@@ -154,7 +154,7 @@ const ApplyLeave = () => {
             EndDayOfLeave: moment(endDate).format('YYYY-MM-DD'),
           }}
           validationSchema={validationSchema}
-          onSubmit={ApplyLeave}>
+          onSubmit={handleApply}>
           {({
             handleChange,
             handleBlur,
