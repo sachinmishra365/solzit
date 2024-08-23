@@ -77,3 +77,16 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+
+
+#node module changes
+
+#agenda >> index.js
+#const HEADER_HEIGHT = 504;
+ #const KNOB_HEIGHT = 24; 
+
+
+ #agenda >> style.js
+  marginTop: 365, //reservations
+  height: 0, //knob container

@@ -85,7 +85,6 @@ const ApplyLeave = () => {
     // const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
     const formattedStartDate = startDate ? moment(startDate).format('YYYY-MM-DD') : null;
     const formattedEndDate = endDate ? moment(endDate).format('YYYY-MM-DD') : null;
-    console.log(values)
     const data = {
       leaveDayType: {
         Value: values.LeaveDayType === 'Full Day' ? 0 : 1,

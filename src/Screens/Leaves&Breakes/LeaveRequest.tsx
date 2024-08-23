@@ -32,13 +32,13 @@ const LeaveRequest = ({navigation}: any) => {
   const {data, isLoading, refetch} = useEmployeeAppliedLeavesQuery({
     ids: EmployeeId?.data?.Data?.ID,
   });
-  console.log('data', data);
 
   useEffect(() => {
     if (data && data !== undefined) {
       setItems(data.Data);
     }
   }, [data]);
+  console.log(data)
 
   const [refreshing, setRefreshing] = React.useState(false);
 

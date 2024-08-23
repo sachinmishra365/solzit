@@ -29,12 +29,16 @@ const Dashboard = () => {
   const [items, setItems] = useState<AgendaSchedule>({});
   const [currentDate, setCurrentDate] = useState('');
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const proceed = useSelector((state: any) => state?.appState?.processed);
-  const Requestdata = useSelector(
-    (state: any) => state?.appState?.appliedLeave,
-  );
+  // const proceed = useSelector((state: any) => state?.appState?.processed);
+  // const Requestdata = useSelector(
+  //   (state: any) => state?.appState?.appliedLeave,
+  // );
+   
+  const ProcessedLeaves = useProcessedLeavesQuery({
+    Id: EmployeeId?.data?.Data?.ID,
+  });
 
-  const leaveDetails = proceed?.map((item:any) => ({
+  const leaveDetails = ProcessedLeaves?.data?.Data?.map((item:any) => ({
     formattedStartDate: moment(item?.leaveStartDate).format('YYYY-MM-DD'),
     formattedEndDate: moment(item?.leaveEndDate).format('YYYY-MM-DD'),
     label: item?.Status?.Label,
@@ -50,32 +54,44 @@ const Dashboard = () => {
       });
     }
   });
+  const AppliedLeave = useEmployeeAppliedLeavesQuery({
+    ids: EmployeeId?.data?.Data?.ID,
+  });
 
 
-  const RequestleaveDetails = Requestdata?.map(item => ({
+  // RequestleaveDetails?.forEach((requestitem:any) => {
+  //   const date = requestitem.formattedStartDate;
+  //   if (items[date]) {
+  //     items[date]?.forEach(event => {
+  //       event.name = requestitem.label;
+  //     });
+  //   }
+  // });
+  
+  const RequestleaveDetails = AppliedLeave?.data?.Data?.map((item: any) => ({
     formattedStartDate: moment(item?.leaveStartDate).format('YYYY-MM-DD'),
+    formattedEndDate: moment(item?.leaveEndDate).format('YYYY-MM-DD'),
     label: item?.Status?.Label,
-  }));  
-
-
-  RequestleaveDetails?.forEach(requestitem => {
-    const date = requestitem.formattedStartDate;
-    if (items[date]) {
-      items[date]?.forEach(event => {
-        event.name = requestitem.label;
-      });
+  }));
+  
+  RequestleaveDetails?.forEach((requestitem: any) => {
+    const startDate = moment(requestitem.formattedStartDate);
+    const endDate = moment(requestitem.formattedEndDate);
+    let currentDate = startDate.clone();
+    while (currentDate.isSameOrBefore(endDate)) {
+      const date = currentDate.format('YYYY-MM-DD');
+      // console.log(date); 
+      if (items[date]) {
+        items[date]?.forEach(event => {
+          event.name = requestitem.label;
+          event.day = requestitem.formattedEndDate;
+          // console.log('Updated event:', event);
+        });
+      }
+      currentDate.add(1, 'day'); 
     }
   });
-
-  const AppliedLeave = useEmployeeAppliedLeavesQuery({
-    id: EmployeeId?.data?.Data?.ID,
-  });
-
-  const ProcessedLeaves = useProcessedLeavesQuery({
-    Id: EmployeeId?.data?.Data?.ID,
-  });
-
-  const leaveApplicationIds = proceed?.map((item:any) => item.leaveApplicationId);
+  
   
   useEffect(() => {
     if (AppliedLeave?.data?.Data !== undefined) {
@@ -96,16 +112,12 @@ const Dashboard = () => {
 
   const loadItems = (day: DateData) => {
     const newItems = {...items};
-
     setTimeout(() => {
       for (let i = -15; i < 85; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
         const strTime = timeToString(time);
-
         if (!newItems[strTime]) {
           newItems[strTime] = [];
-
-          // Generate only one card per day
           newItems[strTime].push({
             name: 'No Event',
             height: 0,
@@ -113,7 +125,6 @@ const Dashboard = () => {
           });
         }
       }
-
       const updatedItems: AgendaSchedule = {};
       Object.keys(newItems).forEach(key => {
         updatedItems[key] = newItems[key];
@@ -121,6 +132,7 @@ const Dashboard = () => {
       setItems(updatedItems);
     }, 1000);
   };
+  
 
   const renderItem = (reservation: AgendaEntry, isFirst: boolean) => {
     const fontSize = isFirst ? 16 : 14;
@@ -150,7 +162,6 @@ const Dashboard = () => {
           //   navigation.navigate('Aboutleavedetails', { leaveApplicationId: reservation.leaveApplicationId});
           // }
         }}
-        // onPress={() =>{reservation.name !=='No Event' ?  navigation.navigate('Aboutleavedetails',{leaveApplicationIds : null })}}
         >
         <Text style={{fontSize, color}}>{reservation.name}</Text>
       </TouchableOpacity>
@@ -203,10 +214,11 @@ const Dashboard = () => {
         rowHasChanged={rowHasChanged}
         pastScrollRange={6}
         futureScrollRange={12}
-        hideKnob={false}
-        showClosingKnob={true}
+        hideKnob={true}
+        showClosingKnob={false}
         pagingEnabled={true}
         refreshing={false}
+        onScroll={true}
         theme={{
           calendarBackground: Colors.gray, //agenda background
           agendaKnobColor: Colors.primary, // knob color
@@ -228,7 +240,7 @@ const Dashboard = () => {
           backgroundColor: Colors.black,
         }}
         style={{
-          height: height * 0.6, 
+          height: height * 0.59, 
         }}
         knobContainerStyle={{
           backgroundColor: Colors.white, 
