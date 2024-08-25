@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Alert, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {
   Agenda,
   DateData,
@@ -8,7 +8,6 @@ import {
   Calendar,
 } from 'react-native-calendars';
 import moment from 'moment';
-import testIDs from '../../../testIDs';
 import Fabbutton from './FabButton/Fabbutton';
 import {Colors} from '../../constants/Colors';
 import {
@@ -17,82 +16,71 @@ import {
 } from '../../Services/services';
 import {useDispatch, useSelector} from 'react-redux';
 import {applied, processedLeaves} from '../../AppStore/Reducers/appState';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {Dimensions} from 'react-native';
 
-import { Dimensions } from 'react-native';
-
-const { height } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const [items, setItems] = useState<AgendaSchedule>({});
   const [currentDate, setCurrentDate] = useState('');
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  // const proceed = useSelector((state: any) => state?.appState?.processed);
-  // const Requestdata = useSelector(
-  //   (state: any) => state?.appState?.appliedLeave,
-  // );
-   
+
   const ProcessedLeaves = useProcessedLeavesQuery({
     Id: EmployeeId?.data?.Data?.ID,
   });
 
-  const leaveDetails = ProcessedLeaves?.data?.Data?.map((item:any) => ({
+  const leaveDetails = ProcessedLeaves?.data?.Data?.map((item: any) => ({
     formattedStartDate: moment(item?.leaveStartDate).format('YYYY-MM-DD'),
     formattedEndDate: moment(item?.leaveEndDate).format('YYYY-MM-DD'),
     label: item?.Status?.Label,
-    leaveApplicationId: item?.leaveApplicationId, 
+    leaveApplicationId: item?.leaveApplicationId,
   }));
 
-  leaveDetails?.forEach((item:any) => {
-    const date = item.formattedStartDate;
-    if (items[date]) {
-      items[date]?.forEach(event => {
-        event.name = item.label;
-        event.leaveApplicationId = item.leaveApplicationId;
-      });
+  leaveDetails?.forEach((requestitem: any) => {
+    const startDate = moment(requestitem.formattedStartDate);
+    const endDate = moment(requestitem.formattedEndDate);
+    let currentDate = startDate.clone();
+    while (currentDate.isSameOrBefore(endDate)) {
+      const date = currentDate.format('YYYY-MM-DD');
+      if (items[date]) {
+        items[date]?.forEach(event => {
+          event.name = requestitem.label;
+          event.day = requestitem.formattedEndDate;
+        });
+      }
+      currentDate.add(1, 'day');
     }
   });
+
   const AppliedLeave = useEmployeeAppliedLeavesQuery({
     ids: EmployeeId?.data?.Data?.ID,
   });
 
-
-  // RequestleaveDetails?.forEach((requestitem:any) => {
-  //   const date = requestitem.formattedStartDate;
-  //   if (items[date]) {
-  //     items[date]?.forEach(event => {
-  //       event.name = requestitem.label;
-  //     });
-  //   }
-  // });
-  
   const RequestleaveDetails = AppliedLeave?.data?.Data?.map((item: any) => ({
     formattedStartDate: moment(item?.leaveStartDate).format('YYYY-MM-DD'),
     formattedEndDate: moment(item?.leaveEndDate).format('YYYY-MM-DD'),
     label: item?.Status?.Label,
   }));
-  
+
   RequestleaveDetails?.forEach((requestitem: any) => {
     const startDate = moment(requestitem.formattedStartDate);
     const endDate = moment(requestitem.formattedEndDate);
     let currentDate = startDate.clone();
     while (currentDate.isSameOrBefore(endDate)) {
       const date = currentDate.format('YYYY-MM-DD');
-      // console.log(date); 
       if (items[date]) {
         items[date]?.forEach(event => {
           event.name = requestitem.label;
           event.day = requestitem.formattedEndDate;
-          // console.log('Updated event:', event);
         });
       }
-      currentDate.add(1, 'day'); 
+      currentDate.add(1, 'day');
     }
   });
-  
-  
+
   useEffect(() => {
     if (AppliedLeave?.data?.Data !== undefined) {
       dispatch(applied(AppliedLeave?.data?.Data));
@@ -132,15 +120,14 @@ const Dashboard = () => {
       setItems(updatedItems);
     }, 1000);
   };
-  
 
   const renderItem = (reservation: AgendaEntry, isFirst: boolean) => {
     const fontSize = isFirst ? 16 : 14;
-    const color = isFirst ? 'white' : '#fff';    
+    const color = isFirst ? 'white' : '#fff';
+    const isCurrentDate = reservation.day === currentDate;
 
     return (
       <TouchableOpacity
-        testID={testIDs.agenda.ITEM}
         style={[
           styles.item,
           {
@@ -159,10 +146,11 @@ const Dashboard = () => {
         ]}
         onPress={() => {
           // if (reservation.name !== 'No Event') {
-          //   navigation.navigate('Aboutleavedetails', { leaveApplicationId: reservation.leaveApplicationId});
+          //   navigation.navigate('Aboutleavedetails', {
+          //     leaveApplicationId: reservation.leaveApplicationId,
+          //   });
           // }
-        }}
-        >
+        }}>
         <Text style={{fontSize, color}}>{reservation.name}</Text>
       </TouchableOpacity>
     );
@@ -180,17 +168,7 @@ const Dashboard = () => {
     return r1.name !== r2.name;
   };
 
-  const renderDay = (day: {
-    getDay: () =>
-      | string
-      | number
-      | boolean
-      | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-      | Iterable<React.ReactNode>
-      | React.ReactPortal
-      | null
-      | undefined;
-  }) => {
+  const renderDay = (day: any) => {
     if (day) {
       return <Text style={styles.customDay}>{day.getDay()}</Text>;
     }
@@ -202,10 +180,53 @@ const Dashboard = () => {
     return date.toISOString().split('T')[0];
   };
 
+  const handleDayPress = (day: DateData) => {
+    setCurrentDate(day.dateString);
+  };
+
   return (
     <View style={{flex: 1, backgroundColor: Colors.gray}}>
+      {/* <Calendar
+        onDayPress={handleDayPress}
+        markedDates={{
+          [currentDate]: { selected: true, marked: true, selectedColor: Colors.primary },
+        }}
+        enableSwipeMonths
+        disabledByDefault
+        theme={{
+          calendarBackground: Colors.black,
+          textSectionTitleColor: Colors.white,
+          selectedDayBackgroundColor: Colors.primary,
+          dayTextColor: Colors.white,
+          todayTextColor: Colors.primary,
+        }}
+      /> */}
+      <Calendar
+        onDayPress={handleDayPress}
+        markedDates={{
+          [currentDate]: {
+            selected: true,
+            marked: true,
+            selectedColor: Colors.primary,
+          },
+        }}
+        theme={{
+          calendarBackground: Colors.black,
+          textSectionTitleColor: Colors.white, // Color of the month/year title (e.g., August 2024)
+          selectedDayBackgroundColor: Colors.primary, // Background color of the selected day
+          dayTextColor: Colors.white, // Color of the day numbers
+          todayTextColor: Colors.primary, // Color for today's date
+          arrowColor: Colors.primary, // Color of the navigation arrows
+          monthTextColor: Colors.white, // Color of the month title
+          textDisabledColor: Colors.error, // Color of the disabled days (days not in the markedDates list)
+        }}
+        markingType={'simple'} // This marking type works with the markedDates prop
+        disableAllTouchEventsForDisabledDays={true} // Disable touch events on disabled days
+      />
+
+      {/* <View style={{borderWidth:1,backgroundColor:Colors.white,height:1}}/> */}
+
       <Agenda
-        testID={testIDs.agenda.CONTAINER}
         items={items}
         loadItemsForMonth={loadItems}
         selected={currentDate}
@@ -214,39 +235,35 @@ const Dashboard = () => {
         rowHasChanged={rowHasChanged}
         pastScrollRange={6}
         futureScrollRange={12}
-        hideKnob={true}
+        hideKnob={true} // Hide the agenda knob
         showClosingKnob={false}
-        pagingEnabled={true}
         refreshing={false}
-        onScroll={true}
         theme={{
-          calendarBackground: Colors.gray, //agenda background
-          agendaKnobColor: Colors.primary, // knob color
-          backgroundColor: Colors.black, // background color below agenda
-          agendaDayTextColor: Colors.white, // day name
-          agendaDayNumColor: Colors.white, // day number
-          agendaTodayColor: Colors.primary, // today in list
-          monthTextColor: Colors.white, // name in calendar
-          textDefaultColor: 'red',
+          calendarBackground: Colors.gray,
+          backgroundColor: Colors.black,
+          agendaDayTextColor: Colors.white,
+          agendaDayNumColor: Colors.white,
+          agendaTodayColor: Colors.primary,
+          monthTextColor: Colors.white,
           todayBackgroundColor: Colors.white,
           textSectionTitleColor: Colors.white,
-          selectedDayBackgroundColor: Colors.primary, // calendar sel date
-          dayTextColor: Colors.white, // calendar day
-          dotColor: 'white', // dots
+          selectedDayBackgroundColor: Colors.primary,
+          dayTextColor: Colors.white,
+          dotColor: 'white',
           textDisabledColor: 'red',
         }}
-        // Agenda container style
         sectionStyle={{
           backgroundColor: Colors.black,
+          height: 0, // Set the header height to 0
         }}
         style={{
-          height: height * 0.59, 
+          height: height * 0.59,
         }}
         knobContainerStyle={{
-          backgroundColor: Colors.white, 
+          backgroundColor: Colors.white,
         }}
         agendaStyle={{
-          backgroundColor: Colors.white, 
+          backgroundColor: Colors.white,
         }}
       />
 
@@ -257,7 +274,6 @@ const Dashboard = () => {
 
 const styles = StyleSheet.create({
   item: {
-    // backgroundColor:item.name,
     flex: 1,
     borderRadius: 5,
     padding: 10,
