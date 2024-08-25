@@ -186,21 +186,7 @@ const Dashboard = () => {
 
   return (
     <View style={{flex: 1, backgroundColor: Colors.gray}}>
-      {/* <Calendar
-        onDayPress={handleDayPress}
-        markedDates={{
-          [currentDate]: { selected: true, marked: true, selectedColor: Colors.primary },
-        }}
-        enableSwipeMonths
-        disabledByDefault
-        theme={{
-          calendarBackground: Colors.black,
-          textSectionTitleColor: Colors.white,
-          selectedDayBackgroundColor: Colors.primary,
-          dayTextColor: Colors.white,
-          todayTextColor: Colors.primary,
-        }}
-      /> */}
+
       <Calendar
         onDayPress={handleDayPress}
         markedDates={{
@@ -220,11 +206,10 @@ const Dashboard = () => {
           monthTextColor: Colors.white, // Color of the month title
           textDisabledColor: Colors.error, // Color of the disabled days (days not in the markedDates list)
         }}
-        markingType={'simple'} // This marking type works with the markedDates prop
+        markingType={'simple'} 
+        enableSwipeMonths// This marking type works with the markedDates prop
         disableAllTouchEventsForDisabledDays={true} // Disable touch events on disabled days
       />
-
-      {/* <View style={{borderWidth:1,backgroundColor:Colors.white,height:1}}/> */}
 
       <Agenda
         items={items}
@@ -233,8 +218,8 @@ const Dashboard = () => {
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
         rowHasChanged={rowHasChanged}
-        pastScrollRange={6}
-        futureScrollRange={12}
+        // pastScrollRange={6}
+        // futureScrollRange={12}
         hideKnob={true} // Hide the agenda knob
         showClosingKnob={false}
         refreshing={false}

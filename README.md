@@ -82,10 +82,15 @@ To learn more about React Native, take a look at the following resources:
 
 #agenda >> index.js
 #const HEADER_HEIGHT = 0;
+const KNOB_HEIGHT = 0;
+
 
 #agenda >> style.js
 marginTop: 0, //reservations
 backgroundColor: 'black' //reservations
 height: 0, //knob container
 backgroundColor: 'black' //knobContainer
+ height: 0, //header
+ width: 0 //header
+ width: 0 //dayHeader
 
