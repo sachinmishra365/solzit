@@ -1,83 +1,14 @@
-// import * as React from 'react';
-// import {createDrawerNavigator} from '@react-navigation/drawer';
-// import ApplyLeave from '../Screens/ApplyLeave';
-// import LeaveRequest from '../Screens/Leaves&Breakes/LeaveRequest';
-// import Logout from '../Screens/Logout/Logout';
-// import LeaveBalance from '../Screens/Leaves&Breakes/LeaveBalance';
-// import {Text, TouchableOpacity, View} from 'react-native';
-// import {auth} from '../AppStore/Reducers/appState';
-// import {useDispatch} from 'react-redux';
-// import {IconButton} from 'react-native-paper';
-// import Dashboard from '../Screens/Dashboard/Dashboard';
-
-// const Drawer = createDrawerNavigator();
-
-// const DrawerNavigator = () => {
-//   const dispatch = useDispatch();
-//   return (
-//     <Drawer.Navigator
-//       screenOptions={{headerShown: false}}
-//       drawerContent={({navigation}) => (
-//         <View>
-//           <View style={{flexDirection: 'row', alignItems: 'center'}}></View>
-//           <TouchableOpacity
-//             style={{flexDirection: 'row', alignItems: 'center', marginLeft: 10}}
-//             onPress={() => navigation.navigate('LeaveRequest')}>
-//             <IconButton
-//               icon="application-settings"
-//               iconColor="#000"
-//               size={20}
-//             />
-//             <Text
-//               style={{
-//                 fontFamily: 'Poppins-Medium',
-//                 fontSize: 16,
-//                 color: '#000',
-//               }}>
-//               Leave Request
-//             </Text>
-//           </TouchableOpacity>
-//           <TouchableOpacity
-//             style={{flexDirection: 'row', alignItems: 'center', marginLeft: 10}}
-//             onPress={() => {
-//               dispatch(auth(null));
-//               navigation.navigate('AuthStack');
-//             }}>
-//             <IconButton icon="logout" iconColor="#000" size={20} />
-//             <Text
-//               style={{
-//                 fontFamily: 'Poppins-Medium',
-//                 fontSize: 16,
-//                 color: '#000',
-//               }}>
-//               Logout
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-//       )}>
-//       <Drawer.Screen name="Soluzione" component={Dashboard} />
-//       <Drawer.Screen name="Home" component={ApplyLeave} />
-//       <Drawer.Screen name="Leave Request" component={LeaveRequest} />
-//       <Drawer.Screen name="Leave Balance" component={LeaveBalance} />
-//       <Drawer.Screen name="Logout" component={Logout} />
-//     </Drawer.Navigator>
-//   );
-// };
-
-// export default DrawerNavigator;
-
 import React, {useRef, useState} from 'react';
 import {
   Animated,
   Image,
-  PanResponder,
   SafeAreaView,
   StyleSheet,
   Text,
   Pressable,
   View,
 } from 'react-native';
-import {Icon, IconButton} from 'react-native-paper';
+import {Icon} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
 import Dashboard from '../Screens/Dashboard/Dashboard';
@@ -127,12 +58,28 @@ const DrawerNavigator = ({navigation}: any) => {
         <View style={styles.drawerBtnContainer}>
           <Pressable
             onPressIn={() => {
-              navigation.navigate('ApplyLeave');
+              navigation.navigate('Profile');
             }}
             onPress={() => {
               toggleMenu();
             }}
             style={styles.drawerBtn}>
+            <Icon
+              source="account"
+              color={Colors.white}
+              size={20}
+            />
+            <Text style={styles.drawerBtnTxt}>Profile</Text>
+          </Pressable>
+
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('ApplyLeave');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={[styles.drawerBtn, {marginTop: 16}]}>
             <Icon
               source="calendar-clock"
               color={Colors.white}
@@ -162,7 +109,7 @@ const DrawerNavigator = ({navigation}: any) => {
             }}
             style={styles.drawerBtn}>
             <Icon
-              source="account-box"
+              source="card-account-details"
               color={Colors.white}
               size={20}
             />
@@ -246,8 +193,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   drawerBtnTxt: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
+    // fontSize: 14,
+    // fontFamily: 'Poppins-Regular',
     paddingLeft: 15,
     color: Colors.white,
   },

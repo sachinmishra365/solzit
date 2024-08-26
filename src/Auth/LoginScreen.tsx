@@ -31,8 +31,10 @@ const [forget] = useForgetpasswordMutation()
         email: values.username,
         password: values.password,
       });
+
       // console.log(response);
       if (response.data.ResponseCode !== 999) {
+        // console.log((response));
         dispatch(auth(response));
         navigation.navigate('RootStack');
       }

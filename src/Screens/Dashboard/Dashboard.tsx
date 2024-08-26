@@ -101,7 +101,7 @@ const Dashboard = () => {
   const loadItems = (day: DateData) => {
     const newItems = {...items};
     setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
+      for (let i = -365; i < 365; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
         const strTime = timeToString(time);
         if (!newItems[strTime]) {
@@ -208,7 +208,7 @@ const Dashboard = () => {
         }}
         markingType={'simple'} 
         enableSwipeMonths// This marking type works with the markedDates prop
-        disableAllTouchEventsForDisabledDays={true} // Disable touch events on disabled days
+        disableAllTouchEventsForDisabledDays={false} // Disable touch events on disabled days
       />
 
       <Agenda

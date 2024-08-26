@@ -20,7 +20,7 @@ const Fabbutton = () => {
       style={{elevation:5}}
       actions={[
         {
-          icon: 'account-box',
+          icon: 'card-account-details',
           color:'white',
           labelStyle:{color:'white'},
           label: 'Processed Leave',

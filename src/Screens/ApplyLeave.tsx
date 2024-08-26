@@ -230,6 +230,7 @@ const ApplyLeave = () => {
                     onDismiss={closeHalfDayMenu}
                     contentStyle={{backgroundColor: Colors.gray}} // Style for the full menu item
                     anchor={
+                      <Pressable onPress={openHalfDayMenu}>
                       <CustomTextInput
                         label="Half Day Type"
                         value={values.HalfDayType}
@@ -241,6 +242,7 @@ const ApplyLeave = () => {
                         onPress={openHalfDayMenu}
                         style={{marginTop: 10, marginHorizontal: 16}}
                       />
+                      </Pressable>
                     }>
                     <Menu.Item
                       onPress={() => {
