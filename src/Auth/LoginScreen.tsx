@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity, Image} from 'react-native';
+import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
@@ -7,7 +7,10 @@ import {SCREEN_WIDTH} from '../constants/Screen';
 import {ActivityIndicator} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import {useForgetpasswordMutation, useUserAuthenticationloginMutation} from '../Services/services';
+import {
+  useForgetpasswordMutation,
+  useUserAuthenticationloginMutation,
+} from '../Services/services';
 import {auth} from '../AppStore/Reducers/appState';
 import Placeholder from '../Screens/Placeholder/Placeholder';
 
@@ -23,7 +26,7 @@ const LoginScreen = ({navigation}: any) => {
       .required('Username is required'),
     password: Yup.string().required('Password is required'),
   });
-const [forget] = useForgetpasswordMutation()
+  const [forget] = useForgetpasswordMutation();
 
   const handleLogin = async (values: {username: string; password: string}) => {
     try {
@@ -32,11 +35,16 @@ const [forget] = useForgetpasswordMutation()
         password: values.password,
       });
 
-      // console.log(response);
       if (response.data.ResponseCode !== 999) {
-        // console.log((response));
         dispatch(auth(response));
-        navigation.navigate('RootStack');
+        navigation.navigate('CheckStack');
+      } else {
+        Alert.alert(
+          'Login Status',
+          response.data.Message,
+          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+          {cancelable: true},
+        );
       }
     } catch (err) {
       console.error('Login failed:', err);
@@ -44,15 +52,14 @@ const [forget] = useForgetpasswordMutation()
   };
 
   const handleforget = async () => {
-    const param ={
-      email:"govind.l@solzit.com"
-    }
+    const param = {
+      email: 'govind.l@solzit.com',
+    };
     try {
       const response = await forget(param);
-
     } catch (error) {}
   };
-  
+
   return (
     <View
       style={{
@@ -62,7 +69,7 @@ const [forget] = useForgetpasswordMutation()
         alignItems: 'center',
       }}>
       {isLoading ? (
-        <Placeholder/>
+        <Placeholder />
       ) : (
         <Formik
           initialValues={{
@@ -87,14 +94,15 @@ const [forget] = useForgetpasswordMutation()
                   marginVertical: 16,
                 }}>
                 <Image
-                  source={require('../Assets/Images/soluzionelogo-whitelogo.png')}
-                  style={{ width: '64%',height:35}}
+                  source={require('../Assets/Images/Solzlogo.png')}
+                  style={{width: '70%', height: 50}}
                 />
               </View>
               <View style={{marginVertical: 16}} />
               <CustomTextInput
                 label="Username"
                 value={values.username}
+                autoFocus={true}
                 secureTextEntry={false}
                 onChangeText={handleChange('username')}
                 onBlur={handleBlur('username')}

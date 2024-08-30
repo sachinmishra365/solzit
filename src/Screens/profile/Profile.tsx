@@ -4,14 +4,14 @@ import CustomHeader from '../../Components/CustomHeader';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
-import {Card} from 'react-native-paper';
-import moment from 'moment';
+import {Card, IconButton} from 'react-native-paper';
 
 const Profile = () => {
   const navigation = useNavigation();
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const Profiledata = EmployeeId?.data?.Data;
   const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
+  console.log(Profiledata);
 
   return (
     <View style={{flex: 1, backgroundColor: Colors.black}}>
@@ -22,6 +22,9 @@ const Profile = () => {
           navigation.goBack();
         }}
       />
+      <View
+        style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
+      />
 
       <Card
         style={{
@@ -30,122 +33,94 @@ const Profile = () => {
           borderColor: Colors.white,
           marginHorizontal: 16,
           padding: 10,
-          marginTop:20
+          marginTop: 60,
         }}>
         <View style={{alignItems: 'center', marginBottom: 40}}>
-          <Image
-            style={{height: 100, width: 100, borderRadius: 50}}
-            source={{uri:base64Image}}
-          />
+          {Profiledata?.employeeImg ? (
+            <Image
+              style={{
+                height: 110,
+                width: 110,
+                borderRadius: 100,
+                position: 'absolute',
+                top: -55,
+                left: 10,
+              }}
+              source={{uri: base64Image}}
+            />
+          ) : (
+            <Image
+              style={{
+                height: 110,
+                width: 110,
+                borderRadius: 100,
+                position: 'absolute',
+                top: -55,
+                left: 10,
+              }}
+              source={require('../../Assets/Images/profile.png')}
+            />
+          )}
         </View>
 
-        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 30,
+            flexWrap: 'wrap',
+          }}>
+          <Text style={{color: Colors.white, fontSize: 22}}>
+            {Profiledata?.fullName ? Profiledata?.fullName : 'N/A'}
+            {' | '}
+          </Text>
+          <Text style={{color: Colors.white, fontSize: 22}}>
+            {Profiledata?.designation ? Profiledata?.designation : 'N/A'}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 10,
+          }}>
           <View>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>EMP ID{' : '}</Text>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>Email{' : '}</Text>
             <Text style={{color: Colors.white, fontWeight: '500'}}>
-              Designation{' : '}
+              Email{' : '}
             </Text>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>
-              Joining Date{' : '}
+
+            <Text
+              style={{
+                color: Colors.white,
+                fontWeight: '500',
+                marginVertical: 10,
+              }}>
+              Employee ID{' : '}
             </Text>
 
             <Text style={{color: Colors.white, fontWeight: '500'}}>
               Reporting Manager{' : '}
             </Text>
           </View>
+
           <View>
-            <Text style={{color: Colors.white}}>{Profiledata?.userName}</Text>
-
             <Text style={{color: Colors.white}}>
-              {Profiledata?.employee?.email}
+              {Profiledata?.employee?.email
+                ? Profiledata?.employee?.email
+                : 'N/A'}
+            </Text>
+
+            <Text style={{color: Colors.white, marginVertical: 10}}>
+              {Profiledata?.userName ? Profiledata?.userName : 'N/A'}
             </Text>
 
             <Text style={{color: Colors.white}}>
-              {Profiledata?.designation}
-            </Text>
-
-            <Text style={{color: Colors.white}}>
-              {moment(Profiledata?.joiningDate).format('DD/MM/YY')}
-            </Text>
-
-            <Text style={{color: Colors.white}}>
-              {Profiledata?.reportingManager?.Name}
+              {Profiledata?.reportingManager?.Name
+                ? Profiledata?.reportingManager?.Name
+                : 'N/A'}
             </Text>
           </View>
         </View>
       </Card>
-
-      {/* <Card style={{backgroundColor:Colors.black,borderWidth:0.5,borderColor:Colors.white,marginHorizontal:16,padding:10}}>
-        <View style={{alignItems: 'center', marginBottom: 40}}>
-          <Image
-            style={{height: 100, width: 100, borderRadius: 50}}
-            source={require('../../Assets/Images/photo.jpg')}
-          />
-        </View>
-
-        <View style={{alignSelf:'center'}}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '90%',
-            }}>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>EMP ID</Text>
-            <Text style={{color: Colors.white}}>{Profiledata?.userName}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '90%',
-            }}>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>Email</Text>
-            <Text style={{color: Colors.white}}>
-              {Profiledata?.employee?.email}
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '90%',
-            }}>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>
-              Designation
-            </Text>
-            <Text style={{color: Colors.white}}>
-              {Profiledata?.designation}
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '90%',
-            }}>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>
-              Joining Date
-            </Text>
-            <Text style={{color: Colors.white}}>
-              {Profiledata?.joiningDate}
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '90%',
-            }}>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>
-              Reporting Manager
-            </Text>
-            <Text style={{color: Colors.white}}>
-              {Profiledata?.reportingManager?.Name}
-            </Text>
-          </View>
-        </View>
-      </Card> */}
     </View>
   );
 };

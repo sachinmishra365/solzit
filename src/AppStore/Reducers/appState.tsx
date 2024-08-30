@@ -3,7 +3,7 @@ import {createSlice} from '@reduxjs/toolkit';
 export const appStateSlice = createSlice({
   name: 'appState',
   initialState: {
-    authToken: null,
+    authToken: undefined,
     appliedLeave: null,
     processed: null,
   },

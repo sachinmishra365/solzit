@@ -7,6 +7,7 @@ import {
   Text,
   Pressable,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import {Icon} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -52,7 +53,9 @@ const DrawerNavigator = ({navigation}: any) => {
         />
 
         <Text style={styles.driverName}>
-          {userData?.data?.Data?.fullName ? userData?.data?.Data?.fullName : 'Guest'}
+          {userData?.data?.Data?.fullName
+            ? userData?.data?.Data?.fullName
+            : 'Guest'}
         </Text>
 
         <View style={styles.drawerBtnContainer}>
@@ -64,11 +67,7 @@ const DrawerNavigator = ({navigation}: any) => {
               toggleMenu();
             }}
             style={styles.drawerBtn}>
-            <Icon
-              source="account"
-              color={Colors.white}
-              size={20}
-            />
+            <Icon source="account" color={Colors.white} size={20} />
             <Text style={styles.drawerBtnTxt}>Profile</Text>
           </Pressable>
 
@@ -80,11 +79,7 @@ const DrawerNavigator = ({navigation}: any) => {
               toggleMenu();
             }}
             style={[styles.drawerBtn, {marginTop: 16}]}>
-            <Icon
-              source="calendar-clock"
-              color={Colors.white}
-              size={20}
-            />
+            <Icon source="calendar-clock" color={Colors.white} size={20} />
             <Text style={styles.drawerBtnTxt}>Apply Leave</Text>
           </Pressable>
 
@@ -116,19 +111,18 @@ const DrawerNavigator = ({navigation}: any) => {
             <Text style={styles.drawerBtnTxt}>Processed Leave</Text>
           </Pressable>
 
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
-              dispatch(auth(null));
+              dispatch(auth(undefined));
             }}
             style={[styles.drawerBtn, {marginVertical: 16}]}>
             <Icon source="logout" color={Colors.white} size={20} />
-            <Text style={styles.drawerBtnTxt}>LogOut</Text>
-          </Pressable>
+            <Text style={styles.drawerBtnTxt}>Logout</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       <Animated.View
-        // {...panResponder.panHandlers}
         style={[
           styles.screenHeaderContainer,
           {
@@ -143,7 +137,8 @@ const DrawerNavigator = ({navigation}: any) => {
               },
             ],
           }}>
-          <View style={styles.screenHeader}>
+        <View style={{flexDirection:'row',alignItems:'center',}}>
+        <View style={styles.screenHeader}>
             <Pressable onPress={toggleMenu}>
               <Image
                 source={
@@ -156,6 +151,16 @@ const DrawerNavigator = ({navigation}: any) => {
             </Pressable>
             <Text style={styles.headerTxt}>Soluzione</Text>
           </View>
+          <View style={{position:'absolute',right:10}}>
+          <Image
+          source={require('../Assets/Images/Logo/solzitLogo.png')}
+          style={{width: 30,
+            height: 30,
+            borderRadius: 10,
+            }}
+        />
+          </View>
+        </View>
         </Animated.View>
         <Dashboard />
       </Animated.View>
@@ -194,7 +199,7 @@ const styles = StyleSheet.create({
   },
   drawerBtnTxt: {
     // fontSize: 14,
-    // fontFamily: 'Poppins-Regular',
+    // fontFamily: 'Poppins-Bold',
     paddingLeft: 15,
     color: Colors.white,
   },
@@ -219,7 +224,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   headerTxt: {
-    fontFamily: 'Poppins-Medium',
     fontSize: 18,
     color: Colors.white,
   },

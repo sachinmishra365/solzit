@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
   RefreshControl,
@@ -19,16 +20,11 @@ import {useSelector} from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
 import Placeholder from '../Placeholder/Placeholder';
+import Toast from 'react-native-toast-message';
 
 const LeaveRequest = ({navigation}: any) => {
-  // const AppliedLeaveData = useSelector(
-  //   (state: any) => state?.appState?.appliedLeave,
-  // );
-
   const [items, setItems] = useState(0);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  // console.log('EmployeeId', EmployeeId);
-
   const {data, isLoading, refetch} = useEmployeeAppliedLeavesQuery({
     ids: EmployeeId?.data?.Data?.ID,
   });
@@ -38,7 +34,6 @@ const LeaveRequest = ({navigation}: any) => {
       setItems(data.Data);
     }
   }, [data]);
-  console.log(data)
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -47,16 +42,14 @@ const LeaveRequest = ({navigation}: any) => {
     setTimeout(() => {
       setRefreshing(false);
       refetch();
-    }, 2000);
+    }, 1000);
   }, [refetch]);
 
   const renderItem = ({item}: any) => (
-   
     <Card
       style={{
         backgroundColor: Colors.black,
         marginVertical: 10,
-        // paddingHorizontal: 16,
         borderColor: Colors.white,
         borderWidth: 0.5,
       }}>
@@ -93,6 +86,7 @@ const LeaveRequest = ({navigation}: any) => {
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
           }}>
           <Text
             style={{
@@ -115,7 +109,9 @@ const LeaveRequest = ({navigation}: any) => {
           <Text
             style={{
               color:
-                item?.leaveType?.Label === 'Earn Leave' ? 'orange' : Colors.white,
+                item?.leaveType?.Label === 'Earn Leave'
+                  ? 'white'
+                  : Colors.white,
               fontSize: 14,
               fontWeight: '600',
             }}>
@@ -124,20 +120,37 @@ const LeaveRequest = ({navigation}: any) => {
           <TouchableOpacity
             style={{
               width: SCREEN_WIDTH - 280,
-              height: 30,
+              height: 33,
               backgroundColor: Colors.primary,
               justifyContent: 'center',
               alignSelf: 'center',
               borderRadius: 3,
             }}
+            disabled={result.isLoading}
             onPress={() => {
-              handlecancel({item});
+              Alert.alert(
+                'Cancel Leave',
+                'Are you sure you want to cancel this leave?',
+                [
+                  {
+                    text: 'No',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Yes',
+                    onPress: () => handlecancel({item}),
+                  },
+                ],
+                {cancelable: true},
+              );
             }}>
             <Text
               style={{
                 textAlign: 'center',
                 fontWeight: '600',
                 color: Colors.white,
+                flexWrap: 'wrap',
               }}>
               Cancel Leave
             </Text>
@@ -224,16 +237,13 @@ const LeaveRequest = ({navigation}: any) => {
     };
     try {
       const response = await CanceleLeave(param);
-
-      Alert.alert(
-        'Cancel Leave Status',
-        response.data.Message,
-        [
-         
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-        ],
-        {cancelable: true},
-      );
+      Toast.show({
+        type: 'success',
+        text1: 'Leave Status',
+        text2: response.data.Message,
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
     } catch (error) {}
   };
 
@@ -246,7 +256,7 @@ const LeaveRequest = ({navigation}: any) => {
           navigation.goBack();
         }}
       />
-       <View
+      <View
         style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
       />
       {isLoading ? (

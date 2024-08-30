@@ -8,12 +8,16 @@ const CustomTextInput = ({
   label,
   value,
   onChangeText,
+  autoFocus = false,
   secureTextEntry = false,
   leftIconName = false,
   rightIconName = false,
   onPress,
   lefticon = true,
-  editable=false
+  editable = false,
+  disable = false,
+  readOnly = false,
+  onLayout,
 }: any) => {
   return (
     <View>
@@ -21,6 +25,7 @@ const CustomTextInput = ({
         mode="outlined"
         label={label}
         value={value}
+        autoFocus={autoFocus}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         textColor={Colors.white}
@@ -28,7 +33,14 @@ const CustomTextInput = ({
         activeOutlineColor={Colors.white}
         placeholderTextColor={Colors.white}
         editable={editable}
-        left={lefticon ? (<TextInput.Icon icon={leftIconName} color={Colors.white} />):null}
+        disabled={disable}
+        readOnly={readOnly}
+        onLayout={onLayout}
+        left={
+          lefticon ? (
+            <TextInput.Icon icon={leftIconName} color={Colors.white} />
+          ) : null
+        }
         right={
           <TextInput.Icon
             icon={rightIconName}
@@ -51,7 +63,6 @@ const CustomTextInput = ({
     </View>
   );
 };
-
 export default CustomTextInput;
 
 const styles = StyleSheet.create({

@@ -77,6 +77,12 @@ export const services = createApi({
         body: data,
       }),
     }),
+    SoluzioneHolidays: builder.query({
+      query: data => ({
+        url: `/Dashboard/GetSoluzioneHolidaysDashboard/`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -87,4 +93,5 @@ export const {
   useEmployeeCancelLeavesMutation,
   useProcessedLeavesQuery,
   useForgetpasswordMutation,
+  useSoluzioneHolidaysQuery
 } = services;

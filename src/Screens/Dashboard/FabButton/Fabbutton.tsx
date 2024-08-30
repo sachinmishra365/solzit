@@ -4,7 +4,7 @@ import {FAB} from 'react-native-paper';
 import {Colors} from '../../../constants/Colors';
 
 const Fabbutton = () => {
-  const navigation = useNavigation();
+  const navigation:any = useNavigation();
   const [state, setState] = React.useState({open: false});
 
   const onStateChange = ({open}: any) => setState({open});

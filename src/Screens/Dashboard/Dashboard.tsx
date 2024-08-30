@@ -13,6 +13,7 @@ import {Colors} from '../../constants/Colors';
 import {
   useEmployeeAppliedLeavesQuery,
   useProcessedLeavesQuery,
+  useSoluzioneHolidaysQuery,
 } from '../../Services/services';
 import {useDispatch, useSelector} from 'react-redux';
 import {applied, processedLeaves} from '../../AppStore/Reducers/appState';
@@ -26,20 +27,43 @@ const Dashboard = () => {
   const navigation = useNavigation();
   const [items, setItems] = useState<AgendaSchedule>({});
   const [currentDate, setCurrentDate] = useState('');
+  const [HolyDays, setHolyDays] = useState();
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
 
-  const ProcessedLeaves = useProcessedLeavesQuery({
-    Id: EmployeeId?.data?.Data?.ID,
+  const Holiday = useSoluzioneHolidaysQuery('');
+  const SolzHolyDays = Holiday?.data?.Data?.map((item: any) => ({
+    HolyDayName: item.holidayName,
+    HolyDayDate: moment(item?.date).format('YYYY-MM-DD'),
+  }));
+
+  SolzHolyDays?.forEach((HoyDayitem: any) => {
+    const date = HoyDayitem.HolyDayDate;
+    if (items[date]) {
+      items[date]?.forEach(event => {
+        event.name = HoyDayitem.HolyDayName;
+        event.day = HoyDayitem.HolyDayDate;
+      });
+    }
+  });
+  console.log(SolzHolyDays);
+
+  useEffect(() => {
+    if (Holiday?.data?.Data) {
+      setHolyDays(Holiday.data.Data);
+    }
+  }, [Holiday]);
+
+  const AppliedLeave = useEmployeeAppliedLeavesQuery({
+    ids: EmployeeId?.data?.Data?.ID,
   });
 
-  const leaveDetails = ProcessedLeaves?.data?.Data?.map((item: any) => ({
+  const RequestleaveDetails = AppliedLeave?.data?.Data?.map((item: any) => ({
     formattedStartDate: moment(item?.leaveStartDate).format('YYYY-MM-DD'),
     formattedEndDate: moment(item?.leaveEndDate).format('YYYY-MM-DD'),
     label: item?.Status?.Label,
-    leaveApplicationId: item?.leaveApplicationId,
   }));
 
-  leaveDetails?.forEach((requestitem: any) => {
+  RequestleaveDetails?.forEach((requestitem: any) => {
     const startDate = moment(requestitem.formattedStartDate);
     const endDate = moment(requestitem.formattedEndDate);
     let currentDate = startDate.clone();
@@ -55,17 +79,18 @@ const Dashboard = () => {
     }
   });
 
-  const AppliedLeave = useEmployeeAppliedLeavesQuery({
-    ids: EmployeeId?.data?.Data?.ID,
+  const ProcessedLeaves = useProcessedLeavesQuery({
+    Id: EmployeeId?.data?.Data?.ID,
   });
 
-  const RequestleaveDetails = AppliedLeave?.data?.Data?.map((item: any) => ({
+  const leaveDetails = ProcessedLeaves?.data?.Data?.map((item: any) => ({
     formattedStartDate: moment(item?.leaveStartDate).format('YYYY-MM-DD'),
     formattedEndDate: moment(item?.leaveEndDate).format('YYYY-MM-DD'),
     label: item?.Status?.Label,
+    leaveApplicationId: item?.leaveApplicationId,
   }));
 
-  RequestleaveDetails?.forEach((requestitem: any) => {
+  leaveDetails?.forEach((requestitem: any) => {
     const startDate = moment(requestitem.formattedStartDate);
     const endDate = moment(requestitem.formattedEndDate);
     let currentDate = startDate.clone();
@@ -125,7 +150,6 @@ const Dashboard = () => {
     const fontSize = isFirst ? 16 : 14;
     const color = isFirst ? 'white' : '#fff';
     const isCurrentDate = reservation.day === currentDate;
-
     return (
       <TouchableOpacity
         style={[
@@ -185,8 +209,7 @@ const Dashboard = () => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: Colors.gray}}>
-
+    <View style={{flex: 1, backgroundColor: Colors.black}}>
       <Calendar
         onDayPress={handleDayPress}
         markedDates={{
@@ -198,19 +221,18 @@ const Dashboard = () => {
         }}
         theme={{
           calendarBackground: Colors.black,
-          textSectionTitleColor: Colors.white, // Color of the month/year title (e.g., August 2024)
-          selectedDayBackgroundColor: Colors.primary, // Background color of the selected day
-          dayTextColor: Colors.white, // Color of the day numbers
-          todayTextColor: Colors.primary, // Color for today's date
-          arrowColor: Colors.primary, // Color of the navigation arrows
-          monthTextColor: Colors.white, // Color of the month title
-          textDisabledColor: Colors.error, // Color of the disabled days (days not in the markedDates list)
+          textSectionTitleColor: Colors.white,
+          selectedDayBackgroundColor: Colors.primary,
+          dayTextColor: Colors.white,
+          todayTextColor: Colors.primary,
+          arrowColor: Colors.primary,
+          monthTextColor: Colors.white,
+          textDisabledColor: Colors.error,
         }}
-        markingType={'simple'} 
-        enableSwipeMonths// This marking type works with the markedDates prop
-        disableAllTouchEventsForDisabledDays={false} // Disable touch events on disabled days
+        markingType={'simple'}
+        enableSwipeMonths
+        disableAllTouchEventsForDisabledDays={false}
       />
-
       <Agenda
         items={items}
         loadItemsForMonth={loadItems}
@@ -218,9 +240,7 @@ const Dashboard = () => {
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
         rowHasChanged={rowHasChanged}
-        // pastScrollRange={6}
-        // futureScrollRange={12}
-        hideKnob={true} // Hide the agenda knob
+        hideKnob={true}
         showClosingKnob={false}
         refreshing={false}
         theme={{
@@ -239,7 +259,7 @@ const Dashboard = () => {
         }}
         sectionStyle={{
           backgroundColor: Colors.black,
-          height: 0, // Set the header height to 0
+          height: 0,
         }}
         style={{
           height: height * 0.59,
@@ -251,7 +271,6 @@ const Dashboard = () => {
           backgroundColor: Colors.white,
         }}
       />
-
       <Fabbutton />
     </View>
   );

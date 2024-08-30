@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-native-gesture-handler';
 import {
   createNavigationContainerRef,
@@ -7,13 +7,76 @@ import {
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import {persistor, store} from './src/AppStore/Store/store';
-import {SafeAreaView, StatusBar} from 'react-native';
+import {SafeAreaView, StatusBar, Text, View} from 'react-native';
 import {PaperProvider} from 'react-native-paper';
 import StackNavigator from './src/AppNavigator/StackNavigator';
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import NetInfo from '@react-native-community/netinfo';
+
+
+const toastConfig = {
+
+  success: (props) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: 'green',height:'auto',minHeight:70}}
+      contentContainerStyle={{ paddingVertical: 15}}
+      text1Style={{
+        fontSize: 14,
+        fontWeight: '400'
+      }}
+      text2NumberOfLines={0} 
+    />
+  ),
+
+
+  error: (props) => (
+    <ErrorToast
+      {...props}
+      text1Style={{
+        fontSize: 14
+      }}
+      text2Style={{
+        fontSize: 13
+      }}
+    />
+  ),
+
+  tomatoToast: ({ text1, props }) => (
+    <View style={{ height: 60, width: '100%', backgroundColor: 'tomato' }}>
+      <Text>{text1}</Text>
+      <Text>{props.uuid}</Text>
+    </View>
+  )
+};
+
 
 export const navigationRef = createNavigationContainerRef();
 
-const App = () => {
+const App = (props) => {
+
+  const [isConnected, setIsConnected] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state: any) => {
+      setIsConnected(state.isConnected);
+      showToast(state.isConnected);
+    });
+
+    return () => unsubscribe();
+  }, [isConnected]);
+
+  const showToast = (connected: any) => {
+    Toast.show({
+      type: connected ? 'success' : 'error',
+      text1: connected ? 'Online' : 'Offline',
+      text2: connected
+        ? 'You are now connected to the internet.'
+        : 'You are currently offline.',
+        text2Style: {flexWrap: 'wrap',fontSize:13},
+    });
+  };
+  
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -24,6 +87,7 @@ const App = () => {
               <StatusBar animated={true} backgroundColor="#000" />
             </NavigationContainer>
           </SafeAreaView>
+           <Toast config={toastConfig}/>
         </PaperProvider>
       </PersistGate>
     </Provider>

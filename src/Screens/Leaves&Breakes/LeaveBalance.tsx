@@ -70,7 +70,11 @@ const LeaveBalance = ({navigation}: any) => {
         borderWidth: 0.5,
       }}>
       <Card.Content>
-        <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+        <View
+          style={{
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+          }}>
           <Text style={{color: Colors.white, fontSize: 14, fontWeight: '600'}}>
             {item.totalDaysofLeave !== 0.5
               ? `Full Day Leave (${item.totalDaysofLeave})`
@@ -97,11 +101,13 @@ const LeaveBalance = ({navigation}: any) => {
             </Text>
           </View>
         </View>
+
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
+            flexWrap: 'wrap',
           }}>
           <Text
             style={{
@@ -124,7 +130,7 @@ const LeaveBalance = ({navigation}: any) => {
           <Text
             style={{
               color:
-                item.leaveType.Label === 'Earn Leave' ? 'orange' : Colors.white,
+                item.leaveType.Label === 'Earn Leave' ? 'white' : Colors.white,
               fontSize: 14,
               fontWeight: '600',
             }}>
@@ -176,7 +182,8 @@ const LeaveBalance = ({navigation}: any) => {
       </View>
       {isLoading ? (
         <Placeholder />
-      ) : data && data.Data && data.Data.length !== 0 ? (
+      ) : // data && data.Data && data.Data.length !== 0
+      filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
           style={{marginHorizontal: 16}}
           data={filteredItems}

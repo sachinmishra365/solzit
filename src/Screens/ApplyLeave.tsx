@@ -2,12 +2,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Platform,
   ActivityIndicator,
-  Alert,
   Pressable,
+  Keyboard,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import CustomTextInput from '../Components/CustomTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Formik} from 'formik';
@@ -17,14 +16,12 @@ import {SCREEN_WIDTH} from '../constants/Screen';
 import {useEmployeeLeaveApplyMutation} from '../Services/services';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
-import {Divider, Menu} from 'react-native-paper';
 import CustomHeader from '../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
-import Placeholder from './Placeholder/Placeholder';
+import Toast from 'react-native-toast-message';
 
 const validationSchema = Yup.object().shape({
   LeaveDayType: Yup.string().required('Leave Day Type is required'),
-  // LeaveType: Yup.string().required('Leave Type is required'),
   StartDayOfLeave: Yup.string().required('Start Day Of Leave is required'),
   EndDayOfLeave: Yup.string().required('End Day Of Leave is required'),
   HalfDayType: Yup.string().when('LeaveDayType', {
@@ -35,28 +32,18 @@ const validationSchema = Yup.object().shape({
 });
 
 const ApplyLeave = () => {
+  const navigation:any = useNavigation();
   const CheckStatus = useSelector((state: any) => state?.appState?.authToken);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showStart, setShowStart] = useState(false);
   const [showEnd, setShowEnd] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [halfDayMenu, SetHalfDayMenu] = useState(false);
 
-  const navigation = useNavigation();
-
-  const openMenu = () => {
-    setVisible(true);
-  };
-  const openHalfDayMenu = () => {
-    SetHalfDayMenu(true);
-  };
-  const closeMenu = () => {
-    setVisible(false);
-  };
-  const closeHalfDayMenu = () => {
-    SetHalfDayMenu(false);
-  };
+  useEffect(() => {
+    setTimeout(() => {
+      Keyboard.dismiss();
+    }, 150);
+  }, []);
 
   const [ApplyLeave, {isLoading, error}] = useEmployeeLeaveApplyMutation();
 
@@ -83,8 +70,12 @@ const ApplyLeave = () => {
   const handleApply = async (values: any) => {
     // const formattedStartDate = moment(startDate).format('YYYY-MM-DD');
     // const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
-    const formattedStartDate = startDate ? moment(startDate).format('YYYY-MM-DD') : null;
-    const formattedEndDate = endDate ? moment(endDate).format('YYYY-MM-DD') : null;
+    const formattedStartDate = startDate
+      ? moment(startDate).format('YYYY-MM-DD')
+      : null;
+    const formattedEndDate = endDate
+      ? moment(endDate).format('YYYY-MM-DD')
+      : null;
     const data = {
       leaveDayType: {
         Value: values.LeaveDayType === 'Full Day' ? 0 : 1,
@@ -95,7 +86,12 @@ const ApplyLeave = () => {
         Label: 'Earn Leave',
       },
       typeofHalfDayLeave: {
-        Value: values.LeaveDayType === 'Full Day' ? null : values.HalfDayType === 'Fore Noon' ? 674180000 : 674180001,
+        Value:
+          values.LeaveDayType === 'Full Day'
+            ? null
+            : values.HalfDayType === 'Fore Noon'
+            ? 674180000
+            : 674180001,
         Label: values.LeaveDayType === 'Full Day' ? null : values.HalfDayType,
       },
       employee: {
@@ -106,26 +102,32 @@ const ApplyLeave = () => {
       leaveStartDate: formattedStartDate,
       leaveEndDate: formattedEndDate,
     };
-    console.log(data);
-    
+
     try {
       const response = await ApplyLeave(data).unwrap();
-      
-      Alert.alert(
-        'Leave Status', 
-        response.Message,
-        [
-          
-          {text: 'OK', onPress: () => console.log('OK Pressed')}, 
-        ],
-        {cancelable: true}, 
-      );
+      {
+        response.Message ==='Your leave application has been submitted successfully.'
+        ? navigation.navigate('LeaveRequest') : null
+      }
+               
+   Toast.show({
+        type: 'success',
+        text1: 'Leave Status',
+        text2: response.Message,
+        text2Style: {flexWrap: 'wrap',fontSize:13},
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
     } catch (err) {
-      console.error('Error:', err);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Application failed. Please try again.',
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
     }
   };
-
-
 
   return (
     <View
@@ -140,203 +142,356 @@ const ApplyLeave = () => {
           navigation.goBack();
         }}
       />
-      <View style={{borderWidth:1,backgroundColor:Colors.white,height:1}}/>
-      {isLoading ? (
-        <Placeholder/>
-      ) : (
-        <Formik
-          initialValues={{
-            LeaveDayType: '',
-            LeaveType: 'Earn Leave',
-            HalfDayType: '',
-            StartDayOfLeave: moment(startDate).format('YYYY-MM-DD'),
-            EndDayOfLeave: moment(endDate).format('YYYY-MM-DD'),
-          }}
-          validationSchema={validationSchema}
-          onSubmit={handleApply}>
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            values,
-            errors,
-            touched,
-          }) => (
-            <View>
-              <View style={{marginVertical: 16}} />
-              <Menu
-                visible={visible}
-                onDismiss={closeMenu}
-                contentStyle={{backgroundColor: Colors.gray}}
-                anchor={
-                  <Pressable onPress={openMenu}>
-                  <CustomTextInput
-                    label="Leave Day Type"
-                    value={values.LeaveDayType}
-                    secureTextEntry={false}
-                    onChangeText={handleChange('LeaveDayType')}
-                    onBlur={handleBlur('LeaveDayType')}
-                    lefticon={false}
-                    rightIconName={'chevron-down'}
-                    onPress={openMenu}
-                  />
-                  </Pressable>
-                }
-                style={{marginTop: 10, marginHorizontal: 14}}>
-                <Menu.Item
-                  onPress={() => {
-                    setFieldValue('LeaveDayType', 'Full Day');
-                    closeMenu();
+      <View
+        style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
+      />
+
+      <Formik
+        initialValues={{
+          LeaveDayType: 'Full Day',
+          LeaveType: 'Earn Leave',
+          HalfDayType: 'Fore Noon',
+          StartDayOfLeave: moment(startDate).format('DD-MM-YYYY'),
+          EndDayOfLeave: moment(endDate).format('DD-MM-YYYY'),
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleApply}>
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          setFieldValue,
+          values,
+          errors,
+          touched,
+        }) => (
+          <View>
+            <View style={{marginVertical: 16}} />
+
+            <View style={{marginHorizontal: 16}}>
+              <Text
+                style={{
+                  color: Colors.white,
+                  fontSize: 16,
+                }}>
+                Leave Type
+              </Text>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 10,
+                    marginRight: 50,
                   }}
-                  title="Full Day"
-                  titleStyle={{color: Colors.white}}
-                />
-                <Divider />
-                <Menu.Item
-                  onPress={() => {
-                    setFieldValue('LeaveDayType', 'Half Day');
-                    closeMenu();
-                  }}
-                  title="Half Day"
-                  titleStyle={{color: Colors.white}}
-                />
-              </Menu>
-              {touched.LeaveDayType && errors.LeaveDayType && (
-                <Text style={{color: Colors.error, marginLeft: 20}}>
-                  {errors.LeaveDayType}
-                </Text>
-              )}
-              <View style={{marginVertical: 16}} />
-              <CustomTextInput
-                label="Leave Type"
-                value={values.LeaveType}
-                onChangeText={handleChange('LeaveType')}
-                onBlur={handleBlur('LeaveType')}
-                lefticon={false}
-                rightIconName={false}
-                editable={false}
-              />
-              {/* {touched.LeaveType && errors.LeaveType && (
-                <Text style={{color: Colors.error, marginLeft: 20}}>
-                  {errors.LeaveType}
-                </Text>
-              )} */}
-              {values.LeaveDayType === 'Half Day' ? (
-                <View>
-                  <View style={{marginVertical: 16}} />
-                  <Menu
-                    visible={halfDayMenu}
-                    onDismiss={closeHalfDayMenu}
-                    contentStyle={{backgroundColor: Colors.gray}} // Style for the full menu item
-                    anchor={
-                      <Pressable onPress={openHalfDayMenu}>
-                      <CustomTextInput
-                        label="Half Day Type"
-                        value={values.HalfDayType}
-                        secureTextEntry={false}
-                        onChangeText={handleChange('HalfDayType')}
-                        onBlur={handleBlur('HalfDayType')}
-                        lefticon={false}
-                        rightIconName={'chevron-down'}
-                        onPress={openHalfDayMenu}
-                        style={{marginTop: 10, marginHorizontal: 16}}
+                  onPress={() => setFieldValue('LeaveType', 'Earn Leave')}>
+                  <View
+                    style={{
+                      height: 20,
+                      width: 20,
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: Colors.white,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginRight: 10,
+                    }}>
+                    {values.LeaveType === 'Earn Leave' && (
+                      <View
+                        style={{
+                          height: 10,
+                          width: 10,
+                          borderRadius: 5,
+                          backgroundColor: Colors.white,
+                        }}
                       />
-                      </Pressable>
-                    }>
-                    <Menu.Item
-                      onPress={() => {
-                        setFieldValue('HalfDayType', 'Fore Noon');
-                        closeHalfDayMenu();
+                    )}
+                  </View>
+                  <Text style={{color: Colors.white}}>Earn Leave</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={{marginVertical: 16}} />
+            <View style={{marginHorizontal: 16}}>
+              <Text
+                style={{
+                  color: Colors.white,
+                  fontSize: 16,
+                }}>
+                Leave Day Type
+              </Text>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 10,
+                    marginRight: 50,
+                  }}
+                  onPress={() => setFieldValue('LeaveDayType', 'Full Day')}>
+                  <View
+                    style={{
+                      height: 20,
+                      width: 20,
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: Colors.white,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginRight: 10,
+                    }}>
+                    {values.LeaveDayType === 'Full Day' && (
+                      <View
+                        style={{
+                          height: 10,
+                          width: 10,
+                          borderRadius: 5,
+                          backgroundColor: Colors.white,
+                        }}
+                      />
+                    )}
+                  </View>
+                  <Text style={{color: Colors.white}}>Full Day</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 10,
+                  }}
+                  onPress={() => setFieldValue('LeaveDayType', 'Half Day')}>
+                  <View
+                    style={{
+                      height: 20,
+                      width: 20,
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: Colors.white,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginRight: 10,
+                    }}>
+                    {values.LeaveDayType === 'Half Day' && (
+                      <View
+                        style={{
+                          height: 10,
+                          width: 10,
+                          borderRadius: 5,
+                          backgroundColor: Colors.white,
+                        }}
+                      />
+                    )}
+                  </View>
+                  <Text style={{color: Colors.white}}>Half Day</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {touched.LeaveDayType && errors.LeaveDayType && (
+              <Text style={{color: Colors.error, marginLeft: 20}}>
+                {errors.LeaveDayType}
+              </Text>
+            )}
+
+            {values.LeaveDayType === 'Half Day' ? (
+              <View>
+                <View style={{marginVertical: 16}} />
+                <View style={{marginHorizontal: 16}}>
+                  <Text style={{color: Colors.white, fontSize: 16}}>
+                    Half Day Type
+                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 10,
+                        marginRight: 35,
                       }}
-                      title="Fore Noon"
-                      titleStyle={{color: Colors.white}}
-                    />
-                    <Divider />
-                    <Menu.Item
-                      onPress={() => {
-                        setFieldValue('HalfDayType', 'After Noon');
-                        closeHalfDayMenu();
+                      onPress={() => setFieldValue('HalfDayType', 'Fore Noon')}>
+                      <View
+                        style={{
+                          height: 20,
+                          width: 20,
+                          borderRadius: 10,
+                          borderWidth: 2,
+                          borderColor: Colors.white,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginRight: 10,
+                        }}>
+                        {values.HalfDayType === 'Fore Noon' && (
+                          <View
+                            style={{
+                              height: 10,
+                              width: 10,
+                              borderRadius: 5,
+                              backgroundColor: Colors.white,
+                            }}
+                          />
+                        )}
+                      </View>
+                      <Text style={{color: Colors.white}}>Fore Noon</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        marginTop: 10,
                       }}
-                      title="After Noon"
-                      titleStyle={{color: Colors.white}}
-                    />
-                  </Menu>
+                      onPress={() =>
+                        setFieldValue('HalfDayType', 'After Noon')
+                      }>
+                      <View
+                        style={{
+                          height: 20,
+                          width: 20,
+                          borderRadius: 10,
+                          borderWidth: 2,
+                          borderColor: Colors.white,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginRight: 10,
+                        }}>
+                        {values.HalfDayType === 'After Noon' && (
+                          <View
+                            style={{
+                              height: 10,
+                              width: 10,
+                              borderRadius: 5,
+                              backgroundColor: Colors.white,
+                            }}
+                          />
+                        )}
+                      </View>
+                      <Text style={{color: Colors.white}}>After Noon</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              ) : null}
-          
-                {touched.HalfDayType && errors.HalfDayType && (
-                <Text style={{color: Colors.error, marginLeft: 20}}>
-                  {errors.HalfDayType}
-                </Text>
-              )}
-              <View style={{marginVertical: 16}} />
-              <Pressable onPress={showDatepickerStart}>
+              </View>
+            ) : null}
+
+            {touched.HalfDayType && errors.HalfDayType && (
+              <Text style={{color: Colors.error, marginLeft: 20}}>
+                {errors.HalfDayType}
+              </Text>
+            )}
+
+            {/* <CustomTextInput
+              label="Leave Type"
+              value={values.LeaveType}
+              // onChangeText={handleChange('LeaveType')}
+              onBlur={handleBlur('LeaveType')}
+              lefticon={false}
+              rightIconName={false}
+              editable={true}
+              autoFocus={true}
+              readOnly={true}
+            /> */}
+
+            <View style={{marginVertical: 16}} />
+            <Pressable onPress={showDatepickerStart}>
               <CustomTextInput
                 label="Start Day Of Leave"
-                value={moment(startDate).format('YYYY-MM-DD')}
+                value={moment(startDate).format('DD-MM-YYYY')}
                 onChangeText={handleChange('StartDayOfLeave')}
                 onBlur={handleBlur('StartDayOfLeave')}
                 lefticon={false}
                 rightIconName={'calendar'}
                 onPress={showDatepickerStart}
+                autoFocus={true}
+                editable={true}
               />
-              </Pressable>
-              {touched.StartDayOfLeave && errors.StartDayOfLeave && (
-                <Text style={{color: Colors.error, marginLeft: 20}}>
-                  {errors.StartDayOfLeave}
-                </Text>
-              )}
-              <View style={{marginVertical: 16}} />
-              <Pressable onPress={showDatepickerEnd}>
-              <CustomTextInput
-                label="End Day Of Leave"
-                value={moment(endDate).format('YYYY-MM-DD')}
-                onChangeText={handleChange('EndDayOfLeave')}
-                onBlur={handleBlur('EndDayOfLeave')}
-                lefticon={false}
-                rightIconName={'calendar'}
-                onPress={showDatepickerEnd}
-              />
-              </Pressable>
-              {touched.EndDayOfLeave && errors.EndDayOfLeave && (
-                <Text style={{color: Colors.error, marginLeft: 20}}>
-                  {errors.EndDayOfLeave}
-                </Text>
-              )}
-              {showStart && (
-                <DateTimePicker
-                  testID="dateTimePickerStart"
-                  value={startDate}
-                  mode="date"
-                  display="default"
-                  onChange={onChangeStart}
-                  minimumDate={new Date()}
-                />
-              )}
-              {showEnd && (
-                <DateTimePicker
-                  testID="dateTimePickerEnd"
+            </Pressable>
+            {touched.StartDayOfLeave && errors.StartDayOfLeave && (
+              <Text style={{color: Colors.error, marginLeft: 20}}>
+                {errors.StartDayOfLeave}
+              </Text>
+            )}
+            <View style={{marginVertical: 16}} />
+            {values.LeaveDayType === 'Half Day' ? (
+              <Pressable>
+                <CustomTextInput
+                  label="End Day Of Leave"
                   value={
-                    values.LeaveDayType === 'Full Day' ? endDate : startDate
+                    values.LeaveDayType === 'Half Day'
+                      ? moment(startDate).format('DD-MM-YYYY')
+                      : moment(endDate).format('DD-MM-YYYY')
                   }
-                  mode="date"
-                  display="default"
-                  onChange={onChangeEnd}
-                  minimumDate={startDate}
+                  onChangeText={handleChange('EndDayOfLeave')}
+                  onBlur={handleBlur('EndDayOfLeave')}
+                  lefticon={false}
+                  rightIconName={'calendar'}
                 />
-              )}
-              <View style={{marginVertical: 16}} />
-              <TouchableOpacity
-                style={{
-                  width: SCREEN_WIDTH - 32,
-                  height: 45,
-                  backgroundColor: Colors.white,
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  borderRadius: 3,
-                }}
-                onPress={handleSubmit}>
+              </Pressable>
+            ) : (
+              <Pressable onPress={showDatepickerEnd}>
+                <CustomTextInput
+                  label="End Day Of Leave"
+                  value={
+                    values.LeaveDayType === 'Half Day'
+                      ? moment(startDate).format('DD-MM-YYYY')
+                      : moment(endDate).format('DD-MM-YYYY')
+                  }
+                  onChangeText={handleChange('EndDayOfLeave')}
+                  onBlur={handleBlur('EndDayOfLeave')}
+                  lefticon={false}
+                  rightIconName={'calendar'}
+                  onPress={showDatepickerEnd}
+                />
+              </Pressable>
+            )}
+            {touched.EndDayOfLeave && errors.EndDayOfLeave && (
+              <Text style={{color: Colors.error, marginLeft: 20}}>
+                {errors.EndDayOfLeave}
+              </Text>
+            )}
+            {showStart && (
+              <DateTimePicker
+                testID="dateTimePickerStart"
+                value={startDate}
+                mode="date"
+                display="default"
+                onChange={onChangeStart}
+                minimumDate={new Date()}
+              />
+            )}
+            {showEnd && (
+              <DateTimePicker
+                testID="dateTimePickerEnd"
+                value={values.LeaveDayType === 'Full Day' ? endDate : startDate}
+                mode="date"
+                display="default"
+                onChange={onChangeEnd}
+                minimumDate={startDate}
+                maximumDate={
+                  values.LeaveDayType === 'Half Day' ? startDate : undefined
+                }
+              />
+            )}
+            <View style={{marginVertical: 16}} />
+
+            <TouchableOpacity
+              style={{
+                width: SCREEN_WIDTH - 32,
+                height: 45,
+                backgroundColor: Colors.white,
+                justifyContent: 'center',
+                alignSelf: 'center',
+                borderRadius: 3,
+              }}
+              onPress={handleSubmit}>
+              {isLoading ? (
+                <ActivityIndicator
+                  animating={true}
+                  color={Colors.black}
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flex: 1,
+                  }}
+                />
+              ) : (
                 <Text
                   style={{
                     textAlign: 'center',
@@ -346,25 +501,12 @@ const ApplyLeave = () => {
                   }}>
                   Apply
                 </Text>
-              </TouchableOpacity>
-              {isLoading && (
-                <ActivityIndicator size="large" color={Colors.black} />
               )}
-              {error && (
-                <Text
-                  style={{
-                    color: Colors.error,
-                    marginTop: 20,
-                    textAlign: 'center',
-                  }}>
-                  Application failed. Please try again.
-                </Text>
-              )}
-             
-            </View>
-          )}
-        </Formik>
-      )}
+            </TouchableOpacity>
+            
+          </View>
+        )}
+      </Formik>
     </View>
   );
 };
