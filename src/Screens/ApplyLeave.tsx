@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Pressable,
   Keyboard,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CustomTextInput from '../Components/CustomTextInput';
@@ -32,7 +33,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const ApplyLeave = () => {
-  const navigation:any = useNavigation();
+  const navigation: any = useNavigation();
   const CheckStatus = useSelector((state: any) => state?.appState?.authToken);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -105,31 +106,41 @@ const ApplyLeave = () => {
 
     try {
       const response = await ApplyLeave(data).unwrap();
-      {
-        response.Message ==='Your leave application has been submitted successfully.'
-        ? navigation.navigate('LeaveRequest') : null
+      if (response.Message === 'Your leave application has been submitted successfully.') {
+        Toast.show({
+          type: 'success',
+          text1: 'Leave Status',
+          text2: response.Message,
+          text2Style: { flexWrap: 'wrap', fontSize: 13 },
+          topOffset: 80,
+          visibilityTime: 5000, 
+        });
+  
+        setTimeout(() => {
+          navigation.navigate('LeaveRequest');
+        }, 5000); 
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Application failed. Please try again.',
+          topOffset: 80,
+          visibilityTime: 4000,
+        });
       }
-               
-   Toast.show({
-        type: 'success',
-        text1: 'Leave Status',
-        text2: response.Message,
-        text2Style: {flexWrap: 'wrap',fontSize:13},
-        topOffset: 80,
-        visibilityTime: 5000,
-      });
     } catch (err) {
       Toast.show({
         type: 'error',
         text1: 'Error',
         text2: 'Application failed. Please try again.',
         topOffset: 80,
-        visibilityTime: 5000,
+        visibilityTime: 4000,
       });
     }
   };
 
   return (
+
     <View
       style={{
         flex: 1,
@@ -480,7 +491,26 @@ const ApplyLeave = () => {
                 alignSelf: 'center',
                 borderRadius: 3,
               }}
-              onPress={handleSubmit}>
+              onPress={()=>
+                {
+                  Alert.alert(
+                    'Leave Status',
+                    'Are you sure you want to Apply the leave?',
+                    [
+                      {
+                        text: 'No',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'Yes',
+                        onPress: () => {handleApply(values)}
+                      },
+                    ],
+                    {cancelable: true},
+                  );
+                }
+              }>
               {isLoading ? (
                 <ActivityIndicator
                   animating={true}
@@ -503,11 +533,11 @@ const ApplyLeave = () => {
                 </Text>
               )}
             </TouchableOpacity>
-            
           </View>
         )}
       </Formik>
     </View>
+
   );
 };
 

@@ -94,8 +94,8 @@ const LoginScreen = ({navigation}: any) => {
                   marginVertical: 16,
                 }}>
                 <Image
-                  source={require('../Assets/Images/Solzlogo.png')}
-                  style={{width: '70%', height: 50}}
+                  source={require('../Assets/Images/Logo/SOLZIT_LOGO.png')}
+                  style={{width: '80%', height: 70}}
                 />
               </View>
               <View style={{marginVertical: 16}} />

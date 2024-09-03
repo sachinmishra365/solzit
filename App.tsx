@@ -29,7 +29,6 @@ const toastConfig = {
     />
   ),
 
-
   error: (props) => (
     <ErrorToast
       {...props}

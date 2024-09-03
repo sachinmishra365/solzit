@@ -45,7 +45,7 @@ const Dashboard = () => {
       });
     }
   });
-  console.log(SolzHolyDays);
+  // console.log(SolzHolyDays);
 
   useEffect(() => {
     if (Holiday?.data?.Data) {

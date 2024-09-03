@@ -25,16 +25,25 @@ import Toast from 'react-native-toast-message';
 const LeaveRequest = ({navigation}: any) => {
   const [items, setItems] = useState(0);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  
   const {data, isLoading, refetch} = useEmployeeAppliedLeavesQuery({
     ids: EmployeeId?.data?.Data?.ID,
   });
 
+  // useEffect(() => {
+  //   if (data && data !== undefined) {
+  //     setItems(data.Data);
+  //   }
+  // }, [data]);
   useEffect(() => {
     if (data && data !== undefined) {
-      setItems(data.Data);
+      const sortedData:any = [...data.Data].sort((a, b) =>
+        moment(a.leaveStartDate).isBefore(moment(b.leaveStartDate)) ? -1 : 1
+      );
+      setItems(sortedData);
     }
   }, [data]);
-
+  
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
@@ -139,7 +148,7 @@ const LeaveRequest = ({navigation}: any) => {
                   },
                   {
                     text: 'Yes',
-                    onPress: () => handlecancel({item}),
+                    onPress: () => {handlecancel({item}),onRefresh()}
                   },
                 ],
                 {cancelable: true},
