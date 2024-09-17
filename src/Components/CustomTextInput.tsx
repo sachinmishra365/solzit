@@ -27,24 +27,24 @@ const CustomTextInput = ({
         value={value}
         autoFocus={autoFocus}
         onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
-        textColor={Colors.white}
-        outlineColor={Colors.white}
-        activeOutlineColor={Colors.white}
-        placeholderTextColor={Colors.white}
+        secureTextEntry={secureTextEntry} 
+        textColor={disable !== true ? Colors.white :Colors.dark_gray}
+        outlineColor={disable !== true ? Colors.white :Colors.dark_gray}
+        activeOutlineColor={disable !== true ? Colors.white :Colors.dark_gray}
+        placeholderTextColor={disable !== true ? Colors.white :Colors.dark_gray}
         editable={editable}
         disabled={disable}
         readOnly={readOnly}
         onLayout={onLayout}
         left={
           lefticon ? (
-            <TextInput.Icon icon={leftIconName} color={Colors.white} />
+            <TextInput.Icon icon={leftIconName} color={disable !== true ? Colors.white :Colors.dark_gray} />
           ) : null
         }
         right={
           <TextInput.Icon
             icon={rightIconName}
-            color={Colors.white}
+            color={disable !== true ? Colors.white : Colors.dark_gray}
             onPress={onPress}
           />
         }

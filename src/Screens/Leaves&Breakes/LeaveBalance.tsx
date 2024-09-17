@@ -1,5 +1,6 @@
 import {
   FlatList,
+  PanResponder,
   RefreshControl,
   StyleSheet,
   Text,
@@ -25,6 +26,8 @@ const LeaveBalance = ({navigation}: any) => {
   const [filteredItems, setFilteredItems] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('All');
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  const statuses = ['All', 'Cancelled', 'Declined', 'Approved'];
+
 
   const {data, isLoading, refetch} = useProcessedLeavesQuery({
     Id: EmployeeId?.data?.Data?.ID,
@@ -126,7 +129,7 @@ const LeaveBalance = ({navigation}: any) => {
             Absent Day: {item.totalAbsentDays}
           </Text>
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between',flexWrap: 'wrap',}}>
           <Text
             style={{
               color:
@@ -144,8 +147,29 @@ const LeaveBalance = ({navigation}: any) => {
     </Card>
   );
 
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      return Math.abs(gestureState.dx) > 20;
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      if (gestureState.dx > 0) {
+        // Swiped right
+        const currentIndex = statuses.indexOf(selectedStatus);
+        if (currentIndex > 0) {
+          filterByStatus(statuses[currentIndex - 1]);
+        }
+      } else if (gestureState.dx < 0) {
+        // Swiped left
+        const currentIndex = statuses.indexOf(selectedStatus);
+        if (currentIndex < statuses.length - 1) {
+          filterByStatus(statuses[currentIndex + 1]);
+        }
+      }
+    },
+  });
+
   return (
-    <View style={{flex: 1, backgroundColor: Colors.black}}>
+    <View style={{flex: 1, backgroundColor: Colors.black}} {...panResponder.panHandlers}>
       <CustomHeader
         showBackIcon={true}
         title="Processed Leaves"
@@ -163,7 +187,7 @@ const LeaveBalance = ({navigation}: any) => {
           justifyContent: 'space-around',
           marginVertical: 10,
         }}>
-        {['All', 'Cancelled', 'Declined', 'Approved'].map(status => (
+        {statuses.map(status => (
           <TouchableOpacity
             key={status}
             style={{
@@ -180,9 +204,13 @@ const LeaveBalance = ({navigation}: any) => {
           </TouchableOpacity>
         ))}
       </View>
+      
+      <View
+        style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
+      />
       {isLoading ? (
         <Placeholder />
-      ) : // data && data.Data && data.Data.length !== 0
+      ) : 
       filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
           style={{marginHorizontal: 16}}

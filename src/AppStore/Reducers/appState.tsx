@@ -5,6 +5,7 @@ export const appStateSlice = createSlice({
   initialState: {
     authToken: undefined,
     appliedLeave: null,
+    colorScheme: null,
     processed: null,
   },
   reducers: {
@@ -14,12 +15,19 @@ export const appStateSlice = createSlice({
     applied: (state, action) => {
       state.appliedLeave = action.payload;
     },
+    theme: (state, action) => {
+      state.colorScheme = action.payload;
+      
+    },
     processedLeaves: (state, action) => {
       state.processed = action.payload;
     },
   },
 });
+export const isDarkTheme = (state: any) =>
+  state.appState.colorScheme === 'dark';
 
-export const {auth, applied, processedLeaves} = appStateSlice.actions;
+
+export const {auth, applied,theme, processedLeaves} = appStateSlice.actions;
 
 export default appStateSlice.reducer;

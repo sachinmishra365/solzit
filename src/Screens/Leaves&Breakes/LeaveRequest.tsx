@@ -129,11 +129,12 @@ const LeaveRequest = ({navigation}: any) => {
           <TouchableOpacity
             style={{
               width: SCREEN_WIDTH - 280,
-              height: 33,
+              height: 'auto',
               backgroundColor: Colors.primary,
               justifyContent: 'center',
               alignSelf: 'center',
               borderRadius: 3,
+              minHeight:33
             }}
             disabled={result.isLoading}
             onPress={() => {
@@ -249,7 +250,7 @@ const LeaveRequest = ({navigation}: any) => {
       Toast.show({
         type: 'success',
         text1: 'Leave Status',
-        text2: response.data.Message,
+        text2: 'Leave cancelled Successfully',//response.data.Message
         topOffset: 80,
         visibilityTime: 5000,
       });

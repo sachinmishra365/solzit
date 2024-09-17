@@ -1,6 +1,7 @@
 import {createApi} from '@reduxjs/toolkit/query/react';
 import axios from 'axios';
 
+
 const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
   try {
     const result = await axios({
@@ -20,7 +21,9 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
     };
   }
 };
+
 // https://solzitesssvc.azurewebsites.net/api
+
 export const services = createApi({
   reducerPath: 'parsApi',
   baseQuery: axiosBaseQuery({baseUrl: 'https://devportalapi.solzit.com/api'}),

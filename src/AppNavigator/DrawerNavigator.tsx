@@ -51,12 +51,13 @@ const DrawerNavigator = ({navigation}: any) => {
           source={require('../Assets/Images/Logo/solzitLogo.png')}
           style={styles.logo}
         />
-
-        <Text style={styles.driverName}>
-          {userData?.data?.Data?.fullName
-            ? userData?.data?.Data?.fullName
-            : 'Guest'}
-        </Text>
+        <View style={{width: '55%'}}>
+          <Text style={styles.driverName}>
+            {userData?.data?.Data?.fullName
+              ? userData?.data?.Data?.fullName
+              : 'Guest'}
+          </Text>
+        </View>
 
         <View style={styles.drawerBtnContainer}>
           <Pressable
@@ -137,30 +138,27 @@ const DrawerNavigator = ({navigation}: any) => {
               },
             ],
           }}>
-        <View style={{flexDirection:'row',alignItems:'center',}}>
-        <View style={styles.screenHeader}>
-            <Pressable onPress={toggleMenu}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={styles.screenHeader}>
+              <Pressable onPress={toggleMenu}>
+                <Image
+                  source={
+                    showMenu
+                      ? require('../Assets/Images/close.png')
+                      : require('../Assets/Images/menu.png')
+                  }
+                  style={styles.headerIcons}
+                />
+              </Pressable>
+              <Text style={styles.headerTxt}>Soluzione</Text>
+            </View>
+            <View style={{position: 'absolute', right: 10}}>
               <Image
-                source={
-                  showMenu
-                    ? require('../Assets/Images/close.png')
-                    : require('../Assets/Images/menu.png')
-                }
-                style={styles.headerIcons}
+                source={require('../Assets/Images/Logo/solzitLogo.png')}
+                style={{width: 30, height: 30, borderRadius: 10}}
               />
-            </Pressable>
-            <Text style={styles.headerTxt}>Soluzione</Text>
+            </View>
           </View>
-          <View style={{position:'absolute',right:10}}>
-          <Image
-          source={require('../Assets/Images/Logo/solzitLogo.png')}
-          style={{width: 30,
-            height: 30,
-            borderRadius: 10,
-            }}
-        />
-          </View>
-        </View>
         </Animated.View>
         <Dashboard />
       </Animated.View>
@@ -194,14 +192,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     paddingLeft: 13,
-    paddingRight: 35,
+    // paddingRight: 35,
     borderRadius: 8,
   },
   drawerBtnTxt: {
-    // fontSize: 14,
+    // fontSize: 15,
     // fontFamily: 'Poppins-Bold',
-    paddingLeft: 15,
+    marginLeft: 15,
     color: Colors.white,
+    flexWrap: 'wrap',
+    flex: 1,
+    width: 'auto',
   },
   screenHeaderContainer: {
     flexGrow: 1,

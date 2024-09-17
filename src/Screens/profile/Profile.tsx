@@ -1,20 +1,24 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {Card, IconButton} from 'react-native-paper';
+import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { Colors } from '../../constants/Colors';
 
 const Profile = () => {
   const navigation = useNavigation();
+  const isDark = useSelector(isDarkTheme);
+  // console.log(isDark);
+  
+
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const Profiledata = EmployeeId?.data?.Data;
   const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
-  console.log(Profiledata);
 
   return (
-    <View style={{flex: 1, backgroundColor: Colors.black}}>
+    <View style={styles(isDark).maincontainer}>
       <CustomHeader
         showBackIcon={true}
         title="Profile"
@@ -23,18 +27,15 @@ const Profile = () => {
         }}
       />
       <View
-        style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
+        style={{
+          borderWidth: 1,
+          backgroundColor: isDark ? Colors.white :'transparent',
+          height: 1,
+          borderColor: isDark ? Colors.black : 'transparent',
+        }}
       />
 
-      <Card
-        style={{
-          backgroundColor: Colors.black,
-          borderWidth: 0.5,
-          borderColor: Colors.white,
-          marginHorizontal: 16,
-          padding: 10,
-          marginTop: 60,
-        }}>
+      <Card style={styles(isDark).cardcontainer}>
         <View style={{alignItems: 'center', marginBottom: 40}}>
           {Profiledata?.employeeImg ? (
             <Image
@@ -69,51 +70,60 @@ const Profile = () => {
             marginTop: 30,
             flexWrap: 'wrap',
           }}>
-          <Text style={{color: Colors.white, fontSize: 22}}>
+          <Text style={styles(isDark).usename}>
             {Profiledata?.fullName ? Profiledata?.fullName : 'N/A'}
             {' | '}
           </Text>
-          <Text style={{color: Colors.white, fontSize: 22}}>
+          <Text style={styles(isDark).usename}>
             {Profiledata?.designation ? Profiledata?.designation : 'N/A'}
           </Text>
         </View>
 
         <View
           style={{
-            flexDirection: 'row',
             marginTop: 10,
           }}>
-          <View>
-            <Text style={{color: Colors.white, fontWeight: '500'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+            }}>
+            <Text style={[styles(isDark).txt, {fontWeight: '500'}]}>
               Email{' : '}
             </Text>
-
-            <Text
-              style={{
-                color: Colors.white,
-                fontWeight: '500',
-                marginVertical: 10,
-              }}>
-              Employee ID{' : '}
-            </Text>
-
-            <Text style={{color: Colors.white, fontWeight: '500'}}>
-              Reporting Manager{' : '}
-            </Text>
-          </View>
-
-          <View>
-            <Text style={{color: Colors.white}}>
+            <Text style={styles(isDark).txt}>
               {Profiledata?.employee?.email
                 ? Profiledata?.employee?.email
                 : 'N/A'}
             </Text>
+          </View>
 
-            <Text style={{color: Colors.white, marginVertical: 10}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+            }}>
+            <Text style={[styles(isDark).txt, {fontWeight: '500'}]}>
+              Employee ID{' : '}
+            </Text>
+            <Text style={[styles(isDark).txt, {marginVertical: 10}]}>
               {Profiledata?.userName ? Profiledata?.userName : 'N/A'}
             </Text>
+          </View>
 
-            <Text style={{color: Colors.white}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+            }}>
+            <Text style={[styles(isDark).txt, {fontWeight: '500'}]}>
+              Reporting Manager{' : '}
+            </Text>
+
+            <Text style={styles(isDark).txt}>
               {Profiledata?.reportingManager?.Name
                 ? Profiledata?.reportingManager?.Name
                 : 'N/A'}
@@ -127,4 +137,26 @@ const Profile = () => {
 
 export default Profile;
 
-const styles = StyleSheet.create({});
+const styles = (isDark: any) =>
+  StyleSheet.create({
+    maincontainer: {
+      flex: 1,
+      backgroundColor: isDark ? Colors.black : Colors.white,
+    },
+    cardcontainer: {
+      backgroundColor: isDark ? Colors.black : Colors.white,
+      borderWidth: 0.5,
+      borderColor: Colors.white,
+      marginHorizontal: 16,
+      padding: 10,
+      marginTop: 60,
+    },
+    usename: {
+      color: isDark ? Colors.white : Colors.black,
+      fontSize: 22,
+    },
+    txt: {
+      color: isDark ? Colors.white : Colors.black,
+      marginVertical: 10,
+    },
+  });

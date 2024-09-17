@@ -16,7 +16,7 @@ import {
   useSoluzioneHolidaysQuery,
 } from '../../Services/services';
 import {useDispatch, useSelector} from 'react-redux';
-import {applied, processedLeaves} from '../../AppStore/Reducers/appState';
+import {applied, isDarkTheme, processedLeaves} from '../../AppStore/Reducers/appState';
 import {useNavigation} from '@react-navigation/native';
 import {Dimensions} from 'react-native';
 
@@ -24,13 +24,15 @@ const {height} = Dimensions.get('window');
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const isDark = useSelector(isDarkTheme);
   const navigation = useNavigation();
   const [items, setItems] = useState<AgendaSchedule>({});
   const [currentDate, setCurrentDate] = useState('');
   const [HolyDays, setHolyDays] = useState();
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
 
-  const Holiday = useSoluzioneHolidaysQuery('');
+  const Holiday = useSoluzioneHolidaysQuery([]);
+  
   const SolzHolyDays = Holiday?.data?.Data?.map((item: any) => ({
     HolyDayName: item.holidayName,
     HolyDayDate: moment(item?.date).format('YYYY-MM-DD'),
@@ -45,7 +47,6 @@ const Dashboard = () => {
       });
     }
   });
-  // console.log(SolzHolyDays);
 
   useEffect(() => {
     if (Holiday?.data?.Data) {
@@ -150,10 +151,13 @@ const Dashboard = () => {
     const fontSize = isFirst ? 16 : 14;
     const color = isFirst ? 'white' : '#fff';
     const isCurrentDate = reservation.day === currentDate;
+    const formattedDate = moment(reservation.day).format('ddd, DD MMM ');
+
+    
     return (
       <TouchableOpacity
         style={[
-          styles.item,
+          styles(isDark).item,
           {
             height: reservation.height,
             backgroundColor:
@@ -175,6 +179,7 @@ const Dashboard = () => {
           //   });
           // }
         }}>
+        {/* <Text style={{fontSize, color}}>{formattedDate}</Text> */}
         <Text style={{fontSize, color}}>{reservation.name}</Text>
       </TouchableOpacity>
     );
@@ -182,7 +187,7 @@ const Dashboard = () => {
 
   const renderEmptyDate = () => {
     return (
-      <View style={styles.emptyDate}>
+      <View style={styles(isDark).emptyDate}>
         <Text>This is empty date!</Text>
       </View>
     );
@@ -194,9 +199,9 @@ const Dashboard = () => {
 
   const renderDay = (day: any) => {
     if (day) {
-      return <Text style={styles.customDay}>{day.getDay()}</Text>;
+      return <Text style={styles(isDark).customDay}>{day.getDay()}</Text>;
     }
-    return <View style={styles.dayItem} />;
+    return <View style={styles(isDark).dayItem} />;
   };
 
   const timeToString = (time: number) => {
@@ -276,8 +281,9 @@ const Dashboard = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  item: {
+const styles = (isDark: any) =>
+  StyleSheet.create({
+      item: {
     flex: 1,
     borderRadius: 5,
     padding: 10,

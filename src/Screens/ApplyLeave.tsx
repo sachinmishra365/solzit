@@ -106,6 +106,8 @@ const ApplyLeave = () => {
 
     try {
       const response = await ApplyLeave(data).unwrap();
+      console.log(response);
+      
       if (response.Message === 'Your leave application has been submitted successfully.') {
         Toast.show({
           type: 'success',
@@ -120,12 +122,13 @@ const ApplyLeave = () => {
           navigation.navigate('LeaveRequest');
         }, 5000); 
       } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Application failed. Please try again.',
+         Toast.show({
+          type: 'success',
+          text1: 'Leave Status',
+          text2: response.Message,
+          text2Style: { flexWrap: 'wrap', fontSize: 13 },
           topOffset: 80,
-          visibilityTime: 4000,
+          visibilityTime: 5000, 
         });
       }
     } catch (err) {
@@ -433,6 +436,7 @@ const ApplyLeave = () => {
                   onBlur={handleBlur('EndDayOfLeave')}
                   lefticon={false}
                   rightIconName={'calendar'}
+                  disable ={true}
                 />
               </Pressable>
             ) : (

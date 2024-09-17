@@ -26,7 +26,6 @@ const LoginScreen = ({navigation}: any) => {
       .required('Username is required'),
     password: Yup.string().required('Password is required'),
   });
-  const [forget] = useForgetpasswordMutation();
 
   const handleLogin = async (values: {username: string; password: string}) => {
     try {
@@ -51,6 +50,8 @@ const LoginScreen = ({navigation}: any) => {
     }
   };
 
+  const [forget] = useForgetpasswordMutation();
+
   const handleforget = async () => {
     const param = {
       email: 'govind.l@solzit.com',
@@ -73,8 +74,8 @@ const LoginScreen = ({navigation}: any) => {
       ) : (
         <Formik
           initialValues={{
-            username: 'govind.l@solzit.com',
-            password: 'Govind12@',
+            username: '',
+            password: '',
           }}
           validationSchema={validationSchema}
           onSubmit={handleLogin}>
