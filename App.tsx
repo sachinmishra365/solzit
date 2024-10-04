@@ -29,7 +29,10 @@ const toastConfig = {
       contentContainerStyle={{paddingVertical: 15}}
       text1Style={{
         fontSize: 14,
-        fontWeight: '400',
+         fontFamily:'Lato-Bold'
+      }}
+      text2Style={{
+         fontFamily:'Lato-Regular'
       }}
       text2NumberOfLines={0}
     />
@@ -40,9 +43,11 @@ const toastConfig = {
       {...props}
       text1Style={{
         fontSize: 14,
+         fontFamily:'Lato-Bold'
       }}
       text2Style={{
         fontSize: 13,
+         fontFamily:'Lato-Regular'
       }}
     />
   ),
@@ -100,7 +105,7 @@ const App = (props) => {
                 barStyle="light-content"
                 animated={true}
                 backgroundColor={
-                  isDark === 'dark' ? Colors.black : Colors.black
+                  isDark === 'dark' ? Colors.black : Colors.white
                 }
               />
             </NavigationContainer>

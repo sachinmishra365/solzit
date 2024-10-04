@@ -7,15 +7,17 @@ import {SCREEN_WIDTH} from '../constants/Screen';
 import {ActivityIndicator} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import {
-  useForgetpasswordMutation,
-  useUserAuthenticationloginMutation,
-} from '../Services/services';
-import {auth} from '../AppStore/Reducers/appState';
+import {auth, isDarkTheme} from '../AppStore/Reducers/appState';
 import Placeholder from '../Screens/Placeholder/Placeholder';
+import {
+  useForgotPasswordQuery,
+  useUserAuthenticationloginMutation,
+} from '../Services/appLevel';
 
 const LoginScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
+  const isDark = useSelector(isDarkTheme);
+
   const [showPassword, setShowPassword] = useState(true);
   const [userAuthenticationlogin, {isLoading, error}] =
     useUserAuthenticationloginMutation();
@@ -34,13 +36,13 @@ const LoginScreen = ({navigation}: any) => {
         password: values.password,
       });
 
-      if (response.data.ResponseCode !== 999) {
-        dispatch(auth(response));
+      if (response && response?.data?.messageDetail?.message_code === 200) {
+        dispatch(auth(response?.data?.data));
         navigation.navigate('CheckStack');
       } else {
         Alert.alert(
           'Login Status',
-          response.data.Message,
+          response?.data?.messageDetail?.message,
           [{text: 'OK', onPress: () => console.log('OK Pressed')}],
           {cancelable: true},
         );
@@ -50,15 +52,25 @@ const LoginScreen = ({navigation}: any) => {
     }
   };
 
-  const [forget] = useForgetpasswordMutation();
+  const [email, setEmail] = useState('');
 
-  const handleforget = async () => {
-    const param = {
-      email: 'govind.l@solzit.com',
-    };
+  const forget = useForgotPasswordQuery(email);
+
+  const handleForgetPassword = async (values: any) => {
+    setEmail(values?.username || null);
     try {
-      const response = await forget(param);
-    } catch (error) {}
+      const response = await forget;
+      console.log('response', JSON.stringify(response));
+      if(response.status === 'fulfilled' ){
+        Alert.alert('Success', response?.data?.messageDetail?.message);
+      }
+      else if (response.status === 'rejected'){
+        Alert.alert('Success','Username/email must not be empty');
+      }
+    } catch (err) {
+    console.warn(err);
+    
+    }
   };
 
   return (
@@ -66,7 +78,7 @@ const LoginScreen = ({navigation}: any) => {
       style={{
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: Colors.black,
+        backgroundColor: isDark ? Colors.black : Colors.white,
         alignItems: 'center',
       }}>
       {isLoading ? (
@@ -74,8 +86,8 @@ const LoginScreen = ({navigation}: any) => {
       ) : (
         <Formik
           initialValues={{
-            username: '',
-            password: '',
+            username: 'rohitrathore564025@gmail.com',
+            password: 'Rohit@123',
           }}
           validationSchema={validationSchema}
           onSubmit={handleLogin}>
@@ -94,10 +106,17 @@ const LoginScreen = ({navigation}: any) => {
                   alignItems: 'center',
                   marginVertical: 16,
                 }}>
-                <Image
-                  source={require('../Assets/Images/Logo/SOLZIT_LOGO.png')}
-                  style={{width: '80%', height: 70}}
-                />
+                {isDark ? (
+                  <Image
+                    source={require('../Assets/Images/Logo/SOLZIT_LOGO.png')}
+                    style={{width: '80%', height: 70}}
+                  />
+                ) : (
+                  <Image
+                    source={require('../Assets/Images/Solzlogo.png')}
+                    style={{width: '84%', height: 70}}
+                  />
+                )}
               </View>
               <View style={{marginVertical: 16}} />
               <CustomTextInput
@@ -111,7 +130,12 @@ const LoginScreen = ({navigation}: any) => {
                 editable={true}
               />
               {touched.username && errors.username && (
-                <Text style={{color: Colors.error, marginLeft: 20}}>
+                <Text
+                  style={{
+                    color: Colors.error,
+                    marginLeft: 20,
+                    fontFamily: 'Lato-Regular',
+                  }}>
                   {errors.username}
                 </Text>
               )}
@@ -130,16 +154,40 @@ const LoginScreen = ({navigation}: any) => {
                 }}
               />
               {touched.password && errors.password && (
-                <Text style={{color: Colors.error, marginLeft: 20}}>
+                <Text
+                  style={{
+                    color: Colors.error,
+                    marginLeft: 20,
+                    fontFamily: 'Lato-Regular',
+                  }}>
                   {errors.password}
                 </Text>
               )}
               <View style={{marginVertical: 16}} />
               <TouchableOpacity
+                onPress={() => {
+                  handleForgetPassword(values);
+                }}
+                style={{}}>
+                <Text
+                  style={{
+                    // textAlign: 'right',
+                    fontSize: 16,
+                    fontFamily: 'Lato-Semibold',
+                    color: Colors.primary,
+                    position: 'absolute',
+                    right: 0,
+                  }}>
+                  Fogot Password?
+                </Text>
+              </TouchableOpacity>
+
+              <View style={{marginVertical: 16}} />
+              <TouchableOpacity
                 style={{
                   width: SCREEN_WIDTH - 32,
                   height: 45,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Colors.primary,
                   justifyContent: 'center',
                   alignSelf: 'center',
                   borderRadius: 3,
@@ -151,15 +199,15 @@ const LoginScreen = ({navigation}: any) => {
                   style={{
                     textAlign: 'center',
                     fontSize: 16,
-                    fontWeight: '600',
-                    color: Colors.black,
+                    fontFamily: 'Lato-Bold',
+                    color: Colors.white,
                   }}>
                   Login
                 </Text>
               </TouchableOpacity>
 
               {isLoading && (
-                <ActivityIndicator size="large" color={Colors.black} />
+                <ActivityIndicator size="large" color={Colors.white} />
               )}
               {error && (
                 <Text
@@ -167,6 +215,7 @@ const LoginScreen = ({navigation}: any) => {
                     color: Colors.error,
                     marginTop: 20,
                     textAlign: 'center',
+                    fontFamily: 'Lato-Regular',
                   }}>
                   Login failed. Please try again.
                 </Text>

@@ -6,6 +6,7 @@ import {
   Pressable,
   Keyboard,
   Alert,
+  StyleSheet,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CustomTextInput from '../Components/CustomTextInput';
@@ -20,6 +21,7 @@ import moment from 'moment';
 import CustomHeader from '../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { isDarkTheme } from '../AppStore/Reducers/appState';
 
 const validationSchema = Yup.object().shape({
   LeaveDayType: Yup.string().required('Leave Day Type is required'),
@@ -34,7 +36,11 @@ const validationSchema = Yup.object().shape({
 
 const ApplyLeave = () => {
   const navigation: any = useNavigation();
+  const isDark = useSelector(isDarkTheme);
+
   const CheckStatus = useSelector((state: any) => state?.appState?.authToken);
+  // console.log(CheckStatus);
+  
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showStart, setShowStart] = useState(false);
@@ -96,14 +102,13 @@ const ApplyLeave = () => {
         Label: values.LeaveDayType === 'Full Day' ? null : values.HalfDayType,
       },
       employee: {
-        ID: CheckStatus.data.Data.ID,
-        email: CheckStatus.data.Data.employee.email,
-        fullName: CheckStatus.data.Data.fullName,
+        ID: CheckStatus?.userProfile?.userId,
+        email: CheckStatus?.userProfile?.email,
+        fullName: CheckStatus?.userProfile?.fullName,
       },
       leaveStartDate: formattedStartDate,
       leaveEndDate: formattedEndDate,
     };
-
     try {
       const response = await ApplyLeave(data).unwrap();
       console.log(response);
@@ -113,7 +118,7 @@ const ApplyLeave = () => {
           type: 'success',
           text1: 'Leave Status',
           text2: response.Message,
-          text2Style: { flexWrap: 'wrap', fontSize: 13 },
+          text2Style: { flexWrap: 'wrap', fontSize: 13,fontFamily:'Lato-Regular'},
           topOffset: 80,
           visibilityTime: 5000, 
         });
@@ -126,7 +131,7 @@ const ApplyLeave = () => {
           type: 'success',
           text1: 'Leave Status',
           text2: response.Message,
-          text2Style: { flexWrap: 'wrap', fontSize: 13 },
+          text2Style: { flexWrap: 'wrap', fontSize: 13,fontFamily:'Lato-Regular' },
           topOffset: 80,
           visibilityTime: 5000, 
         });
@@ -138,6 +143,7 @@ const ApplyLeave = () => {
         text2: 'Application failed. Please try again.',
         topOffset: 80,
         visibilityTime: 4000,
+        text2Style:{fontFamily:'Lato-Regular'}
       });
     }
   };
@@ -147,7 +153,7 @@ const ApplyLeave = () => {
     <View
       style={{
         flex: 1,
-        backgroundColor: Colors.black,
+        backgroundColor: isDark ? Colors.black : Colors.white,
       }}>
       <CustomHeader
         showBackIcon={true}
@@ -156,8 +162,12 @@ const ApplyLeave = () => {
           navigation.goBack();
         }}
       />
-      <View
-        style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
+     <View
+        style={{borderWidth: 1,
+          height: 1,
+          backgroundColor: isDark ? Colors.white :'transparent',
+          borderColor: isDark ? Colors.black : 'transparent',   
+           }}
       />
 
       <Formik
@@ -185,8 +195,9 @@ const ApplyLeave = () => {
             <View style={{marginHorizontal: 16}}>
               <Text
                 style={{
-                  color: Colors.white,
+                  color: isDark ? Colors.white :Colors.black,
                   fontSize: 16,
+                  fontFamily:'Lato-Bold'
                 }}>
                 Leave Type
               </Text>
@@ -205,7 +216,7 @@ const ApplyLeave = () => {
                       width: 20,
                       borderRadius: 10,
                       borderWidth: 2,
-                      borderColor: Colors.white,
+                      borderColor: isDark ? Colors.white :Colors.primary,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 10,
@@ -216,12 +227,12 @@ const ApplyLeave = () => {
                           height: 10,
                           width: 10,
                           borderRadius: 5,
-                          backgroundColor: Colors.white,
+                          backgroundColor: isDark ? Colors.white :Colors.primary,
                         }}
                       />
                     )}
                   </View>
-                  <Text style={{color: Colors.white}}>Earn Leave</Text>
+                  <Text style={{color:isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Earn Leave</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -230,8 +241,9 @@ const ApplyLeave = () => {
             <View style={{marginHorizontal: 16}}>
               <Text
                 style={{
-                  color: Colors.white,
+                  color:isDark ? Colors.white :Colors.black,
                   fontSize: 16,
+                  fontFamily:'Lato-Bold'
                 }}>
                 Leave Day Type
               </Text>
@@ -250,7 +262,7 @@ const ApplyLeave = () => {
                       width: 20,
                       borderRadius: 10,
                       borderWidth: 2,
-                      borderColor: Colors.white,
+                      borderColor: isDark ? Colors.white :Colors.primary,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 10,
@@ -261,12 +273,12 @@ const ApplyLeave = () => {
                           height: 10,
                           width: 10,
                           borderRadius: 5,
-                          backgroundColor: Colors.white,
+                          backgroundColor: isDark ? Colors.white :Colors.primary,
                         }}
                       />
                     )}
                   </View>
-                  <Text style={{color: Colors.white}}>Full Day</Text>
+                  <Text style={{color: isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Full Day</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{
@@ -281,7 +293,7 @@ const ApplyLeave = () => {
                       width: 20,
                       borderRadius: 10,
                       borderWidth: 2,
-                      borderColor: Colors.white,
+                      borderColor: isDark ? Colors.white :Colors.primary,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 10,
@@ -292,12 +304,12 @@ const ApplyLeave = () => {
                           height: 10,
                           width: 10,
                           borderRadius: 5,
-                          backgroundColor: Colors.white,
+                          backgroundColor: isDark ? Colors.white :Colors.primary,
                         }}
                       />
                     )}
                   </View>
-                  <Text style={{color: Colors.white}}>Half Day</Text>
+                  <Text style={{color: isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Half Day</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -311,7 +323,7 @@ const ApplyLeave = () => {
               <View>
                 <View style={{marginVertical: 16}} />
                 <View style={{marginHorizontal: 16}}>
-                  <Text style={{color: Colors.white, fontSize: 16}}>
+                  <Text style={{color: isDark ? Colors.white :Colors.black, fontSize: 16,fontFamily:'Lato-Bold'}}>
                     Half Day Type
                   </Text>
                   <View style={{flexDirection: 'row'}}>
@@ -329,7 +341,7 @@ const ApplyLeave = () => {
                           width: 20,
                           borderRadius: 10,
                           borderWidth: 2,
-                          borderColor: Colors.white,
+                          borderColor: isDark ? Colors.white :Colors.primary,
                           alignItems: 'center',
                           justifyContent: 'center',
                           marginRight: 10,
@@ -340,12 +352,12 @@ const ApplyLeave = () => {
                               height: 10,
                               width: 10,
                               borderRadius: 5,
-                              backgroundColor: Colors.white,
+                              backgroundColor: isDark ? Colors.white :Colors.primary,
                             }}
                           />
                         )}
                       </View>
-                      <Text style={{color: Colors.white}}>Fore Noon</Text>
+                      <Text style={{color:isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Fore Noon</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={{
@@ -362,7 +374,7 @@ const ApplyLeave = () => {
                           width: 20,
                           borderRadius: 10,
                           borderWidth: 2,
-                          borderColor: Colors.white,
+                          borderColor: isDark ? Colors.white :Colors.primary,
                           alignItems: 'center',
                           justifyContent: 'center',
                           marginRight: 10,
@@ -373,12 +385,12 @@ const ApplyLeave = () => {
                               height: 10,
                               width: 10,
                               borderRadius: 5,
-                              backgroundColor: Colors.white,
+                              backgroundColor: isDark ? Colors.white :Colors.primary,
                             }}
                           />
                         )}
                       </View>
-                      <Text style={{color: Colors.white}}>After Noon</Text>
+                      <Text style={{color: isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>After Noon</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -490,7 +502,7 @@ const ApplyLeave = () => {
               style={{
                 width: SCREEN_WIDTH - 32,
                 height: 45,
-                backgroundColor: Colors.white,
+                backgroundColor: Colors.primary,
                 justifyContent: 'center',
                 alignSelf: 'center',
                 borderRadius: 3,
@@ -518,7 +530,7 @@ const ApplyLeave = () => {
               {isLoading ? (
                 <ActivityIndicator
                   animating={true}
-                  color={Colors.black}
+                  color={Colors.white}
                   style={{
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -530,10 +542,11 @@ const ApplyLeave = () => {
                   style={{
                     textAlign: 'center',
                     fontSize: 16,
-                    fontWeight: '600',
-                    color: Colors.black,
+                    // fontWeight: '600',
+                    color: Colors.white,
+                    fontFamily:'Lato-Bold'
                   }}>
-                  Apply
+                  Apply Leave
                 </Text>
               )}
             </TouchableOpacity>
@@ -546,3 +559,8 @@ const ApplyLeave = () => {
 };
 
 export default ApplyLeave;
+
+const styles = (isDark: any) =>
+  StyleSheet.create({
+
+});

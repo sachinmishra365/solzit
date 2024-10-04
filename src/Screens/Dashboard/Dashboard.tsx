@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
 import {
-  Agenda,
   DateData,
   AgendaEntry,
   AgendaSchedule,
@@ -16,46 +15,45 @@ import {
   useSoluzioneHolidaysQuery,
 } from '../../Services/services';
 import {useDispatch, useSelector} from 'react-redux';
-import {applied, isDarkTheme, processedLeaves} from '../../AppStore/Reducers/appState';
-import {useNavigation} from '@react-navigation/native';
+import {
+  applied,
+  isDarkTheme,
+  processedLeaves,
+} from '../../AppStore/Reducers/appState';
 import {Dimensions} from 'react-native';
+import Placeholder from '../Placeholder/Placeholder';
 
 const {height} = Dimensions.get('window');
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
-  const navigation = useNavigation();
+
   const [items, setItems] = useState<AgendaSchedule>({});
   const [currentDate, setCurrentDate] = useState('');
-  const [HolyDays, setHolyDays] = useState();
+  const [HolyDays, setHolyDays] = useState<any>([]);
+
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
 
-  const Holiday = useSoluzioneHolidaysQuery([]);
-  
-  const SolzHolyDays = Holiday?.data?.Data?.map((item: any) => ({
-    HolyDayName: item.holidayName,
-    HolyDayDate: moment(item?.date).format('YYYY-MM-DD'),
-  }));
+  const {data, error, isLoading} = useSoluzioneHolidaysQuery([]);
 
-  SolzHolyDays?.forEach((HoyDayitem: any) => {
-    const date = HoyDayitem.HolyDayDate;
-    if (items[date]) {
-      items[date]?.forEach(event => {
-        event.name = HoyDayitem.HolyDayName;
-        event.day = HoyDayitem.HolyDayDate;
-      });
+  const handleholiday = async () => {
+    try {
+      const response = await data;
+      if (response && response?.Data && response?.ResponseCode === 100) {
+        setHolyDays(response?.Data);
+      }
+    } catch (err) {
+      console.log(err);
     }
-  });
+  };
 
   useEffect(() => {
-    if (Holiday?.data?.Data) {
-      setHolyDays(Holiday.data.Data);
-    }
-  }, [Holiday]);
+    handleholiday();
+  }, [data]);
 
   const AppliedLeave = useEmployeeAppliedLeavesQuery({
-    ids: EmployeeId?.data?.Data?.ID,
+    ids: EmployeeId?.userProfile?.userId || null,
   });
 
   const RequestleaveDetails = AppliedLeave?.data?.Data?.map((item: any) => ({
@@ -81,7 +79,7 @@ const Dashboard = () => {
   });
 
   const ProcessedLeaves = useProcessedLeavesQuery({
-    Id: EmployeeId?.data?.Data?.ID,
+    Id: EmployeeId?.userProfile?.userId || null,
   });
 
   const leaveDetails = ProcessedLeaves?.data?.Data?.map((item: any) => ({
@@ -124,97 +122,66 @@ const Dashboard = () => {
     setCurrentDate(date);
   }, []);
 
-  const loadItems = (day: DateData) => {
-    const newItems = {...items};
-    setTimeout(() => {
-      for (let i = -365; i < 365; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        const strTime = timeToString(time);
-        if (!newItems[strTime]) {
-          newItems[strTime] = [];
-          newItems[strTime].push({
-            name: 'No Event',
-            height: 0,
-            day: strTime,
-          });
-        }
-      }
-      const updatedItems: AgendaSchedule = {};
-      Object.keys(newItems).forEach(key => {
-        updatedItems[key] = newItems[key];
-      });
-      setItems(updatedItems);
-    }, 1000);
-  };
-
-  const renderItem = (reservation: AgendaEntry, isFirst: boolean) => {
-    const fontSize = isFirst ? 16 : 14;
-    const color = isFirst ? 'white' : '#fff';
-    const isCurrentDate = reservation.day === currentDate;
-    const formattedDate = moment(reservation.day).format('ddd, DD MMM ');
-
-    
-    return (
-      <TouchableOpacity
-        style={[
-          styles(isDark).item,
-          {
-            height: reservation.height,
-            backgroundColor:
-              reservation.name === 'Applied'
-                ? Colors.primary
-                : reservation.name === 'Cancelled'
-                ? '#8b4315'
-                : reservation.name === 'Declined'
-                ? Colors.error
-                : reservation.name === 'Approved'
-                ? 'green'
-                : Colors.gray,
-          },
-        ]}
-        onPress={() => {
-          // if (reservation.name !== 'No Event') {
-          //   navigation.navigate('Aboutleavedetails', {
-          //     leaveApplicationId: reservation.leaveApplicationId,
-          //   });
-          // }
-        }}>
-        {/* <Text style={{fontSize, color}}>{formattedDate}</Text> */}
-        <Text style={{fontSize, color}}>{reservation.name}</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderEmptyDate = () => {
-    return (
-      <View style={styles(isDark).emptyDate}>
-        <Text>This is empty date!</Text>
-      </View>
-    );
-  };
-
-  const rowHasChanged = (r1: AgendaEntry, r2: AgendaEntry) => {
-    return r1.name !== r2.name;
-  };
-
-  const renderDay = (day: any) => {
-    if (day) {
-      return <Text style={styles(isDark).customDay}>{day.getDay()}</Text>;
-    }
-    return <View style={styles(isDark).dayItem} />;
-  };
-
-  const timeToString = (time: number) => {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
-  };
-
   const handleDayPress = (day: DateData) => {
     setCurrentDate(day.dateString);
   };
 
+  const renderHolidays = ({item}: any) => {
+    return (
+      <View style={styles(isDark).holidayItem}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            elevation: 15,
+            shadowColor: isDark ? Colors.white : Colors.black,
+          }}>
+          <View>
+            <Text
+              style={{
+                color: isDark ? Colors.white : Colors.black,
+                fontSize: 20,
+                fontFamily: 'Lato-Regular',
+              }}>
+              {moment(item.date).format(' D ')} {/* Format the date */}
+            </Text>
+            <Text
+              style={{
+                color: isDark ? Colors.white : Colors.black,
+                fontSize: 18,
+                fontFamily: 'Lato-Regular',
+              }}>
+              {moment(item.date).format(' MMM ')} {/* Format the date */}
+            </Text>
+          </View>
+          <View
+            style={{
+              backgroundColor: isDark ? Colors.gray : Colors.background,
+              padding: 10,
+              height: 70,
+              borderRadius: 10,
+              width: '80%',
+            }}>
+            <Text
+              style={{
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Semibold',
+              }}>
+              {item.holidayName}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
-    <View style={{flex: 1, backgroundColor: Colors.black}}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? Colors.black : Colors.white,
+      }}>
       <Calendar
         onDayPress={handleDayPress}
         markedDates={{
@@ -225,57 +192,30 @@ const Dashboard = () => {
           },
         }}
         theme={{
-          calendarBackground: Colors.black,
-          textSectionTitleColor: Colors.white,
+          calendarBackground: 'transparent',
+          textSectionTitleColor: Colors.dark_gray,
           selectedDayBackgroundColor: Colors.primary,
-          dayTextColor: Colors.white,
+          dayTextColor: Colors.dark_gray,
           todayTextColor: Colors.primary,
           arrowColor: Colors.primary,
-          monthTextColor: Colors.white,
+          monthTextColor: Colors.dark_gray,
           textDisabledColor: Colors.error,
         }}
         markingType={'simple'}
         enableSwipeMonths
         disableAllTouchEventsForDisabledDays={false}
       />
-      <Agenda
-        items={items}
-        loadItemsForMonth={loadItems}
-        selected={currentDate}
-        renderItem={renderItem}
-        renderEmptyDate={renderEmptyDate}
-        rowHasChanged={rowHasChanged}
-        hideKnob={true}
-        showClosingKnob={false}
-        refreshing={false}
-        theme={{
-          calendarBackground: Colors.gray,
-          backgroundColor: Colors.black,
-          agendaDayTextColor: Colors.white,
-          agendaDayNumColor: Colors.white,
-          agendaTodayColor: Colors.primary,
-          monthTextColor: Colors.white,
-          todayBackgroundColor: Colors.white,
-          textSectionTitleColor: Colors.white,
-          selectedDayBackgroundColor: Colors.primary,
-          dayTextColor: Colors.white,
-          dotColor: 'white',
-          textDisabledColor: 'red',
-        }}
-        sectionStyle={{
-          backgroundColor: Colors.black,
-          height: 0,
-        }}
-        style={{
-          height: height * 0.59,
-        }}
-        knobContainerStyle={{
-          backgroundColor: Colors.white,
-        }}
-        agendaStyle={{
-          backgroundColor: Colors.white,
-        }}
-      />
+      {isLoading ? (
+        <Placeholder />
+      ) : (
+        <FlatList
+          data={HolyDays}
+          renderItem={renderHolidays}
+          keyExtractor={(item, index) => item?.id?.toString() + index}
+          style={{margin: 5}}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
       <Fabbutton />
     </View>
   );
@@ -283,26 +223,32 @@ const Dashboard = () => {
 
 const styles = (isDark: any) =>
   StyleSheet.create({
-      item: {
-    flex: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-    marginTop: 17,
-  },
-  emptyDate: {
-    height: 15,
-    flex: 1,
-    paddingTop: 30,
-  },
-  customDay: {
-    margin: 10,
-    fontSize: 24,
-    color: 'green',
-  },
-  dayItem: {
-    marginLeft: 34,
-  },
-});
+    item: {
+      flex: 1,
+      borderRadius: 5,
+      padding: 10,
+      marginRight: 10,
+      marginTop: 17,
+    },
+    emptyDate: {
+      height: 15,
+      flex: 1,
+      paddingTop: 30,
+    },
+    customDay: {
+      margin: 10,
+      fontSize: 24,
+      color: 'green',
+      fontFamily: 'Lato-Semibold',
+    },
+    dayItem: {
+      marginLeft: 34,
+    },
+    holidayItem: {
+      padding: 10,
+      elevation: 15,
+      shadowColor: isDark ? Colors.white : Colors.black,
+    },
+  });
 
 export default Dashboard;

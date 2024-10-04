@@ -6,6 +6,9 @@ import LeaveRequest from '../Screens/Leaves&Breakes/LeaveRequest';
 import LeaveBalance from '../Screens/Leaves&Breakes/LeaveBalance';
 import Aboutleavedetails from '../Screens/Dashboard/Aboutleavedetails';
 import Profile from '../Screens/profile/Profile';
+import Attandance from '../Screens/Attendance/Attandance';
+import ChangePassword from '../Screens/ChangePassword/ChangePassword';
+import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +21,9 @@ const RootStack = () => {
       <Stack.Screen name="LeaveBalance" component={LeaveBalance} />
       <Stack.Screen name="Aboutleavedetails" component={Aboutleavedetails} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen name="Attandance" component={Attandance} />
+      <Stack.Screen name="SepratedAttendance" component={SepratedAttendance} />
     </Stack.Navigator>
   );
 };

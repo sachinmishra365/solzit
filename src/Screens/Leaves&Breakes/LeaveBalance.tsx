@@ -20,32 +20,44 @@ import {useSelector} from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
 import Placeholder from '../Placeholder/Placeholder';
+import {isDarkTheme} from '../../AppStore/Reducers/appState';
 
 const LeaveBalance = ({navigation}: any) => {
   const [items, setItems] = useState(null);
-  const [filteredItems, setFilteredItems] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('All');
-  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const statuses = ['All', 'Cancelled', 'Declined', 'Approved'];
+  const isDark = useSelector(isDarkTheme);
 
+  const [filteredItems, setFilteredItems] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('Approved');
+  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  // const statuses = ['All', 'Cancelled', 'Declined', 'Approved'];
+  const statuses = ['Approved', 'Declined', 'Cancelled', 'All'];
 
   const {data, isLoading, refetch} = useProcessedLeavesQuery({
-    Id: EmployeeId?.data?.Data?.ID,
+    Id: EmployeeId?.userProfile?.userId || null,
   });
 
+  // useEffect(() => {
+  //   if (data && data !== undefined) {
+  //     setItems(data.Data);
+  //     setFilteredItems(data.Data);
+  //   }
+  // }, [items]);
   useEffect(() => {
     if (data && data !== undefined) {
       setItems(data.Data);
-      setFilteredItems(data.Data); // Initialize filtered items
+      const approvedLeaves = data?.Data?.filter(
+        (item: any) => item.Status.Label === 'Approved',
+      );
+      setFilteredItems(approvedLeaves);
     }
-  }, [items]);
+  }, [data]);
 
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);
     if (status === 'All') {
       setFilteredItems(items);
     } else {
-      const filteredData = items.filter(
+      const filteredData = items?.filter(
         (item: any) => item.Status.Label === status,
       );
       setFilteredItems(filteredData);
@@ -66,11 +78,12 @@ const LeaveBalance = ({navigation}: any) => {
     // console.log(item),
     <Card
       style={{
-        backgroundColor: Colors.black,
+        backgroundColor: isDark ? Colors.black : Colors.background,
         marginVertical: 10,
         // paddingHorizontal: 16,
-        borderColor: Colors.white,
+        borderColor: Colors.background,
         borderWidth: 0.5,
+        marginHorizontal:5
       }}>
       <Card.Content>
         <View
@@ -78,7 +91,12 @@ const LeaveBalance = ({navigation}: any) => {
             justifyContent: 'space-between',
             flexDirection: 'row',
           }}>
-          <Text style={{color: Colors.white, fontSize: 14, fontWeight: '600'}}>
+          <Text
+            style={{
+              color: isDark ? Colors.white : Colors.black,
+              fontSize: 14,
+              fontFamily:'Lato-Bold'
+            }}>
             {item.totalDaysofLeave !== 0.5
               ? `Full Day Leave (${item.totalDaysofLeave})`
               : `Half Day Leave (${item.totalDaysofLeave})`}
@@ -98,7 +116,7 @@ const LeaveBalance = ({navigation}: any) => {
                     ? 'green'
                     : Colors.gray,
                 fontSize: 16,
-                fontWeight: 'bold',
+                fontFamily:'Lato-Bold'
               }}>
               {item.Status.Label}
             </Text>
@@ -114,9 +132,9 @@ const LeaveBalance = ({navigation}: any) => {
           }}>
           <Text
             style={{
-              color: Colors.white,
+              color: isDark ? Colors.white : Colors.black,
               fontSize: 18,
-              fontWeight: '600',
+              fontFamily:'Lato-Bold',
               marginBottom: 6,
             }}>
             {item?.leaveStartDate === item?.leaveEndDate
@@ -125,21 +143,42 @@ const LeaveBalance = ({navigation}: any) => {
                   'ddd, DD MMM',
                 )} - ${moment(item?.leaveEndDate).format('ddd, DD MMM')}`}
           </Text>
-          <Text style={{color: Colors.white, fontSize: 14, fontWeight: '600'}}>
+          <Text
+            style={{
+              color: isDark ? Colors.white : Colors.black,
+              fontSize: 14,
+              fontFamily:'Lato-Bold'
+            }}>
             Absent Day: {item.totalAbsentDays}
           </Text>
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between',flexWrap: 'wrap',}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}>
           <Text
             style={{
               color:
-                item.leaveType.Label === 'Earn Leave' ? 'white' : Colors.white,
+                item.leaveType.Label === 'Earn Leave'
+                  ? isDark
+                    ? Colors.white
+                    : Colors.black
+                  : isDark
+                  ? Colors.white
+                  : Colors.black,
               fontSize: 14,
-              fontWeight: '600',
+              fontFamily:'Lato-Bold'
             }}>
             {item.leaveType.Label}
           </Text>
-          <Text style={{color: Colors.white, fontSize: 14, fontWeight: '600'}}>
+          <Text
+            style={{
+              color: isDark ? Colors.white : Colors.black,
+              fontSize: 14,
+              fontFamily:'Lato-Bold'
+            }}>
             Approved by: {item?.approver?.Name ? item?.approver?.Name : 'N/A'}
           </Text>
         </View>
@@ -169,7 +208,12 @@ const LeaveBalance = ({navigation}: any) => {
   });
 
   return (
-    <View style={{flex: 1, backgroundColor: Colors.black}} {...panResponder.panHandlers}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? Colors.black : Colors.white,
+      }}
+      {...panResponder.panHandlers}>
       <CustomHeader
         showBackIcon={true}
         title="Processed Leaves"
@@ -177,10 +221,18 @@ const LeaveBalance = ({navigation}: any) => {
           navigation.goBack();
         }}
       />
+
       <View
-        style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
+        style={{
+          borderWidth: 1,
+          height: 1,
+          backgroundColor: isDark ? Colors.white : 'transparent',
+          borderColor: isDark ? Colors.black : 'transparent',
+        }}
       />
+
       {/* Filter Buttons */}
+
       <View
         style={{
           flexDirection: 'row',
@@ -192,26 +244,43 @@ const LeaveBalance = ({navigation}: any) => {
             key={status}
             style={{
               backgroundColor:
-                selectedStatus === status ? Colors.primary : Colors.gray,
+                selectedStatus === status
+                  ? Colors.primary
+                  : isDark
+                  ? Colors.gray
+                  : Colors.white,
               paddingHorizontal: 10,
               paddingVertical: 5,
               borderRadius: 20,
             }}
             onPress={() => filterByStatus(status)}>
-            <Text style={{color: Colors.white, fontWeight: '600'}}>
+            <Text
+              style={{
+                color: isDark
+                  ? Colors.white
+                  : selectedStatus === status
+                  ? Colors.white
+                  : Colors.black,
+                  fontFamily:'Lato-Bold'
+                  }}>
               {status}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
-      
+
       <View
-        style={{borderWidth: 1, backgroundColor: Colors.white, height: 1}}
+        style={{
+          borderWidth: 1,
+          height: 1,
+          backgroundColor: isDark ? Colors.white : 'transparent',
+          borderColor: isDark ? Colors.black : 'transparent',
+        }}
       />
+
       {isLoading ? (
         <Placeholder />
-      ) : 
-      filteredItems && filteredItems?.length !== 0 ? (
+      ) : filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
           style={{marginHorizontal: 16}}
           data={filteredItems}
@@ -224,10 +293,16 @@ const LeaveBalance = ({navigation}: any) => {
           renderItem={item => renderItem(item)}
           keyExtractor={(item, index) => index.toString()}
           ListFooterComponent={<View style={{height: 100}} />}
+          showsVerticalScrollIndicator={false}
         />
       ) : (
         <View style={{flex: 1, justifyContent: 'center'}}>
-          <Text style={{color: Colors.white, alignSelf: 'center'}}>
+          <Text
+            style={{
+              color: isDark ? Colors.white : Colors.black,
+              alignSelf: 'center',
+              fontFamily:'Lato-Bold'
+            }}>
             No Records
           </Text>
         </View>
@@ -238,4 +313,4 @@ const LeaveBalance = ({navigation}: any) => {
 
 export default LeaveBalance;
 
-const styles = StyleSheet.create({});
+const styles = (isDark: any) => StyleSheet.create({});

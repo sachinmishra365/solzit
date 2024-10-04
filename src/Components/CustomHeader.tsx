@@ -67,6 +67,7 @@ const styles = (isDark: any) =>
     fontSize: 18,
     color: isDark ? Colors.white : Colors.black,
     marginTop: 2,
+    fontFamily:'Lato-Semibold'
   },
   searchIcon: {
     position: 'absolute',

@@ -1,5 +1,6 @@
 import {createApi} from '@reduxjs/toolkit/query/react';
 import axios from 'axios';
+import Attendance from '../Screens/Attendance/Attandance';
 
 
 const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
@@ -30,13 +31,13 @@ export const services = createApi({
   tagTypes: ['Hello', 'Hello1'],
 
   endpoints: builder => ({
-    userAuthenticationlogin: builder.mutation({
-      query: data => ({
-        url: `/EmployeeAuthorization/AuthorizeEmployee`,
-        method: 'POST',
-        body: data,
-      }),
-    }),
+    // userAuthenticationlogin: builder.mutation({
+    //   query: data => ({
+    //     url: `/V1/Auth/Authenticate`,
+    //     method: 'POST',
+    //     body: data,
+    //   }),
+    // }),
 
     EmployeeAppliedLeaves: builder.query({
       query: data => ({
@@ -72,7 +73,7 @@ export const services = createApi({
       }),
       invalidatesTags: ['Hello1'],
     }),
-
+    
     Forgetpassword: builder.mutation({
       query: data => ({
         url: `EmployeeAuthorization/ForgotPassword`,
@@ -80,21 +81,60 @@ export const services = createApi({
         body: data,
       }),
     }),
+    
     SoluzioneHolidays: builder.query({
       query: data => ({
         url: `/Dashboard/GetSoluzioneHolidaysDashboard/`,
         method: 'GET',
       }),
     }),
+
+    EmployeeAttendanceList: builder.mutation({
+      query: data => ({
+        url: `/EmployeeAttendance/EmployeeAttendanceList`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+    AttendanceList: builder.query({
+      query: data => ({
+        url: `/EmployeeLeaveRecords/LeaveBalanceRecordList/${data.UserID}`,
+        method: 'GET',
+        body: data,
+      }),
+    }),
+
+    AttendanceMonthList: builder.mutation({
+      query: data => ({
+        url: `/EmployeeAttendance/EmployeeAttendanceList`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+    EmployeeAttendanceQuery: builder.query({
+      query: data => ({
+        url: `/EmployeeAttendance/GetAttendanceQuery?id=${data.AttendanceID}`,
+        method: 'GET',
+        body: data,
+      }),
+    }),
+
+
   }),
 });
 
 export const {
-  useUserAuthenticationloginMutation,
+  // useUserAuthenticationloginMutation,
   useEmployeeLeaveApplyMutation,
   useEmployeeAppliedLeavesQuery,
   useEmployeeCancelLeavesMutation,
   useProcessedLeavesQuery,
   useForgetpasswordMutation,
-  useSoluzioneHolidaysQuery
+  useSoluzioneHolidaysQuery,
+  useEmployeeAttendanceListMutation,
+  useAttendanceListQuery,
+  useAttendanceMonthListMutation,
+  useEmployeeAttendanceQueryQuery
 } = services;

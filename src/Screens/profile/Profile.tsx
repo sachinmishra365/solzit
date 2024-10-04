@@ -12,9 +12,10 @@ const Profile = () => {
   const isDark = useSelector(isDarkTheme);
   // console.log(isDark);
   
-
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const Profiledata = EmployeeId?.data?.Data;
+  console.log('userData',JSON.stringify(EmployeeId));
+
+  const Profiledata = EmployeeId?.userProfile;
   const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
 
   return (
@@ -29,8 +30,8 @@ const Profile = () => {
       <View
         style={{
           borderWidth: 1,
-          backgroundColor: isDark ? Colors.white :'transparent',
           height: 1,
+          backgroundColor: isDark ? Colors.white :'transparent',
           borderColor: isDark ? Colors.black : 'transparent',
         }}
       />
@@ -89,12 +90,12 @@ const Profile = () => {
               justifyContent: 'space-between',
               flexWrap: 'wrap',
             }}>
-            <Text style={[styles(isDark).txt, {fontWeight: '500'}]}>
+            <Text style={[styles(isDark).txt, {fontFamily:'Lato-Semibold'}]}>
               Email{' : '}
             </Text>
             <Text style={styles(isDark).txt}>
-              {Profiledata?.employee?.email
-                ? Profiledata?.employee?.email
+              {Profiledata?.email
+                ? Profiledata?.email
                 : 'N/A'}
             </Text>
           </View>
@@ -105,7 +106,7 @@ const Profile = () => {
               justifyContent: 'space-between',
               flexWrap: 'wrap',
             }}>
-            <Text style={[styles(isDark).txt, {fontWeight: '500'}]}>
+            <Text style={[styles(isDark).txt, {fontFamily:'Lato-Semibold'}]}>
               Employee ID{' : '}
             </Text>
             <Text style={[styles(isDark).txt, {marginVertical: 10}]}>
@@ -119,7 +120,7 @@ const Profile = () => {
               justifyContent: 'space-between',
               flexWrap: 'wrap',
             }}>
-            <Text style={[styles(isDark).txt, {fontWeight: '500'}]}>
+            <Text style={[styles(isDark).txt, {fontFamily:'Lato-Semibold'}]}>
               Reporting Manager{' : '}
             </Text>
 
@@ -131,6 +132,7 @@ const Profile = () => {
           </View>
         </View>
       </Card>
+      
     </View>
   );
 };
@@ -141,7 +143,7 @@ const styles = (isDark: any) =>
   StyleSheet.create({
     maincontainer: {
       flex: 1,
-      backgroundColor: isDark ? Colors.black : Colors.white,
+      backgroundColor: isDark ? Colors.black : Colors.background,
     },
     cardcontainer: {
       backgroundColor: isDark ? Colors.black : Colors.white,
@@ -153,10 +155,13 @@ const styles = (isDark: any) =>
     },
     usename: {
       color: isDark ? Colors.white : Colors.black,
-      fontSize: 22,
+      fontSize: 20,
+      fontFamily:'Lato-Bold'
     },
     txt: {
       color: isDark ? Colors.white : Colors.black,
       marginVertical: 10,
+      fontFamily:'Lato-Regular'
+
     },
   });
