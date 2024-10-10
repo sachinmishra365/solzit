@@ -9,13 +9,9 @@ import { Colors } from '../../constants/Colors';
 
 const Profile = () => {
   const navigation = useNavigation();
-  const isDark = useSelector(isDarkTheme);
-  // console.log(isDark);
-  
+  const isDark = useSelector(isDarkTheme);  
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  console.log('userData',JSON.stringify(EmployeeId));
-
-  const Profiledata = EmployeeId?.userProfile;
+  const Profiledata = EmployeeId?.userProfile;  
   const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
 
   return (
@@ -125,8 +121,8 @@ const Profile = () => {
             </Text>
 
             <Text style={styles(isDark).txt}>
-              {Profiledata?.reportingManager?.Name
-                ? Profiledata?.reportingManager?.Name
+              {Profiledata?.reportingManager?.name
+                ? Profiledata?.reportingManager?.name
                 : 'N/A'}
             </Text>
           </View>

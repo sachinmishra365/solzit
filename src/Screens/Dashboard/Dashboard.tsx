@@ -1,11 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
-import {
-  DateData,
-  AgendaEntry,
-  AgendaSchedule,
-  Calendar,
-} from 'react-native-calendars';
+import {StyleSheet, Text, View, FlatList} from 'react-native';
+import {DateData, AgendaSchedule, Calendar} from 'react-native-calendars';
 import moment from 'moment';
 import Fabbutton from './FabButton/Fabbutton';
 import {Colors} from '../../constants/Colors';
@@ -211,7 +206,7 @@ const Dashboard = () => {
         <FlatList
           data={HolyDays}
           renderItem={renderHolidays}
-          keyExtractor={(item, index) => item?.id?.toString() + index}
+          keyExtractor={(item, index) => index.toString()}
           style={{margin: 5}}
           showsVerticalScrollIndicator={false}
         />

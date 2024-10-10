@@ -3,8 +3,8 @@ import React from 'react';
 import {TextInput} from 'react-native-paper';
 import {Colors} from '../constants/Colors';
 import {SCREEN_WIDTH} from '../constants/Screen';
-import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../AppStore/Reducers/appState';
+import {useSelector} from 'react-redux';
+import {isDarkTheme} from '../AppStore/Reducers/appState';
 
 const CustomTextInput = ({
   label,
@@ -23,7 +23,7 @@ const CustomTextInput = ({
   style,
   keyboardType = 'default',
   contentStyle,
-  numberOfLines 
+  numberOfLines,
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -35,38 +35,77 @@ const CustomTextInput = ({
         value={value}
         autoFocus={autoFocus}
         onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry} 
-        textColor={disable !== true ? isDark ? Colors.white : Colors.black :Colors.dark_gray}
-        outlineColor={disable !== true ? isDark ? Colors.white : Colors.primary:Colors.dark_gray}
-        activeOutlineColor={disable !== true ? isDark ? Colors.white : Colors.primary :Colors.dark_gray}
-        placeholderTextColor={disable !== true ? isDark ? Colors.white : Colors.black :Colors.dark_gray}
+        secureTextEntry={secureTextEntry}
+        textColor={
+          disable !== true
+            ? isDark
+              ? Colors.white
+              : Colors.black
+            : Colors.dark_gray
+        }
+        outlineColor={
+          disable !== true
+            ? isDark
+              ? Colors.white
+              : Colors.primary
+            : Colors.dark_gray
+        }
+        activeOutlineColor={
+          disable !== true
+            ? isDark
+              ? Colors.white
+              : Colors.primary
+            : Colors.dark_gray
+        }
+        placeholderTextColor={
+          disable !== true
+            ? isDark
+              ? Colors.white
+              : Colors.black
+            : Colors.dark_gray
+        }
         editable={editable}
         disabled={disable}
         readOnly={readOnly}
         onLayout={onLayout}
         keyboardType={keyboardType}
         contentStyle={contentStyle}
-        numberOfLines ={numberOfLines}
+        numberOfLines={numberOfLines}
         left={
           lefticon ? (
-            <TextInput.Icon icon={leftIconName} color={disable !== true ? isDark ? Colors.white : Colors.primary :Colors.dark_gray} />
+            <TextInput.Icon
+              icon={leftIconName}
+              color={
+                disable !== true
+                  ? isDark
+                    ? Colors.white
+                    : Colors.primary
+                  : Colors.dark_gray
+              }
+            />
           ) : null
         }
         right={
           <TextInput.Icon
             icon={rightIconName}
-            color={disable !== true ? isDark ? Colors.white : Colors.primary : Colors.dark_gray}
+            color={
+              disable !== true
+                ? isDark
+                  ? Colors.white
+                  : Colors.primary
+                : Colors.dark_gray
+            }
             onPress={onPress}
           />
         }
         style={[styles(isDark).input, style]}
-                theme={{
+        theme={{
           colors: {
             primary: isDark ? Colors.white : Colors.primary,
             background: isDark ? Colors.black : Colors.white,
-            outline:isDark ? Colors.white : Colors.primary,
+            outline: isDark ? Colors.white : Colors.primary,
             outlineVariant: isDark ? Colors.white : Colors.primary,
-            tertiaryContainer:isDark ? Colors.white : Colors.primary,
+            tertiaryContainer: isDark ? Colors.white : Colors.primary,
             onSurfaceVariant: isDark ? Colors.white : Colors.primary,
           },
         }}
@@ -78,9 +117,9 @@ export default CustomTextInput;
 
 const styles = (isDark: any) =>
   StyleSheet.create({
-  input: {
-    width: SCREEN_WIDTH - 32 ,
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-});
+    input: {
+      width: SCREEN_WIDTH - 32,
+      justifyContent: 'center',
+      alignSelf: 'center',
+    },
+  });

@@ -8,6 +8,7 @@ import {
   Pressable,
   View,
   TouchableOpacity,
+  useColorScheme,
 } from 'react-native';
 import {Icon, Switch} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -19,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const DrawerNavigator = ({navigation}: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
+  const colorScheme = useColorScheme();
   const [isSwitchOn, setIsSwitchOn] = React.useState(isDark);
   const userData = useSelector((state: any) => state?.appState?.authToken);  
   const [showMenu, setShowMenu] = useState(false);
@@ -46,10 +48,34 @@ const DrawerNavigator = ({navigation}: any) => {
     });
   };
 
-  const onToggleSwitch = () => {
-    setIsSwitchOn(!isSwitchOn);
+  const [Loading, setLoading] = React.useState(true);
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const storedTheme = await AsyncStorage.getItem('theme');
+      if (storedTheme) {
+        const themeValue = storedTheme === 'dark';
+        setIsSwitchOn(themeValue);
+        dispatch(theme(storedTheme));
+      } else {
+        const initialTheme = colorScheme === 'dark' ? 'dark' : 'light';
+        setIsSwitchOn(initialTheme === 'dark');
+        dispatch(theme(initialTheme));
+      }
+      setLoading(false); 
+    };
+    loadTheme();
+  }, [dispatch, colorScheme]);
+  
+  if (Loading) {
+    return null; 
+  }
+
+  const onToggleSwitch = async () => {
     const newTheme = !isSwitchOn ? 'dark' : 'light';
+    setIsSwitchOn(!isSwitchOn);
     dispatch(theme(newTheme));
+    await AsyncStorage.setItem('theme', newTheme); 
   };
 
 
@@ -156,7 +182,7 @@ const DrawerNavigator = ({navigation}: any) => {
             onPress={() => {
               toggleMenu();
             }}
-            style={[styles(isDark).drawerBtn, {marginTop: 16}]}>
+            style={[styles(isDark).drawerBtn, {marginVertical: 16}]}>
             <Icon
               source="cog"
               color={isDark ? Colors.white : Colors.primary}
@@ -166,7 +192,7 @@ const DrawerNavigator = ({navigation}: any) => {
           </Pressable>
 
        
-          <Pressable
+          {/* <Pressable
             onPressIn={() => {
               onToggleSwitch();
             }}
@@ -181,7 +207,7 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Dark Theme</Text>
             <Switch value={isSwitchOn} onValueChange={onToggleSwitch} thumbColor={Colors.primary} color={Colors.primary}/>
-          </Pressable>
+          </Pressable> */}
 
           <TouchableOpacity
             onPress={() => {
@@ -195,6 +221,7 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Logout</Text>
           </TouchableOpacity>
+          
         </View>
       </View>
 

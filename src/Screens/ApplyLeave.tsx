@@ -37,10 +37,7 @@ const validationSchema = Yup.object().shape({
 const ApplyLeave = () => {
   const navigation: any = useNavigation();
   const isDark = useSelector(isDarkTheme);
-
-  const CheckStatus = useSelector((state: any) => state?.appState?.authToken);
-  // console.log(CheckStatus);
-  
+  const CheckStatus = useSelector((state: any) => state?.appState?.authToken);  
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showStart, setShowStart] = useState(false);
@@ -124,7 +121,7 @@ const ApplyLeave = () => {
         });
   
         setTimeout(() => {
-          navigation.navigate('LeaveRequest');
+          navigation.replace('LeaveRequest');
         }, 5000); 
       } else {
          Toast.show({
@@ -402,19 +399,6 @@ const ApplyLeave = () => {
                 {errors.HalfDayType}
               </Text>
             )}
-
-            {/* <CustomTextInput
-              label="Leave Type"
-              value={values.LeaveType}
-              // onChangeText={handleChange('LeaveType')}
-              onBlur={handleBlur('LeaveType')}
-              lefticon={false}
-              rightIconName={false}
-              editable={true}
-              autoFocus={true}
-              readOnly={true}
-            /> */}
-
             <View style={{marginVertical: 16}} />
             <Pressable onPress={showDatepickerStart}>
               <CustomTextInput
@@ -425,8 +409,9 @@ const ApplyLeave = () => {
                 lefticon={false}
                 rightIconName={'calendar'}
                 onPress={showDatepickerStart}
-                autoFocus={true}
-                editable={true}
+                autoFocus={false}
+                editable={false}
+                readOnly={true}
               />
             </Pressable>
             {touched.StartDayOfLeave && errors.StartDayOfLeave && (
@@ -449,6 +434,7 @@ const ApplyLeave = () => {
                   lefticon={false}
                   rightIconName={'calendar'}
                   disable ={true}
+                  readOnly={true}
                 />
               </Pressable>
             ) : (
@@ -465,6 +451,7 @@ const ApplyLeave = () => {
                   lefticon={false}
                   rightIconName={'calendar'}
                   onPress={showDatepickerEnd}
+                  readOnly={true}
                 />
               </Pressable>
             )}

@@ -27,7 +27,7 @@ const LeaveBalance = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
 
   const [filteredItems, setFilteredItems] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('Approved');
+  const [selectedStatus, setSelectedStatus] = useState('All');
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   // const statuses = ['All', 'Cancelled', 'Declined', 'Approved'];
   const statuses = ['Approved', 'Declined', 'Cancelled', 'All'];
@@ -36,21 +36,21 @@ const LeaveBalance = ({navigation}: any) => {
     Id: EmployeeId?.userProfile?.userId || null,
   });
 
-  // useEffect(() => {
-  //   if (data && data !== undefined) {
-  //     setItems(data.Data);
-  //     setFilteredItems(data.Data);
-  //   }
-  // }, [items]);
   useEffect(() => {
     if (data && data !== undefined) {
       setItems(data.Data);
-      const approvedLeaves = data?.Data?.filter(
-        (item: any) => item.Status.Label === 'Approved',
-      );
-      setFilteredItems(approvedLeaves);
+      setFilteredItems(data.Data);
     }
   }, [data]);
+  // useEffect(() => {
+  //   if (data && data !== undefined) {
+  //     setItems(data.Data);
+  //     const approvedLeaves = data?.Data?.filter(
+  //       (item: any) => item.Status.Label === 'Approved',
+  //     );
+  //     setFilteredItems(approvedLeaves);
+  //   }
+  // }, [data]);
 
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);

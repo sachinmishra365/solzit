@@ -2,7 +2,6 @@ import {createApi} from '@reduxjs/toolkit/query/react';
 import axios from 'axios';
 import Attendance from '../Screens/Attendance/Attandance';
 
-
 const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
   try {
     const result = await axios({
@@ -28,7 +27,7 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
 export const services = createApi({
   reducerPath: 'parsApi',
   baseQuery: axiosBaseQuery({baseUrl: 'https://devportalapi.solzit.com/api'}),
-  tagTypes: ['Hello', 'Hello1'],
+  tagTypes: ['Hello', 'Hello1', 'attendance'],
 
   endpoints: builder => ({
     // userAuthenticationlogin: builder.mutation({
@@ -73,7 +72,7 @@ export const services = createApi({
       }),
       invalidatesTags: ['Hello1'],
     }),
-    
+
     Forgetpassword: builder.mutation({
       query: data => ({
         url: `EmployeeAuthorization/ForgotPassword`,
@@ -81,7 +80,7 @@ export const services = createApi({
         body: data,
       }),
     }),
-    
+
     SoluzioneHolidays: builder.query({
       query: data => ({
         url: `/Dashboard/GetSoluzioneHolidaysDashboard/`,
@@ -115,13 +114,21 @@ export const services = createApi({
 
     EmployeeAttendanceQuery: builder.query({
       query: data => ({
-        url: `/EmployeeAttendance/GetAttendanceQuery?id=${data.AttendanceID}`,
+        url: `/EmployeeAttendance/GetAttendanceQuery?id=${data?.AttendanceID}`,
         method: 'GET',
         body: data,
       }),
+      providesTags: ['attendance'],
     }),
 
-
+    AskEmployeeAttendanceQuery: builder.mutation({
+      query: data => ({
+        url: `/EmployeeAttendance/AskQueryForAttendance`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['attendance'],
+    }),
   }),
 });
 
@@ -136,5 +143,6 @@ export const {
   useEmployeeAttendanceListMutation,
   useAttendanceListQuery,
   useAttendanceMonthListMutation,
-  useEmployeeAttendanceQueryQuery
+  useEmployeeAttendanceQueryQuery,
+  useAskEmployeeAttendanceQueryMutation,
 } = services;

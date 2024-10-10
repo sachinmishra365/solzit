@@ -9,18 +9,18 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {auth, isDarkTheme} from '../AppStore/Reducers/appState';
 import Placeholder from '../Screens/Placeholder/Placeholder';
-import {
-  useForgotPasswordQuery,
-  useUserAuthenticationloginMutation,
-} from '../Services/appLevel';
+import { useForgotPasswordQuery, useUserAuthenticationloginMutation} from '../Services/appLevel';
 
 const LoginScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
 
   const [showPassword, setShowPassword] = useState(true);
+  const [showForgot, SetShowForgot] = useState(false);
   const [userAuthenticationlogin, {isLoading, error}] =
     useUserAuthenticationloginMutation();
+    console.log(error);
+    
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
@@ -41,7 +41,7 @@ const LoginScreen = ({navigation}: any) => {
         navigation.navigate('CheckStack');
       } else {
         Alert.alert(
-          'Login Status',
+          'Network Error',
           response?.data?.messageDetail?.message,
           [{text: 'OK', onPress: () => console.log('OK Pressed')}],
           {cancelable: true},
@@ -86,8 +86,8 @@ const LoginScreen = ({navigation}: any) => {
       ) : (
         <Formik
           initialValues={{
-            username: 'rohitrathore564025@gmail.com',
-            password: 'Rohit@123',
+            username: 'exmaple@gmail.COM',
+            password: 'Poorvi@19',
           }}
           validationSchema={validationSchema}
           onSubmit={handleLogin}>
@@ -114,7 +114,7 @@ const LoginScreen = ({navigation}: any) => {
                 ) : (
                   <Image
                     source={require('../Assets/Images/Solzlogo.png')}
-                    style={{width: '84%', height: 70}}
+                    style={{width: '90%', height: 70}}
                   />
                 )}
               </View>
@@ -167,6 +167,7 @@ const LoginScreen = ({navigation}: any) => {
               <TouchableOpacity
                 onPress={() => {
                   handleForgetPassword(values);
+                  SetShowForgot(true)
                 }}
                 style={{}}>
                 <Text

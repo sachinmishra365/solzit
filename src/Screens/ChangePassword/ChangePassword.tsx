@@ -21,13 +21,14 @@ import Toast from 'react-native-toast-message';
 const ChangePassword = () => {
   const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
-  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);  
+  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  console.log('e',EmployeeId);
+  
   const [showPassword, setShowPassword] = useState(true);
   const [showNewPassword, setShowNewPassword] = useState(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState(true);
 
-  const [ChangePassword, {isSuccess, isLoading}] =
-    useChangePasswordMutation();
+  const [ChangePassword, {isSuccess, isLoading}] = useChangePasswordMutation();
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email is required'),
@@ -130,12 +131,10 @@ const ChangePassword = () => {
             <CustomTextInput
               label="email"
               value={values.email}
-              autoFocus={true}
+              autoFocus={false}
               secureTextEntry={false}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
               leftIconName="email"
-              editable={true}
+              readOnly={true}
             />
             {touched.email && errors.email && (
               <Text
