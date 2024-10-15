@@ -126,6 +126,7 @@ const Profile = () => {
                 : 'N/A'}
             </Text>
           </View>
+          
         </View>
       </Card>
       
@@ -139,10 +140,10 @@ const styles = (isDark: any) =>
   StyleSheet.create({
     maincontainer: {
       flex: 1,
-      backgroundColor: isDark ? Colors.black : Colors.background,
+      backgroundColor: isDark ? Colors.black : Colors.white,
     },
     cardcontainer: {
-      backgroundColor: isDark ? Colors.black : Colors.white,
+      backgroundColor: isDark ? Colors.black : Colors.background,
       borderWidth: 0.5,
       borderColor: Colors.white,
       marginHorizontal: 16,

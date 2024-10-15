@@ -9,6 +9,7 @@ import Profile from '../Screens/profile/Profile';
 import Attandance from '../Screens/Attendance/Attandance';
 import ChangePassword from '../Screens/ChangePassword/ChangePassword';
 import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
+import Summary from '../Screens/Attendance/Summary';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,7 @@ const RootStack = () => {
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="Attandance" component={Attandance} />
       <Stack.Screen name="SepratedAttendance" component={SepratedAttendance} />
+      <Stack.Screen name="Summary" component={Summary} />
     </Stack.Navigator>
   );
 };

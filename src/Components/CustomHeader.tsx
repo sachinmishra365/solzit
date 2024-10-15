@@ -66,7 +66,7 @@ const styles = (isDark: any) =>
   title: {
     fontSize: 18,
     color: isDark ? Colors.white : Colors.black,
-    marginTop: 2,
+    // marginTop: 2,
     fontFamily:'Lato-Semibold'
   },
   searchIcon: {

@@ -21,6 +21,7 @@ import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
 import Placeholder from '../Placeholder/Placeholder';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
 const LeaveBalance = ({navigation}: any) => {
   const [items, setItems] = useState(null);
@@ -83,7 +84,7 @@ const LeaveBalance = ({navigation}: any) => {
         // paddingHorizontal: 16,
         borderColor: Colors.background,
         borderWidth: 0.5,
-        marginHorizontal:5
+        marginHorizontal: 5,
       }}>
       <Card.Content>
         <View
@@ -95,7 +96,7 @@ const LeaveBalance = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily:'Lato-Bold'
+              fontFamily: 'Lato-Bold',
             }}>
             {item.totalDaysofLeave !== 0.5
               ? `Full Day Leave (${item.totalDaysofLeave})`
@@ -116,7 +117,7 @@ const LeaveBalance = ({navigation}: any) => {
                     ? 'green'
                     : Colors.gray,
                 fontSize: 16,
-                fontFamily:'Lato-Bold'
+                fontFamily: 'Lato-Bold',
               }}>
               {item.Status.Label}
             </Text>
@@ -134,7 +135,7 @@ const LeaveBalance = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 18,
-              fontFamily:'Lato-Bold',
+              fontFamily: 'Lato-Bold',
               marginBottom: 6,
             }}>
             {item?.leaveStartDate === item?.leaveEndDate
@@ -147,7 +148,7 @@ const LeaveBalance = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily:'Lato-Bold'
+              fontFamily: 'Lato-Bold',
             }}>
             Absent Day: {item.totalAbsentDays}
           </Text>
@@ -169,7 +170,7 @@ const LeaveBalance = ({navigation}: any) => {
                   ? Colors.white
                   : Colors.black,
               fontSize: 14,
-              fontFamily:'Lato-Bold'
+              fontFamily: 'Lato-Bold',
             }}>
             {item.leaveType.Label}
           </Text>
@@ -177,7 +178,7 @@ const LeaveBalance = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily:'Lato-Bold'
+              fontFamily: 'Lato-Bold',
             }}>
             Approved by: {item?.approver?.Name ? item?.approver?.Name : 'N/A'}
           </Text>
@@ -261,8 +262,8 @@ const LeaveBalance = ({navigation}: any) => {
                   : selectedStatus === status
                   ? Colors.white
                   : Colors.black,
-                  fontFamily:'Lato-Bold'
-                  }}>
+                fontFamily: 'Lato-Bold',
+              }}>
               {status}
             </Text>
           </TouchableOpacity>
@@ -279,7 +280,7 @@ const LeaveBalance = ({navigation}: any) => {
       />
 
       {isLoading ? (
-        <Placeholder />
+        <ShimmerPlaceHolder />
       ) : filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
           style={{marginHorizontal: 16}}
@@ -301,7 +302,7 @@ const LeaveBalance = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               alignSelf: 'center',
-              fontFamily:'Lato-Bold'
+              fontFamily: 'Lato-Bold',
             }}>
             No Records
           </Text>

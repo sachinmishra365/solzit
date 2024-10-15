@@ -7,11 +7,12 @@ import {Colors} from '../../constants/Colors';
 import {useAttendanceListQuery} from '../../Services/services';
 import {Card, IconButton} from 'react-native-paper';
 import Placeholder from '../Placeholder/Placeholder';
+import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
 const Attendance = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const [attendanceMonthData, SetAttendanceMonthData] = useState([]);
+  const [attendanceMonthData, SetAttendanceMonthData] = useState([]);  
 
   const {data, error, isLoading} = useAttendanceListQuery({
     UserID: EmployeeId?.userProfile?.userId,
@@ -35,7 +36,8 @@ const Attendance = ({navigation}: any) => {
     handleAttendanceList();
   }, [data]);
 
-  const renderAttendance = ({item}: any) => {
+  const renderAttendance = ({item}: any) => {    
+    
     return (
       <Card
         style={{
@@ -55,7 +57,7 @@ const Attendance = ({navigation}: any) => {
                 fontSize: 16,
                 fontFamily: 'Lato-Bold',
               }}>
-              Month: {item.Month.Label}
+              Month: {item.Month.Label ? item.Month.Label : 'N/A'}
             </Text>
 
             <View style={{}}>
@@ -65,7 +67,7 @@ const Attendance = ({navigation}: any) => {
                   fontSize: 16,
                   fontFamily: 'Lato-Bold',
                 }}>
-                Total Pay Day: {item.TotalPayDays}
+                Total Pay Day: {item.TotalPayDays ? item.TotalPayDays : 'N/A'}
               </Text>
             </View>
           </View>
@@ -84,7 +86,7 @@ const Attendance = ({navigation}: any) => {
                 fontFamily: 'Lato-Semibold',
                 marginBottom: 6,
               }}>
-              Year: {item.Year.Label}
+              Year: {item.Year.Label ? item.Year.Label :'N/A'}
             </Text>
             <Text
               style={{
@@ -92,7 +94,7 @@ const Attendance = ({navigation}: any) => {
                 fontSize: 14,
                 fontFamily: 'Lato-Semibold',
               }}>
-              Earned Leave: {item.EarnedLeave}
+              Earned Leave: {item.EarnedLeave ? item.EarnedLeave :'N/A'}
             </Text>
           </View>
 
@@ -113,13 +115,15 @@ const Attendance = ({navigation}: any) => {
                 flexDirection: 'row',
               }}
               // disabled={result.isLoading}
-              onPress={() => {}}>
+              onPress={() => {
+                navigation.navigate('Summary', item);
+              }}>
               <IconButton
                 style={{margin: -2}}
-                icon="circle-edit-outline"
+                icon="information"
                 iconColor={Colors.white}
                 size={18}
-                onPress={() => console.log('Pressed')}
+               
               />
               <Text
                 style={{
@@ -129,7 +133,7 @@ const Attendance = ({navigation}: any) => {
                   flexWrap: 'wrap',
                   marginRight: 12,
                 }}>
-                Leave Detail
+                Summary
               </Text>
             </TouchableOpacity>
 
@@ -165,6 +169,7 @@ const Attendance = ({navigation}: any) => {
               </Text>
             </TouchableOpacity>
           </View>
+
         </Card.Content>
       </Card>
     );
@@ -181,23 +186,8 @@ const Attendance = ({navigation}: any) => {
 
       <View style={styles(isDark).divider} />
 
-      {/* {isLoading && <ActivityIndicator size="large" color={Colors.primary} />}
-
-      {isError && (
-        <Text style={{color: Colors.error}}>
-          {error?.data?.message || 'Something went wrong!'}
-        </Text>
-      )} */}
-
-      {/* {attendanceData && (
-        <View>
-          <Text style={{ color: isDark ? Colors.white : Colors.black }}>
-            Attendance data fetched successfully!
-          </Text>
-        </View>
-      )} */}
       {isLoading ? (
-        <Placeholder />
+            <ShimmerPlaceHolder />
       ) : 
       data && data !== null &&(
         <FlatList

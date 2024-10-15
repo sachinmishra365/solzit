@@ -129,6 +129,13 @@ export const services = createApi({
       }),
       invalidatesTags: ['attendance'],
     }),
+
+    EmployeeLeaveRecords: builder.query({
+      query: data => ({
+        url: `/EmployeeLeaveRecords/LeaveBalanceMonthlyRecordList/${data?.MonthID}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -145,4 +152,5 @@ export const {
   useAttendanceMonthListMutation,
   useEmployeeAttendanceQueryQuery,
   useAskEmployeeAttendanceQueryMutation,
+  useEmployeeLeaveRecordsQuery
 } = services;

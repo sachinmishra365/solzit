@@ -21,6 +21,7 @@ import CustomHeader from '../../Components/CustomHeader';
 import Placeholder from '../Placeholder/Placeholder';
 import Toast from 'react-native-toast-message';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
 const LeaveRequest = ({navigation}: any) => {
   const [items, setItems] = useState<any>([]);
@@ -66,8 +67,8 @@ const LeaveRequest = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily:'Lato-Semibold'
-               }}>
+              fontFamily: 'Lato-Semibold',
+            }}>
             {item.totalDaysofLeave !== 0.5
               ? `Full Day Leave (${item?.totalDaysofLeave})`
               : `Half Day Leave (${item?.totalDaysofLeave})`}
@@ -87,8 +88,8 @@ const LeaveRequest = ({navigation}: any) => {
                     ? 'green'
                     : Colors.gray,
                 fontSize: 16,
-                fontFamily:'Lato-Semibold'  
-                            }}>
+                fontFamily: 'Lato-Semibold',
+              }}>
               {item?.Status?.Label}
             </Text>
           </View>
@@ -104,7 +105,7 @@ const LeaveRequest = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 18,
-              fontFamily:'Lato-Bold',
+              fontFamily: 'Lato-Bold',
               marginBottom: 6,
             }}>
             {item?.leaveStartDate === item?.leaveEndDate
@@ -117,8 +118,8 @@ const LeaveRequest = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily:'Lato-Semibold'
-              }}>
+              fontFamily: 'Lato-Semibold',
+            }}>
             Absent Day: {item.totalAbsentDays}
           </Text>
         </View>
@@ -134,8 +135,8 @@ const LeaveRequest = ({navigation}: any) => {
                   ? Colors.white
                   : Colors.black,
               fontSize: 14,
-              fontFamily:'Lato-Semibold'
-              }}>
+              fontFamily: 'Lato-Semibold',
+            }}>
             {item?.leaveType?.Label}
           </Text>
           <TouchableOpacity
@@ -172,7 +173,7 @@ const LeaveRequest = ({navigation}: any) => {
             <Text
               style={{
                 textAlign: 'center',
-                fontFamily:'Lato-Bold',
+                fontFamily: 'Lato-Bold',
                 color: Colors.white,
                 flexWrap: 'wrap',
               }}>
@@ -293,7 +294,7 @@ const LeaveRequest = ({navigation}: any) => {
         }}
       />
       {isLoading ? (
-        <Placeholder />
+        <ShimmerPlaceHolder />
       ) : data?.Data === null ? (
         <View
           style={{
@@ -305,7 +306,7 @@ const LeaveRequest = ({navigation}: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               alignSelf: 'center',
-              fontFamily:'Lato-Bold'
+              fontFamily: 'Lato-Bold',
             }}>
             No Records
           </Text>

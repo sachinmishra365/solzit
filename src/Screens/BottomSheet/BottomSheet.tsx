@@ -7,9 +7,9 @@ import {
   Dimensions,
   PanResponder,
 } from 'react-native';
-import { Colors } from '../../constants/Colors';
-import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import {Colors} from '../../constants/Colors';
+import {useSelector} from 'react-redux';
+import {isDarkTheme} from '../../AppStore/Reducers/appState';
 
 export interface IBottomSheetRef {
   expand: () => void;
@@ -93,7 +93,9 @@ export const BottomSheet = forwardRef<IBottomSheetRef, React.PropsWithChildren>(
 
     return (
       <>
-        {expanded && <Animated.View style={[styles(isDark).overlay, {opacity}]} />}
+        {expanded && (
+          <Animated.View style={[styles(isDark).overlay, {opacity}]} />
+        )}
         <Animated.View
           style={[
             styles(isDark).bottomSheet,
@@ -101,7 +103,9 @@ export const BottomSheet = forwardRef<IBottomSheetRef, React.PropsWithChildren>(
               transform: [{translateY}],
             },
           ]}>
-          <View style={styles(isDark).handleWrapper} {...panResponder.panHandlers}>
+          <View
+            style={styles(isDark).handleWrapper}
+            {...panResponder.panHandlers}>
             <View style={styles(isDark).handle} />
           </View>
           {children}
@@ -122,46 +126,46 @@ const BOTTOM_SHEET_HEIGHT = {
 
 const styles = (isDark: boolean) =>
   StyleSheet.create({
-  bottomSheet: {
-    padding: 24,
-    backgroundColor:isDark ? 'black' :'white',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    //#region positioning
-    left: 0,
-    position: 'absolute',
-    //#endregion
-    width: SCREEN_WIDTH,
-    height: BOTTOM_SHEET_HEIGHT.max,
-    // shadow
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 1,
-    shadowRadius: 15.19,
+    bottomSheet: {
+      padding: 24,
+      backgroundColor: isDark ? 'black' : 'white',
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
+      //#region positioning
+      left: 0,
+      position: 'absolute',
+      //#endregion
+      width: SCREEN_WIDTH,
+      height: BOTTOM_SHEET_HEIGHT.max,
+      // shadow
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 0,
+      },
+      shadowOpacity: 1,
+      shadowRadius: 15.19,
 
-    elevation: 20,
-  },
-  overlay: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    elevation: 10,
-    position: 'absolute',
-    backgroundColor: '#000000',
-  },
-  handle: {
-    height: 8,
-    width: 100,
-    borderRadius: 4,
-    alignSelf: 'center',
-    backgroundColor: Colors.primary,
-  },
-  handleWrapper: {
-    marginTop: -24,
-    paddingVertical: 24,
-  },
-});
+      elevation: 20,
+    },
+    overlay: {
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      elevation: 10,
+      position: 'absolute',
+      backgroundColor: '#000000',
+    },
+    handle: {
+      height: 8,
+      width: 100,
+      borderRadius: 4,
+      alignSelf: 'center',
+      backgroundColor: Colors.primary,
+    },
+    handleWrapper: {
+      marginTop: -24,
+      paddingVertical: 24,
+    },
+  });

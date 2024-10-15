@@ -41,8 +41,9 @@ const LoginScreen = ({navigation}: any) => {
         navigation.navigate('CheckStack');
       } else {
         Alert.alert(
-          'Network Error',
-          response?.data?.messageDetail?.message,
+          'Login Status',
+          `${response?.data?.messageDetail?.message || ''}
+          \nIf you did not remember password then fill email and click on forgot button`,
           [{text: 'OK', onPress: () => console.log('OK Pressed')}],
           {cancelable: true},
         );
@@ -179,7 +180,7 @@ const LoginScreen = ({navigation}: any) => {
                     position: 'absolute',
                     right: 0,
                   }}>
-                  Fogot Password?
+                  Forgot Password?
                 </Text>
               </TouchableOpacity>
 
