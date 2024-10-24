@@ -19,7 +19,7 @@ const LoginScreen = ({navigation}: any) => {
   const [showForgot, SetShowForgot] = useState(false);
   const [userAuthenticationlogin, {isLoading, error}] =
     useUserAuthenticationloginMutation();
-    console.log(error);
+   
     
 
   const validationSchema = Yup.object().shape({
@@ -37,6 +37,8 @@ const LoginScreen = ({navigation}: any) => {
       });
 
       if (response && response?.data?.messageDetail?.message_code === 200) {
+     
+        
         dispatch(auth(response?.data?.data));
         navigation.navigate('CheckStack');
       } else {
@@ -61,7 +63,7 @@ const LoginScreen = ({navigation}: any) => {
     setEmail(values?.username || null);
     try {
       const response = await forget;
-      console.log('response', JSON.stringify(response));
+      
       if(response.status === 'fulfilled' ){
         Alert.alert('Success', response?.data?.messageDetail?.message);
       }
@@ -87,8 +89,8 @@ const LoginScreen = ({navigation}: any) => {
       ) : (
         <Formik
           initialValues={{
-            username: 'exmaple@gmail.COM',
-            password: 'Poorvi@19',
+            username: '',
+            password: '',
           }}
           validationSchema={validationSchema}
           onSubmit={handleLogin}>

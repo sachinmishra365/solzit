@@ -4,42 +4,40 @@ import {Card, Text} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 
-const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
+const ImageShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
-const PlaceholderCard = ({
-  Showlist= false
-}) => {
+const PlaceholderCard = () => {
   return (
-    <Card style={styles.containerInner}>
-      <View style={{paddingHorizontal: 16, paddingVertical: 16}}>
-        <ShimmerPlaceHolder style={{width: '90%'}} />
-        <ShimmerPlaceHolder style={{width: '50%', marginTop: 16}} />
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        padding: 10,
+        alignItems: 'center',
+        elevation: 15,
+      }}>
+      <View>
+        <Text style={{padding: 8}}>
+          <ImageShimmerPlaceHolder
+            style={{width: 60, height: 60, borderRadius: 35}}
+          />
+        </Text>
       </View>
+
       <View
         style={{
-          paddingHorizontal: 8,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
+          padding: 8,
         }}>
         <View>
           <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 70}} />
+            <ImageShimmerPlaceHolder style={{width: 230}} />
           </Text>
           <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 50}} />
-          </Text>
-        </View>
-        <View>
-       
-          <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 70}} />
-          </Text>
-          <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 50}} />
+            <ImageShimmerPlaceHolder style={{width: 150}} />
           </Text>
         </View>
       </View>
-    </Card>
+    </View>
   );
 };
 

@@ -158,8 +158,8 @@ const styles = (isDark: boolean) =>
       backgroundColor: '#000000',
     },
     handle: {
-      height: 8,
-      width: 100,
+      height: 6,
+      width: 50,
       borderRadius: 4,
       alignSelf: 'center',
       backgroundColor: Colors.primary,

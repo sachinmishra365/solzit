@@ -11,23 +11,28 @@ import { Card } from 'react-native-paper';
 
 const Summary = ({route}: any) => {
   const MonthData = route.params;
+  
   const isDark = useSelector(isDarkTheme);
   const navigation = useNavigation();
   const [records, SetRecords] = useState<any>({});
+  const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
+  const accessToken = Assesstoken?.authToken?.accessToken;
 
-  const {data, isLoading} = useEmployeeLeaveRecordsQuery({
-    MonthID: MonthData?.ID,
+  const {data, isLoading,error} = useEmployeeLeaveRecordsQuery({
+    monthID: MonthData?.leaveApplicationId,
+    accessToken:accessToken
   });
 
+  
   const handlesummary = async () => {
     try {
       const response = data;
       if (
-        response?.Data !== undefined &&
-        response?.ResponseCode === 100 &&
-        response?.Data !== null
+        response?.data !== undefined &&
+        response?.messageDetail?.message_code === 200 &&
+        response?.data !== null
       ) {
-        SetRecords(response?.Data);
+        SetRecords(response?.data);
       }
     } catch (error) {}
   };
@@ -69,7 +74,7 @@ const Summary = ({route}: any) => {
                 fontSize: 16,
                 fontFamily: 'Lato-Bold',
               }}>
-              {records?.Month?.Label ? records?.Month?.Label : 'N/A'}
+              {records?.month?.label ? records?.month?.label : 0}
             </Text>
           </View>
 
@@ -80,7 +85,7 @@ const Summary = ({route}: any) => {
                 fontSize: 16,
                 fontFamily: 'Lato-Bold',
               }}>
-              Earn Leave: {records?.EarnedLeave ? records?.EarnedLeave : 'N/A'}
+              Earn Leave: {records?.earnedLeave ? records?.earnedLeave : 0}
             </Text>
 
             <View style={{}}>
@@ -90,7 +95,7 @@ const Summary = ({route}: any) => {
                   fontSize: 16,
                   fontFamily: 'Lato-Bold',
                 }}>
-                Total pay day: {records.TotalPayDays ? records.TotalPayDays : 'N/A'}
+                Total pay day: {records.totalPayDays ? records.totalPayDays : 0}
               </Text>
             </View>
           </View>
@@ -123,11 +128,8 @@ const Summary = ({route}: any) => {
 
         </Card.Content>
       </Card>
-
         )
       }
-
-
     </View>
   );
 };

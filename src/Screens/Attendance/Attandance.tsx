@@ -1,5 +1,12 @@
-import {StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import {useSelector} from 'react-redux';
@@ -12,32 +19,51 @@ import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 const Attendance = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const [attendanceMonthData, SetAttendanceMonthData] = useState([]);  
 
-  const {data, error, isLoading} = useAttendanceListQuery({
-    UserID: EmployeeId?.userProfile?.userId,
+  const [attendanceMonthData, SetAttendanceMonthData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const {data, error, isLoading, refetch} = useAttendanceListQuery({
+    // userId: EmployeeId?.userProfile?.userId,
+    accessToken: EmployeeId?.authToken?.accessToken,
   });
+  
 
   const handleAttendanceList = async () => {
     try {
-      const result = await data;
+      const result = await data;      
+
       if (
         result !== undefined &&
-        result?.ResponseCode === 100 &&
+        result?.messageDetail?.message_code === 200 &&
         result !== null
       ) {
-        SetAttendanceMonthData(result?.Data);
+        SetAttendanceMonthData(result?.data);
       }
     } catch (err) {
       console.log(err);
     }
   };
+
   useEffect(() => {
     handleAttendanceList();
   }, [data]);
 
-  const renderAttendance = ({item}: any) => {    
-    
+  // const onRefresh = useCallback(async () => {
+  //   setRefreshing(true);
+  //   await handleAttendanceList();
+  //   setRefreshing(false);
+  // }, [refetch]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      refetch();
+    }, 1000);
+  }, [refetch]);
+
+  const renderAttendance = ({item}: any) => {
     return (
       <Card
         style={{
@@ -57,7 +83,7 @@ const Attendance = ({navigation}: any) => {
                 fontSize: 16,
                 fontFamily: 'Lato-Bold',
               }}>
-              Month: {item.Month.Label ? item.Month.Label : 'N/A'}
+              Month: {item.month.label ? item.month.label : 'N/A'}
             </Text>
 
             <View style={{}}>
@@ -67,7 +93,7 @@ const Attendance = ({navigation}: any) => {
                   fontSize: 16,
                   fontFamily: 'Lato-Bold',
                 }}>
-                Total Pay Day: {item.TotalPayDays ? item.TotalPayDays : 'N/A'}
+                Total Pay Day: {item.totalPayDays ? item.totalPayDays : 'N/A'}
               </Text>
             </View>
           </View>
@@ -86,7 +112,7 @@ const Attendance = ({navigation}: any) => {
                 fontFamily: 'Lato-Semibold',
                 marginBottom: 6,
               }}>
-              Year: {item.Year.Label ? item.Year.Label :'N/A'}
+              Year: {item.year.label ? item.year.label : 'N/A'}
             </Text>
             <Text
               style={{
@@ -94,7 +120,7 @@ const Attendance = ({navigation}: any) => {
                 fontSize: 14,
                 fontFamily: 'Lato-Semibold',
               }}>
-              Earned Leave: {item.EarnedLeave ? item.EarnedLeave :'N/A'}
+              Earned Leave: {item.earnedLeave ? item.earnedLeave : 'N/A'}
             </Text>
           </View>
 
@@ -123,7 +149,6 @@ const Attendance = ({navigation}: any) => {
                 icon="information"
                 iconColor={Colors.white}
                 size={18}
-               
               />
               <Text
                 style={{
@@ -169,12 +194,10 @@ const Attendance = ({navigation}: any) => {
               </Text>
             </TouchableOpacity>
           </View>
-
         </Card.Content>
       </Card>
     );
   };
-
 
   return (
     <View style={styles(isDark).maincontainer}>
@@ -187,18 +210,25 @@ const Attendance = ({navigation}: any) => {
       <View style={styles(isDark).divider} />
 
       {isLoading ? (
-            <ShimmerPlaceHolder />
-      ) : 
-      data && data !== null &&(
-        <FlatList
-          data={attendanceMonthData}
-          renderItem={renderAttendance}
-          keyExtractor={item => item?.ID}
-        />
+        <ShimmerPlaceHolder />
+      ) : (
+        data &&
+        data !== null && (
+          <FlatList
+            data={attendanceMonthData}
+            renderItem={renderAttendance}
+            keyExtractor={item => item?.ID}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => onRefresh()}
+              />
+            }
+          />
+        )
       )}
     </View>
   );
-
 };
 
 const styles = (isDark: boolean) =>

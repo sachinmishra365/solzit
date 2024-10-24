@@ -21,7 +21,7 @@ import moment from 'moment';
 import CustomHeader from '../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
-import { isDarkTheme } from '../AppStore/Reducers/appState';
+import {isDarkTheme} from '../AppStore/Reducers/appState';
 
 const validationSchema = Yup.object().shape({
   LeaveDayType: Yup.string().required('Leave Day Type is required'),
@@ -37,11 +37,14 @@ const validationSchema = Yup.object().shape({
 const ApplyLeave = () => {
   const navigation: any = useNavigation();
   const isDark = useSelector(isDarkTheme);
-  const CheckStatus = useSelector((state: any) => state?.appState?.authToken);  
+  const CheckStatus = useSelector((state: any) => state?.appState?.authToken);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showStart, setShowStart] = useState(false);
   const [showEnd, setShowEnd] = useState(false);
+  const [totalDaysofLeave, setTotalDaysofLeave] = useState(0);
+  const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
+  const accessToken = Assesstoken?.authToken?.accessToken;
 
   useEffect(() => {
     setTimeout(() => {
@@ -71,82 +74,113 @@ const ApplyLeave = () => {
     setShowEnd(true);
   };
 
+
+  useEffect(() => {
+    const SD = moment(startDate).format('YYYY-MM-DD');
+    const ED = moment(endDate).format('YYYY-MM-DD');
+    if (SD === ED) {
+      setTotalDaysofLeave(1);
+    } else {
+      const daysdiff =
+        startDate && endDate
+          ? moment(endDate).diff(moment(startDate), 'days')
+          : 1;
+      setTotalDaysofLeave(daysdiff);
+    }
+  }, [startDate, endDate]);
+
   const handleApply = async (values: any) => {
-    // const formattedStartDate = moment(startDate).format('YYYY-MM-DD');
-    // const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
     const formattedStartDate = startDate
       ? moment(startDate).format('YYYY-MM-DD')
       : null;
     const formattedEndDate = endDate
       ? moment(endDate).format('YYYY-MM-DD')
       : null;
+
+    const totalLeaveDay =
+      values.LeaveDayType === 'Full Day' ? totalDaysofLeave : 0.5;
+
     const data = {
-      leaveDayType: {
-        Value: values.LeaveDayType === 'Full Day' ? 0 : 1,
-        Label: values.LeaveDayType,
-      },
+      leaveApplicationId: null,
+      employeeId: CheckStatus?.userProfile?.userId,
       leaveType: {
-        Value: 674180000,
-        Label: 'Earn Leave',
+        value: 674180000,
+        label: 'Earn Leave',
       },
-      typeofHalfDayLeave: {
-        Value:
-          values.LeaveDayType === 'Full Day'
-            ? null
-            : values.HalfDayType === 'Fore Noon'
-            ? 674180000
-            : 674180001,
-        Label: values.LeaveDayType === 'Full Day' ? null : values.HalfDayType,
-      },
-      employee: {
-        ID: CheckStatus?.userProfile?.userId,
-        email: CheckStatus?.userProfile?.email,
-        fullName: CheckStatus?.userProfile?.fullName,
-      },
+      typeofHalfDayLeave:
+        values.LeaveDayType !== 'Full Day'
+          ? {
+              value:
+                values.LeaveDayType === 'Full Day'
+                  ? null
+                  : values.HalfDayType === 'Fore Noon'
+                  ? 674180000
+                  : 674180001,
+              label:
+                values.LeaveDayType === 'Full Day' ? null : values.HalfDayType,
+            }
+          : null,
       leaveStartDate: formattedStartDate,
       leaveEndDate: formattedEndDate,
+      totalDaysofLeave: totalLeaveDay,
     };
-    try {
-      const response = await ApplyLeave(data).unwrap();
-      console.log(response);
-      
-      if (response.Message === 'Your leave application has been submitted successfully.') {
-        Toast.show({
-          type: 'success',
-          text1: 'Leave Status',
-          text2: response.Message,
-          text2Style: { flexWrap: 'wrap', fontSize: 13,fontFamily:'Lato-Regular'},
-          topOffset: 80,
-          visibilityTime: 5000, 
-        });
-  
-        setTimeout(() => {
-          navigation.replace('LeaveRequest');
-        }, 5000); 
-      } else {
-         Toast.show({
-          type: 'success',
-          text1: 'Leave Status',
-          text2: response.Message,
-          text2Style: { flexWrap: 'wrap', fontSize: 13,fontFamily:'Lato-Regular' },
-          topOffset: 80,
-          visibilityTime: 5000, 
-        });
-      }
-    } catch (err) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Application failed. Please try again.',
-        topOffset: 80,
-        visibilityTime: 4000,
-        text2Style:{fontFamily:'Lato-Regular'}
-      });
-    }
+
+    console.log(data);
+
+    // try {
+    // const response = await ApplyLeave({data, accessToken});
+    //   console.log('dre',response);
+    //   if (
+    //     response?.data?.messageDetail?.message ===
+    //     'Your leave application has been submitted successfully.'
+    //   ) {
+    //     Toast.show({
+    //       type: 'success',
+    //       text1: 'Leave Status',
+    //       text2: response?.data?.messageDetail?.message,
+    //       text2Style: {
+    //         flexWrap: 'wrap',
+    //         fontSize: 20,
+    //         fontFamily: 'Lato-Regular',
+    //       },
+    //       topOffset: 80,
+    //       visibilityTime: 5000,
+    //     });
+
+    //     setTimeout(() => {
+    //       navigation.replace('LeaveRequest');
+    //     }, 5000);
+    //   } else {
+    //     Toast.show({
+    //       type: 'success',
+    //       text1: 'Leave Status',
+    //       text2: response?.data?.messageDetail?.message,
+    //       text2Style: {
+    //         flexWrap: 'wrap',
+    //         fontSize: 20,
+    //         fontFamily: 'Lato-Regular',
+    //       },
+    //       topOffset: 80,
+    //       visibilityTime: 5000,
+    //     });
+    //   }
+    // } catch (err) {
+    //   Toast.show({
+    //     type: 'error',
+    //     text1: 'Error',
+    //     text2: 'Application failed. Please try again.',
+    //     text2Style: {
+    //       flexWrap: 'wrap',
+    //       fontSize: 20,
+    //       fontFamily: 'Lato-Regular',
+    //     },
+    //     topOffset: 80,
+    //     visibilityTime: 4000,
+    //   });
+    // }
   };
 
   return (
-
     <View
       style={{
         flex: 1,
@@ -159,12 +193,13 @@ const ApplyLeave = () => {
           navigation.goBack();
         }}
       />
-     <View
-        style={{borderWidth: 1,
+      <View
+        style={{
+          borderWidth: 1,
           height: 1,
-          backgroundColor: isDark ? Colors.white :'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',   
-           }}
+          backgroundColor: isDark ? Colors.white : 'transparent',
+          borderColor: isDark ? Colors.black : 'transparent',
+        }}
       />
 
       <Formik
@@ -192,9 +227,9 @@ const ApplyLeave = () => {
             <View style={{marginHorizontal: 16}}>
               <Text
                 style={{
-                  color: isDark ? Colors.white :Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                   fontSize: 16,
-                  fontFamily:'Lato-Bold'
+                  fontFamily: 'Lato-Bold',
                 }}>
                 Leave Type
               </Text>
@@ -213,7 +248,7 @@ const ApplyLeave = () => {
                       width: 20,
                       borderRadius: 10,
                       borderWidth: 2,
-                      borderColor: isDark ? Colors.white :Colors.primary,
+                      borderColor: isDark ? Colors.white : Colors.primary,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 10,
@@ -224,12 +259,20 @@ const ApplyLeave = () => {
                           height: 10,
                           width: 10,
                           borderRadius: 5,
-                          backgroundColor: isDark ? Colors.white :Colors.primary,
+                          backgroundColor: isDark
+                            ? Colors.white
+                            : Colors.primary,
                         }}
                       />
                     )}
                   </View>
-                  <Text style={{color:isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Earn Leave</Text>
+                  <Text
+                    style={{
+                      color: isDark ? Colors.white : Colors.black,
+                      fontFamily: 'Lato-Regular',
+                    }}>
+                    Earn Leave
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -238,9 +281,9 @@ const ApplyLeave = () => {
             <View style={{marginHorizontal: 16}}>
               <Text
                 style={{
-                  color:isDark ? Colors.white :Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                   fontSize: 16,
-                  fontFamily:'Lato-Bold'
+                  fontFamily: 'Lato-Bold',
                 }}>
                 Leave Day Type
               </Text>
@@ -259,7 +302,7 @@ const ApplyLeave = () => {
                       width: 20,
                       borderRadius: 10,
                       borderWidth: 2,
-                      borderColor: isDark ? Colors.white :Colors.primary,
+                      borderColor: isDark ? Colors.white : Colors.primary,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 10,
@@ -270,12 +313,20 @@ const ApplyLeave = () => {
                           height: 10,
                           width: 10,
                           borderRadius: 5,
-                          backgroundColor: isDark ? Colors.white :Colors.primary,
+                          backgroundColor: isDark
+                            ? Colors.white
+                            : Colors.primary,
                         }}
                       />
                     )}
                   </View>
-                  <Text style={{color: isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Full Day</Text>
+                  <Text
+                    style={{
+                      color: isDark ? Colors.white : Colors.black,
+                      fontFamily: 'Lato-Regular',
+                    }}>
+                    Full Day
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{
@@ -290,7 +341,7 @@ const ApplyLeave = () => {
                       width: 20,
                       borderRadius: 10,
                       borderWidth: 2,
-                      borderColor: isDark ? Colors.white :Colors.primary,
+                      borderColor: isDark ? Colors.white : Colors.primary,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 10,
@@ -301,12 +352,20 @@ const ApplyLeave = () => {
                           height: 10,
                           width: 10,
                           borderRadius: 5,
-                          backgroundColor: isDark ? Colors.white :Colors.primary,
+                          backgroundColor: isDark
+                            ? Colors.white
+                            : Colors.primary,
                         }}
                       />
                     )}
                   </View>
-                  <Text style={{color: isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Half Day</Text>
+                  <Text
+                    style={{
+                      color: isDark ? Colors.white : Colors.black,
+                      fontFamily: 'Lato-Regular',
+                    }}>
+                    Half Day
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -320,7 +379,12 @@ const ApplyLeave = () => {
               <View>
                 <View style={{marginVertical: 16}} />
                 <View style={{marginHorizontal: 16}}>
-                  <Text style={{color: isDark ? Colors.white :Colors.black, fontSize: 16,fontFamily:'Lato-Bold'}}>
+                  <Text
+                    style={{
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 16,
+                      fontFamily: 'Lato-Bold',
+                    }}>
                     Half Day Type
                   </Text>
                   <View style={{flexDirection: 'row'}}>
@@ -338,7 +402,7 @@ const ApplyLeave = () => {
                           width: 20,
                           borderRadius: 10,
                           borderWidth: 2,
-                          borderColor: isDark ? Colors.white :Colors.primary,
+                          borderColor: isDark ? Colors.white : Colors.primary,
                           alignItems: 'center',
                           justifyContent: 'center',
                           marginRight: 10,
@@ -349,12 +413,20 @@ const ApplyLeave = () => {
                               height: 10,
                               width: 10,
                               borderRadius: 5,
-                              backgroundColor: isDark ? Colors.white :Colors.primary,
+                              backgroundColor: isDark
+                                ? Colors.white
+                                : Colors.primary,
                             }}
                           />
                         )}
                       </View>
-                      <Text style={{color:isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>Fore Noon</Text>
+                      <Text
+                        style={{
+                          color: isDark ? Colors.white : Colors.black,
+                          fontFamily: 'Lato-Regular',
+                        }}>
+                        Fore Noon
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={{
@@ -371,7 +443,7 @@ const ApplyLeave = () => {
                           width: 20,
                           borderRadius: 10,
                           borderWidth: 2,
-                          borderColor: isDark ? Colors.white :Colors.primary,
+                          borderColor: isDark ? Colors.white : Colors.primary,
                           alignItems: 'center',
                           justifyContent: 'center',
                           marginRight: 10,
@@ -382,12 +454,20 @@ const ApplyLeave = () => {
                               height: 10,
                               width: 10,
                               borderRadius: 5,
-                              backgroundColor: isDark ? Colors.white :Colors.primary,
+                              backgroundColor: isDark
+                                ? Colors.white
+                                : Colors.primary,
                             }}
                           />
                         )}
                       </View>
-                      <Text style={{color: isDark ? Colors.white :Colors.black,fontFamily:'Lato-Regular'}}>After Noon</Text>
+                      <Text
+                        style={{
+                          color: isDark ? Colors.white : Colors.black,
+                          fontFamily: 'Lato-Regular',
+                        }}>
+                        After Noon
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -400,7 +480,10 @@ const ApplyLeave = () => {
               </Text>
             )}
             <View style={{marginVertical: 16}} />
-            <Pressable onPress={showDatepickerStart}>
+            <Pressable
+              onPress={() => {
+                showDatepickerStart();
+              }}>
               <CustomTextInput
                 label="Start Day Of Leave"
                 value={moment(startDate).format('DD-MM-YYYY')}
@@ -408,7 +491,9 @@ const ApplyLeave = () => {
                 onBlur={handleBlur('StartDayOfLeave')}
                 lefticon={false}
                 rightIconName={'calendar'}
-                onPress={showDatepickerStart}
+                onPress={() => {
+                  showDatepickerStart();
+                }}
                 autoFocus={false}
                 editable={false}
                 readOnly={true}
@@ -433,12 +518,15 @@ const ApplyLeave = () => {
                   onBlur={handleBlur('EndDayOfLeave')}
                   lefticon={false}
                   rightIconName={'calendar'}
-                  disable ={true}
+                  disable={true}
                   readOnly={true}
                 />
               </Pressable>
             ) : (
-              <Pressable onPress={showDatepickerEnd}>
+              <Pressable
+                onPress={() => {
+                  showDatepickerEnd();
+                }}>
                 <CustomTextInput
                   label="End Day Of Leave"
                   value={
@@ -450,7 +538,9 @@ const ApplyLeave = () => {
                   onBlur={handleBlur('EndDayOfLeave')}
                   lefticon={false}
                   rightIconName={'calendar'}
-                  onPress={showDatepickerEnd}
+                  onPress={() => {
+                    showDatepickerEnd();
+                  }}
                   readOnly={true}
                 />
               </Pressable>
@@ -494,26 +584,28 @@ const ApplyLeave = () => {
                 alignSelf: 'center',
                 borderRadius: 3,
               }}
-              onPress={()=>
-                {
-                  Alert.alert(
-                    'Leave Status',
-                    'Are you sure you want to Apply the leave?',
-                    [
-                      {
-                        text: 'No',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                      },
-                      {
-                        text: 'Yes',
-                        onPress: () => {handleApply(values)}
-                      },
-                    ],
-                    {cancelable: true},
-                  );
-                }
-              }>
+              disabled={isLoading ? true : false}
+              onPress={() => {
+                handleApply(values);
+                // Alert.alert(
+                //   'Leave Status',
+                //   'Are you sure you want to Apply the leave?',
+                //   [
+                //     {
+                //       text: 'No',
+                //       onPress: () => console.log('Cancel Pressed'),
+                //       style: 'cancel',
+                //     },
+                //     {
+                //       text: 'Yes',
+                //       onPress: () => {
+                //         handleApply(values);
+                //       },
+                //     },
+                //   ],
+                //   {cancelable: true},
+                // );
+              }}>
               {isLoading ? (
                 <ActivityIndicator
                   animating={true}
@@ -531,7 +623,7 @@ const ApplyLeave = () => {
                     fontSize: 16,
                     // fontWeight: '600',
                     color: Colors.white,
-                    fontFamily:'Lato-Bold'
+                    fontFamily: 'Lato-Bold',
                   }}>
                   Apply Leave
                 </Text>
@@ -541,13 +633,9 @@ const ApplyLeave = () => {
         )}
       </Formik>
     </View>
-
   );
 };
 
 export default ApplyLeave;
 
-const styles = (isDark: any) =>
-  StyleSheet.create({
-
-});
+const styles = (isDark: any) => StyleSheet.create({});

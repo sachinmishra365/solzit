@@ -22,8 +22,7 @@ const ChangePassword = () => {
   const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  console.log('e',EmployeeId);
-  
+
   const [showPassword, setShowPassword] = useState(true);
   const [showNewPassword, setShowNewPassword] = useState(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState(true);
@@ -35,7 +34,12 @@ const ChangePassword = () => {
     Oldpassword: Yup.string().required('Old password is required'),
     Newpassword: Yup.string()
       .required('New password is required')
-      .min(6, 'Password must be at least 6 characters'),
+      .min(6, 'Password must be at least 6 characters')
+      .matches(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        'Password must contain at least one special character',
+      ),
+
     ConfirmPassword: Yup.string()
       .required('Confirm password is required')
       .oneOf([Yup.ref('Newpassword')], 'Passwords must match'),
@@ -51,12 +55,11 @@ const ChangePassword = () => {
     try {
       const response = await ChangePassword(data).unwrap();
       console.log(response);
-
-      // Alert.alert('Success', 'Password changed successfully!');
+      
       Toast.show({
         type: 'success',
         text1: 'Password Change Status',
-        text2: 'Password Change successfully',
+        text2: response?.messageDetail?.message,
         text1Style: {fontFamily: 'Lato-Regular'},
         text2Style: {
           flexWrap: 'wrap',
@@ -67,14 +70,10 @@ const ChangePassword = () => {
         visibilityTime: 5000,
       });
     } catch (err) {
-      // Alert.alert(
-      //   'Error',
-      //   error?.data?.message || 'Failed to change password.',
-      // );
       Toast.show({
         type: 'error',
-        text1: 'Error',
-        text2: 'Application failed. Please try again.',
+        text1: 'Password Change Status',
+        text2: err?.data?.messageDetail?.message,
         text1Style: {fontFamily: 'Lato-Regular'},
         text2Style: {
           flexWrap: 'wrap',

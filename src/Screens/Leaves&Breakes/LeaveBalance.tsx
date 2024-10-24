@@ -9,61 +9,81 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Card} from 'react-native-paper';
-import {SCREEN_WIDTH} from '../../constants/Screen';
 import {Colors} from '../../constants/Colors';
-import {
-  useEmployeeAppliedLeavesQuery,
-  useEmployeeCancelLeavesMutation,
-  useProcessedLeavesQuery,
-} from '../../Services/services';
+import {useProcessedLeavesQuery} from '../../Services/services';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
-import Placeholder from '../Placeholder/Placeholder';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
 const LeaveBalance = ({navigation}: any) => {
-  const [items, setItems] = useState(null);
+  const [items, setItems] = useState([]);
   const isDark = useSelector(isDarkTheme);
+  console.log(JSON.stringify(items));
 
   const [filteredItems, setFilteredItems] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState('Approved');
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  // const statuses = ['All', 'Cancelled', 'Declined', 'Approved'];
+
   const statuses = ['Approved', 'Declined', 'Cancelled', 'All'];
 
-  const {data, isLoading, refetch} = useProcessedLeavesQuery({
-    Id: EmployeeId?.userProfile?.userId || null,
+  const {data, isLoading, isSuccess, refetch} = useProcessedLeavesQuery({
+    data_ID: EmployeeId?.userProfile?.userId || null,
+    accessToken: EmployeeId.authToken?.accessToken,
   });
 
   useEffect(() => {
-    if (data && data !== undefined) {
-      setItems(data.Data);
-      setFilteredItems(data.Data);
+    if (data && isSuccess) {
+      setItems(data?.data);
     }
-  }, [data]);
-  // useEffect(() => {
-  //   if (data && data !== undefined) {
-  //     setItems(data.Data);
-  //     const approvedLeaves = data?.Data?.filter(
-  //       (item: any) => item.Status.Label === 'Approved',
-  //     );
-  //     setFilteredItems(approvedLeaves);
-  //   }
-  // }, [data]);
-
-  const filterByStatus = (status: string) => {
-    setSelectedStatus(status);
-    if (status === 'All') {
+  }, [data, isSuccess]);
+  
+  useEffect(() => {
+    if (selectedStatus === 'All') {
       setFilteredItems(items);
     } else {
       const filteredData = items?.filter(
-        (item: any) => item.Status.Label === status,
+        (item: any) => item?.status?.label === selectedStatus
       );
       setFilteredItems(filteredData);
     }
+  }, [items, selectedStatus]);
+  
+  useEffect(() => {
+    if (data && isSuccess) {
+      setSelectedStatus('Approved'); 
+    }
+  }, [data, isSuccess]);
+  
+  const filterByStatus = (status: string) => {
+    setSelectedStatus(status);
   };
+
+
+  // useEffect(() => {
+  //   if (data && isSuccess) {
+  //     setItems(data?.data);
+  //       const approvedLeaves = items?.filter(
+  //         (item: any) => item?.status?.label === 'Approved',
+  //       );
+  //       console.log(approvedLeaves);
+  //       setFilteredItems(approvedLeaves);
+      
+  //   }
+  // }, [data]);
+
+  // const filterByStatus = (status: string) => {
+  //   setSelectedStatus(status);
+  //   if (status === 'All') {
+  //     setFilteredItems(items);
+  //   } else {
+  //     const filteredData = items?.filter(
+  //       (item: any) => item.status.label === status,
+  //     );
+  //     setFilteredItems(filteredData);
+  //   }
+  // };
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -76,12 +96,10 @@ const LeaveBalance = ({navigation}: any) => {
   }, []);
 
   const renderItem = ({item}: any) => (
-    // console.log(item),
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
         marginVertical: 10,
-        // paddingHorizontal: 16,
         borderColor: Colors.background,
         borderWidth: 0.5,
         marginHorizontal: 5,
@@ -107,19 +125,19 @@ const LeaveBalance = ({navigation}: any) => {
             <Text
               style={{
                 color:
-                  item.Status.Label === 'Applied'
+                  item.status.label === 'Applied'
                     ? Colors.primary
-                    : item.Status.Label === 'Cancelled'
-                    ? '#8b4315'
-                    : item.Status.Label === 'Declined'
+                    : item.status.label === 'Cancelled'
+                    ? '#b55d0b'
+                    : item.status.label === 'Declined'
                     ? Colors.error
-                    : item.Status.Label === 'Approved'
+                    : item.status.label === 'Approved'
                     ? 'green'
                     : Colors.gray,
                 fontSize: 16,
                 fontFamily: 'Lato-Bold',
               }}>
-              {item.Status.Label}
+              {item.status.label}
             </Text>
           </View>
         </View>
@@ -162,7 +180,7 @@ const LeaveBalance = ({navigation}: any) => {
           <Text
             style={{
               color:
-                item.leaveType.Label === 'Earn Leave'
+                item.leaveType.label === 'Earn Leave'
                   ? isDark
                     ? Colors.white
                     : Colors.black
@@ -172,16 +190,28 @@ const LeaveBalance = ({navigation}: any) => {
               fontSize: 14,
               fontFamily: 'Lato-Bold',
             }}>
-            {item.leaveType.Label}
+            {item.leaveType.label}
           </Text>
-          <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              fontSize: 14,
-              fontFamily: 'Lato-Bold',
-            }}>
-            Approved by: {item?.approver?.Name ? item?.approver?.Name : 'N/A'}
-          </Text>
+          {item?.approver && (
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={{
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 14,
+                  fontFamily: 'Lato-Bold',
+                }}>
+                Approved by :{' '}
+              </Text>
+              <Text
+                style={{
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 14,
+                  fontFamily: 'Lato-Bold',
+                }}>
+                {item?.approver ? item?.approver : 'N/A'}
+              </Text>
+            </View>
+          )}
         </View>
       </Card.Content>
     </Card>
@@ -193,13 +223,11 @@ const LeaveBalance = ({navigation}: any) => {
     },
     onPanResponderRelease: (evt, gestureState) => {
       if (gestureState.dx > 0) {
-        // Swiped right
         const currentIndex = statuses.indexOf(selectedStatus);
         if (currentIndex > 0) {
           filterByStatus(statuses[currentIndex - 1]);
         }
       } else if (gestureState.dx < 0) {
-        // Swiped left
         const currentIndex = statuses.indexOf(selectedStatus);
         if (currentIndex < statuses.length - 1) {
           filterByStatus(statuses[currentIndex + 1]);

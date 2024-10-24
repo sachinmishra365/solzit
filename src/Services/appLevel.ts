@@ -26,7 +26,8 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
 export const appLevelApi = createApi({
   reducerPath: 'AppLevel_SolzitApi',
   baseQuery: axiosBaseQuery({
-    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1/Auth/',
+    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1/Auth/', //dev
+    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1/Auth/', //pro
   }),
 
   endpoints: builder => ({
@@ -52,6 +53,14 @@ export const appLevelApi = createApi({
         method: 'GET',
       }),
     }),
+
+    EmployeeUpdateProfile: builder.mutation({
+      query: data => ({
+        url: `/UpdateDisplayPicture`,
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -59,4 +68,5 @@ export const {
   useUserAuthenticationloginMutation,
   useChangePasswordMutation,
   useForgotPasswordQuery,
+  useEmployeeUpdateProfileMutation,
 } = appLevelApi;

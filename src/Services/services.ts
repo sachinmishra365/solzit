@@ -1,6 +1,5 @@
 import {createApi} from '@reduxjs/toolkit/query/react';
 import axios from 'axios';
-import Attendance from '../Screens/Attendance/Attandance';
 
 const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
   try {
@@ -22,53 +21,61 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
   }
 };
 
-// https://solzitesssvc.azurewebsites.net/api
-
 export const services = createApi({
   reducerPath: 'parsApi',
-  baseQuery: axiosBaseQuery({baseUrl: 'https://devportalapi.solzit.com/api'}),
+  baseQuery: axiosBaseQuery({
+    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1',
+    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1',
+  }),
   tagTypes: ['Hello', 'Hello1', 'attendance'],
 
   endpoints: builder => ({
-    // userAuthenticationlogin: builder.mutation({
-    //   query: data => ({
-    //     url: `/V1/Auth/Authenticate`,
-    //     method: 'POST',
-    //     body: data,
-    //   }),
-    // }),
-
     EmployeeAppliedLeaves: builder.query({
-      query: data => ({
-        url: `/EmployeeLeaveRecords/AppliedLeaveRecordList/${data?.ids}`,
+      query: ({data, accessToken}) => ({
+        url: `/LeaveRecords/AppliedLeaveRecordList`,
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }),
       providesTags: ['Hello'],
     }),
 
     EmployeeLeaveApply: builder.mutation({
-      query: data => ({
-        url: `/EmployeeLeaveRecords/NewLeaveRequest/?${data?.id}&${data.module}`,
-        method: 'POST',
-        body: data,
-      }),
-      invalidatesTags: ['Hello'],
+      query: ({data, accessToken}) => {
+        return {
+          url: `/LeaveRecords/ApplyNewLeaveRequest`,
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          invalidatesTags: ['Hello1'],
+        };
+      },
     }),
 
     ProcessedLeaves: builder.query({
-      query: data => ({
-        url: `/EmployeeLeaveRecords/AcceptedLeaveRecordList/${data.Id}`,
+      query: ({accessToken}) => ({
+        url: `/LeaveRecords/AcceptedLeaveRecordList`,
         method: 'GET',
-        body: data,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
       }),
       providesTags: ['Hello1'],
     }),
 
     EmployeeCancelLeaves: builder.mutation({
-      query: data => ({
-        url: `/EmployeeLeaveRecords/CancelLeave`,
+      query: ({data, accessToken}) => ({
+        url: `/LeaveRecords/CancelLeaveRequest`,
         method: 'POST',
         body: data,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }),
       invalidatesTags: ['Hello1'],
     }),
@@ -82,43 +89,61 @@ export const services = createApi({
     }),
 
     SoluzioneHolidays: builder.query({
-      query: data => ({
-        url: `/Dashboard/GetSoluzioneHolidaysDashboard/`,
-        method: 'GET',
-      }),
+      query: ({accessToken}) => {
+        return {
+          url: `/Dashboard/GetSoluzioneHolidaysDashboard/`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
     }),
 
-    EmployeeAttendanceList: builder.mutation({
-      query: data => ({
-        url: `/EmployeeAttendance/EmployeeAttendanceList`,
-        method: 'POST',
-        body: data,
-      }),
-    }),
+    // EmployeeAttendanceList: builder.mutation({
+    //   query: data => ({
+    //     url: `/EmployeeAttendance/EmployeeAttendanceList`,
+    //     method: 'POST',
+    //     body: data,
+    //   }),
+    // }),
 
     AttendanceList: builder.query({
-      query: data => ({
-        url: `/EmployeeLeaveRecords/LeaveBalanceRecordList/${data.UserID}`,
+      query: ({accessToken}) => ({
+        url: `/LeaveRecords/LeaveBalanceRecordList`,
         method: 'GET',
-        body: data,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }),
     }),
 
     AttendanceMonthList: builder.mutation({
-      query: data => ({
-        url: `/EmployeeAttendance/EmployeeAttendanceList`,
-        method: 'POST',
-        body: data,
-      }),
+      query: ({data, accessToken}) => {
+        return {
+          url: '/EmployeeAttendance/EmployeeAttendanceList',
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        };
+      },
     }),
 
     EmployeeAttendanceQuery: builder.query({
-      query: data => ({
-        url: `/EmployeeAttendance/GetAttendanceQuery?id=${data?.AttendanceID}`,
-        method: 'GET',
-        body: data,
-      }),
-      providesTags: ['attendance'],
+      query: ({attendanceID, accessToken}) => {
+        return {
+          url: `/EmployeeAttendance/GetAttendanceQuery?AttendanceRecId=${attendanceID}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          // providesTags: ['attendance'],
+        };
+      },
     }),
 
     AskEmployeeAttendanceQuery: builder.mutation({
@@ -131,26 +156,30 @@ export const services = createApi({
     }),
 
     EmployeeLeaveRecords: builder.query({
-      query: data => ({
-        url: `/EmployeeLeaveRecords/LeaveBalanceMonthlyRecordList/${data?.MonthID}`,
-        method: 'GET',
-      }),
+      query: ({monthID, accessToken}) => {
+        return {
+          url: `/LeaveRecords/LeaveBalanceMonthlyRecordList?EmpYearRecordId=${monthID}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
     }),
   }),
 });
 
 export const {
-  // useUserAuthenticationloginMutation,
   useEmployeeLeaveApplyMutation,
   useEmployeeAppliedLeavesQuery,
   useEmployeeCancelLeavesMutation,
   useProcessedLeavesQuery,
   useForgetpasswordMutation,
   useSoluzioneHolidaysQuery,
-  useEmployeeAttendanceListMutation,
+  // useEmployeeAttendanceListMutation,
   useAttendanceListQuery,
   useAttendanceMonthListMutation,
   useEmployeeAttendanceQueryQuery,
   useAskEmployeeAttendanceQueryMutation,
-  useEmployeeLeaveRecordsQuery
+  useEmployeeLeaveRecordsQuery,
 } = services;
