@@ -4,23 +4,29 @@ import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
 import CustomTextInput from '../Components/CustomTextInput';
 import {SCREEN_WIDTH} from '../constants/Screen';
-import {ActivityIndicator} from 'react-native-paper';
+import {ActivityIndicator, Checkbox} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import {auth, isDarkTheme} from '../AppStore/Reducers/appState';
+import {auth, credential, isDarkTheme} from '../AppStore/Reducers/appState';
 import Placeholder from '../Screens/Placeholder/Placeholder';
-import { useForgotPasswordQuery, useUserAuthenticationloginMutation} from '../Services/appLevel';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  useForgotPasswordQuery,
+  useUserAuthenticationloginMutation,
+} from '../Services/appLevel';
 
 const LoginScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
 
+  const authCredential = useSelector(
+    (state: any) => state?.appState?.authCredential,
+  );
+
   const [showPassword, setShowPassword] = useState(true);
+  const [iscredential, setIsCredential] = useState(false);
   const [showForgot, SetShowForgot] = useState(false);
   const [userAuthenticationlogin, {isLoading, error}] =
     useUserAuthenticationloginMutation();
-  
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
@@ -30,13 +36,23 @@ const LoginScreen = ({navigation}: any) => {
   });
 
   const handleLogin = async (values: {username: string; password: string}) => {
+    const email = values.username;
+    const password = values.password;
+
     try {
       const response = await userAuthenticationlogin({
-        email: values.username,
-        password: values.password,
+        email: email,
+        password: password,
       });
       if (response && response?.data?.messageDetail?.message_code === 200) {
         dispatch(auth(response?.data?.data));
+
+        if (iscredential) {
+          dispatch(credential({username: email, password: password}));
+        } else {
+          dispatch(credential({username: '', password: ''}));
+        }
+
         navigation.navigate('CheckStack');
       } else {
         Alert.alert(
@@ -54,9 +70,9 @@ const LoginScreen = ({navigation}: any) => {
 
   const [email, setEmail] = useState('');
   const [triggerQuery, setTriggerQuery] = useState(false);
-  
+
   const forget = useForgotPasswordQuery(email);
-    
+
   useEffect(() => {
     const handleQuery = async () => {
       if (triggerQuery && email) {
@@ -77,12 +93,12 @@ const LoginScreen = ({navigation}: any) => {
     };
     handleQuery();
   }, [triggerQuery, email]);
-  
+
   const handleForgetPassword = (values: any) => {
     const enteredEmail = values?.username || '';
-  
+
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  
+
     if (!enteredEmail) {
       Alert.alert('Error', 'Username/email must not be empty');
       return;
@@ -94,8 +110,7 @@ const LoginScreen = ({navigation}: any) => {
     setEmail(enteredEmail);
     setTriggerQuery(true);
   };
-  
-  
+
   return (
     <View
       style={{
@@ -109,8 +124,8 @@ const LoginScreen = ({navigation}: any) => {
       ) : (
         <Formik
           initialValues={{
-            username: '',
-            password: '',
+            username: authCredential?.username || '',
+            password: authCredential?.password || '',
           }}
           validationSchema={validationSchema}
           onSubmit={handleLogin}>
@@ -141,7 +156,9 @@ const LoginScreen = ({navigation}: any) => {
                   />
                 )}
               </View>
+
               <View style={{marginVertical: 16}} />
+
               <CustomTextInput
                 label="Username"
                 value={values.username}
@@ -152,6 +169,7 @@ const LoginScreen = ({navigation}: any) => {
                 leftIconName="email"
                 editable={true}
               />
+
               {touched.username && errors.username && (
                 <Text
                   style={{
@@ -162,7 +180,9 @@ const LoginScreen = ({navigation}: any) => {
                   {errors.username}
                 </Text>
               )}
+
               <View style={{marginVertical: 16}} />
+
               <CustomTextInput
                 label="Password"
                 value={values.password}
@@ -176,6 +196,7 @@ const LoginScreen = ({navigation}: any) => {
                   setShowPassword(!showPassword);
                 }}
               />
+
               {touched.password && errors.password && (
                 <Text
                   style={{
@@ -186,16 +207,48 @@ const LoginScreen = ({navigation}: any) => {
                   {errors.password}
                 </Text>
               )}
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginVertical: 16,
+                }}>
+                <View
+                  style={{
+                    position: 'absolute',
+                  }}>
+                  <Checkbox
+                    status={iscredential ? 'checked' : 'unchecked'}
+                    onPress={() => {
+                      setIsCredential(!iscredential);
+                    }}
+                    color={Colors.primary}
+                    uncheckedColor={Colors.primary}
+                  />
+                </View>
+
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: 'Lato-Semibold',
+                    color: Colors.primary,
+                    marginLeft: 35,
+                  }}>
+                  Remember
+                </Text>
+              </View>
+
               <View style={{marginVertical: 16}} />
+
               <TouchableOpacity
                 onPress={() => {
                   handleForgetPassword(values);
-                  SetShowForgot(true)
+                  SetShowForgot(true);
                 }}
                 style={{}}>
                 <Text
                   style={{
-                    // textAlign: 'right',
                     fontSize: 16,
                     fontFamily: 'Lato-Semibold',
                     color: Colors.primary,

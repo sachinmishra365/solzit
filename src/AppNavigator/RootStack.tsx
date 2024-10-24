@@ -10,10 +10,17 @@ import Attandance from '../Screens/Attendance/Attandance';
 import ChangePassword from '../Screens/ChangePassword/ChangePassword';
 import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
 import Summary from '../Screens/Attendance/Summary';
+import { PermissionHandler } from '../permissions';
 
 const Stack = createNativeStackNavigator();
 
 const RootStack = () => {
+
+  React.useEffect(() => {
+    PermissionHandler.requestAllPermissions();
+  }, []);
+
+  
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />

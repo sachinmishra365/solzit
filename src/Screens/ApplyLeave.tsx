@@ -124,21 +124,11 @@ const ApplyLeave = () => {
       totalDaysofLeave: totalLeaveDay,
     };
 
-    try {
-      const response: any = await ApplyLeave({data, accessToken});
-      console.log(JSON.stringify(response));
-
+    if (totalDaysofLeave <= 0) {
       Toast.show({
         type: 'success',
         text1: 'Leave Status',
-        text2:
-          response?.data?.messageDetail?.message_code === 201 &&
-          response?.data?.messageDetail?.message_shortcode ===
-            'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
-            ? response?.data?.messageDetail?.message
-            : response?.error?.data?.messageDetail?.message_code === 4449
-            ? response?.error?.data?.messageDetail?.message
-            : `Something went wrong...${'/n'}Please try again.`,
+        text2: `Please select valid end date.`,
         text2Style: {
           flexWrap: 'wrap',
           fontSize: 20,
@@ -147,16 +137,40 @@ const ApplyLeave = () => {
         topOffset: 80,
         visibilityTime: 5000,
       });
+    } else if (totalDaysofLeave > 0) {
+      try {
+        const response: any = await ApplyLeave({data, accessToken});
 
-      setTimeout(() => {
-        response?.data?.messageDetail?.message_code === 201 &&
-        response?.data?.messageDetail?.message_shortcode ===
-          'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
-          ? navigation.replace('LeaveRequest')
-          : null;
-      }, 5000);
-    } catch (err) {
-      console.log(err);
+        Toast.show({
+          type: 'success',
+          text1: 'Leave Status',
+          text2:
+            response?.data?.messageDetail?.message_code === 201 &&
+            response?.data?.messageDetail?.message_shortcode ===
+              'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
+              ? response?.data?.messageDetail?.message
+              : response?.error?.data?.messageDetail?.message_code === 4449
+              ? response?.error?.data?.messageDetail?.message
+              : `Something went wrong...${'/n'}Please try again.`,
+          text2Style: {
+            flexWrap: 'wrap',
+            fontSize: 20,
+            fontFamily: 'Lato-Regular',
+          },
+          topOffset: 80,
+          visibilityTime: 5000,
+        });
+
+        setTimeout(() => {
+          response?.data?.messageDetail?.message_code === 201 &&
+          response?.data?.messageDetail?.message_shortcode ===
+            'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
+            ? navigation.replace('LeaveRequest')
+            : null;
+        }, 5000);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -566,25 +580,24 @@ const ApplyLeave = () => {
               }}
               disabled={isLoading ? true : false}
               onPress={() => {
-                handleApply(values);
-                // Alert.alert(
-                //   'Leave Status',
-                //   'Are you sure you want to Apply the leave?',
-                //   [
-                //     {
-                //       text: 'No',
-                //       onPress: () => console.log('Cancel Pressed'),
-                //       style: 'cancel',
-                //     },
-                //     {
-                //       text: 'Yes',
-                //       onPress: () => {
-                //         handleApply(values);
-                //       },
-                //     },
-                //   ],
-                //   {cancelable: true},
-                // );
+                Alert.alert(
+                  'Leave Status',
+                  'Are you sure you want to Apply the leave?',
+                  [
+                    {
+                      text: 'No',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                    },
+                    {
+                      text: 'Yes',
+                      onPress: () => {
+                        handleApply(values);
+                      },
+                    },
+                  ],
+                  {cancelable: true},
+                );
               }}>
               {isLoading ? (
                 <ActivityIndicator
