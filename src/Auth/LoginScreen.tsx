@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
 import CustomTextInput from '../Components/CustomTextInput';
@@ -10,6 +10,7 @@ import * as Yup from 'yup';
 import {auth, isDarkTheme} from '../AppStore/Reducers/appState';
 import Placeholder from '../Screens/Placeholder/Placeholder';
 import { useForgotPasswordQuery, useUserAuthenticationloginMutation} from '../Services/appLevel';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
@@ -19,8 +20,7 @@ const LoginScreen = ({navigation}: any) => {
   const [showForgot, SetShowForgot] = useState(false);
   const [userAuthenticationlogin, {isLoading, error}] =
     useUserAuthenticationloginMutation();
-   
-    
+  
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
@@ -35,10 +35,7 @@ const LoginScreen = ({navigation}: any) => {
         email: values.username,
         password: values.password,
       });
-
       if (response && response?.data?.messageDetail?.message_code === 200) {
-     
-        
         dispatch(auth(response?.data?.data));
         navigation.navigate('CheckStack');
       } else {
@@ -56,26 +53,49 @@ const LoginScreen = ({navigation}: any) => {
   };
 
   const [email, setEmail] = useState('');
-
+  const [triggerQuery, setTriggerQuery] = useState(false);
+  
   const forget = useForgotPasswordQuery(email);
-
-  const handleForgetPassword = async (values: any) => {
-    setEmail(values?.username || null);
-    try {
-      const response = await forget;
-      
-      if(response.status === 'fulfilled' ){
-        Alert.alert('Success', response?.data?.messageDetail?.message);
-      }
-      else if (response.status === 'rejected'){
-        Alert.alert('Success','Username/email must not be empty');
-      }
-    } catch (err) {
-    console.warn(err);
     
+  useEffect(() => {
+    const handleQuery = async () => {
+      if (triggerQuery && email) {
+        try {
+          const response = await forget;
+          if (response.status === 'fulfilled') {
+            Alert.alert('Success', response?.data?.messageDetail?.message);
+          } else if (response.status === 'rejected') {
+            Alert.alert('Error', 'Failed to process the request.');
+          }
+        } catch (err) {
+          console.warn(err);
+          Alert.alert('Error', 'Something went wrong.');
+        } finally {
+          setTriggerQuery(false);
+        }
+      }
+    };
+    handleQuery();
+  }, [triggerQuery, email]);
+  
+  const handleForgetPassword = (values: any) => {
+    const enteredEmail = values?.username || '';
+  
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  
+    if (!enteredEmail) {
+      Alert.alert('Error', 'Username/email must not be empty');
+      return;
     }
+    if (!emailRegex.test(enteredEmail)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+    setEmail(enteredEmail);
+    setTriggerQuery(true);
   };
-
+  
+  
   return (
     <View
       style={{

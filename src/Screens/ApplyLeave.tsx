@@ -74,7 +74,6 @@ const ApplyLeave = () => {
     setShowEnd(true);
   };
 
-
   useEffect(() => {
     const SD = moment(startDate).format('YYYY-MM-DD');
     const ED = moment(endDate).format('YYYY-MM-DD');
@@ -125,59 +124,40 @@ const ApplyLeave = () => {
       totalDaysofLeave: totalLeaveDay,
     };
 
-    console.log(data);
+    try {
+      const response: any = await ApplyLeave({data, accessToken});
+      console.log(JSON.stringify(response));
 
-    // try {
-    // const response = await ApplyLeave({data, accessToken});
-    //   console.log('dre',response);
-    //   if (
-    //     response?.data?.messageDetail?.message ===
-    //     'Your leave application has been submitted successfully.'
-    //   ) {
-    //     Toast.show({
-    //       type: 'success',
-    //       text1: 'Leave Status',
-    //       text2: response?.data?.messageDetail?.message,
-    //       text2Style: {
-    //         flexWrap: 'wrap',
-    //         fontSize: 20,
-    //         fontFamily: 'Lato-Regular',
-    //       },
-    //       topOffset: 80,
-    //       visibilityTime: 5000,
-    //     });
+      Toast.show({
+        type: 'success',
+        text1: 'Leave Status',
+        text2:
+          response?.data?.messageDetail?.message_code === 201 &&
+          response?.data?.messageDetail?.message_shortcode ===
+            'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
+            ? response?.data?.messageDetail?.message
+            : response?.error?.data?.messageDetail?.message_code === 4449
+            ? response?.error?.data?.messageDetail?.message
+            : `Something went wrong...${'/n'}Please try again.`,
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
 
-    //     setTimeout(() => {
-    //       navigation.replace('LeaveRequest');
-    //     }, 5000);
-    //   } else {
-    //     Toast.show({
-    //       type: 'success',
-    //       text1: 'Leave Status',
-    //       text2: response?.data?.messageDetail?.message,
-    //       text2Style: {
-    //         flexWrap: 'wrap',
-    //         fontSize: 20,
-    //         fontFamily: 'Lato-Regular',
-    //       },
-    //       topOffset: 80,
-    //       visibilityTime: 5000,
-    //     });
-    //   }
-    // } catch (err) {
-    //   Toast.show({
-    //     type: 'error',
-    //     text1: 'Error',
-    //     text2: 'Application failed. Please try again.',
-    //     text2Style: {
-    //       flexWrap: 'wrap',
-    //       fontSize: 20,
-    //       fontFamily: 'Lato-Regular',
-    //     },
-    //     topOffset: 80,
-    //     visibilityTime: 4000,
-    //   });
-    // }
+      setTimeout(() => {
+        response?.data?.messageDetail?.message_code === 201 &&
+        response?.data?.messageDetail?.message_shortcode ===
+          'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
+          ? navigation.replace('LeaveRequest')
+          : null;
+      }, 5000);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
