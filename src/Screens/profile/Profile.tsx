@@ -19,6 +19,7 @@ import {Colors} from '../../constants/Colors';
 import {useEmployeeUpdateProfileMutation} from '../../Services/appLevel';
 import Toast from 'react-native-toast-message';
 import {PERMISSION_TYPE, PermissionHandler} from '../../permissions';
+import Placeholder from '../Placeholder/Placeholder';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -72,7 +73,7 @@ const Profile = () => {
     });
   };
 
-  const [updateProfile, result] = useEmployeeUpdateProfileMutation();
+  const [updateProfile, {isLoading}] = useEmployeeUpdateProfileMutation();
 
   const handleUpdateImage = async () => {
     try {
@@ -126,114 +127,117 @@ const Profile = () => {
           borderColor: isDark ? Colors.black : 'transparent',
         }}
       />
+      {isLoading ? (
+        <Placeholder />
+      ) : (
+        <Card style={styles(isDark).cardcontainer}>
+          <IconButton
+            style={{position: 'absolute', top: -10, right: -5}}
+            icon="account-edit"
+            iconColor={Colors.primary}
+            size={30}
+            onPress={openModal}
+          />
+          <TouchableOpacity
+            style={{alignItems: 'center', marginBottom: 40}}
+            onPress={openModal}>
+            {Profiledata?.employeeImg ? (
+              <Image
+                style={{
+                  height: 110,
+                  width: 110,
+                  borderRadius: 100,
+                  position: 'absolute',
+                  top: -55,
+                  left: 10,
+                }}
+                source={{uri: imageAsset?.uri ? imageAsset?.uri : base64Image}}
+              />
+            ) : (
+              <Image
+                style={{
+                  height: 110,
+                  width: 110,
+                  borderRadius: 100,
+                  position: 'absolute',
+                  top: -55,
+                  left: 10,
+                }}
+                source={
+                  imageAsset?.uri
+                    ? {uri: imageAsset.uri}
+                    : require('../../Assets/Images/profile.png')
+                }
+              />
+            )}
+          </TouchableOpacity>
 
-      <Card style={styles(isDark).cardcontainer}>
-        <IconButton
-          style={{position: 'absolute', top: -10, right: -5}}
-          icon="account-edit"
-          iconColor={Colors.primary}
-          size={30}
-          onPress={openModal}
-        />
-        <TouchableOpacity
-          style={{alignItems: 'center', marginBottom: 40}}
-          onPress={openModal}>
-          {Profiledata?.employeeImg ? (
-            <Image
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 30,
+              flexWrap: 'wrap',
+            }}>
+            <Text style={styles(isDark).usename}>
+              {Profiledata?.fullName ? Profiledata?.fullName : 'N/A'}
+              {' | '}
+            </Text>
+            <Text style={styles(isDark).usename}>
+              {Profiledata?.designation ? Profiledata?.designation : 'N/A'}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 10,
+            }}>
+            <View
               style={{
-                height: 110,
-                width: 110,
-                borderRadius: 100,
-                position: 'absolute',
-                top: -55,
-                left: 10,
-              }}
-              source={{uri: imageAsset?.uri ? imageAsset?.uri : base64Image}}
-            />
-          ) : (
-            <Image
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+              }}>
+              <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
+                Email{' : '}
+              </Text>
+              <Text style={styles(isDark).txt}>
+                {Profiledata?.email ? Profiledata?.email : 'N/A'}
+              </Text>
+            </View>
+
+            <View
               style={{
-                height: 110,
-                width: 110,
-                borderRadius: 100,
-                position: 'absolute',
-                top: -55,
-                left: 10,
-              }}
-              source={
-                imageAsset?.uri
-                  ? {uri: imageAsset.uri}
-                  : require('../../Assets/Images/profile.png')
-              }
-            />
-          )}
-        </TouchableOpacity>
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+              }}>
+              <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
+                Employee ID{' : '}
+              </Text>
+              <Text style={[styles(isDark).txt, {marginVertical: 10}]}>
+                {Profiledata?.userName ? Profiledata?.userName : 'N/A'}
+              </Text>
+            </View>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 30,
-            flexWrap: 'wrap',
-          }}>
-          <Text style={styles(isDark).usename}>
-            {Profiledata?.fullName ? Profiledata?.fullName : 'N/A'}
-            {' | '}
-          </Text>
-          <Text style={styles(isDark).usename}>
-            {Profiledata?.designation ? Profiledata?.designation : 'N/A'}
-          </Text>
-        </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+              }}>
+              <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
+                Reporting Manager{' : '}
+              </Text>
 
-        <View
-          style={{
-            marginTop: 10,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-            }}>
-            <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
-              Email{' : '}
-            </Text>
-            <Text style={styles(isDark).txt}>
-              {Profiledata?.email ? Profiledata?.email : 'N/A'}
-            </Text>
+              <Text style={styles(isDark).txt}>
+                {Profiledata?.reportingManager?.name
+                  ? Profiledata?.reportingManager?.name
+                  : 'N/A'}
+              </Text>
+            </View>
           </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-            }}>
-            <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
-              Employee ID{' : '}
-            </Text>
-            <Text style={[styles(isDark).txt, {marginVertical: 10}]}>
-              {Profiledata?.userName ? Profiledata?.userName : 'N/A'}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-            }}>
-            <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
-              Reporting Manager{' : '}
-            </Text>
-
-            <Text style={styles(isDark).txt}>
-              {Profiledata?.reportingManager?.name
-                ? Profiledata?.reportingManager?.name
-                : 'N/A'}
-            </Text>
-          </View>
-        </View>
-      </Card>
+        </Card>
+      )}
 
       <Modal
         visible={modalVisible}
@@ -341,6 +345,7 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
+
     </View>
   );
 };

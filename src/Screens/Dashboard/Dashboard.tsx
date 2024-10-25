@@ -30,7 +30,7 @@ import {logProfileData} from 'react-native-calendars/src/Profiler';
 
 const {height, width} = Dimensions.get('window');
 
-const Dashboard = () => {
+const Dashboard = ({navigation}: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
   const [currentDate, setCurrentDate] = useState('');
@@ -41,7 +41,6 @@ const Dashboard = () => {
   const [markedDates, setMarkedDates] = useState({});
   const [onMonth, setOnMonth] = useState(moment().format('MM'));
 
-  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const processed = useSelector((state: any) => state?.appState?.processed);
 
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
@@ -53,7 +52,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     handleholiday();
-  }, [data]);
+  }, []);
 
   const handleholiday = async () => {
     try {
@@ -65,20 +64,21 @@ const Dashboard = () => {
       ) {
         setHolyDays(response?.data);
       } else if (error) {
-        dispatch(auth(null));
+        dispatch(auth(undefined));
+        if (!Assesstoken || Assesstoken === undefined) {
+          navigation.navigate('Login');
+        }
       }
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
   };
 
   const AppliedLeave = useEmployeeAppliedLeavesQuery({
-    // ids: EmployeeId?.userProfile?.userId || null,
     accessToken: accessToken,
   });
 
   const ProcessedLeaves = useProcessedLeavesQuery({
-    // Id: EmployeeId?.userProfile?.userId || null,
     accessToken: accessToken,
   });
 
@@ -314,7 +314,6 @@ const Dashboard = () => {
 
     setMarkedDates(marked);
   }, [HolyDays, processed, currentDate]);
- 
 
   return (
     <View
@@ -327,7 +326,7 @@ const Dashboard = () => {
         markingType={'custom'}
         markedDates={markedDates}
         onMonthChange={(month: any) => {
-          setOnMonth(()=> month.month.toString());
+          setOnMonth(() => month.month.toString());
         }}
         hideExtraDays={false}
         theme={{
@@ -340,7 +339,6 @@ const Dashboard = () => {
           monthTextColor: Colors.dark_gray,
           textDisabledColor: Colors.error,
         }}
-        
         enableSwipeMonths
         disableAllTouchEventsForDisabledDays={false}
       />
@@ -349,30 +347,36 @@ const Dashboard = () => {
         <ImageShimmerPlaceHolder />
       ) : (
         <FlatList
-          data={[...appliedLeave, ...HolyDays]?.filter(
-            (item) => {
-              if(moment(item?.leaveStartDate).format('MM') === onMonth && !item?.holidayName){
-                return item
-              } else if (moment(item?.date).format('MM') === onMonth && item?.holidayName){
-                return item
-              }
-            })}
+          data={[...appliedLeave, ...HolyDays]?.filter(item => {
+            if (
+              moment(item?.leaveStartDate).format('MM') === onMonth &&
+              !item?.holidayName
+            ) {
+              return item;
+            } else if (
+              moment(item?.date).format('MM') === onMonth &&
+              item?.holidayName
+            ) {
+              return item;
+            }
+          })}
           renderItem={renderHolidays}
           keyExtractor={(item, index) => index.toString()}
           style={{margin: 5}}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <View style={{ justifyContent: 'center',alignItems:'center'}}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                // alignSelf: 'center',
-                fontFamily: 'Lato-Bold',
-                justifyContent: 'center',alignItems:'center'
-              }}>
-              No Records
-            </Text>
-          </View>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Text
+                style={{
+                  color: isDark ? Colors.white : Colors.black,
+                  // alignSelf: 'center',
+                  fontFamily: 'Lato-Bold',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                No Records
+              </Text>
+            </View>
           }
         />
       )}
