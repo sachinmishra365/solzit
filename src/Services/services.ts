@@ -133,24 +133,26 @@ export const services = createApi({
     }),
 
     EmployeeAttendanceQuery: builder.query({
-      query: ({attendanceID, accessToken}) => {
-        return {
+      query: ({attendanceID, accessToken}) => ({
           url: `/EmployeeAttendance/GetAttendanceQuery?AttendanceRecId=${attendanceID}`,
           method: 'GET',
           headers: {
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-          },
-          // providesTags: ['attendance'],
-        };
-      },
+          }
+          }),
+          providesTags: ['attendance'],
     }),
 
     AskEmployeeAttendanceQuery: builder.mutation({
-      query: data => ({
-        url: `/EmployeeAttendance/AskQueryForAttendance`,
+      query: ({data,accessToken}) => ({
+        url: `/EmployeeAttendance/CreateAskQueryForAttendance`,
         method: 'POST',
         body: data,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        }
       }),
       invalidatesTags: ['attendance'],
     }),

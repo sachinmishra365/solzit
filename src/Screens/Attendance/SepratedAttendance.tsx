@@ -50,8 +50,7 @@ const SepratedAttendance = ({route}: any) => {
   const [load, SetLoad] = useState(false);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
-  
-  
+
   const bottomSheetRef = useRef<IBottomSheetRef>(null);
 
   useEffect(() => {
@@ -134,7 +133,7 @@ const SepratedAttendance = ({route}: any) => {
 
   const handleSepratedAttendance = async () => {
     try {
-      const response = await attendanceData({data, accessToken}).unwrap();      
+      const response = await attendanceData({data, accessToken}).unwrap();
       if (response?.messageDetail?.message_code === 200) {
         SetAttendancedata(response?.data);
       }
@@ -146,18 +145,15 @@ const SepratedAttendance = ({route}: any) => {
   useEffect(() => {
     handleSepratedAttendance();
   }, [MonthData, call]);
-  
 
   const AttendanceQuery = useEmployeeAttendanceQueryQuery({
     attendanceID: selectedItem?.id,
-    accessToken:accessToken
+    accessToken: accessToken,
   });
-
 
   const handlequery = async () => {
     try {
       const response = await AttendanceQuery;
-     
 
       if (
         (response?.data?.messageDetail?.message_code === 200 &&
@@ -178,31 +174,34 @@ const SepratedAttendance = ({route}: any) => {
   const [AskAttendanceQuery] = useAskEmployeeAttendanceQueryMutation();
 
   const handleSubmit = async (values: any) => {
-    const body = {
-      ID: selectedItem?.ID,
-      SuggestedStartTime: values.startTime || null,
-      Dates: moment(selectedItem?.date).format('YYYY-MM-DD'),
-      SuggestedEndtTime: values.endTime || null,
-      ActualHour: values.actualHours,
-      Reason: values.reason,
+    const data = {
+      attendanceId: selectedItem?.id,
+      suggestedStartTime: values.startTime || null,
+      dates: moment(selectedItem?.date).format('YYYY-MM-DD'),
+      suggestedEndtTime: values.endTime || null,
+      actualHour: values.actualHours,
+      reason: values.reason,
     };
 
-    try {
-      const response = await AskAttendanceQuery(body);
 
-      Alert.alert(
-        'Attendance Query ',
-        'Changes saved successfully',
-        [
-          {
-            text: 'ok',
-            onPress: () => {
-              handleClose();
+    try {
+      const response = await AskAttendanceQuery({data, accessToken});
+      if (response?.data?.messageDetail?.message_code === 201) {
+        Alert.alert(
+          'Attendance Query ',
+          'Changes saved successfully',
+          [
+            {
+              text: 'ok',
+              onPress: () => {
+                handleClose();
+              },
             },
-          },
-        ],
-        {cancelable: true},
-      );
+          ],
+          {cancelable: true},
+        );
+      }
+
       if (response?.data) {
         setcall(!call);
       }
@@ -719,7 +718,7 @@ const SepratedAttendance = ({route}: any) => {
                         justifyContent: 'space-between',
                         flexDirection: 'row',
                         marginTop: 5,
-                        flexWrap:'wrap'
+                        flexWrap: 'wrap',
                       }}>
                       <Text
                         style={{

@@ -3,8 +3,6 @@ import {
   Image,
   Linking,
   Modal,
-  PermissionsAndroid,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -41,12 +39,12 @@ const Profile = () => {
       PERMISSION_TYPE.photos,
     );
 
-    if (!cameraPermission || !photosPermission) {
+    if (!cameraPermission) {
       Linking.openSettings();
       return;
     }
 
-    if (cameraPermission && photosPermission) {
+    if (cameraPermission) {
       setModalVisible(true);
     }
   };

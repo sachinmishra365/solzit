@@ -26,6 +26,7 @@ import {
 } from '../../AppStore/Reducers/appState';
 import {Dimensions} from 'react-native';
 import ImageShimmerPlaceHolder from '../Placeholder/ImageShimmerPlaceHolder';
+import {logProfileData} from 'react-native-calendars/src/Profiler';
 
 const {height, width} = Dimensions.get('window');
 
@@ -38,6 +39,7 @@ const Dashboard = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
+  const [onMonth, setOnMonth] = useState(moment().format('MM'));
 
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const processed = useSelector((state: any) => state?.appState?.processed);
@@ -48,6 +50,10 @@ const Dashboard = () => {
   const {data, error, isLoading} = useSoluzioneHolidaysQuery({
     accessToken: accessToken,
   });
+
+  useEffect(() => {
+    handleholiday();
+  }, [data]);
 
   const handleholiday = async () => {
     try {
@@ -65,10 +71,6 @@ const Dashboard = () => {
       // console.log(error);
     }
   };
-
-  useEffect(() => {
-    handleholiday();
-  }, [data]);
 
   const AppliedLeave = useEmployeeAppliedLeavesQuery({
     // ids: EmployeeId?.userProfile?.userId || null,
@@ -93,8 +95,6 @@ const Dashboard = () => {
       dispatch(applied(AppliedLeave?.data?.data));
     }
   }, [AppliedLeave]);
-  console.log(JSON.stringify(AppliedLeave));
-  
 
   useEffect(() => {
     if (
@@ -181,10 +181,10 @@ const Dashboard = () => {
             ) : (
               <TouchableOpacity
                 onPress={() =>
-                  handleImagePress(getImageSource(item.holidayName))
+                  handleImagePress(getImageSource(item?.holidayName))
                 }>
                 <Image
-                  source={getImageSource(item.holidayName)}
+                  source={getImageSource(item?.holidayName)}
                   style={styles(isDark).Holidaylogo}
                 />
               </TouchableOpacity>
@@ -200,13 +200,13 @@ const Dashboard = () => {
               marginLeft: 15,
               justifyContent: 'center',
             }}>
-            {item.holidayName && (
+            {item?.holidayName && (
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,
                   fontFamily: 'Lato-Semibold',
                 }}>
-                {item.holidayName}
+                {item?.holidayName}
                 {' ('}
                 {moment(item.date).format('DD/MM/YY ')}
                 {')'}
@@ -277,33 +277,6 @@ const Dashboard = () => {
       };
     });
 
-    // processed.forEach((proceed: any) => {
-    //   const startDate = moment(proceed.leaveStartDate, 'YYYY-MM-DD');
-    //   const endDate = moment(proceed.leaveEndDate, 'YYYY-MM-DD');
-    //   const isApproved = proceed?.status?.label === 'Approved';
-
-    //   if (isApproved && endDate.isAfter(today)) {
-    //     let current = startDate.clone();
-    //     while (current.isSameOrBefore(endDate)) {
-    //       if (current.isAfter(today)) {
-    //         const formattedDate = current.format('YYYY-MM-DD');
-    //         marked[formattedDate] = {
-    //           customStyles: {
-    //             container: {
-    //               backgroundColor: 'green',
-    //               borderRadius: 50,
-    //             },
-    //             text: {
-    //               color: Colors.white,
-    //               fontWeight: 'bold',
-    //             },
-    //           },
-    //         };
-    //       }
-    //       current.add(1, 'day');
-    //     }
-    //   }
-    // });
     if (processed !== null) {
       processed.forEach((proceed: any) => {
         const startDate = moment(proceed.leaveStartDate, 'YYYY-MM-DD');
@@ -341,8 +314,7 @@ const Dashboard = () => {
 
     setMarkedDates(marked);
   }, [HolyDays, processed, currentDate]);
-
-  const mergedata = [...appliedLeave, ...HolyDays];
+ 
 
   return (
     <View
@@ -354,6 +326,10 @@ const Dashboard = () => {
         onDayPress={handleDayPress}
         markingType={'custom'}
         markedDates={markedDates}
+        onMonthChange={(month: any) => {
+          setOnMonth(()=> month.month.toString());
+        }}
+        hideExtraDays={false}
         theme={{
           calendarBackground: 'transparent',
           textSectionTitleColor: Colors.dark_gray,
@@ -364,6 +340,7 @@ const Dashboard = () => {
           monthTextColor: Colors.dark_gray,
           textDisabledColor: Colors.error,
         }}
+        
         enableSwipeMonths
         disableAllTouchEventsForDisabledDays={false}
       />
@@ -372,11 +349,31 @@ const Dashboard = () => {
         <ImageShimmerPlaceHolder />
       ) : (
         <FlatList
-          data={mergedata}
+          data={[...appliedLeave, ...HolyDays]?.filter(
+            (item) => {
+              if(moment(item?.leaveStartDate).format('MM') === onMonth && !item?.holidayName){
+                return item
+              } else if (moment(item?.date).format('MM') === onMonth && item?.holidayName){
+                return item
+              }
+            })}
           renderItem={renderHolidays}
           keyExtractor={(item, index) => index.toString()}
           style={{margin: 5}}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={{ justifyContent: 'center',alignItems:'center'}}>
+            <Text
+              style={{
+                color: isDark ? Colors.white : Colors.black,
+                // alignSelf: 'center',
+                fontFamily: 'Lato-Bold',
+                justifyContent: 'center',alignItems:'center'
+              }}>
+              No Records
+            </Text>
+          </View>
+          }
         />
       )}
       <Fabbutton />

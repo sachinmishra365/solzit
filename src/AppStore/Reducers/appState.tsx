@@ -12,6 +12,7 @@ export const appStateSlice = createSlice({
   },
   reducers: {
     auth: (state, action) => {
+      console.log(state,action);
       state.authToken = action.payload;
     },
     applied: (state, action) => {
@@ -24,6 +25,7 @@ export const appStateSlice = createSlice({
       state.processed = action.payload;
     },
     assesstoken: (state, action) => {
+      console.log(state,action);
       state.token = action.payload;
     },
     credential: (state, action) => {
