@@ -57,8 +57,7 @@ const LoginScreen = ({navigation}: any) => {
       } else {
         Alert.alert(
           'Login Status',
-          `${response?.data?.messageDetail?.message || ''}
-          \nIf you did not remember password then fill email and click on forgot button`,
+          `${response?.data?.messageDetail?.message || ''}`,
           [{text: 'OK', onPress: () => console.log('OK Pressed')}],
           {cancelable: true},
         );
@@ -66,49 +65,6 @@ const LoginScreen = ({navigation}: any) => {
     } catch (err) {
       console.error('Login failed:', err);
     }
-  };
-
-  const [email, setEmail] = useState('');
-  const [triggerQuery, setTriggerQuery] = useState(false);
-
-  const forget = useForgotPasswordQuery(email);
-
-  useEffect(() => {
-    const handleQuery = async () => {
-      if (triggerQuery && email) {
-        try {
-          const response = await forget;
-          if (response.status === 'fulfilled') {
-            Alert.alert('Success', response?.data?.messageDetail?.message);
-          } else if (response.status === 'rejected') {
-            Alert.alert('Error', 'Failed to process the request.');
-          }
-        } catch (err) {
-          console.warn(err);
-          Alert.alert('Error', 'Something went wrong.');
-        } finally {
-          setTriggerQuery(false);
-        }
-      }
-    };
-    handleQuery();
-  }, [triggerQuery, email]);
-
-  const handleForgetPassword = (values: any) => {
-    const enteredEmail = values?.username || '';
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-    if (!enteredEmail) {
-      Alert.alert('Error','Username/email must not be empty');
-      return;
-    }
-    if (!emailRegex.test(enteredEmail)) {
-      Alert.alert('Error', 'Please enter a valid email address');
-      return;
-    }
-    setEmail(enteredEmail);
-    setTriggerQuery(true);
   };
 
   return (
@@ -239,12 +195,12 @@ const LoginScreen = ({navigation}: any) => {
                 </Text>
               </View>
 
-              <View style={{marginVertical: 16}} />
 
               <TouchableOpacity
                 onPress={() => {
-                  handleForgetPassword(values);
-                  SetShowForgot(true);
+                  // handleForgetPassword(values);
+                  // SetShowForgot(true);
+                  navigation.replace('ForgotPassword')
                 }}
                 style={{}}>
                 <Text
@@ -259,7 +215,7 @@ const LoginScreen = ({navigation}: any) => {
                 </Text>
               </TouchableOpacity>
 
-              <View style={{marginVertical: 16}} />
+              <View style={{marginVertical: 20}} />
               <TouchableOpacity
                 style={{
                   width: SCREEN_WIDTH - 32,

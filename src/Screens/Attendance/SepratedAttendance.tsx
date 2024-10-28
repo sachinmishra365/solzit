@@ -52,7 +52,7 @@ const SepratedAttendance = ({route}: any) => {
   const accessToken = Assesstoken?.authToken?.accessToken;
 
   const bottomSheetRef = useRef<IBottomSheetRef>(null);
-
+  
   useEffect(() => {
     const backAction = () => {
       handleClose();
@@ -154,7 +154,6 @@ const SepratedAttendance = ({route}: any) => {
   const handlequery = async () => {
     try {
       const response = await AttendanceQuery;
-
       if (
         (response?.data?.messageDetail?.message_code === 200 &&
           response?.data !== undefined) ||
@@ -169,11 +168,13 @@ const SepratedAttendance = ({route}: any) => {
   };
   useEffect(() => {
     handlequery();
-  }, [AttendanceQuery]);
+  }, [AttendanceQuery,call]);
 
-  const [AskAttendanceQuery] = useAskEmployeeAttendanceQueryMutation();
+  const [AskAttendanceQuery, result] = useAskEmployeeAttendanceQueryMutation();  
+  console.log('result',JSON.stringify(result));
+  
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: any,setFieldValue:any) => {
     const data = {
       attendanceId: selectedItem?.id,
       suggestedStartTime: values.startTime || null,
@@ -186,6 +187,8 @@ const SepratedAttendance = ({route}: any) => {
 
     try {
       const response = await AskAttendanceQuery({data, accessToken});
+      console.log(response);
+      
       if (response?.data?.messageDetail?.message_code === 201) {
         Alert.alert(
           'Attendance Query ',
@@ -195,6 +198,7 @@ const SepratedAttendance = ({route}: any) => {
               text: 'ok',
               onPress: () => {
                 handleClose();
+                setcall(!call)
               },
             },
           ],
@@ -204,6 +208,8 @@ const SepratedAttendance = ({route}: any) => {
 
       if (response?.data) {
         setcall(!call);
+        setFieldValue('actualHour',null)
+        setFieldValue('reason',null)
       }
     } catch (error) {
       console.error('Error in handlequery:', error);

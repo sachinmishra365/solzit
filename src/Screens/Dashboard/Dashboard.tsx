@@ -364,15 +364,15 @@ const Dashboard = ({navigation}: any) => {
           keyExtractor={(item, index) => index.toString()}
           style={{margin: 5}}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          ListEmptyComponent={isLoading ?
+            <ImageShimmerPlaceHolder /> :
+            <View style={{}}>
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,
-                  // alignSelf: 'center',
+                  alignSelf: 'center',
                   fontFamily: 'Lato-Bold',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  alignItems:'center'
                 }}>
                 No Records
               </Text>

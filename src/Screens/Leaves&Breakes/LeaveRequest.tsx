@@ -38,7 +38,7 @@ const LeaveRequest = ({navigation}: any) => {
   });  
 
   useEffect(() => {
-    if (data && isSuccess) {
+    if (data && isSuccess && data.data !==null) {
       const sortedData: any = [...data?.data].sort((a, b) =>
         moment(a.leaveStartDate).isBefore(moment(b?.leaveStartDate)) ? -1 : 1,
       );
@@ -236,7 +236,7 @@ const LeaveRequest = ({navigation}: any) => {
       />
       {isLoading ? (
         <ShimmerPlaceHolder />
-      ) : data?.Data === null ? (
+      ) : data?.data === null ? (
         <View
           style={{
             flex: 1,

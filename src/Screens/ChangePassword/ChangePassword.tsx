@@ -33,12 +33,14 @@ const ChangePassword = () => {
     email: Yup.string().email('Invalid email').required('Email is required'),
     Oldpassword: Yup.string().required('Old password is required'),
     Newpassword: Yup.string()
-      .required('New password is required')
-      .min(6, 'Password must be at least 6 characters')
+      .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+      .matches(/[0-9]/, 'Password must contain at least one number')
       .matches(
         /[!@#$%^&*(),.?":{}|<>]/,
         'Password must contain at least one special character',
-      ),
+      )
+      .min(8, 'Password must be at least 8 characters long')
+      .required('Password is required'),
 
     ConfirmPassword: Yup.string()
       .required('Confirm password is required')
@@ -55,7 +57,7 @@ const ChangePassword = () => {
     try {
       const response = await ChangePassword(data).unwrap();
       console.log(response);
-      
+
       Toast.show({
         type: 'success',
         text1: 'Password Change Status',

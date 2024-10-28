@@ -42,8 +42,7 @@ export const services = createApi({
     }),
 
     EmployeeLeaveApply: builder.mutation({
-      query: ({data, accessToken}) => {
-        return {
+      query: ({data, accessToken}) => ({
           url: `/LeaveRecords/ApplyNewLeaveRequest`,
           method: 'POST',
           body: JSON.stringify(data),
@@ -51,9 +50,8 @@ export const services = createApi({
             Authorization: `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
           },
-          invalidatesTags: ['Hello1'],
-        };
-      },
+        }),
+        invalidatesTags: ['Hello']
     }),
 
     ProcessedLeaves: builder.query({
@@ -145,7 +143,9 @@ export const services = createApi({
     }),
 
     AskEmployeeAttendanceQuery: builder.mutation({
-      query: ({data,accessToken}) => ({
+      query: ({data,accessToken}) => {
+        console.log('data',accessToken);
+        return{
         url: `/EmployeeAttendance/CreateAskQueryForAttendance`,
         method: 'POST',
         body: data,
@@ -153,9 +153,10 @@ export const services = createApi({
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         }
+      }
+    }
       }),
-      invalidatesTags: ['attendance'],
-    }),
+      // invalidatesTags: ['attendance'],
 
     EmployeeLeaveRecords: builder.query({
       query: ({monthID, accessToken}) => {

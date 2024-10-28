@@ -7,6 +7,7 @@ import {
   Keyboard,
   Alert,
   StyleSheet,
+  Button,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CustomTextInput from '../Components/CustomTextInput';
@@ -22,6 +23,7 @@ import CustomHeader from '../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import {isDarkTheme} from '../AppStore/Reducers/appState';
+import { Dialog, Portal } from 'react-native-paper';
 
 const validationSchema = Yup.object().shape({
   LeaveDayType: Yup.string().required('Leave Day Type is required'),
@@ -173,6 +175,7 @@ const ApplyLeave = () => {
       }
     }
   };
+
 
   return (
     <View

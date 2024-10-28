@@ -71,13 +71,7 @@ const DrawerNavigator = ({navigation}: any) => {
     return null; 
   }
 
-  const onToggleSwitch = async () => {
-    const newTheme = !isSwitchOn ? 'dark' : 'light';
-    setIsSwitchOn(!isSwitchOn);
-    dispatch(theme(newTheme));
-    await AsyncStorage.setItem('theme', newTheme); 
-  };
-
+ 
 
   return (
     <SafeAreaView style={styles(isDark).container}>
