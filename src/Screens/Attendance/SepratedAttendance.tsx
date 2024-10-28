@@ -28,7 +28,10 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {BottomSheet, IBottomSheetRef} from '../BottomSheet/BottomSheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
+import ShimmerPlaceHolder, {
+  PlaceholderCard,
+} from '../Placeholder/ShimmerPlaceHolder';
+import Placeholder from '../Placeholder/Placeholder';
 
 const SepratedAttendance = ({route}: any) => {
   const MonthData = route.params;
@@ -36,35 +39,45 @@ const SepratedAttendance = ({route}: any) => {
   const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
 
-  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-
   const [attendancedata, SetAttendancedata] = useState([]);
   const [selectedItem, setSelectedItem] = useState<any>();
   const [showStartTime, setShowStartTime] = useState(false);
   const [pickStartTime, SetpickStartTime] = useState(new Date());
   const [pickEndTime, SetpickEndTime] = useState(new Date());
   const [showEndTime, setShowEndTime] = useState(false);
-  const [AttendanceQueryData, SetAttendanceQueryData] = useState({});
   const [call, setcall] = useState(false);
   const [close, SetClose] = useState(false);
   const [load, SetLoad] = useState(false);
+
+  const [AttendanceQueryData, SetAttendanceQueryData] = useState({});
+
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
   const bottomSheetRef = useRef<IBottomSheetRef>(null);
-  
+
+  const handleClose = () => {
+    bottomSheetRef.current?.collapse();
+    SetClose(false);
+  };
+
   useEffect(() => {
-    const backAction = () => {
-      handleClose();
-      return true;
-    };
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       backAction,
     );
 
     return () => backHandler.remove();
-  }, []);
+  }, [close]);
+
+  const backAction = () => {
+    if (close) {
+      handleClose();
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const validationSchema = Yup.object().shape({
     startTime: Yup.string().required('Start time is required'),
@@ -113,11 +126,6 @@ const SepratedAttendance = ({route}: any) => {
     setShowEndTime(true);
   };
 
-  const handleClose = () => {
-    bottomSheetRef.current?.collapse();
-    SetClose(false);
-  };
-
   const [attendanceData, {isLoading, error}] = useAttendanceMonthListMutation();
 
   const data = {
@@ -159,22 +167,21 @@ const SepratedAttendance = ({route}: any) => {
           response?.data !== undefined) ||
         null
       ) {
-        SetAttendanceQueryData(response.data.data);
+        SetAttendanceQueryData(response?.data?.data);
         SetLoad(true);
       }
     } catch (error) {
       console.error('Error in handlequery:', error);
     }
   };
+
   useEffect(() => {
     handlequery();
-  }, [AttendanceQuery,call]);
+  }, [AttendanceQuery, call]);
 
-  const [AskAttendanceQuery, result] = useAskEmployeeAttendanceQueryMutation();  
-  console.log('result',JSON.stringify(result));
-  
+  const [AskAttendanceQuery, result] = useAskEmployeeAttendanceQueryMutation();
 
-  const handleSubmit = async (values: any,setFieldValue:any) => {
+  const handleSubmit = async (values: any, setFieldValue: any) => {
     const data = {
       attendanceId: selectedItem?.id,
       suggestedStartTime: values.startTime || null,
@@ -184,11 +191,9 @@ const SepratedAttendance = ({route}: any) => {
       reason: values.reason,
     };
 
-
     try {
       const response = await AskAttendanceQuery({data, accessToken});
-      console.log(response);
-      
+
       if (response?.data?.messageDetail?.message_code === 201) {
         Alert.alert(
           'Attendance Query ',
@@ -198,7 +203,7 @@ const SepratedAttendance = ({route}: any) => {
               text: 'ok',
               onPress: () => {
                 handleClose();
-                setcall(!call)
+                setcall(!call);
               },
             },
           ],
@@ -208,8 +213,8 @@ const SepratedAttendance = ({route}: any) => {
 
       if (response?.data) {
         setcall(!call);
-        setFieldValue('actualHour',null)
-        setFieldValue('reason',null)
+        setFieldValue('actualHour', null);
+        setFieldValue('reason', null);
       }
     } catch (error) {
       console.error('Error in handlequery:', error);
@@ -510,7 +515,7 @@ const SepratedAttendance = ({route}: any) => {
           <FlatList
             data={attendancedata}
             renderItem={renderItem}
-            keyExtractor={item => item?.ID}
+            keyExtractor={(item: any) => item?.id.toString()}
           />
         )}
       </View>
@@ -659,7 +664,10 @@ const SepratedAttendance = ({route}: any) => {
 
           {selectedItem?.queryStatus?.label != 'Default' ? (
             load === false ? (
-              <ShimmerPlaceHolder />
+              <>
+                <View style={{marginVertical: 5}} />
+                <PlaceholderCard />
+              </>
             ) : (
               <View>
                 <Text
@@ -781,12 +789,8 @@ const SepratedAttendance = ({route}: any) => {
             <View>
               <Formik
                 initialValues={{
-                  startTime:
-                    selectedItem.inTime &&
-                    moment(selectedItem.inTime).format('h:mm A'),
-                  endTime:
-                    selectedItem.outTime &&
-                    moment(selectedItem.outTime).format('h:mm A'),
+                  startTime: moment().set({hour: 0, minute: 0}).format('HH:mm'),
+                  endTime: moment().set({hour: 0, minute: 0}).format('HH:mm'),
                   actualHours: '',
                   reason: '',
                 }}

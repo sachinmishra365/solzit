@@ -1,4 +1,3 @@
-import React, {useEffect, useRef, useState} from 'react';
 import {
   Animated,
   Image,
@@ -10,19 +9,20 @@ import {
   TouchableOpacity,
   useColorScheme,
 } from 'react-native';
-import {Icon, Switch} from 'react-native-paper';
+import {Icon} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
 import Dashboard from '../Screens/Dashboard/Dashboard';
 import {auth, isDarkTheme, theme} from '../AppStore/Reducers/appState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useEffect, useRef, useState} from 'react';
 
 const DrawerNavigator = ({navigation}: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
   const colorScheme = useColorScheme();
-  const [isSwitchOn, setIsSwitchOn] = React.useState(isDark);
-  const userData = useSelector((state: any) => state?.appState?.authToken);  
+  const [isSwitchOn, setIsSwitchOn] = useState(isDark);
+  const userData = useSelector((state: any) => state?.appState?.authToken);
   const [showMenu, setShowMenu] = useState(false);
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
@@ -48,7 +48,7 @@ const DrawerNavigator = ({navigation}: any) => {
     });
   };
 
-  const [Loading, setLoading] = React.useState(true);
+  const [Loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadTheme = async () => {
@@ -62,16 +62,14 @@ const DrawerNavigator = ({navigation}: any) => {
         setIsSwitchOn(initialTheme === 'dark');
         dispatch(theme(initialTheme));
       }
-      setLoading(false); 
+      setLoading(false);
     };
     loadTheme();
   }, [dispatch, colorScheme]);
-  
-  if (Loading) {
-    return null; 
-  }
 
- 
+  if (Loading) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={styles(isDark).container}>
@@ -185,24 +183,6 @@ const DrawerNavigator = ({navigation}: any) => {
             <Text style={styles(isDark).drawerBtnTxt}>Change Password</Text>
           </Pressable>
 
-       
-          {/* <Pressable
-            onPressIn={() => {
-              onToggleSwitch();
-            }}
-            onPress={() => {
-              toggleMenu();
-            }}
-            style={[styles(isDark).drawerBtn, {marginVertical: 16}]}>
-            <Icon
-              source="shield-moon"
-              color={isDark ? Colors.white : Colors.primary}
-              size={20}
-            />
-            <Text style={styles(isDark).drawerBtnTxt}>Dark Theme</Text>
-            <Switch value={isSwitchOn} onValueChange={onToggleSwitch} thumbColor={Colors.primary} color={Colors.primary}/>
-          </Pressable> */}
-
           <TouchableOpacity
             onPress={() => {
               dispatch(auth(undefined));
@@ -215,7 +195,6 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Logout</Text>
           </TouchableOpacity>
-          
         </View>
       </View>
 
@@ -281,7 +260,7 @@ const styles = (isDark: any) =>
       fontSize: 18,
       color: isDark ? Colors.white : Colors.black,
       marginTop: 16,
-      fontFamily:'Lato-Bold'
+      fontFamily: 'Lato-Bold',
     },
     drawerBtnContainer: {flexGrow: 1, marginVertical: 60},
     drawerBtn: {
@@ -289,18 +268,16 @@ const styles = (isDark: any) =>
       alignItems: 'center',
       backgroundColor: 'transparent',
       paddingLeft: 13,
-      // paddingRight: 35,
+
       borderRadius: 8,
     },
     drawerBtnTxt: {
-      // fontSize: 15,
-      // fontFamily: 'Poppins-Bold',
       marginLeft: 15,
       color: isDark ? Colors.white : Colors.black,
       flexWrap: 'wrap',
       flex: 1,
       width: 'auto',
-      fontFamily:'Lato-Semibold'
+      fontFamily: 'Lato-Semibold',
     },
     screenHeaderContainer: {
       flexGrow: 1,
@@ -325,7 +302,7 @@ const styles = (isDark: any) =>
     headerTxt: {
       fontSize: 18,
       color: isDark ? Colors.white : Colors.black,
-      fontFamily:'Lato-Semibold'
+      fontFamily: 'Lato-Semibold',
     },
   });
 

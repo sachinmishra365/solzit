@@ -1,6 +1,5 @@
-import React from 'react';
 import {StyleSheet, View, FlatList} from 'react-native';
-import {Card, Text} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 
@@ -42,7 +41,7 @@ const PlaceholderCard = () => {
 };
 
 const PlaceholderList = () => {
-  const data = Array(5).fill({}); 
+  const data = Array(5).fill({});
 
   return (
     <FlatList

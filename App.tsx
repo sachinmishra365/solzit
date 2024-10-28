@@ -4,7 +4,7 @@ import {
   createNavigationContainerRef,
   NavigationContainer,
 } from '@react-navigation/native';
-import {Provider, useDispatch} from 'react-redux';
+import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import {persistor, store} from './src/AppStore/Store/store';
 import {
@@ -19,40 +19,39 @@ import StackNavigator from './src/AppNavigator/StackNavigator';
 import Toast, {BaseToast, ErrorToast} from 'react-native-toast-message';
 import NetInfo from '@react-native-community/netinfo';
 import {Colors} from './src/constants/Colors';
-import { theme } from './src/AppStore/Reducers/appState';
 
 const toastConfig = {
-  success: props => (
+  success: (props: any) => (
     <BaseToast
       {...props}
       style={{borderLeftColor: 'green', height: 'auto', minHeight: 70}}
       contentContainerStyle={{paddingVertical: 15}}
       text1Style={{
         fontSize: 14,
-         fontFamily:'Lato-Bold'
+        fontFamily: 'Lato-Bold',
       }}
       text2Style={{
-         fontFamily:'Lato-Regular'
+        fontFamily: 'Lato-Regular',
       }}
       text2NumberOfLines={0}
     />
   ),
 
-  error: props => (
+  error: (props: any) => (
     <ErrorToast
       {...props}
       text1Style={{
         fontSize: 14,
-         fontFamily:'Lato-Bold'
+        fontFamily: 'Lato-Bold',
       }}
       text2Style={{
         fontSize: 13,
-         fontFamily:'Lato-Regular'
+        fontFamily: 'Lato-Regular',
       }}
     />
   ),
 
-  tomatoToast: ({text1, props}) => (
+  tomatoToast: ({text1, props}: any) => (
     <View style={{height: 60, width: '100%', backgroundColor: 'tomato'}}>
       <Text>{text1}</Text>
       <Text>{props.uuid}</Text>
@@ -62,9 +61,8 @@ const toastConfig = {
 
 export const navigationRef = createNavigationContainerRef();
 
-const App = (props) => {
+const App = () => {
   const colorScheme = useColorScheme();
-  // console.log(colorScheme);
 
   const [isDark, setIsDark] = useState(colorScheme);
   const [isConnected, setIsConnected] = useState(null);
@@ -100,7 +98,6 @@ const App = (props) => {
           <SafeAreaView style={{flex: 1}}>
             <NavigationContainer ref={navigationRef}>
               <StackNavigator />
-              {/* <StatusBar animated={true} backgroundColor="#000" /> */}
               <StatusBar
                 barStyle="light-content"
                 animated={true}

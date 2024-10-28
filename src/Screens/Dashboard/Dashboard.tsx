@@ -1,4 +1,3 @@
-import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -27,6 +26,7 @@ import {
 import {Dimensions} from 'react-native';
 import ImageShimmerPlaceHolder from '../Placeholder/ImageShimmerPlaceHolder';
 import {logProfileData} from 'react-native-calendars/src/Profiler';
+import {useEffect, useState} from 'react';
 
 const {height, width} = Dimensions.get('window');
 
@@ -364,15 +364,18 @@ const Dashboard = ({navigation}: any) => {
           keyExtractor={(item, index) => index.toString()}
           style={{margin: 5}}
           showsVerticalScrollIndicator={false}
-          ListEmptyComponent={isLoading ?
-            <ImageShimmerPlaceHolder /> :
-            <View style={{}}>
+          ListEmptyComponent={
+            <View
+              style={{
+                height: Dimensions.get('window').height - 400,
+                justifyContent: 'center',
+              }}>
               <Text
                 style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  alignSelf: 'center',
+                  color: isDark ? Colors.white : Colors.dark_gray,
                   fontFamily: 'Lato-Bold',
-                  alignItems:'center'
+                  textAlign: 'center',
+                  fontSize: 14,
                 }}>
                 No Records
               </Text>

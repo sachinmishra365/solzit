@@ -21,8 +21,6 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
   }
 };
 
-// https://solzitesssvc.azurewebsites.net/api
-
 export const appLevelApi = createApi({
   reducerPath: 'AppLevel_SolzitApi',
   baseQuery: axiosBaseQuery({

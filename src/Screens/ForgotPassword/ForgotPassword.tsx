@@ -1,6 +1,6 @@
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
@@ -8,18 +8,14 @@ import {useForgotPasswordQuery} from '../../Services/appLevel';
 import {Colors} from '../../constants/Colors';
 import CustomTextInput from '../../Components/CustomTextInput';
 import {SCREEN_WIDTH} from '../../constants/Screen';
-import {TextInput} from 'react-native-paper';
 
 const ForgotPassword = ({navigation}: any) => {
-  const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
 
   const [email, setEmail] = useState('');
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .email('Invalid email')
-      .required('email is required'),
+    email: Yup.string().email('Invalid email').required('email is required'),
   });
 
   const [triggerQuery, setTriggerQuery] = useState(false);
@@ -47,12 +43,19 @@ const ForgotPassword = ({navigation}: any) => {
     handleQuery();
   }, [triggerQuery, email]);
 
-  const handleForgetPassword = (values: any) => {
-    const enteredEmail = values?.email || '';
-    console.log(enteredEmail);
-    
-    setEmail(enteredEmail);
-    setTriggerQuery(true);
+  const handleForgetPassword = async () => {
+    try {
+      const response = await forget;
+
+      if (response.status === 'fulfilled') {
+        Alert.alert('Success', response?.data?.messageDetail?.message);
+      } else if (response.status === 'rejected') {
+        Alert.alert('Error', 'Failed to process the request.');
+      }
+    } catch (err) {
+      console.warn(err);
+      Alert.alert('Error', 'Something went wrong.');
+    }
   };
   return (
     <View
@@ -61,7 +64,7 @@ const ForgotPassword = ({navigation}: any) => {
         justifyContent: 'center',
         backgroundColor: isDark ? Colors.black : Colors.white,
         alignItems: 'center',
-        paddingHorizontal:16
+        paddingHorizontal: 16,
       }}>
       <Formik
         initialValues={{
@@ -98,37 +101,25 @@ const ForgotPassword = ({navigation}: any) => {
             </View>
 
             <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              alignSelf: 'center',
-              fontFamily: 'Lato-Bold',
-            }}>
-           Enter your email address below and we'll send you a link to reset your password.
-          </Text>
+              style={{
+                color: isDark ? Colors.white : Colors.black,
+                alignSelf: 'center',
+                fontFamily: 'Lato-Bold',
+              }}>
+              Enter your email address below and we'll send you a link to reset
+              your password.
+            </Text>
 
             <View style={{marginVertical: 16}} />
 
             <CustomTextInput
               label="Email"
-              value={values.email}
+              value={email}
               secureTextEntry={false}
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
+              onChangeText={(text: any) => setEmail(text)}
               leftIconName="email"
               editable={true}
             />
-
-
-            {touched.email && errors.email && (
-              <Text
-                style={{
-                  color: Colors.error,
-                  marginLeft: 20,
-                  fontFamily: 'Lato-Regular',
-                }}>
-                {errors.email}
-              </Text>
-            )}
 
             <View style={{marginVertical: 32}} />
             <TouchableOpacity
@@ -141,7 +132,7 @@ const ForgotPassword = ({navigation}: any) => {
                 borderRadius: 3,
               }}
               onPress={() => {
-                handleSubmit();
+                handleForgetPassword();
               }}>
               <Text
                 style={{
@@ -165,7 +156,7 @@ const ForgotPassword = ({navigation}: any) => {
                 borderRadius: 3,
               }}
               onPress={() => {
-                navigation.replace('Login');
+                navigation.navigate('Login');
               }}>
               <Text
                 style={{

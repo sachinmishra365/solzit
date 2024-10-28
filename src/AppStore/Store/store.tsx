@@ -3,13 +3,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {persistReducer, persistStore} from 'redux-persist';
 import {setupListeners} from '@reduxjs/toolkit/query';
 import {services} from '../../Services/services';
-import  appStateSlice  from '../Reducers/appState';
-import { appLevelApi } from '../../Services/appLevel';
+import appStateSlice from '../Reducers/appState';
+import {appLevelApi} from '../../Services/appLevel';
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['appState'],
 };
 
 const rootReducer = combineReducers({
@@ -27,10 +26,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
       immutableCheck: false,
-    }).concat(
-      services.middleware,
-      appLevelApi.middleware,
-    ),
+    }).concat(services.middleware, appLevelApi.middleware),
 });
 
 export const persistor = persistStore(store);

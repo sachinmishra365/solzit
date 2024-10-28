@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {StyleSheet, TextComponent, TouchableOpacity} from 'react-native';
-import {Button, Dialog, Portal, Text} from 'react-native-paper';
+import {StyleSheet, TouchableOpacity} from 'react-native';
+import {Dialog, Portal, Text} from 'react-native-paper';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 const DialogBox = ({
@@ -9,7 +9,7 @@ const DialogBox = ({
   title,
   onPress,
   message,
-  icon
+  icon,
 }: any) => {
   return (
     <Portal>

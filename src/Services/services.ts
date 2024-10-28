@@ -24,8 +24,8 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
 export const services = createApi({
   reducerPath: 'parsApi',
   baseQuery: axiosBaseQuery({
-    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1',
-    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1',
+    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
+    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
   }),
   tagTypes: ['Hello', 'Hello1', 'attendance'],
 
@@ -43,15 +43,15 @@ export const services = createApi({
 
     EmployeeLeaveApply: builder.mutation({
       query: ({data, accessToken}) => ({
-          url: `/LeaveRecords/ApplyNewLeaveRequest`,
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        }),
-        invalidatesTags: ['Hello']
+        url: `/LeaveRecords/ApplyNewLeaveRequest`,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+      invalidatesTags: ['Hello'],
     }),
 
     ProcessedLeaves: builder.query({
@@ -98,14 +98,6 @@ export const services = createApi({
       },
     }),
 
-    // EmployeeAttendanceList: builder.mutation({
-    //   query: data => ({
-    //     url: `/EmployeeAttendance/EmployeeAttendanceList`,
-    //     method: 'POST',
-    //     body: data,
-    //   }),
-    // }),
-
     AttendanceList: builder.query({
       query: ({accessToken}) => ({
         url: `/LeaveRecords/LeaveBalanceRecordList`,
@@ -132,31 +124,30 @@ export const services = createApi({
 
     EmployeeAttendanceQuery: builder.query({
       query: ({attendanceID, accessToken}) => ({
-          url: `/EmployeeAttendance/GetAttendanceQuery?AttendanceRecId=${attendanceID}`,
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          }
-          }),
-          providesTags: ['attendance'],
-    }),
-
-    AskEmployeeAttendanceQuery: builder.mutation({
-      query: ({data,accessToken}) => {
-        console.log('data',accessToken);
-        return{
-        url: `/EmployeeAttendance/CreateAskQueryForAttendance`,
-        method: 'POST',
-        body: data,
+        url: `/EmployeeAttendance/GetAttendanceQuery?AttendanceRecId=${attendanceID}`,
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
-        }
-      }
-    }
+        },
       }),
-      // invalidatesTags: ['attendance'],
+      providesTags: ['attendance'],
+    }),
+
+    AskEmployeeAttendanceQuery: builder.mutation({
+      query: ({data, accessToken}) => {
+        return {
+          url: `/EmployeeAttendance/CreateAskQueryForAttendance`,
+          method: 'POST',
+          body: data,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['attendance'],
+    }),
 
     EmployeeLeaveRecords: builder.query({
       query: ({monthID, accessToken}) => {
@@ -179,7 +170,6 @@ export const {
   useProcessedLeavesQuery,
   useForgetpasswordMutation,
   useSoluzioneHolidaysQuery,
-  // useEmployeeAttendanceListMutation,
   useAttendanceListQuery,
   useAttendanceMonthListMutation,
   useEmployeeAttendanceQueryQuery,

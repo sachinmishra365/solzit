@@ -11,12 +11,12 @@ import ChangePassword from '../Screens/ChangePassword/ChangePassword';
 import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
 import Summary from '../Screens/Attendance/Summary';
 import {PermissionHandler} from '../permissions';
-import ForgotPassword from '../Screens/ForgotPassword/ForgotPassword';
+import {useEffect} from 'react';
 
 const Stack = createNativeStackNavigator();
 
 const RootStack = () => {
-  React.useEffect(() => {
+  useEffect(() => {
     PermissionHandler.requestAllPermissions();
   }, []);
 

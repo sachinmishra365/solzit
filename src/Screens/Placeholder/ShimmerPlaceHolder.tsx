@@ -6,9 +6,7 @@ import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
-const PlaceholderCard = ({
-  Showlist= false
-}) => {
+export const PlaceholderCard = ({Showlist = false}) => {
   return (
     <Card style={styles.containerInner}>
       <View style={{paddingHorizontal: 16, paddingVertical: 16}}>
@@ -30,7 +28,6 @@ const PlaceholderCard = ({
           </Text>
         </View>
         <View>
-       
           <Text style={{padding: 8}}>
             <ShimmerPlaceHolder style={{width: 70}} />
           </Text>
@@ -44,7 +41,7 @@ const PlaceholderCard = ({
 };
 
 const PlaceholderList = () => {
-  const data = Array(5).fill({}); 
+  const data = Array(5).fill({});
 
   return (
     <FlatList

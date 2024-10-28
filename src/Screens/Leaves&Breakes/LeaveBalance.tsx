@@ -20,10 +20,10 @@ import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 const LeaveBalance = ({navigation}: any) => {
   const [items, setItems] = useState([]);
   const isDark = useSelector(isDarkTheme);
-  console.log(JSON.stringify(items));
 
   const [filteredItems, setFilteredItems] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState('Approved');
+
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
 
   const statuses = ['Approved', 'Declined', 'Cancelled', 'All'];
@@ -38,54 +38,29 @@ const LeaveBalance = ({navigation}: any) => {
       setItems(data?.data);
     }
   }, [data, isSuccess]);
-  
+
   useEffect(() => {
     if (selectedStatus === 'All') {
       setFilteredItems(items);
     } else {
       const filteredData = items?.filter(
-        (item: any) => item?.status?.label === selectedStatus
+        (item: any) => item?.status?.label === selectedStatus,
       );
       setFilteredItems(filteredData);
     }
   }, [items, selectedStatus]);
-  
+
   useEffect(() => {
     if (data && isSuccess) {
-      setSelectedStatus('Approved'); 
+      setSelectedStatus('Approved');
     }
   }, [data, isSuccess]);
-  
+
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);
   };
 
-
-  // useEffect(() => {
-  //   if (data && isSuccess) {
-  //     setItems(data?.data);
-  //       const approvedLeaves = items?.filter(
-  //         (item: any) => item?.status?.label === 'Approved',
-  //       );
-  //       console.log(approvedLeaves);
-  //       setFilteredItems(approvedLeaves);
-      
-  //   }
-  // }, [data]);
-
-  // const filterByStatus = (status: string) => {
-  //   setSelectedStatus(status);
-  //   if (status === 'All') {
-  //     setFilteredItems(items);
-  //   } else {
-  //     const filteredData = items?.filter(
-  //       (item: any) => item.status.label === status,
-  //     );
-  //     setFilteredItems(filteredData);
-  //   }
-  // };
-
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -117,27 +92,27 @@ const LeaveBalance = ({navigation}: any) => {
               fontFamily: 'Lato-Bold',
             }}>
             {item.totalDaysofLeave !== 0.5
-              ? `Full Day Leave (${item.totalDaysofLeave})`
-              : `Half Day Leave (${item.totalDaysofLeave})`}
+              ? `Full Day Leave (${item?.totalDaysofLeave})`
+              : `Half Day Leave (${item?.totalDaysofLeave})`}
           </Text>
 
           <View style={{}}>
             <Text
               style={{
                 color:
-                  item.status.label === 'Applied'
+                  item?.status?.label === 'Applied'
                     ? Colors.primary
-                    : item.status.label === 'Cancelled'
-                    ? '#39FF14'
-                    : item.status.label === 'Declined'
+                    : item?.status?.label === 'Cancelled'
+                    ? '#2dcf0e'
+                    : item?.status?.label === 'Declined'
                     ? Colors.error
-                    : item.status.label === 'Approved'
+                    : item?.status?.label === 'Approved'
                     ? 'green'
                     : Colors.gray,
                 fontSize: 16,
                 fontFamily: 'Lato-Bold',
               }}>
-              {item.status.label}
+              {item?.status?.label}
             </Text>
           </View>
         </View>
@@ -168,7 +143,7 @@ const LeaveBalance = ({navigation}: any) => {
               fontSize: 14,
               fontFamily: 'Lato-Bold',
             }}>
-            Absent Day: {item.totalAbsentDays}
+            Absent Day: {item?.totalAbsentDays}
           </Text>
         </View>
         <View
@@ -190,7 +165,7 @@ const LeaveBalance = ({navigation}: any) => {
               fontSize: 14,
               fontFamily: 'Lato-Bold',
             }}>
-            {item.leaveType.label}
+            {item?.leaveType?.label}
           </Text>
           {item?.approver && (
             <View style={{flexDirection: 'row'}}>
@@ -341,5 +316,3 @@ const LeaveBalance = ({navigation}: any) => {
 };
 
 export default LeaveBalance;
-
-const styles = (isDark: any) => StyleSheet.create({});

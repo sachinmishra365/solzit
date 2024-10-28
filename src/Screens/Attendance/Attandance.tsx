@@ -6,14 +6,13 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import {useSelector} from 'react-redux';
 import {Colors} from '../../constants/Colors';
 import {useAttendanceListQuery} from '../../Services/services';
 import {Card, IconButton} from 'react-native-paper';
-import Placeholder from '../Placeholder/Placeholder';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
 const Attendance = ({navigation}: any) => {
@@ -24,14 +23,12 @@ const Attendance = ({navigation}: any) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const {data, error, isLoading, refetch} = useAttendanceListQuery({
-    // userId: EmployeeId?.userProfile?.userId,
     accessToken: EmployeeId?.authToken?.accessToken,
   });
-  
 
   const handleAttendanceList = async () => {
     try {
-      const result = await data;      
+      const result = await data;
 
       if (
         result !== undefined &&
@@ -48,12 +45,6 @@ const Attendance = ({navigation}: any) => {
   useEffect(() => {
     handleAttendanceList();
   }, [data]);
-
-  // const onRefresh = useCallback(async () => {
-  //   setRefreshing(true);
-  //   await handleAttendanceList();
-  //   setRefreshing(false);
-  // }, [refetch]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -217,7 +208,9 @@ const Attendance = ({navigation}: any) => {
           <FlatList
             data={attendanceMonthData}
             renderItem={renderAttendance}
-            keyExtractor={item => item?.ID}
+            keyExtractor={(item: any, index: any) =>
+              item?.id.toString() + index
+            }
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}

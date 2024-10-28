@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
 import CustomTextInput from '../Components/CustomTextInput';
@@ -9,10 +9,7 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {auth, credential, isDarkTheme} from '../AppStore/Reducers/appState';
 import Placeholder from '../Screens/Placeholder/Placeholder';
-import {
-  useForgotPasswordQuery,
-  useUserAuthenticationloginMutation,
-} from '../Services/appLevel';
+import {useUserAuthenticationloginMutation} from '../Services/appLevel';
 
 const LoginScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
@@ -24,7 +21,6 @@ const LoginScreen = ({navigation}: any) => {
 
   const [showPassword, setShowPassword] = useState(true);
   const [iscredential, setIsCredential] = useState(false);
-  const [showForgot, SetShowForgot] = useState(false);
   const [userAuthenticationlogin, {isLoading, error}] =
     useUserAuthenticationloginMutation();
 
@@ -195,12 +191,9 @@ const LoginScreen = ({navigation}: any) => {
                 </Text>
               </View>
 
-
               <TouchableOpacity
                 onPress={() => {
-                  // handleForgetPassword(values);
-                  // SetShowForgot(true);
-                  navigation.replace('ForgotPassword')
+                  navigation.navigate('ForgotPassword');
                 }}
                 style={{}}>
                 <Text
