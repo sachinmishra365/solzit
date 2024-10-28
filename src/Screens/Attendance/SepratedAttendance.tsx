@@ -31,11 +31,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ShimmerPlaceHolder, {
   PlaceholderCard,
 } from '../Placeholder/ShimmerPlaceHolder';
-import Placeholder from '../Placeholder/Placeholder';
 
 const SepratedAttendance = ({route}: any) => {
   const MonthData = route.params;
-
   const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
 
@@ -181,7 +179,7 @@ const SepratedAttendance = ({route}: any) => {
 
   const [AskAttendanceQuery, result] = useAskEmployeeAttendanceQueryMutation();
 
-  const handleSubmit = async (values: any, setFieldValue: any) => {
+  const handleSubmit = async (values: any) => {
     const data = {
       attendanceId: selectedItem?.id,
       suggestedStartTime: values.startTime || null,
@@ -209,12 +207,8 @@ const SepratedAttendance = ({route}: any) => {
           ],
           {cancelable: true},
         );
-      }
 
-      if (response?.data) {
         setcall(!call);
-        setFieldValue('actualHour', null);
-        setFieldValue('reason', null);
       }
     } catch (error) {
       console.error('Error in handlequery:', error);
@@ -700,6 +694,46 @@ const SepratedAttendance = ({route}: any) => {
                           fontSize: 14,
                           fontFamily: 'Lato-Semibold',
                         }}>
+                        {selectedItem?.date
+                          ? moment(selectedItem?.date).format('DD MMM, YYYY')
+                          : 'N/A'}
+                      </Text>
+
+                      <View style={{}}>
+                        <Text
+                          style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 16,
+                            fontFamily: 'Lato-Semibold',
+                          }}>
+                          {AttendanceQueryData?.suggestedStartTime
+                            ? moment(
+                                AttendanceQueryData?.suggestedStartTime,
+                                'M/D/YYYY h:mm:ss A',
+                              ).format('hh:mm A')
+                            : 'N/A'}{' '}
+                          {' - '}
+                          {AttendanceQueryData?.suggestedEndtTime
+                            ? moment(
+                                AttendanceQueryData?.suggestedEndtTime,
+                                'M/D/YYYY h:mm:ss A',
+                              ).format('hh:mm A')
+                            : 'N/A'}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* <View
+                      style={{
+                        justifyContent: 'space-between',
+                        flexDirection: 'row',
+                      }}>
+                      <Text
+                        style={{
+                          color: isDark ? Colors.white : Colors.black,
+                          fontSize: 14,
+                          fontFamily: 'Lato-Semibold',
+                        }}>
                         Start Time :{' '}
                         {AttendanceQueryData?.suggestedStartTime
                           ? moment(
@@ -725,7 +759,7 @@ const SepratedAttendance = ({route}: any) => {
                             : 'N/A'}
                         </Text>
                       </View>
-                    </View>
+                    </View> */}
 
                     <View
                       style={{
@@ -791,7 +825,7 @@ const SepratedAttendance = ({route}: any) => {
                 initialValues={{
                   startTime: moment().set({hour: 0, minute: 0}).format('HH:mm'),
                   endTime: moment().set({hour: 0, minute: 0}).format('HH:mm'),
-                  actualHours: '',
+                  actualHours: null,
                   reason: '',
                 }}
                 validationSchema={validationSchema}
@@ -801,9 +835,9 @@ const SepratedAttendance = ({route}: any) => {
                   handleBlur,
                   handleSubmit,
                   values,
+                  setFieldValue,
                   errors,
                   touched,
-                  setFieldValue,
                 }) => (
                   <View style={{paddingHorizontal: 10}}>
                     <View style={{marginVertical: 6}} />
@@ -904,6 +938,7 @@ const SepratedAttendance = ({route}: any) => {
                     )}
 
                     <View style={{marginVertical: 16}} />
+
                     <CustomTextInput
                       label="Reason"
                       value={values.reason}
@@ -931,6 +966,7 @@ const SepratedAttendance = ({route}: any) => {
                     )}
 
                     <View style={{marginVertical: 16}} />
+
                     <TouchableOpacity
                       style={{
                         width: SCREEN_WIDTH - 90,
@@ -940,11 +976,21 @@ const SepratedAttendance = ({route}: any) => {
                         alignSelf: 'center',
                         borderRadius: 3,
                       }}
-                      onPress={() => {
-                        handleSubmit();
-                        setFieldValue('ActualHour', null);
-                        setFieldValue('Reason', null);
-                        // navigation.replace('Attandance');
+                      onPress={async () => {
+                        await handleSubmit();
+
+                        setTimeout(() => {
+                          setFieldValue(
+                            'startTime',
+                            moment().set({hour: 0, minute: 0}).format('HH:mm'),
+                          );
+                          setFieldValue(
+                            'endTime',
+                            moment().set({hour: 0, minute: 0}).format('HH:mm'),
+                          );
+                          setFieldValue('actualHour', null);
+                          setFieldValue('reason', null);
+                        }, 1500);
                       }}>
                       <Text
                         style={{

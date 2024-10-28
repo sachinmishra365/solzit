@@ -7,7 +7,7 @@ import {
   Keyboard,
   Alert,
   StyleSheet,
-} from'react-native';
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CustomTextInput from '../Components/CustomTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -124,20 +124,7 @@ const ApplyLeave = () => {
       totalDaysofLeave: totalLeaveDay,
     };
 
-    if (totalDaysofLeave <= 0) {
-      Toast.show({
-        type: 'success',
-        text1: 'Leave Status',
-        text2: `Please select valid end date.`,
-        text2Style: {
-          flexWrap: 'wrap',
-          fontSize: 20,
-          fontFamily: 'Lato-Regular',
-        },
-        topOffset: 80,
-        visibilityTime: 5000,
-      });
-    } else if (totalDaysofLeave > 0) {
+    if (totalDaysofLeave) {
       try {
         const response: any = await ApplyLeave({data, accessToken});
 
