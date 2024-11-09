@@ -6,6 +6,7 @@ import {
   Image,
   Modal,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import {DateData, Calendar} from 'react-native-calendars';
 import moment from 'moment';
@@ -27,6 +28,7 @@ import {Dimensions} from 'react-native';
 import ImageShimmerPlaceHolder from '../Placeholder/ImageShimmerPlaceHolder';
 import {logProfileData} from 'react-native-calendars/src/Profiler';
 import {useEffect, useState} from 'react';
+import React from 'react';
 
 const {height, width} = Dimensions.get('window');
 
@@ -40,14 +42,18 @@ const Dashboard = ({navigation}: any) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
   const [onMonth, setOnMonth] = useState(moment().format('MM'));
+  const [calendarDate, setCalendarDate] = useState();
+  const [refreshing, setRefreshing] = React.useState(false);
+  const financialYearStart = new Date(new Date().getFullYear(), 3, 1);
+  const financialYearEnd = new Date(new Date().getFullYear() + 1, 2, 31);
 
   const processed = useSelector((state: any) => state?.appState?.processed);
 
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
-  const {data, error, isLoading} = useSoluzioneHolidaysQuery({
-    accessToken: accessToken,
+  const {data, error, isLoading, refetch} = useSoluzioneHolidaysQuery({
+    accessToken:accessToken,
   });
 
   useEffect(() => {
@@ -70,13 +76,13 @@ const Dashboard = ({navigation}: any) => {
         }
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
-  const AppliedLeave = useEmployeeAppliedLeavesQuery({
+  const {data:AppliedLeave ,refetch:refetchapplies} = useEmployeeAppliedLeavesQuery({
     accessToken: accessToken,
   });
+  
 
   const ProcessedLeaves = useProcessedLeavesQuery({
     accessToken: accessToken,
@@ -84,17 +90,18 @@ const Dashboard = ({navigation}: any) => {
 
   useEffect(() => {
     if (
-      AppliedLeave?.data?.data !== undefined &&
-      AppliedLeave?.data?.data !== null &&
-      AppliedLeave?.data?.messageDetail?.message_code === 200
+      AppliedLeave?.data !== undefined &&
+      AppliedLeave?.data !== null &&
+      AppliedLeave?.messageDetail?.message_code === 200
     ) {
-      const sortedData: any = [...AppliedLeave?.data?.data].sort((a, b) =>
+      const sortedData: any = [...AppliedLeave?.data].sort((a, b) =>
         moment(a.leaveStartDate).isBefore(moment(b?.leaveStartDate)) ? -1 : 1,
       );
       SetAppliedLeave(sortedData);
-      dispatch(applied(AppliedLeave?.data?.data));
+      dispatch(applied(AppliedLeave?.data));
     }
-  }, [AppliedLeave]);
+  }, [AppliedLeave, ProcessedLeaves, refetch]);
+
 
   useEffect(() => {
     if (
@@ -315,6 +322,15 @@ const Dashboard = ({navigation}: any) => {
     setMarkedDates(marked);
   }, [HolyDays, processed, currentDate]);
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      refetch();
+      refetchapplies()
+    }, 1000);
+  }, [refetch,refetchapplies]);
+
   return (
     <View
       style={{
@@ -322,13 +338,22 @@ const Dashboard = ({navigation}: any) => {
         backgroundColor: isDark ? Colors.black : Colors.white,
       }}>
       <Calendar
-        onDayPress={handleDayPress}
+        // onDayPress={handleDayPress}
         markingType={'custom'}
         markedDates={markedDates}
         onMonthChange={(month: any) => {
+          setCalendarDate(month.dateString.toString());
           setOnMonth(() => month.month.toString());
         }}
         hideExtraDays={false}
+        disableArrowLeft={ moment(calendarDate).format('YYYY-MM') ===
+          moment(financialYearStart).format('YYYY-MM')
+            ? true 
+            : false}
+        disableArrowRight={moment(calendarDate).format('YYYY-MM') ===
+          moment(financialYearEnd).format('YYYY-MM')
+            ? true 
+            : false}
         theme={{
           calendarBackground: 'transparent',
           textSectionTitleColor: Colors.dark_gray,
@@ -339,8 +364,8 @@ const Dashboard = ({navigation}: any) => {
           monthTextColor: Colors.dark_gray,
           textDisabledColor: Colors.error,
         }}
-        enableSwipeMonths
-        disableAllTouchEventsForDisabledDays={false}
+        enableSwipeMonths={false}
+        disableAllTouchEventsForDisabledDays={true}
       />
 
       {isLoading ? (
@@ -360,6 +385,12 @@ const Dashboard = ({navigation}: any) => {
               return item;
             }
           })}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
+          }
           renderItem={renderHolidays}
           keyExtractor={(item, index) => index.toString()}
           style={{margin: 5}}

@@ -72,13 +72,14 @@ const App = () => {
   }, [colorScheme]);
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state: any) => {
+    const unsubscribe = NetInfo.addEventListener((state: any) => {      
       setIsConnected(state.isConnected);
       showToast(state.isConnected);
     });
 
     return () => unsubscribe();
   }, [isConnected]);
+  
 
   const showToast = (connected: any) => {
     Toast.show({

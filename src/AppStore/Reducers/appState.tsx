@@ -9,6 +9,7 @@ export const appStateSlice = createSlice({
     colorScheme: null,
     processed: null,
     authCredential: {},
+    connected: false,
   },
   reducers: {
     auth: (state, action) => {
@@ -29,12 +30,22 @@ export const appStateSlice = createSlice({
     credential: (state, action) => {
       state.authCredential = action.payload;
     },
+    internet: (state, action) => {
+      state.connected = action.payload;
+    },
   },
 });
 export const isDarkTheme = (state: any) =>
   state.appState.colorScheme === 'dark';
 
-export const {auth, applied, theme, processedLeaves, assesstoken, credential} =
-  appStateSlice.actions;
+export const {
+  auth,
+  applied,
+  theme,
+  processedLeaves,
+  assesstoken,
+  credential,
+  internet,
+} = appStateSlice.actions;
 
 export default appStateSlice.reducer;

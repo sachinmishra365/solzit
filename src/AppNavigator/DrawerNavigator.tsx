@@ -8,6 +8,7 @@ import {
   View,
   TouchableOpacity,
   useColorScheme,
+  PanResponder,
 } from 'react-native';
 import {Icon} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -16,6 +17,7 @@ import Dashboard from '../Screens/Dashboard/Dashboard';
 import {auth, isDarkTheme, theme} from '../AppStore/Reducers/appState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useRef, useState} from 'react';
+import { SCREEN_WIDTH } from '../constants/Screen';
 
 const DrawerNavigator = ({navigation}: any) => {
   const dispatch = useDispatch();
@@ -47,6 +49,38 @@ const DrawerNavigator = ({navigation}: any) => {
       setShowMenu(newShowMenu);
     });
   };
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (evt, gestureState) => {
+            if (gestureState.dx > 0 && gestureState.x0 < SCREEN_WIDTH * 0.1) {
+        setShowMenu(true);
+        Animated.timing(scaleValue, {
+          toValue: 0.9,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+        Animated.timing(offsetValue, {
+          toValue: 230,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      } else if (gestureState.dx < 0) {
+        setShowMenu(false);
+        Animated.timing(scaleValue, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+        Animated.timing(offsetValue, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+  });
 
   const [Loading, setLoading] = useState(true);
 
@@ -199,6 +233,7 @@ const DrawerNavigator = ({navigation}: any) => {
       </View>
 
       <Animated.View
+      //  {...panResponder.panHandlers}
         style={[
           styles(isDark).screenHeaderContainer,
           {

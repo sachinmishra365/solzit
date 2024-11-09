@@ -31,6 +31,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ShimmerPlaceHolder, {
   PlaceholderCard,
 } from '../Placeholder/ShimmerPlaceHolder';
+import Toast from 'react-native-toast-message';
 
 const SepratedAttendance = ({route}: any) => {
   const MonthData = route.params;
@@ -51,8 +52,16 @@ const SepratedAttendance = ({route}: any) => {
 
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
   const bottomSheetRef = useRef<IBottomSheetRef>(null);
+
+  const handleGoBack = async (setFieldValue: any) => {
+    setFieldValue('startTime', '');
+    setFieldValue('endTime', '');
+    setFieldValue('actualHour', null);
+    setFieldValue('reason', '');
+  };
 
   const handleClose = () => {
     bottomSheetRef.current?.collapse();
@@ -78,8 +87,12 @@ const SepratedAttendance = ({route}: any) => {
   };
 
   const validationSchema = Yup.object().shape({
-    startTime: Yup.string().required('Start time is required'),
-    endTime: Yup.string().required('End time is required'),
+    startTime: Yup.string()
+      .required('Start time is required')
+      .test('Start time can not be 00:00', value => value !== '00:00'),
+    endTime: Yup.string()
+      .required('End time is required')
+      .test('End time can not be 00:00', value => value !== '00:00'),
     actualHours: Yup.number()
       .required('Actual hours are required')
       .positive('Must be a positive number')
@@ -138,14 +151,27 @@ const SepratedAttendance = ({route}: any) => {
   };
 
   const handleSepratedAttendance = async () => {
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     try {
       const response = await attendanceData({data, accessToken}).unwrap();
       if (response?.messageDetail?.message_code === 200) {
         SetAttendancedata(response?.data);
       }
-    } catch (err) {
-      console.error('Failed to fetch attendance:', err);
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -168,9 +194,7 @@ const SepratedAttendance = ({route}: any) => {
         SetAttendanceQueryData(response?.data?.data);
         SetLoad(true);
       }
-    } catch (error) {
-      console.error('Error in handlequery:', error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -179,7 +203,22 @@ const SepratedAttendance = ({route}: any) => {
 
   const [AskAttendanceQuery, result] = useAskEmployeeAttendanceQueryMutation();
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: any, setFieldValue: any) => {
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     const data = {
       attendanceId: selectedItem?.id,
       suggestedStartTime: values.startTime || null,
@@ -193,26 +232,28 @@ const SepratedAttendance = ({route}: any) => {
       const response = await AskAttendanceQuery({data, accessToken});
 
       if (response?.data?.messageDetail?.message_code === 201) {
-        Alert.alert(
-          'Attendance Query ',
-          'Changes saved successfully',
-          [
-            {
-              text: 'ok',
-              onPress: () => {
-                handleClose();
-                setcall(!call);
-              },
-            },
-          ],
-          {cancelable: true},
-        );
+        Toast.show({
+          type: 'success',
+          text1: 'Attendance Query',
+          text2: 'Changes saved successfully',
+          text2Style: {
+            flexWrap: 'wrap',
+            fontSize: 20,
+            fontFamily: 'Lato-Regular',
+          },
+          topOffset: 80,
+          visibilityTime: 5000,
+        });
 
+        handleClose();
         setcall(!call);
+
+        setFieldValue('startTime', '');
+        setFieldValue('endTime', '');
+        setFieldValue('actualHour', null);
+        setFieldValue('reason', '');
       }
-    } catch (error) {
-      console.error('Error in handlequery:', error);
-    }
+    } catch (error) {}
   };
 
   const renderItem = ({item}: any) => {
@@ -260,6 +301,7 @@ const SepratedAttendance = ({route}: any) => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   flexWrap: 'wrap',
+                  marginTop: 10,
                 }}>
                 {item?.leaveType?.label !== 'Loss of Pay' &&
                 item?.leaveType?.label !== 'Earn Leave' ? (
@@ -269,7 +311,7 @@ const SepratedAttendance = ({route}: any) => {
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 18,
                         fontFamily: 'Lato-Bold',
-                        marginBottom: 6,
+                        // marginBottom: 6,
                       }}>
                       Late?{' : '}
                     </Text>
@@ -285,6 +327,43 @@ const SepratedAttendance = ({route}: any) => {
                   </View>
                 ) : null}
 
+                {item?.leaveType?.label !== 'Loss of Pay' &&
+                item?.totalHours > 0 ? (
+                  <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                        flexWrap: 'wrap',
+                      }}>
+                      Effective Hours{' : '}
+                    </Text>
+                    <Text
+                      style={{
+                        color:
+                          item?.totalHours < 7
+                            ? Colors.error
+                            : isDark
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                      }}>
+                      {item?.totalHours}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  // marginTop: 10,
+                  flexWrap: 'wrap',
+                  justifyContent: 'space-between',
+                }}>
                 <View style={{flexDirection: 'row'}}>
                   <Text
                     style={{
@@ -310,83 +389,50 @@ const SepratedAttendance = ({route}: any) => {
                       : 'Working Day'}
                   </Text>
                 </View>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 10,
-                }}>
-                {item?.leaveType?.label !== 'Loss of Pay' &&
-                item?.totalHours > 0 ? (
-                  <View style={{flexDirection: 'row'}}>
-                    <Text
-                      style={{
-                        color: isDark ? Colors.white : Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
-                      }}>
-                      Effective Hours{' : '}
-                    </Text>
-                    <Text
-                      style={{
-                        color:
-                          item?.totalHours < 7
-                            ? Colors.error
-                            : isDark
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
-                      }}>
-                      {item?.totalHours}
-                    </Text>
-                  </View>
-                ) : null}
-
-                <TouchableOpacity
+                <View
                   style={{
                     height: 'auto',
-                    backgroundColor: Colors.primary,
-                    justifyContent: 'center',
-                    alignSelf: 'center',
-                    borderRadius: 3,
-                    position: 'absolute',
-                    right: 0,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                  }}
-                  onPress={() => {
-                    setSelectedItem(item);
-                    bottomSheetRef.current?.expand();
-                    SetClose(true);
                   }}>
-                  <IconButton
-                    style={{margin: -2}}
-                    icon={
-                      item?.queryStatus?.label !== 'Default'
-                        ? 'information-outline'
-                        : 'circle-edit-outline'
-                    }
-                    iconColor={Colors.white}
-                    size={18}
-                  />
-                  <Text
+                  <TouchableOpacity
                     style={{
-                      textAlign: 'center',
-                      fontFamily: 'Lato-Bold',
-                      color: Colors.white,
-                      flexWrap: 'wrap',
-                      marginRight: 5,
+                      backgroundColor: Colors.primary,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 3,
+                      flexDirection: 'row',
+                      marginTop: 4,
+                    }}
+                    onPress={() => {
+                      setSelectedItem(item);
+                      bottomSheetRef.current?.expand();
+                      SetClose(true);
                     }}>
-                    {item?.queryStatus?.label != 'Default' &&
-                    item?.leaveType?.label !== 'Weekend' &&
-                    item?.leaveType?.label !== 'Soluzione Fixed Holiday'
-                      ? 'View Request'
-                      : 'Request Change'}
-                  </Text>
-                </TouchableOpacity>
+                    <IconButton
+                      style={{margin: -2}}
+                      icon={
+                        item?.queryStatus?.label !== 'Default'
+                          ? 'information-outline'
+                          : 'circle-edit-outline'
+                      }
+                      iconColor={Colors.white}
+                      size={18}
+                    />
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        fontFamily: 'Lato-Bold',
+                        color: Colors.white,
+                        flexWrap: 'wrap',
+                        marginRight: 5,
+                      }}>
+                      {item?.queryStatus?.label != 'Default' &&
+                      item?.leaveType?.label !== 'Weekend' &&
+                      item?.leaveType?.label !== 'Soluzione Fixed Holiday'
+                        ? 'View Request'
+                        : 'Request Change'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </>
           ) : (
@@ -543,6 +589,7 @@ const SepratedAttendance = ({route}: any) => {
                     style={{
                       justifyContent: 'space-between',
                       flexDirection: 'row',
+                      flexWrap: 'wrap',
                     }}>
                     <Text
                       style={{
@@ -687,6 +734,7 @@ const SepratedAttendance = ({route}: any) => {
                       style={{
                         justifyContent: 'space-between',
                         flexDirection: 'row',
+                        flexWrap: 'wrap',
                       }}>
                       <Text
                         style={{
@@ -722,44 +770,6 @@ const SepratedAttendance = ({route}: any) => {
                         </Text>
                       </View>
                     </View>
-
-                    {/* <View
-                      style={{
-                        justifyContent: 'space-between',
-                        flexDirection: 'row',
-                      }}>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontSize: 14,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        Start Time :{' '}
-                        {AttendanceQueryData?.suggestedStartTime
-                          ? moment(
-                              AttendanceQueryData?.suggestedStartTime,
-                              'M/D/YYYY h:mm:ss A',
-                            ).format('hh:mm A')
-                          : 'N/A'}
-                      </Text>
-
-                      <View style={{}}>
-                        <Text
-                          style={{
-                            color: isDark ? Colors.white : Colors.black,
-                            fontSize: 14,
-                            fontFamily: 'Lato-Semibold',
-                          }}>
-                          End Time :{' '}
-                          {AttendanceQueryData?.suggestedEndtTime
-                            ? moment(
-                                AttendanceQueryData?.suggestedEndtTime,
-                                'M/D/YYYY h:mm:ss A',
-                              ).format('hh:mm A')
-                            : 'N/A'}
-                        </Text>
-                      </View>
-                    </View> */}
 
                     <View
                       style={{
@@ -823,12 +833,15 @@ const SepratedAttendance = ({route}: any) => {
             <View>
               <Formik
                 initialValues={{
-                  startTime: moment().set({hour: 0, minute: 0}).format('HH:mm'),
-                  endTime: moment().set({hour: 0, minute: 0}).format('HH:mm'),
+                  startTime: '',
+                  endTime: '',
                   actualHours: null,
                   reason: '',
                 }}
                 validationSchema={validationSchema}
+                onReset={(values, actions) => {
+                  
+                }}
                 onSubmit={handleSubmit}>
                 {({
                   handleChange,
@@ -838,176 +851,166 @@ const SepratedAttendance = ({route}: any) => {
                   setFieldValue,
                   errors,
                   touched,
-                }) => (
-                  <View style={{paddingHorizontal: 10}}>
-                    <View style={{marginVertical: 6}} />
-                    <CustomTextInput
-                      label="Start Time"
-                      value={values.startTime}
-                      autoFocus={false}
-                      secureTextEntry={false}
-                      onChangeText={handleChange('startTime')}
-                      onBlur={handleBlur('startTime')}
-                      rightIconName="clock"
-                      readOnly={true}
-                      leftIconName="calendar"
-                      style={styles(isDark).input}
-                      onPress={showTimepicker}
-                    />
-                    {touched.startTime && errors.startTime && (
-                      <Text
-                        style={{
-                          color: Colors.error,
-                          marginLeft: 20,
-                          fontFamily: 'Lato-Regular',
-                        }}>
-                        {errors.startTime}
-                      </Text>
-                    )}
-                    {showStartTime && (
-                      <DateTimePicker
-                        testID="dateTimePicker"
-                        value={pickStartTime || new Date()}
-                        mode="time"
-                        is24Hour={true}
-                        display="default"
-                        onChange={(event, selectedTime) =>
-                          onChangeStartTime(event, selectedTime, setFieldValue)
-                        }
+                }) => {
+                  return (
+                    <View style={{paddingHorizontal: 10}}>
+                      <View style={{marginVertical: 6}} />
+                      <CustomTextInput
+                        label="Start Time"
+                        value={values.startTime}
+                        autoFocus={false}
+                        secureTextEntry={false}
+                        onChangeText={handleChange('startTime')}
+                        onBlur={handleBlur('startTime')}
+                        rightIconName="clock"
+                        readOnly={true}
+                        leftIconName="calendar"
+                        style={styles(isDark).input}
+                        onPress={showTimepicker}
                       />
-                    )}
-                    <View style={{marginVertical: 16}} />
-                    <CustomTextInput
-                      label="End Time"
-                      value={values.endTime}
-                      autoFocus={false}
-                      secureTextEntry={false}
-                      rightIconName="clock"
-                      leftIconName="calendar"
-                      onChangeText={handleChange('endTime')}
-                      onBlur={handleBlur('endTime')}
-                      editable={true}
-                      readOnly={true}
-                      style={styles(isDark).input}
-                      onPress={showEndTimepicker}
-                    />
-                    {touched.endTime && errors.endTime && (
-                      <Text
-                        style={{
-                          color: Colors.error,
-                          marginLeft: 20,
-                          fontFamily: 'Lato-Regular',
-                        }}>
-                        {errors.endTime}
-                      </Text>
-                    )}
-                    {showEndTime && (
-                      <DateTimePicker
-                        testID="dateTimePicker"
-                        value={pickEndTime || new Date()}
-                        mode="time"
-                        is24Hour={true}
-                        display="default"
-                        onChange={(event, selectedTime) =>
-                          onChangeEndTime(event, selectedTime, setFieldValue)
-                        }
+                      {touched.startTime && errors.startTime && (
+                        <Text
+                          style={{
+                            color: Colors.error,
+                            marginLeft: 20,
+                            fontFamily: 'Lato-Regular',
+                          }}>
+                          {errors.startTime}
+                        </Text>
+                      )}
+                      {showStartTime && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={pickStartTime || new Date()}
+                          mode="time"
+                          is24Hour={true}
+                          display="default"
+                          onChange={(event, selectedTime) =>
+                            onChangeStartTime(
+                              event,
+                              selectedTime,
+                              setFieldValue,
+                            )
+                          }
+                        />
+                      )}
+                      <View style={{marginVertical: 16}} />
+                      <CustomTextInput
+                        label="End Time"
+                        value={values.endTime}
+                        autoFocus={false}
+                        secureTextEntry={false}
+                        rightIconName="clock"
+                        leftIconName="calendar"
+                        onChangeText={handleChange('endTime')}
+                        onBlur={handleBlur('endTime')}
+                        editable={true}
+                        readOnly={true}
+                        style={styles(isDark).input}
+                        onPress={showEndTimepicker}
                       />
-                    )}
-                    <View style={{marginVertical: 16}} />
-                    <CustomTextInput
-                      label="Actual Hours"
-                      value={values.actualHours}
-                      autoFocus={false}
-                      secureTextEntry={false}
-                      leftIconName="hours-24"
-                      onChangeText={handleChange('actualHours')}
-                      onBlur={handleBlur('actualHours')}
-                      editable={true}
-                      style={styles(isDark).input}
-                      keyboardType="numeric"
-                    />
-                    {touched.actualHours && errors.actualHours && (
-                      <Text
+                      {touched.endTime && errors.endTime && (
+                        <Text
+                          style={{
+                            color: Colors.error,
+                            marginLeft: 20,
+                            fontFamily: 'Lato-Regular',
+                          }}>
+                          {errors.endTime}
+                        </Text>
+                      )}
+                      {showEndTime && (
+                        <DateTimePicker
+                          testID="dateTimePicker"
+                          value={pickEndTime || new Date()}
+                          mode="time"
+                          is24Hour={true}
+                          display="default"
+                          onChange={(event, selectedTime) =>
+                            onChangeEndTime(event, selectedTime, setFieldValue)
+                          }
+                        />
+                      )}
+                      <View style={{marginVertical: 16}} />
+                      <CustomTextInput
+                        label="Actual Hours"
+                        value={values.actualHours}
+                        autoFocus={false}
+                        secureTextEntry={false}
+                        leftIconName="hours-24"
+                        onChangeText={handleChange('actualHours')}
+                        onBlur={handleBlur('actualHours')}
+                        editable={true}
+                        style={styles(isDark).input}
+                        keyboardType="numeric"
+                      />
+                      {touched.actualHours && errors.actualHours && (
+                        <Text
+                          style={{
+                            color: Colors.error,
+                            marginLeft: 20,
+                            fontFamily: 'Lato-Regular',
+                          }}>
+                          {errors.actualHours}
+                        </Text>
+                      )}
+
+                      <View style={{marginVertical: 16}} />
+
+                      <CustomTextInput
+                        label="Reason"
+                        value={values.reason}
+                        secureTextEntry={false}
+                        leftIconName="message-reply-text-outline"
+                        onChangeText={handleChange('reason')}
+                        onBlur={handleBlur('reason')}
+                        editable={true}
+                        style={[styles(isDark).input]}
+                        contentStyle={{height: 100, paddingBottom: 50}}
+                        numberOfLines={4}
+                      />
+                      {touched.reason && errors.reason && (
+                        <Text
+                          style={{
+                            color: Colors.error,
+                            marginLeft: 20,
+                            fontFamily: 'Lato-Regular',
+                          }}>
+                          {errors.reason}
+                        </Text>
+                      )}
+
+                      <View style={{marginVertical: 16}} />
+
+                      <TouchableOpacity
                         style={{
-                          color: Colors.error,
-                          marginLeft: 20,
-                          fontFamily: 'Lato-Regular',
+                          width: SCREEN_WIDTH - 90,
+                          height: 45,
+                          backgroundColor: Colors.primary,
+                          justifyContent: 'center',
+                          alignSelf: 'center',
+                          borderRadius: 3,
+                        }}
+                        onPress={async () => {
+                          handleSubmit();
                         }}>
-                        {errors.actualHours}
-                      </Text>
-                    )}
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            fontSize: 16,
+                            fontFamily: 'Lato-Bold',
+                            color: Colors.white,
+                          }}>
+                          Submit
+                        </Text>
+                      </TouchableOpacity>
 
-                    <View style={{marginVertical: 16}} />
-
-                    <CustomTextInput
-                      label="Reason"
-                      value={values.reason}
-                      secureTextEntry={false}
-                      leftIconName="message-reply-text-outline"
-                      onChangeText={handleChange('reason')}
-                      onBlur={handleBlur('reason')}
-                      editable={true}
-                      onPress={() => {
-                        // setShowPassword(!showPassword);
-                      }}
-                      style={[styles(isDark).input]}
-                      contentStyle={{height: 100, paddingBottom: 50}}
-                      numberOfLines={4}
-                    />
-                    {touched.reason && errors.reason && (
-                      <Text
-                        style={{
-                          color: Colors.error,
-                          marginLeft: 20,
-                          fontFamily: 'Lato-Regular',
-                        }}>
-                        {errors.reason}
-                      </Text>
-                    )}
-
-                    <View style={{marginVertical: 16}} />
-
-                    <TouchableOpacity
-                      style={{
-                        width: SCREEN_WIDTH - 90,
-                        height: 45,
-                        backgroundColor: Colors.primary,
-                        justifyContent: 'center',
-                        alignSelf: 'center',
-                        borderRadius: 3,
-                      }}
-                      onPress={async () => {
-                        await handleSubmit();
-
-                        setTimeout(() => {
-                          setFieldValue(
-                            'startTime',
-                            moment().set({hour: 0, minute: 0}).format('HH:mm'),
-                          );
-                          setFieldValue(
-                            'endTime',
-                            moment().set({hour: 0, minute: 0}).format('HH:mm'),
-                          );
-                          setFieldValue('actualHour', null);
-                          setFieldValue('reason', null);
-                        }, 1500);
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          fontSize: 16,
-                          fontFamily: 'Lato-Bold',
-                          color: Colors.white,
-                        }}>
-                        Submit
-                      </Text>
-                    </TouchableOpacity>
-
-                    {isLoading && (
-                      <ActivityIndicator size="large" color={Colors.white} />
-                    )}
-                  </View>
-                )}
+                      {isLoading && (
+                        <ActivityIndicator size="large" color={Colors.white} />
+                      )}
+                    </View>
+                  );
+                }}
               </Formik>
               <View style={{height: 200}} />
             </View>

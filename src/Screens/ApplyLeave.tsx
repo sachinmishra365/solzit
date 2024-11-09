@@ -22,6 +22,7 @@ import CustomHeader from '../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import {isDarkTheme} from '../AppStore/Reducers/appState';
+import Placeholder from './Placeholder/Placeholder';
 
 const validationSchema = Yup.object().shape({
   LeaveDayType: Yup.string().required('Leave Day Type is required'),
@@ -45,6 +46,9 @@ const ApplyLeave = () => {
   const [totalDaysofLeave, setTotalDaysofLeave] = useState(0);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
+  const financialYearStart = new Date(new Date().getFullYear(), 3, 1);
+  const financialYearEnd = new Date(new Date().getFullYear() + 2, 2, 31);
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
   useEffect(() => {
     setTimeout(() => {
@@ -58,6 +62,7 @@ const ApplyLeave = () => {
     const currentDate = selectedDate || startDate;
     setShowStart(false);
     setStartDate(currentDate);
+    setEndDate(currentDate);
   };
 
   const onChangeEnd = (event: any, selectedDate: Date) => {
@@ -89,6 +94,21 @@ const ApplyLeave = () => {
   }, [startDate, endDate]);
 
   const handleApply = async (values: any) => {
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     const formattedStartDate = startDate
       ? moment(startDate).format('YYYY-MM-DD')
       : null;
@@ -124,21 +144,12 @@ const ApplyLeave = () => {
       totalDaysofLeave: totalLeaveDay,
     };
 
-    if (totalDaysofLeave) {
-      try {
-        const response: any = await ApplyLeave({data, accessToken});
-
+    try {
+      if(totalDaysofLeave >=100){
         Toast.show({
           type: 'success',
           text1: 'Leave Status',
-          text2:
-            response?.data?.messageDetail?.message_code === 201 &&
-            response?.data?.messageDetail?.message_shortcode ===
-              'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
-              ? response?.data?.messageDetail?.message
-              : response?.error?.data?.messageDetail?.message_code === 4449
-              ? response?.error?.data?.messageDetail?.message
-              : `Something went wrong...${'/n'}Please try again.`,
+          text2:'Leave does not more than 100 days',
           text2Style: {
             flexWrap: 'wrap',
             fontSize: 20,
@@ -147,17 +158,38 @@ const ApplyLeave = () => {
           topOffset: 80,
           visibilityTime: 5000,
         });
-
-        setTimeout(() => {
+      }
+      else{
+      const response: any = await ApplyLeave({data, accessToken});
+      Toast.show({
+        type: 'success',
+        text1: 'Leave Status',
+        text2:
           response?.data?.messageDetail?.message_code === 201 &&
           response?.data?.messageDetail?.message_shortcode ===
             'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
-            ? navigation.replace('LeaveRequest')
-            : null;
-        }, 5000);
-      } catch (err) {
-        console.log(err);
-      }
+            ? 'Leave applied successfully'
+            : response?.error?.data?.messageDetail?.message_code === 4449
+            ? response?.error?.data?.messageDetail?.message
+            : `Something went wrong...${' '}Please try again.`,
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+
+      setTimeout(() => {
+        response?.data?.messageDetail?.message_code === 201 &&
+        response?.data?.messageDetail?.message_shortcode ===
+          'SOLZIT_RECORDS_CREATED_SUCCESSFULLY'
+          ? navigation.replace('LeaveRequest')
+          : null;
+      }, 5000);
+    }
+    } catch (err) {
     }
   };
 
@@ -182,436 +214,446 @@ const ApplyLeave = () => {
           borderColor: isDark ? Colors.black : 'transparent',
         }}
       />
+      {isLoading ? (
+        <Placeholder />
+      ) : (
+        <Formik
+          initialValues={{
+            LeaveDayType: 'Full Day',
+            LeaveType: 'Earn Leave',
+            HalfDayType: 'Fore Noon',
+            StartDayOfLeave: moment(startDate).format('DD-MM-YYYY'),
+            EndDayOfLeave: moment(endDate).format('DD-MM-YYYY'),
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleApply}>
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue,
+            values,
+            errors,
+            touched,
+          }) => (
+            <View>
+              <View style={{marginVertical: 16}} />
 
-      <Formik
-        initialValues={{
-          LeaveDayType: 'Full Day',
-          LeaveType: 'Earn Leave',
-          HalfDayType: 'Fore Noon',
-          StartDayOfLeave: moment(startDate).format('DD-MM-YYYY'),
-          EndDayOfLeave: moment(endDate).format('DD-MM-YYYY'),
-        }}
-        validationSchema={validationSchema}
-        onSubmit={handleApply}>
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          setFieldValue,
-          values,
-          errors,
-          touched,
-        }) => (
-          <View>
-            <View style={{marginVertical: 16}} />
-
-            <View style={{marginHorizontal: 16}}>
-              <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Lato-Bold',
-                }}>
-                Leave Type
-              </Text>
-              <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
+              <View style={{marginHorizontal: 16}}>
+                <Text
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 10,
-                    marginRight: 50,
-                  }}
-                  onPress={() => setFieldValue('LeaveType', 'Earn Leave')}>
-                  <View
+                    color: isDark ? Colors.white : Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Lato-Bold',
+                  }}>
+                  Leave Type
+                </Text>
+                <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity
                     style={{
-                      height: 20,
-                      width: 20,
-                      borderRadius: 10,
-                      borderWidth: 2,
-                      borderColor: isDark ? Colors.white : Colors.primary,
+                      flexDirection: 'row',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: 10,
-                    }}>
-                    {values.LeaveType === 'Earn Leave' && (
-                      <View
-                        style={{
-                          height: 10,
-                          width: 10,
-                          borderRadius: 5,
-                          backgroundColor: isDark
-                            ? Colors.white
-                            : Colors.primary,
-                        }}
-                      />
-                    )}
-                  </View>
-                  <Text
-                    style={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Regular',
-                    }}>
-                    Earn Leave
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={{marginVertical: 16}} />
-            <View style={{marginHorizontal: 16}}>
-              <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Lato-Bold',
-                }}>
-                Leave Day Type
-              </Text>
-              <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 10,
-                    marginRight: 50,
-                  }}
-                  onPress={() => setFieldValue('LeaveDayType', 'Full Day')}>
-                  <View
-                    style={{
-                      height: 20,
-                      width: 20,
-                      borderRadius: 10,
-                      borderWidth: 2,
-                      borderColor: isDark ? Colors.white : Colors.primary,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: 10,
-                    }}>
-                    {values.LeaveDayType === 'Full Day' && (
-                      <View
-                        style={{
-                          height: 10,
-                          width: 10,
-                          borderRadius: 5,
-                          backgroundColor: isDark
-                            ? Colors.white
-                            : Colors.primary,
-                        }}
-                      />
-                    )}
-                  </View>
-                  <Text
-                    style={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Regular',
-                    }}>
-                    Full Day
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginTop: 10,
-                  }}
-                  onPress={() => setFieldValue('LeaveDayType', 'Half Day')}>
-                  <View
-                    style={{
-                      height: 20,
-                      width: 20,
-                      borderRadius: 10,
-                      borderWidth: 2,
-                      borderColor: isDark ? Colors.white : Colors.primary,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: 10,
-                    }}>
-                    {values.LeaveDayType === 'Half Day' && (
-                      <View
-                        style={{
-                          height: 10,
-                          width: 10,
-                          borderRadius: 5,
-                          backgroundColor: isDark
-                            ? Colors.white
-                            : Colors.primary,
-                        }}
-                      />
-                    )}
-                  </View>
-                  <Text
-                    style={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Regular',
-                    }}>
-                    Half Day
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            {touched.LeaveDayType && errors.LeaveDayType && (
-              <Text style={{color: Colors.error, marginLeft: 20}}>
-                {errors.LeaveDayType}
-              </Text>
-            )}
-
-            {values.LeaveDayType === 'Half Day' ? (
-              <View>
-                <View style={{marginVertical: 16}} />
-                <View style={{marginHorizontal: 16}}>
-                  <Text
-                    style={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'Lato-Bold',
-                    }}>
-                    Half Day Type
-                  </Text>
-                  <View style={{flexDirection: 'row'}}>
-                    <TouchableOpacity
+                      marginTop: 10,
+                      marginRight: 50,
+                    }}
+                    onPress={() => setFieldValue('LeaveType', 'Earn Leave')}>
+                    <View
                       style={{
-                        flexDirection: 'row',
+                        height: 20,
+                        width: 20,
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: isDark ? Colors.white : Colors.primary,
                         alignItems: 'center',
-                        marginTop: 10,
-                        marginRight: 35,
-                      }}
-                      onPress={() => setFieldValue('HalfDayType', 'Fore Noon')}>
-                      <View
-                        style={{
-                          height: 20,
-                          width: 20,
-                          borderRadius: 10,
-                          borderWidth: 2,
-                          borderColor: isDark ? Colors.white : Colors.primary,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginRight: 10,
-                        }}>
-                        {values.HalfDayType === 'Fore Noon' && (
-                          <View
-                            style={{
-                              height: 10,
-                              width: 10,
-                              borderRadius: 5,
-                              backgroundColor: isDark
-                                ? Colors.white
-                                : Colors.primary,
-                            }}
-                          />
-                        )}
-                      </View>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontFamily: 'Lato-Regular',
-                        }}>
-                        Fore Noon
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                        justifyContent: 'center',
+                        marginRight: 10,
+                      }}>
+                      {values.LeaveType === 'Earn Leave' && (
+                        <View
+                          style={{
+                            height: 10,
+                            width: 10,
+                            borderRadius: 5,
+                            backgroundColor: isDark
+                              ? Colors.white
+                              : Colors.primary,
+                          }}
+                        />
+                      )}
+                    </View>
+                    <Text
                       style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginTop: 10,
-                      }}
-                      onPress={() =>
-                        setFieldValue('HalfDayType', 'After Noon')
-                      }>
-                      <View
-                        style={{
-                          height: 20,
-                          width: 20,
-                          borderRadius: 10,
-                          borderWidth: 2,
-                          borderColor: isDark ? Colors.white : Colors.primary,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          marginRight: 10,
-                        }}>
-                        {values.HalfDayType === 'After Noon' && (
-                          <View
-                            style={{
-                              height: 10,
-                              width: 10,
-                              borderRadius: 5,
-                              backgroundColor: isDark
-                                ? Colors.white
-                                : Colors.primary,
-                            }}
-                          />
-                        )}
-                      </View>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontFamily: 'Lato-Regular',
-                        }}>
-                        After Noon
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
+                        color: isDark ? Colors.white : Colors.black,
+                        fontFamily: 'Lato-Regular',
+                      }}>
+                      Earn Leave
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-            ) : null}
 
-            {touched.HalfDayType && errors.HalfDayType && (
-              <Text style={{color: Colors.error, marginLeft: 20}}>
-                {errors.HalfDayType}
-              </Text>
-            )}
-            <View style={{marginVertical: 16}} />
-            <Pressable
-              onPress={() => {
-                showDatepickerStart();
-              }}>
-              <CustomTextInput
-                label="Start Day Of Leave"
-                value={moment(startDate).format('DD-MM-YYYY')}
-                onChangeText={handleChange('StartDayOfLeave')}
-                onBlur={handleBlur('StartDayOfLeave')}
-                lefticon={false}
-                rightIconName={'calendar'}
-                onPress={() => {
-                  showDatepickerStart();
-                }}
-                autoFocus={false}
-                editable={false}
-                readOnly={true}
-              />
-            </Pressable>
-            {touched.StartDayOfLeave && errors.StartDayOfLeave && (
-              <Text style={{color: Colors.error, marginLeft: 20}}>
-                {errors.StartDayOfLeave}
-              </Text>
-            )}
-            <View style={{marginVertical: 16}} />
-            {values.LeaveDayType === 'Half Day' ? (
-              <Pressable>
-                <CustomTextInput
-                  label="End Day Of Leave"
-                  value={
-                    values.LeaveDayType === 'Half Day'
-                      ? moment(startDate).format('DD-MM-YYYY')
-                      : moment(endDate).format('DD-MM-YYYY')
-                  }
-                  onChangeText={handleChange('EndDayOfLeave')}
-                  onBlur={handleBlur('EndDayOfLeave')}
-                  lefticon={false}
-                  rightIconName={'calendar'}
-                  disable={true}
-                  readOnly={true}
-                />
-              </Pressable>
-            ) : (
+              <View style={{marginVertical: 16}} />
+              <View style={{marginHorizontal: 16}}>
+                <Text
+                  style={{
+                    color: isDark ? Colors.white : Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Lato-Bold',
+                  }}>
+                  Leave Day Type
+                </Text>
+                <View style={{flexDirection: 'row'}}>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: 10,
+                      marginRight: 50,
+                    }}
+                    onPress={() => setFieldValue('LeaveDayType', 'Full Day')}>
+                    <View
+                      style={{
+                        height: 20,
+                        width: 20,
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: isDark ? Colors.white : Colors.primary,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 10,
+                      }}>
+                      {values.LeaveDayType === 'Full Day' && (
+                        <View
+                          style={{
+                            height: 10,
+                            width: 10,
+                            borderRadius: 5,
+                            backgroundColor: isDark
+                              ? Colors.white
+                              : Colors.primary,
+                          }}
+                        />
+                      )}
+                    </View>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontFamily: 'Lato-Regular',
+                      }}>
+                      Full Day
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: 10,
+                    }}
+                    onPress={() => setFieldValue('LeaveDayType', 'Half Day')}>
+                    <View
+                      style={{
+                        height: 20,
+                        width: 20,
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: isDark ? Colors.white : Colors.primary,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 10,
+                      }}>
+                      {values.LeaveDayType === 'Half Day' && (
+                        <View
+                          style={{
+                            height: 10,
+                            width: 10,
+                            borderRadius: 5,
+                            backgroundColor: isDark
+                              ? Colors.white
+                              : Colors.primary,
+                          }}
+                        />
+                      )}
+                    </View>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontFamily: 'Lato-Regular',
+                      }}>
+                      Half Day
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              {touched.LeaveDayType && errors.LeaveDayType && (
+                <Text style={{color: Colors.error, marginLeft: 20}}>
+                  {errors.LeaveDayType}
+                </Text>
+              )}
+
+              {values.LeaveDayType === 'Half Day' ? (
+                <View>
+                  <View style={{marginVertical: 16}} />
+                  <View style={{marginHorizontal: 16}}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 16,
+                        fontFamily: 'Lato-Bold',
+                      }}>
+                      Half Day Type
+                    </Text>
+                    <View style={{flexDirection: 'row'}}>
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginTop: 10,
+                          marginRight: 35,
+                        }}
+                        onPress={() =>
+                          setFieldValue('HalfDayType', 'Fore Noon')
+                        }>
+                        <View
+                          style={{
+                            height: 20,
+                            width: 20,
+                            borderRadius: 10,
+                            borderWidth: 2,
+                            borderColor: isDark ? Colors.white : Colors.primary,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 10,
+                          }}>
+                          {values.HalfDayType === 'Fore Noon' && (
+                            <View
+                              style={{
+                                height: 10,
+                                width: 10,
+                                borderRadius: 5,
+                                backgroundColor: isDark
+                                  ? Colors.white
+                                  : Colors.primary,
+                              }}
+                            />
+                          )}
+                        </View>
+                        <Text
+                          style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            fontFamily: 'Lato-Regular',
+                          }}>
+                          Fore Noon
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginTop: 10,
+                        }}
+                        onPress={() =>
+                          setFieldValue('HalfDayType', 'After Noon')
+                        }>
+                        <View
+                          style={{
+                            height: 20,
+                            width: 20,
+                            borderRadius: 10,
+                            borderWidth: 2,
+                            borderColor: isDark ? Colors.white : Colors.primary,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 10,
+                          }}>
+                          {values.HalfDayType === 'After Noon' && (
+                            <View
+                              style={{
+                                height: 10,
+                                width: 10,
+                                borderRadius: 5,
+                                backgroundColor: isDark
+                                  ? Colors.white
+                                  : Colors.primary,
+                              }}
+                            />
+                          )}
+                        </View>
+                        <Text
+                          style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            fontFamily: 'Lato-Regular',
+                          }}>
+                          After Noon
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              ) : null}
+
+              {touched.HalfDayType && errors.HalfDayType && (
+                <Text style={{color: Colors.error, marginLeft: 20}}>
+                  {errors.HalfDayType}
+                </Text>
+              )}
+              <View style={{marginVertical: 16}} />
               <Pressable
                 onPress={() => {
-                  showDatepickerEnd();
+                  showDatepickerStart();
                 }}>
                 <CustomTextInput
-                  label="End Day Of Leave"
-                  value={
-                    values.LeaveDayType === 'Half Day'
-                      ? moment(startDate).format('DD-MM-YYYY')
-                      : moment(endDate).format('DD-MM-YYYY')
-                  }
-                  onChangeText={handleChange('EndDayOfLeave')}
-                  onBlur={handleBlur('EndDayOfLeave')}
+                  label="Start Day Of Leave"
+                  value={moment(startDate).format('DD-MM-YYYY')}
+                  onChangeText={handleChange('StartDayOfLeave')}
+                  onBlur={handleBlur('StartDayOfLeave')}
                   lefticon={false}
                   rightIconName={'calendar'}
                   onPress={() => {
-                    showDatepickerEnd();
+                    showDatepickerStart();
                   }}
+                  autoFocus={false}
+                  editable={false}
                   readOnly={true}
                 />
               </Pressable>
-            )}
-            {touched.EndDayOfLeave && errors.EndDayOfLeave && (
-              <Text style={{color: Colors.error, marginLeft: 20}}>
-                {errors.EndDayOfLeave}
-              </Text>
-            )}
-            {showStart && (
-              <DateTimePicker
-                testID="dateTimePickerStart"
-                value={startDate}
-                mode="date"
-                display="default"
-                onChange={onChangeStart}
-                minimumDate={new Date()}
-              />
-            )}
-            {showEnd && (
-              <DateTimePicker
-                testID="dateTimePickerEnd"
-                value={values.LeaveDayType === 'Full Day' ? endDate : startDate}
-                mode="date"
-                display="default"
-                onChange={onChangeEnd}
-                minimumDate={startDate}
-                maximumDate={
-                  values.LeaveDayType === 'Half Day' ? startDate : undefined
-                }
-              />
-            )}
-            <View style={{marginVertical: 16}} />
-
-            <TouchableOpacity
-              style={{
-                width: SCREEN_WIDTH - 32,
-                height: 45,
-                backgroundColor: Colors.primary,
-                justifyContent: 'center',
-                alignSelf: 'center',
-                borderRadius: 3,
-              }}
-              disabled={isLoading ? true : false}
-              onPress={() => {
-                Alert.alert(
-                  'Leave Status',
-                  'Are you sure you want to Apply the leave?',
-                  [
-                    {
-                      text: 'No',
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                    },
-                    {
-                      text: 'Yes',
-                      onPress: () => {
-                        handleApply(values);
-                      },
-                    },
-                  ],
-                  {cancelable: true},
-                );
-              }}>
-              {isLoading ? (
-                <ActivityIndicator
-                  animating={true}
-                  color={Colors.white}
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flex: 1,
-                  }}
-                />
-              ) : (
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    fontSize: 16,
-                    // fontWeight: '600',
-                    color: Colors.white,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  Apply Leave
+              {touched.StartDayOfLeave && errors.StartDayOfLeave && (
+                <Text style={{color: Colors.error, marginLeft: 20}}>
+                  {errors.StartDayOfLeave}
                 </Text>
               )}
-            </TouchableOpacity>
-          </View>
-        )}
-      </Formik>
+              <View style={{marginVertical: 16}} />
+              {values.LeaveDayType === 'Half Day' ? (
+                <Pressable>
+                  <CustomTextInput
+                    label="End Day Of Leave"
+                    value={
+                      values.LeaveDayType === 'Half Day'
+                        ? moment(startDate).format('DD-MM-YYYY')
+                        : moment(endDate).format('DD-MM-YYYY')
+                    }
+                    onChangeText={handleChange('EndDayOfLeave')}
+                    onBlur={handleBlur('EndDayOfLeave')}
+                    lefticon={false}
+                    rightIconName={'calendar'}
+                    disable={true}
+                    readOnly={true}
+                  />
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPress={() => {
+                    showDatepickerEnd();
+                  }}>
+                  <CustomTextInput
+                    label="End Day Of Leave"
+                    value={
+                      values.LeaveDayType === 'Half Day'
+                        ? moment(startDate).format('DD-MM-YYYY')
+                        : moment(endDate).format('DD-MM-YYYY')
+                    }
+                    onChangeText={handleChange('EndDayOfLeave')}
+                    onBlur={handleBlur('EndDayOfLeave')}
+                    lefticon={false}
+                    rightIconName={'calendar'}
+                    onPress={() => {
+                      showDatepickerEnd();
+                    }}
+                    readOnly={true}
+                  />
+                </Pressable>
+              )}
+              {touched.EndDayOfLeave && errors.EndDayOfLeave && (
+                <Text style={{color: Colors.error, marginLeft: 20}}>
+                  {errors.EndDayOfLeave}
+                </Text>
+              )}
+              {showStart && (
+                <DateTimePicker
+                  testID="dateTimePickerStart"
+                  value={startDate}
+                  mode="date"
+                  display="default"
+                  onChange={onChangeStart}
+                  // minimumDate={new Date()}
+                  minimumDate={financialYearStart && new Date()}
+                  maximumDate={financialYearEnd}
+                />
+              )}
+              {showEnd && (
+                <DateTimePicker
+                  testID="dateTimePickerEnd"
+                  value={
+                    values.LeaveDayType === 'Full Day' ? endDate : startDate
+                  }
+                  mode="date"
+                  display="default"
+                  onChange={onChangeEnd}
+                  // minimumDate={startDate}
+                  // maximumDate={
+                  //   values.LeaveDayType === 'Half Day' ? startDate : undefined
+                  // }
+                  minimumDate={startDate}
+                  maximumDate={financialYearEnd}
+                />
+              )}
+              <View style={{marginVertical: 16}} />
+
+              <TouchableOpacity
+                style={{
+                  width: SCREEN_WIDTH - 32,
+                  height: 45,
+                  backgroundColor: Colors.primary,
+                  justifyContent: 'center',
+                  alignSelf: 'center',
+                  borderRadius: 3,
+                }}
+                disabled={isLoading ? true : false}
+                onPress={() => {
+                  Alert.alert(
+                    'Leave Status',
+                    'Are you sure you want to Apply the leave?',
+                    [
+                      {
+                        text: 'No',
+                        onPress: () =>{},
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'Yes',
+                        onPress: () => {
+                          handleApply(values);
+                        },
+                      },
+                    ],
+                    {cancelable: true},
+                  );
+                }}>
+                {isLoading ? (
+                  <ActivityIndicator
+                    animating={true}
+                    color={Colors.white}
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      flex: 1,
+                    }}
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontFamily: 'Lato-Bold',
+                    }}>
+                    Apply Leave
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+        </Formik>
+      )}
     </View>
   );
 };

@@ -10,6 +10,7 @@ import * as Yup from 'yup';
 import {auth, credential, isDarkTheme} from '../AppStore/Reducers/appState';
 import Placeholder from '../Screens/Placeholder/Placeholder';
 import {useUserAuthenticationloginMutation} from '../Services/appLevel';
+import Toast from 'react-native-toast-message';
 
 const LoginScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const LoginScreen = ({navigation}: any) => {
   const authCredential = useSelector(
     (state: any) => state?.appState?.authCredential,
   );
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [showPassword, setShowPassword] = useState(true);
   const [iscredential, setIsCredential] = useState(false);
@@ -32,6 +34,22 @@ const LoginScreen = ({navigation}: any) => {
   });
 
   const handleLogin = async (values: {username: string; password: string}) => {
+
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     const email = values.username;
     const password = values.password;
 
@@ -54,12 +72,11 @@ const LoginScreen = ({navigation}: any) => {
         Alert.alert(
           'Login Status',
           `${response?.data?.messageDetail?.message || ''}`,
-          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+          [{text: 'OK', onPress: () => {}}],
           {cancelable: true},
         );
       }
     } catch (err) {
-      console.error('Login failed:', err);
     }
   };
 
@@ -187,7 +204,7 @@ const LoginScreen = ({navigation}: any) => {
                     color: Colors.primary,
                     marginLeft: 35,
                   }}>
-                  Remember
+                  Remember me
                 </Text>
               </View>
 

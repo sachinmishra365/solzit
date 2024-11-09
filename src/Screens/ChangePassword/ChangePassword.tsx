@@ -6,8 +6,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import {useDispatch, useSelector} from 'react-redux';
+import {auth, isDarkTheme} from '../../AppStore/Reducers/appState';
 import {Colors} from '../../constants/Colors';
 import CustomHeader from '../../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
@@ -18,14 +18,17 @@ import * as Yup from 'yup';
 import {SCREEN_WIDTH} from '../../constants/Screen';
 import Toast from 'react-native-toast-message';
 
-const ChangePassword = () => {
-  const navigation = useNavigation();
+
+const ChangePassword = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  const dispatch = useDispatch();
 
   const [showPassword, setShowPassword] = useState(true);
   const [showNewPassword, setShowNewPassword] = useState(true);
   const [showConfirmPassword, setShowConfirmPassword] = useState(true);
+
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [ChangePassword, {isSuccess, isLoading}] = useChangePasswordMutation();
 
@@ -39,15 +42,31 @@ const ChangePassword = () => {
         /[!@#$%^&*(),.?":{}|<>]/,
         'Password must contain at least one special character',
       )
-      .min(8, 'Password must be at least 8 characters long')
-      .required('Password is required'),
+      .min(8, 'New Password must be at least 8 characters long')
+      .required(' New Password is required'),
 
     ConfirmPassword: Yup.string()
-      .required('Confirm password is required')
+      .required('Confirm New password is required')
       .oneOf([Yup.ref('Newpassword')], 'Passwords must match'),
   });
 
   const handleChangePassword = async (values: any) => {
+
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     const data = {
       email: values.email,
       Oldpassword: values.Oldpassword,
@@ -56,8 +75,10 @@ const ChangePassword = () => {
 
     try {
       const response = await ChangePassword(data).unwrap();
-      console.log(response);
-
+      if(response?.isSuccessful === true){
+        navigation.replace('AuthStack');
+        dispatch(auth(undefined));
+      }
       Toast.show({
         type: 'success',
         text1: 'Password Change Status',

@@ -14,10 +14,12 @@ import {Colors} from '../../constants/Colors';
 import {useAttendanceListQuery} from '../../Services/services';
 import {Card, IconButton} from 'react-native-paper';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
+import Toast from 'react-native-toast-message';
 
 const Attendance = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [attendanceMonthData, SetAttendanceMonthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -27,6 +29,21 @@ const Attendance = ({navigation}: any) => {
   });
 
   const handleAttendanceList = async () => {
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     try {
       const result = await data;
 
@@ -38,7 +55,6 @@ const Attendance = ({navigation}: any) => {
         SetAttendanceMonthData(result?.data);
       }
     } catch (err) {
-      console.log(err);
     }
   };
 
@@ -67,7 +83,8 @@ const Attendance = ({navigation}: any) => {
           shadowColor: isDark ? Colors.white : Colors.black,
         }}>
         <Card.Content>
-          <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+          <View style={{justifyContent: 'space-between', flexDirection: 'row',flexWrap:'wrap'
+}}>
             <Text
               style={{
                 color: isDark ? Colors.white : Colors.black,
@@ -84,7 +101,7 @@ const Attendance = ({navigation}: any) => {
                   fontSize: 16,
                   fontFamily: 'Lato-Bold',
                 }}>
-                Total Pay Day: {item.totalPayDays ? item.totalPayDays : 'N/A'}
+                Total Pay Day: {item.totalPayDays ? item.totalPayDays : 0}
               </Text>
             </View>
           </View>
@@ -111,7 +128,7 @@ const Attendance = ({navigation}: any) => {
                 fontSize: 14,
                 fontFamily: 'Lato-Semibold',
               }}>
-              Earned Leave: {item.earnedLeave ? item.earnedLeave : 'N/A'}
+              Earned Leave: {item.earnedLeave ? item.earnedLeave : 0}
             </Text>
           </View>
 

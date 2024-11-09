@@ -56,7 +56,6 @@ const Fabbutton = () => {
         elevation:10}}
       onPress={() => {
         if (open) {
-          // do something if the speed dial is open
         }
       }}
     />

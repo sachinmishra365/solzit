@@ -8,28 +8,57 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {Card, IconButton} from 'react-native-paper';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+// import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {Colors} from '../../constants/Colors';
 import {useEmployeeUpdateProfileMutation} from '../../Services/appLevel';
 import Toast from 'react-native-toast-message';
 import {PERMISSION_TYPE, PermissionHandler} from '../../permissions';
 import Placeholder from '../Placeholder/Placeholder';
 
+import ImageCropPicker, {
+  ImageOrVideo,
+  Image as CropImage,
+  Video as CropVideo,
+} from 'react-native-image-crop-picker';
+
 const Profile = () => {
   const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const Profiledata = EmployeeId?.userProfile;
-  const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
+   
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
-  const [imageAsset, setImageAsset] = useState(null);
+  // const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
+  const base64Image = useMemo(
+    () => `data:image/jpeg;base64,${Profiledata?.employeeImg}`,
+    [Profiledata?.employeeImg]
+  );
+
+  const [imageAsset, setImageAsset] = useState<any>(null);
+  
   const [modalVisible, setModalVisible] = useState(false);
+
+  const handlePick = async (
+    action: () => Promise<ImageOrVideo | ImageOrVideo[]>,
+  ) => {
+    try {
+      const result = await action();
+      if (Array.isArray(result)) {
+        setImageAsset(result as CropImage[]);
+      } else {
+        setImageAsset(result as CropImage);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const openModal = async () => {
     const cameraPermission = await PermissionHandler.checkPermission(
@@ -50,40 +79,63 @@ const Profile = () => {
     }
   };
 
-  const openImagePicker = async (type: string) => {
-    const options = {
-      includeBase64: true,
-      mediaType: 'photo',
-      quality: 1,
-    };
-
-    const pickerFunction =
-      type === 'camera' ? launchCamera : launchImageLibrary;
-
-    pickerFunction(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorMessage) {
-        console.log('Image Picker Error: ', response.errorMessage);
-      } else {
-        const asset = response.assets[0];
-        setImageAsset(asset);
-        setModalVisible(false);
-      }
-    });
+  const pickSingleWithCamera = (
+    cropping = false,
+    mediaType: 'photo' | 'video' = 'photo',
+  ) => {
+    handlePick(() =>
+      ImageCropPicker.openCamera({
+        cropping,
+        width: 500,
+        height: 500,
+        includeExif: true,
+        mediaType,
+        includeBase64: true,
+      }),
+    );
+  };
+  
+  const pickSingleWithGallary = (
+    cropping = false,
+    mediaType: 'photo' | 'video' = 'photo',
+  ) => {
+    handlePick(() =>
+      ImageCropPicker.openPicker({
+        cropping,
+        width: 500,
+        height: 500,
+        includeExif: true,
+        mediaType,
+        includeBase64: true,
+      }),
+    );
   };
 
   const [updateProfile, {isLoading}] = useEmployeeUpdateProfileMutation();
 
   const handleUpdateImage = async () => {
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     try {
       const body = {
         email: Profiledata.email,
-        profileImage: imageAsset?.base64 || imageAsset.uri,
+        profileImage: imageAsset?.base64 || imageAsset.uri || imageAsset.data,
       };
 
-      const response = await updateProfile(body);
-
+      const response = await updateProfile(body);      
       if (response?.data?.isSuccessful === true) {
         Toast.show({
           type: 'success',
@@ -100,7 +152,6 @@ const Profile = () => {
       }
     } catch (error) {
       console.error('Image update failed:', error);
-      Alert.alert('Error', 'Failed to update profile image.');
     }
   };
 
@@ -151,7 +202,11 @@ const Profile = () => {
                   top: -55,
                   left: 10,
                 }}
-                source={{uri: imageAsset?.uri ? imageAsset?.uri : base64Image}}
+                source={{
+                  uri: imageAsset?.data ?
+                  `data:image/jpeg;base64,${imageAsset?.data}`
+                  : base64Image,
+                }}
               />
             ) : (
               <Image
@@ -163,11 +218,7 @@ const Profile = () => {
                   top: -55,
                   left: 10,
                 }}
-                source={
-                  imageAsset?.uri
-                    ? {uri: imageAsset.uri}
-                    : require('../../Assets/Images/profile.png')
-                }
+                source={require('../../Assets/Images/profile.png')}
               />
             )}
           </TouchableOpacity>
@@ -252,7 +303,7 @@ const Profile = () => {
             <View style={styles(isDark).imageContainer}>
               {imageAsset ? (
                 <Image
-                  source={{uri: imageAsset?.uri}}
+                  source={{uri: `data:image/jpeg;base64,${imageAsset?.data}`}}
                   style={styles(isDark).image}
                 />
               ) : Profiledata?.employeeImg ? (
@@ -284,8 +335,7 @@ const Profile = () => {
                   alignItems: 'center',
                   flexDirection: 'row',
                 }}
-                // disabled={result.isLoading}
-                onPress={() => openImagePicker('camera')}>
+                onPress={() => pickSingleWithCamera(true)}>
                 <IconButton
                   style={{margin: -2}}
                   icon="camera"
@@ -314,7 +364,7 @@ const Profile = () => {
                   flexDirection: 'row',
                   height: 'auto',
                 }}
-                onPress={() => openImagePicker('gallery')}>
+                onPress={() => pickSingleWithGallary(true)}>
                 <IconButton
                   style={{margin: -2}}
                   icon="account-box"
@@ -327,8 +377,7 @@ const Profile = () => {
                     fontFamily: 'Lato-Bold',
                     color: Colors.white,
                     flexWrap: 'wrap',
-                    fontSize: 12,
-                    marginRight: 5,
+                    marginRight: 12,
                   }}>
                   Gallary
                 </Text>
@@ -345,7 +394,6 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
-
     </View>
   );
 };

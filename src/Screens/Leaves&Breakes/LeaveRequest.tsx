@@ -31,10 +31,10 @@ const LeaveRequest = ({navigation}: any) => {
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
-  const {data, isLoading, isSuccess, refetch} = useEmployeeAppliedLeavesQuery({
-    // ids: EmployeeId?.userProfile?.userId || null,
-    accessToken:accessToken,
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
+  const {data, isLoading, isSuccess, refetch} = useEmployeeAppliedLeavesQuery({
+    accessToken:accessToken,
   });  
 
   useEffect(() => {
@@ -161,7 +161,7 @@ const LeaveRequest = ({navigation}: any) => {
                 [
                   {
                     text: 'No',
-                    onPress: () => console.log('Cancel Pressed'),
+                    onPress: () =>{},
                     style: 'cancel',
                   },
                   {
@@ -189,11 +189,24 @@ const LeaveRequest = ({navigation}: any) => {
     </Card>
   );
 
-  const [CanceleLeave, result] = useEmployeeCancelLeavesMutation();
-  // console.log(result);
-  
+  const [CanceleLeave, result] = useEmployeeCancelLeavesMutation();  
 
   const handlecancel = async ({item}: any) => {
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+        text2Style: {
+          flexWrap: 'wrap',
+          fontSize: 20,
+          fontFamily: 'Lato-Regular',
+        },
+        topOffset: 80,
+        visibilityTime: 5000,
+      });
+      return;
+    }
     
     const data = {
       leaveApplicationId: item?.leaveApplicationId,
@@ -201,15 +214,15 @@ const LeaveRequest = ({navigation}: any) => {
     };
     try {
       const response = await CanceleLeave({data,accessToken});
-      console.log('sss',response.data);
-      
-      Toast.show({
-        type: 'success',
-        text1: 'Leave Status',
-        text2: 'Leave cancelled Successfully', 
-        topOffset: 80,
-        visibilityTime: 5000,
-      });
+      if(response?.data?.isSuccessful === true){
+        Toast.show({
+          type: 'success',
+          text1: 'Leave Status',
+          text2: 'Leave cancelled Successfully', 
+          topOffset: 80,
+          visibilityTime: 5000,
+        });
+      }
     } catch (error) {}
   };
 

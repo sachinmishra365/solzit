@@ -103,7 +103,7 @@ const LeaveBalance = ({navigation}: any) => {
                   item?.status?.label === 'Applied'
                     ? Colors.primary
                     : item?.status?.label === 'Cancelled'
-                    ? '#2dcf0e'
+                    ? '#9e2d2d'
                     : item?.status?.label === 'Declined'
                     ? Colors.error
                     : item?.status?.label === 'Approved'

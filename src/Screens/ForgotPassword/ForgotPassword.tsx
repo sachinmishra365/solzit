@@ -33,7 +33,6 @@ const ForgotPassword = ({navigation}: any) => {
             Alert.alert('Error', 'Failed to process the request.');
           }
         } catch (err) {
-          console.warn(err);
           Alert.alert('Error', 'Something went wrong.');
         } finally {
           setTriggerQuery(false);
@@ -53,7 +52,6 @@ const ForgotPassword = ({navigation}: any) => {
         Alert.alert('Error', 'Failed to process the request.');
       }
     } catch (err) {
-      console.warn(err);
       Alert.alert('Error', 'Something went wrong.');
     }
   };
