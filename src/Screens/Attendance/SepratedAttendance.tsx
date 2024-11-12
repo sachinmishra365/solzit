@@ -56,13 +56,6 @@ const SepratedAttendance = ({route}: any) => {
 
   const bottomSheetRef = useRef<IBottomSheetRef>(null);
 
-  const handleGoBack = async (setFieldValue: any) => {
-    setFieldValue('startTime', '');
-    setFieldValue('endTime', '');
-    setFieldValue('actualHour', null);
-    setFieldValue('reason', '');
-  };
-
   const handleClose = () => {
     bottomSheetRef.current?.collapse();
     SetClose(false);
@@ -221,12 +214,18 @@ const SepratedAttendance = ({route}: any) => {
     }
     const data = {
       attendanceId: selectedItem?.id,
-      suggestedStartTime: values.startTime || null,
+      suggestedStartTime: values.startTime
+        ? moment(values.startTime, 'HH:mm')
+            .subtract(5, 'hours')
+            .subtract(30, 'minutes')
+            .format('HH:mm')
+        : null,
       dates: moment(selectedItem?.date).format('YYYY-MM-DD'),
       suggestedEndtTime: values.endTime || null,
       actualHour: values.actualHours,
       reason: values.reason,
     };
+    console.log(data);
 
     try {
       const response = await AskAttendanceQuery({data, accessToken});
@@ -747,7 +746,7 @@ const SepratedAttendance = ({route}: any) => {
                           : 'N/A'}
                       </Text>
 
-                      <View style={{}}>
+                      <View>
                         <Text
                           style={{
                             color: isDark ? Colors.white : Colors.black,
@@ -839,9 +838,6 @@ const SepratedAttendance = ({route}: any) => {
                   reason: '',
                 }}
                 validationSchema={validationSchema}
-                onReset={(values, actions) => {
-                  
-                }}
                 onSubmit={handleSubmit}>
                 {({
                   handleChange,
