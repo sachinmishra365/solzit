@@ -52,8 +52,20 @@ const Dashboard = ({navigation}: any) => {
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
+  useEffect(() => {
+    const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
+    const currentTime = moment().toISOString();
+    const isTokenExpired = moment(tokenExpiry).isSameOrBefore(currentTime);
+
+    if (isTokenExpired) {
+      dispatch(auth(undefined));
+    } else {
+      // console.log('Token is still valid.');
+    }
+  }, []);
+
   const {data, error, isLoading, refetch} = useSoluzioneHolidaysQuery({
-    accessToken:accessToken,
+    accessToken: accessToken,
   });
 
   useEffect(() => {
@@ -75,14 +87,13 @@ const Dashboard = ({navigation}: any) => {
           navigation.navigate('Login');
         }
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
-  const {data:AppliedLeave ,refetch:refetchapplies} = useEmployeeAppliedLeavesQuery({
-    accessToken: accessToken,
-  });
-  
+  const {data: AppliedLeave, refetch: refetchapplies} =
+    useEmployeeAppliedLeavesQuery({
+      accessToken: accessToken,
+    });
 
   const ProcessedLeaves = useProcessedLeavesQuery({
     accessToken: accessToken,
@@ -102,7 +113,6 @@ const Dashboard = ({navigation}: any) => {
     }
   }, [AppliedLeave, ProcessedLeaves, refetch]);
 
-
   useEffect(() => {
     if (
       ProcessedLeaves?.data?.data !== undefined &&
@@ -116,10 +126,6 @@ const Dashboard = ({navigation}: any) => {
     const date = moment().format('YYYY-MM-DD');
     setCurrentDate(date);
   }, []);
-
-  const handleDayPress = (day: DateData) => {
-    setCurrentDate(day.dateString);
-  };
 
   const handleImagePress = (image: any) => {
     setSelectedImage(image);
@@ -327,9 +333,9 @@ const Dashboard = ({navigation}: any) => {
     setTimeout(() => {
       setRefreshing(false);
       refetch();
-      refetchapplies()
+      refetchapplies();
     }, 1000);
-  }, [refetch,refetchapplies]);
+  }, [refetch, refetchapplies]);
 
   return (
     <View
@@ -346,14 +352,18 @@ const Dashboard = ({navigation}: any) => {
           setOnMonth(() => month.month.toString());
         }}
         hideExtraDays={false}
-        disableArrowLeft={ moment(calendarDate).format('YYYY-MM') ===
+        disableArrowLeft={
+          moment(calendarDate).format('YYYY-MM') ===
           moment(financialYearStart).format('YYYY-MM')
-            ? true 
-            : false}
-        disableArrowRight={moment(calendarDate).format('YYYY-MM') ===
+            ? true
+            : false
+        }
+        disableArrowRight={
+          moment(calendarDate).format('YYYY-MM') ===
           moment(financialYearEnd).format('YYYY-MM')
-            ? true 
-            : false}
+            ? true
+            : false
+        }
         theme={{
           calendarBackground: 'transparent',
           textSectionTitleColor: Colors.dark_gray,

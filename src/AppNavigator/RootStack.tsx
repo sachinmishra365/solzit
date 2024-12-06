@@ -26,7 +26,6 @@ const RootStack = () => {
       <Stack.Screen name="ApplyLeave" component={ApplyLeave} />
       <Stack.Screen name="LeaveRequest" component={LeaveRequest} />
       <Stack.Screen name="LeaveBalance" component={LeaveBalance} />
-      <Stack.Screen name="Aboutleavedetails" component={Aboutleavedetails} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="Attandance" component={Attandance} />

@@ -227,32 +227,32 @@ const SepratedAttendance = ({route}: any) => {
     };
     console.log(data);
 
-    try {
-      const response = await AskAttendanceQuery({data, accessToken});
+    // try {
+    //   const response = await AskAttendanceQuery({data, accessToken});
 
-      if (response?.data?.messageDetail?.message_code === 201) {
-        Toast.show({
-          type: 'success',
-          text1: 'Attendance Query',
-          text2: 'Changes saved successfully',
-          text2Style: {
-            flexWrap: 'wrap',
-            fontSize: 20,
-            fontFamily: 'Lato-Regular',
-          },
-          topOffset: 80,
-          visibilityTime: 5000,
-        });
+    //   if (response?.data?.messageDetail?.message_code === 201) {
+    //     Toast.show({
+    //       type: 'success',
+    //       text1: 'Attendance Query',
+    //       text2: 'Changes saved successfully',
+    //       text2Style: {
+    //         flexWrap: 'wrap',
+    //         fontSize: 20,
+    //         fontFamily: 'Lato-Regular',
+    //       },
+    //       topOffset: 80,
+    //       visibilityTime: 5000,
+    //     });
 
-        handleClose();
-        setcall(!call);
+    //     handleClose();
+    //     setcall(!call);
 
-        setFieldValue('startTime', '');
-        setFieldValue('endTime', '');
-        setFieldValue('actualHour', null);
-        setFieldValue('reason', '');
-      }
-    } catch (error) {}
+    //     setFieldValue('startTime', '');
+    //     setFieldValue('endTime', '');
+    //     setFieldValue('actualHour', null);
+    //     setFieldValue('reason', '');
+    //   }
+    // } catch (error) {}
   };
 
   const renderItem = ({item}: any) => {
@@ -879,7 +879,7 @@ const SepratedAttendance = ({route}: any) => {
                           testID="dateTimePicker"
                           value={pickStartTime || new Date()}
                           mode="time"
-                          is24Hour={true}
+                          is24Hour={false}
                           display="default"
                           onChange={(event, selectedTime) =>
                             onChangeStartTime(
@@ -920,7 +920,7 @@ const SepratedAttendance = ({route}: any) => {
                           testID="dateTimePicker"
                           value={pickEndTime || new Date()}
                           mode="time"
-                          is24Hour={true}
+                          is24Hour={false}
                           display="default"
                           onChange={(event, selectedTime) =>
                             onChangeEndTime(event, selectedTime, setFieldValue)
