@@ -41,11 +41,11 @@ const Dashboard = ({navigation}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
-  const [onMonth, setOnMonth] = useState(moment().format('MM'));
+  const [onMonth, setOnMonth] = useState(moment().format('MM-YYYY'));
   const [calendarDate, setCalendarDate] = useState();
   const [refreshing, setRefreshing] = React.useState(false);
-  const financialYearStart = new Date(new Date().getFullYear(), 3, 1);
-  const financialYearEnd = new Date(new Date().getFullYear() + 1, 2, 31);
+  // const financialYearStart = new Date(new Date().getFullYear()+1, 0, 1);
+  // const financialYearEnd = new Date(new Date().getFullYear() + 1, 11, 31);
 
   const processed = useSelector((state: any) => state?.appState?.processed);
 
@@ -133,37 +133,10 @@ const Dashboard = ({navigation}: any) => {
   };
 
   const getImageSource = (holidayName: any) => {
-    switch (holidayName) {
-      case 'Dhanteras':
-        return require('../../Assets/Images/Danteras.jpg');
-      case 'Mahatma Gandhi Jayanti':
-        return require('../../Assets/Images/GandhiJyanti.jpg');
-      case 'Deepawali':
-      case 'Deepavali':
-      case 'Diwali':
-      case 'Diwali/Deepavali':
-        return require('../../Assets/Images/Deewali.jpg');
-      case 'Christmas':
-        return require('../../Assets/Images/Chrismas.jpg');
-      case "New Year's Day":
-        return require('../../Assets/Images/NewYear.jpg');
-      case 'Republic Day':
-        return require('../../Assets/Images/republicDay.jpg');
-      case 'Holi':
-        return require('../../Assets/Images/holi.jpg');
-      case 'Ramzan Id':
-      case 'Eid-ul-Fitar':
-        return require('../../Assets/Images/Chrismas.jpg');
-      case 'Bakrid':
-      case 'Eid ul-Adha':
-        return require('../../Assets/Images/Chrismas.jpg');
-      case 'Independence Day':
-        return require('../../Assets/Images/independence.jpg');
-      case 'Raksha Bandhan':
-      case 'Rakhi':
-        return require('../../Assets/Images/Rakhi.jpg');
-      default:
-        return require('../../Assets/Images/Correct.png');
+    if (holidayName) {
+      return require('../../Assets/Images/holiday.png');
+    } else {
+      return require('../../Assets/Images/Correct.png');
     }
   };
 
@@ -171,7 +144,6 @@ const Dashboard = ({navigation}: any) => {
     const base64 = `data:image/jpeg;base64`;
     const image = item?.holidayImage;
     const HolidayImage = `${base64},${image}`;
-    const LeaveIMG = !HolidayImage;
 
     return (
       <View style={styles(isDark).holidayItem}>
@@ -349,21 +321,23 @@ const Dashboard = ({navigation}: any) => {
         markedDates={markedDates}
         onMonthChange={(month: any) => {
           setCalendarDate(month.dateString.toString());
-          setOnMonth(() => month.month.toString());
+          const date = month?.dateString;
+          const extractMonth = moment(date).format('MM-YYYY');
+          setOnMonth(() => extractMonth.toString());
         }}
         hideExtraDays={false}
-        disableArrowLeft={
-          moment(calendarDate).format('YYYY-MM') ===
-          moment(financialYearStart).format('YYYY-MM')
-            ? true
-            : false
-        }
-        disableArrowRight={
-          moment(calendarDate).format('YYYY-MM') ===
-          moment(financialYearEnd).format('YYYY-MM')
-            ? true
-            : false
-        }
+        // disableArrowLeft={
+        //   moment(calendarDate).format('YYYY-MM') ===
+        //   moment(financialYearStart).format('YYYY-MM')
+        //     ? true
+        //     : false
+        // }
+        // disableArrowRight={
+        //   moment(calendarDate).format('YYYY-MM') ===
+        //   moment(financialYearEnd).format('YYYY-MM')
+        //     ? true
+        //     : false
+        // }
         theme={{
           calendarBackground: 'transparent',
           textSectionTitleColor: Colors.dark_gray,
@@ -384,12 +358,12 @@ const Dashboard = ({navigation}: any) => {
         <FlatList
           data={[...appliedLeave, ...HolyDays]?.filter(item => {
             if (
-              moment(item?.leaveStartDate).format('MM') === onMonth &&
+              moment(item?.leaveStartDate).format('MM-YYYY') === onMonth &&
               !item?.holidayName
             ) {
               return item;
             } else if (
-              moment(item?.date).format('MM') === onMonth &&
+              moment(item?.date).format('MM-YYYY') === onMonth &&
               item?.holidayName
             ) {
               return item;
