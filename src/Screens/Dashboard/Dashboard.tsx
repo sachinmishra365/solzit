@@ -193,7 +193,7 @@ const Dashboard = ({navigation}: any) => {
                 }}>
                 {item?.holidayName}
                 {' ('}
-                {moment(item.date).format('DD/MM/YY ')}
+                {moment(item.date).format('DD/MM/YY')}
                 {')'}
               </Text>
             )}

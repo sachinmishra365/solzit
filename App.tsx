@@ -100,7 +100,7 @@ const App = () => {
             <NavigationContainer ref={navigationRef}>
               <StackNavigator />
               <StatusBar
-                barStyle="light-content"
+                barStyle= {isDark === 'dark' ? "light-content" :"dark-content"}
                 animated={true}
                 backgroundColor={
                   isDark === 'dark' ? Colors.black : Colors.white
