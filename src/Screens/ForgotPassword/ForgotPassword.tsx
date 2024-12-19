@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
+import {Alert, Image, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {Formik} from 'formik';

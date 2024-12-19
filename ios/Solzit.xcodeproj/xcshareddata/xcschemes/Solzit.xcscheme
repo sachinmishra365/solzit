@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "PARS.app"
-               BlueprintName = "PARS"
-               ReferencedContainer = "container:PARS.xcodeproj">
+               BuildableName = "Solzit.app"
+               BlueprintName = "Solzit"
+               ReferencedContainer = "container:Solzit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "PARSTests.xctest"
-               BlueprintName = "PARSTests"
-               ReferencedContainer = "container:PARS.xcodeproj">
+               BuildableName = "SolzitTests.xctest"
+               BlueprintName = "SolzitTests"
+               ReferencedContainer = "container:Solzit.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "PARS.app"
-            BlueprintName = "PARS"
-            ReferencedContainer = "container:PARS.xcodeproj">
+            BuildableName = "Solzit.app"
+            BlueprintName = "Solzit"
+            ReferencedContainer = "container:Solzit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "PARS.app"
-            BlueprintName = "PARS"
-            ReferencedContainer = "container:PARS.xcodeproj">
+            BuildableName = "Solzit.app"
+            BlueprintName = "Solzit"
+            ReferencedContainer = "container:Solzit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

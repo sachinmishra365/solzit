@@ -14,7 +14,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'PARS' do
+target 'Solzit' do
   config = use_native_modules!
 
   use_react_native!(
@@ -23,7 +23,7 @@ target 'PARS' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'PARSTests' do
+  target 'SolzitTests' do
     inherit! :complete
     # Pods for testing
   end

@@ -94,3 +94,16 @@ backgroundColor: 'black' //knobContainer
  width: 0 //header
  width: 0 //dayHeader
 
+1. yarn install && npx react-native setup-ios-permissions
+2. kill $(ps aux | grep 'Xcode' | awk '{print $2}')
+3. rm -rf ~/Library/Caches/CocoaPods
+4. rm -rf ~/Library/Developer/Xcode/DerivedData/*
+5. cd ios
+6. pod deintegrate
+7. pod setup
+8. watchman watch-del-all
+9. arch -x86_64 pod install Or pod install --verbose
+10. cd ..
+11. npx react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'
+## Generate app for IOS
+These are the steps to generate `.apk`, `.aab` and `.ipa` files

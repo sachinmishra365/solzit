@@ -94,26 +94,25 @@ android {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk true  // If true, also generate a universal APK
-            include (*reactNativeArchitectures())
+            universalApk false  // If true, also generate a universal APK
+            include(*reactNativeArchitectures())
         }
     }
     signingConfigs {
-    
-    release {
-      storeFile file('SolzIT.keystore')
-      storePassword 'Solzit@123'
-      keyAlias 'SolzIT'
-      keyPassword 'Solzit@123'
-    }
-  
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-        
+        release {
+            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
@@ -126,46 +125,15 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
-        applicationVariants.all{
-            // this method is use to rename your all apk weather
-            // it may be signed or unsigned(debug apk)
-            variant ->
-                variant.outputs.each{
-                    // on below line we are setting a 
-                    // name to our apk as GFG.apk
-                    output->
-                        def name = "SolzIT-PRD-1.0.5.apk"
-                        output.outputFileName = name
-            //             def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
-            // def abi = output.getFilter(OutputFile.ABI)
-            // if (abi != null) {  // null for the universal-debug, universal-release variants
-            //     output.versionCodeOverride =
-            //             defaultConfig.versionCode * 1000 + versionCodes.get(abi)
-            // }
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+                def abi = output.getFilter(OutputFile.ABI)
+                if (abi != null) {  // null for the universal-debug, universal-release variants
+                    output.versionCodeOverride = defaultConfig.versionCode * 1000 + versionCodes.get(abi)
                 }
-       }
-
-    // applicationVariants.all { variant ->
-    // variant.outputs.each { output ->
-    //     // Define the base name for your APK
-    //     def baseName = "SolzIT-PRD"
-        
-    //     // Dynamically include version, variant name, or other info in the APK name
-    //     def version = "1.0.4"
-    //     def variantName = variant.name.capitalize() // Debug, Release, etc.
-    //     def abi = output.getFilter(OutputFile.ABI) // e.g., armeabi-v7a, x86, etc.
-
-    //     def name = "${baseName}-${version}-${variantName}${abi ? "-${abi}" : ""}.apk"
-    //     output.outputFileName = name
-
-    //     // Set version code override for different ABIs
-    //     def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
-    //     if (abi != null) { // For ABI-specific builds
-    //         output.versionCodeOverride =
-    //                 defaultConfig.versionCode * 1000 + versionCodes.get(abi)
-    //     }
-    // }
-// }
+            }
+        }
     }
 }
 
