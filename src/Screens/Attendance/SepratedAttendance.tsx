@@ -47,7 +47,6 @@ const SepratedAttendance = ({route}: any) => {
   const [close, SetClose] = useState(false);
   const [load, SetLoad] = useState(false);
   const [actualTime, setActualTime] = useState(0);
-  console.log(actualTime);
 
   useEffect(() => {
     if (pickStartTime && pickEndTime) {
@@ -237,7 +236,6 @@ const SepratedAttendance = ({route}: any) => {
           : 0,
       reason: values.reason,
     };
-    console.log(data);
     try {
       const response = await AskAttendanceQuery({data, accessToken});
 
