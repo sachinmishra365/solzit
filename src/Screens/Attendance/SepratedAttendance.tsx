@@ -37,7 +37,6 @@ const SepratedAttendance = ({route}: any) => {
   const MonthData = route.params;
   const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
-
   const [attendancedata, SetAttendancedata] = useState([]);
   const [selectedItem, setSelectedItem] = useState<any>();
   const [showStartTime, setShowStartTime] = useState(false);
@@ -47,8 +46,17 @@ const SepratedAttendance = ({route}: any) => {
   const [call, setcall] = useState(false);
   const [close, SetClose] = useState(false);
   const [load, SetLoad] = useState(false);
-  const [actualHour, SetActualHour] = useState();
-  // console.log(attendancedata);
+  const [actualTime, setActualTime] = useState(0);
+  console.log(actualTime);
+
+  useEffect(() => {
+    if (pickStartTime && pickEndTime) {
+      const startMoment = moment(pickStartTime, 'HH:mm');
+      const endMoment = moment(pickEndTime, 'HH:mm');
+      let duration = moment.duration(endMoment.diff(startMoment)).asHours();
+      setActualTime(duration);
+    }
+  }, [pickStartTime, pickEndTime]);
 
   const [AttendanceQueryData, SetAttendanceQueryData] = useState({});
 
@@ -230,32 +238,32 @@ const SepratedAttendance = ({route}: any) => {
       reason: values.reason,
     };
     console.log(data);
-    // try {
-    //   const response = await AskAttendanceQuery({data, accessToken});
+    try {
+      const response = await AskAttendanceQuery({data, accessToken});
 
-    //   if (response?.data?.messageDetail?.message_code === 201) {
-    //     Toast.show({
-    //       type: 'success',
-    //       text1: 'Attendance Query',
-    //       text2: 'Changes saved successfully',
-    //       text2Style: {
-    //         flexWrap: 'wrap',
-    //         fontSize: 20,
-    //         fontFamily: 'Lato-Regular',
-    //       },
-    //       topOffset: 80,
-    //       visibilityTime: 5000,
-    //     });
+      if (response?.data?.messageDetail?.message_code === 201) {
+        Toast.show({
+          type: 'success',
+          text1: 'Attendance Query',
+          text2: 'Changes saved successfully',
+          text2Style: {
+            flexWrap: 'wrap',
+            fontSize: 20,
+            fontFamily: 'Lato-Regular',
+          },
+          topOffset: 80,
+          visibilityTime: 5000,
+        });
 
-    //     handleClose();
-    //     setcall(!call);
+        handleClose();
+        setcall(!call);
 
-    //     setFieldValue('startTime', '');
-    //     setFieldValue('endTime', '');
-    //     setFieldValue('actualHour', null);
-    //     setFieldValue('reason', '');
-    //   }
-    // } catch (error) {}
+        setFieldValue('startTime', '');
+        setFieldValue('endTime', '');
+        setFieldValue('actualHour', null);
+        setFieldValue('reason', '');
+      }
+    } catch (error) {}
   };
 
   const renderItem = ({item}: any) => {
@@ -915,14 +923,6 @@ const SepratedAttendance = ({route}: any) => {
                   errors,
                   touched,
                 }) => {
-                  const actualTime =
-                    values.endTime && values.startTime
-                      ? moment(values.endTime, 'HH:mm').diff(
-                          moment(values.startTime, 'HH:mm'),
-                          'hours',
-                          true,
-                        )
-                      : 0;
                   return (
                     <View style={{paddingHorizontal: 10}}>
                       <View style={{marginVertical: 6}} />
@@ -1015,29 +1015,16 @@ const SepratedAttendance = ({route}: any) => {
                       <View style={{marginVertical: 16}} />
                       <CustomTextInput
                         label="Actual Hours"
-                        value={actualTime}
-                        autoFocus={false}
-                        secureTextEntry={false}
-                        leftIconName="hours-24"
+                        value={actualTime.toFixed(2)}
                         onChangeText={handleChange('actualHours')}
                         onBlur={handleBlur('actualHours')}
-                        editable={true}
+                        secureTextEntry={false}
+                        leftIconName="hours-24"
+                        editable={false}
+                        readOnly
                         style={styles(isDark).input}
-                        keyboardType="numeric"
                       />
-                      {touched.actualHours && errors.actualHours && (
-                        <Text
-                          style={{
-                            color: Colors.error,
-                            marginLeft: 20,
-                            fontFamily: 'Lato-Regular',
-                          }}>
-                          {errors.actualHours}
-                        </Text>
-                      )}
-
                       <View style={{marginVertical: 16}} />
-
                       <CustomTextInput
                         label="Reason"
                         value={values.reason}
