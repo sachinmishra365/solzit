@@ -47,6 +47,8 @@ const SepratedAttendance = ({route}: any) => {
   const [call, setcall] = useState(false);
   const [close, SetClose] = useState(false);
   const [load, SetLoad] = useState(false);
+  const [actualHour, SetActualHour] = useState();
+  // console.log(attendancedata);
 
   const [AttendanceQueryData, SetAttendanceQueryData] = useState({});
 
@@ -214,19 +216,20 @@ const SepratedAttendance = ({route}: any) => {
     }
     const data = {
       attendanceId: selectedItem?.id,
-      suggestedStartTime: values.startTime
-        ? moment(values.startTime, 'HH:mm')
-            .subtract(5, 'hours')
-            .subtract(30, 'minutes')
-            .format('HH:mm')
-        : null,
+      suggestedStartTime: values.startTime,
       dates: moment(selectedItem?.date).format('YYYY-MM-DD'),
       suggestedEndtTime: values.endTime || null,
-      actualHour: values.actualHours,
+      actualHour:
+        values.endTime && values.startTime
+          ? moment(values.endTime, 'HH:mm').diff(
+              moment(values.startTime, 'HH:mm'),
+              'hours',
+              true,
+            )
+          : 0,
       reason: values.reason,
     };
     console.log(data);
-
     // try {
     //   const response = await AskAttendanceQuery({data, accessToken});
 
@@ -310,7 +313,6 @@ const SepratedAttendance = ({route}: any) => {
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 18,
                         fontFamily: 'Lato-Bold',
-                        // marginBottom: 6,
                       }}>
                       Late?{' : '}
                     </Text>
@@ -327,7 +329,72 @@ const SepratedAttendance = ({route}: any) => {
                 ) : null}
 
                 {item?.leaveType?.label !== 'Loss of Pay' &&
-                item?.totalHours > 0 ? (
+                item?.hoursPunchInOutTime > 0 ? (
+                  <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                        flexWrap: 'wrap',
+                      }}>
+                      Punch In/Out{' : '}
+                    </Text>
+                    <Text
+                      style={{
+                        color:
+                          item?.hoursPunchInOutTime < 7
+                            ? Colors.error
+                            : isDark
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                      }}>
+                      {item?.hoursPunchInOutTime}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  marginVertical: 10,
+                }}>
+                {item?.leaveType?.label !== 'Loss of Pay' &&
+                item?.loggedHours > 0 ? (
+                  <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                        flexWrap: 'wrap',
+                      }}>
+                      Logged Hours{' : '}
+                    </Text>
+                    <Text
+                      style={{
+                        color:
+                          item?.loggedHours < 7
+                            ? Colors.error
+                            : isDark
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                      }}>
+                      {item?.loggedHours}
+                    </Text>
+                  </View>
+                ) : null}
+
+                {item?.leaveType?.label !== 'Loss of Pay' &&
+                item?.totalEffectiveApprovedHours > 0 ? (
                   <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                     <Text
                       style={{
@@ -341,7 +408,7 @@ const SepratedAttendance = ({route}: any) => {
                     <Text
                       style={{
                         color:
-                          item?.totalHours < 7
+                          item?.totalEffectiveApprovedHours < 7
                             ? Colors.error
                             : isDark
                             ? Colors.white
@@ -349,7 +416,7 @@ const SepratedAttendance = ({route}: any) => {
                         fontSize: 14,
                         fontFamily: 'Lato-Semibold',
                       }}>
-                      {item?.totalHours}
+                      {item?.totalEffectiveApprovedHours}
                     </Text>
                   </View>
                 ) : null}
@@ -453,7 +520,7 @@ const SepratedAttendance = ({route}: any) => {
                   ? item?.leaveType?.label
                   : 'Working Day'}
               </Text>
-              {item.totalHours > 0 ? (
+              {item.hoursPunchInOutTime > 0 ? (
                 <View style={{flexDirection: 'row'}}>
                   <Text
                     style={{
@@ -461,12 +528,12 @@ const SepratedAttendance = ({route}: any) => {
                       fontSize: 14,
                       fontFamily: 'Lato-Semibold',
                     }}>
-                    Effective Hours{' : '}
+                    Punch In/Out{' : '}
                   </Text>
                   <Text
                     style={{
                       color:
-                        item?.totalHours < 7
+                        item?.hoursPunchInOutTime < 7
                           ? Colors.error
                           : isDark
                           ? Colors.white
@@ -474,7 +541,7 @@ const SepratedAttendance = ({route}: any) => {
                       fontSize: 14,
                       fontFamily: 'Lato-Semibold',
                     }}>
-                    {item?.totalHours}
+                    {item?.hoursPunchInOutTime}
                   </Text>
                 </View>
               ) : null}
@@ -694,7 +761,7 @@ const SepratedAttendance = ({route}: any) => {
                         fontSize: 14,
                         fontFamily: 'Lato-Semibold',
                       }}>
-                      Effective Hours : {selectedItem?.totalHours}
+                      Punch In/Out : {selectedItem?.hoursPunchInOutTime}
                     </Text>
                   </View>
                 </Card.Content>
@@ -848,12 +915,26 @@ const SepratedAttendance = ({route}: any) => {
                   errors,
                   touched,
                 }) => {
+                  const actualTime =
+                    values.endTime && values.startTime
+                      ? moment(values.endTime, 'HH:mm').diff(
+                          moment(values.startTime, 'HH:mm'),
+                          'hours',
+                          true,
+                        )
+                      : 0;
                   return (
                     <View style={{paddingHorizontal: 10}}>
                       <View style={{marginVertical: 6}} />
                       <CustomTextInput
                         label="Start Time"
-                        value={values.startTime}
+                        value={
+                          values.startTime
+                            ? moment(values.startTime, 'HH:mm').format(
+                                'hh:mm A',
+                              )
+                            : ''
+                        }
                         autoFocus={false}
                         secureTextEntry={false}
                         onChangeText={handleChange('startTime')}
@@ -893,7 +974,11 @@ const SepratedAttendance = ({route}: any) => {
                       <View style={{marginVertical: 16}} />
                       <CustomTextInput
                         label="End Time"
-                        value={values.endTime}
+                        value={
+                          values.endTime
+                            ? moment(values.endTime, 'HH:mm').format('hh:mm A')
+                            : ''
+                        }
                         autoFocus={false}
                         secureTextEntry={false}
                         rightIconName="clock"
@@ -930,7 +1015,7 @@ const SepratedAttendance = ({route}: any) => {
                       <View style={{marginVertical: 16}} />
                       <CustomTextInput
                         label="Actual Hours"
-                        value={values.actualHours}
+                        value={actualTime}
                         autoFocus={false}
                         secureTextEntry={false}
                         leftIconName="hours-24"

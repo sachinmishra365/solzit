@@ -38,9 +38,13 @@ export const appLevelApi = createApi({
     }),
 
     ChangePassword: builder.mutation({
-      query: data => ({
+      query: ({data,accessToken}) => ({
         url: 'ChangePassword',
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
         body: data,
       }),
     }),
@@ -53,9 +57,13 @@ export const appLevelApi = createApi({
     }),
 
     EmployeeUpdateProfile: builder.mutation({
-      query: data => ({
+      query: ({data,accessToken}) => ({
         url: `/UpdateDisplayPicture`,
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
         body: data,
       }),
     }),

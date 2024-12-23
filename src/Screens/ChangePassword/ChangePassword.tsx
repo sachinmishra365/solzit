@@ -29,8 +29,8 @@ const ChangePassword = ({navigation}: any) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(true);
 
   const connected = useSelector((state: any) => state?.appState?.connected);
-
-  const [ChangePassword, {isSuccess, isLoading}] = useChangePasswordMutation();
+  const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
+  const accessToken = Assesstoken?.authToken?.accessToken;
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Email is required'),
@@ -49,6 +49,7 @@ const ChangePassword = ({navigation}: any) => {
       .required('Confirm New password is required')
       .oneOf([Yup.ref('Newpassword')], 'Passwords must match'),
   });
+  const [ChangePassword, {isSuccess, isLoading}] = useChangePasswordMutation();
 
   const handleChangePassword = async (values: any) => {
 
@@ -74,7 +75,7 @@ const ChangePassword = ({navigation}: any) => {
     };
 
     try {
-      const response = await ChangePassword(data).unwrap();
+      const response = await ChangePassword({data,accessToken}).unwrap();
       if(response?.isSuccessful === true){
         navigation.replace('AuthStack');
         dispatch(auth(undefined));

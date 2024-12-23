@@ -35,7 +35,7 @@ const LeaveRequest = ({navigation}: any) => {
 
   const {data, isLoading, isSuccess, refetch} = useEmployeeAppliedLeavesQuery({
     accessToken:accessToken,
-  });  
+  }); 
 
   useEffect(() => {
     if (data && isSuccess && data.data !==null) {

@@ -34,12 +34,13 @@ const Profile = () => {
   const Profiledata = EmployeeId?.userProfile;
    
   const connected = useSelector((state: any) => state?.appState?.connected);
-
-  // const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
-  const base64Image = useMemo(
-    () => `data:image/jpeg;base64,${Profiledata?.employeeImg}`,
-    [Profiledata?.employeeImg]
-  );
+  const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
+  const accessToken = Assesstoken?.authToken?.accessToken;
+  const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
+  // const base64Image = useMemo(
+  //   () => `data:image/jpeg;base64,${Profiledata?.employeeImg}`,
+  //   [Profiledata?.employeeImg]
+  // );
 
   const [imageAsset, setImageAsset] = useState<any>(null);
   
@@ -130,12 +131,13 @@ const Profile = () => {
       return;
     }
     try {
-      const body = {
-        email: Profiledata.email,
+      const data = {
+        // email: Profiledata.email,
         profileImage: imageAsset?.base64 || imageAsset.uri || imageAsset.data,
       };
 
-      const response = await updateProfile(body);      
+      const response = await updateProfile({data,accessToken});     
+      
       if (response?.data?.isSuccessful === true) {
         Toast.show({
           type: 'success',
