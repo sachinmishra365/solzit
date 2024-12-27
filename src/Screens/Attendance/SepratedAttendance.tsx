@@ -45,7 +45,7 @@ const SepratedAttendance = ({route}: any) => {
   const [showEndTime, setShowEndTime] = useState(false);
   const [call, setcall] = useState(false);
   const [close, SetClose] = useState(false);
-  const [load, SetLoad] = useState(false);
+  // const [load, SetLoad] = useState(false);
   const [actualTime, setActualTime] = useState(0);
 
   useEffect(() => {
@@ -58,6 +58,8 @@ const SepratedAttendance = ({route}: any) => {
   }, [pickStartTime, pickEndTime]);
 
   const [AttendanceQueryData, SetAttendanceQueryData] = useState({});
+  console.log('aqd',AttendanceQueryData);
+  
 
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
@@ -95,12 +97,12 @@ const SepratedAttendance = ({route}: any) => {
     endTime: Yup.string()
       .required('End time is required')
       .test('End time can not be 00:00', value => value !== '00:00'),
-    actualHours: Yup.number()
-      .required('Actual hours are required')
-      .positive('Must be a positive number')
-      .integer('Must be an integer')
-      .min(1, 'Must be at least 1')
-      .max(24, 'Must be less than 24'),
+    // actualHours: Yup.number()
+    //   .required('Actual hours are required')
+    //   .positive('Must be a positive number')
+    //   .integer('Must be an integer')
+    //   .min(1, 'Must be at least 1')
+    //   .max(24, 'Must be less than 24'),
 
     reason: Yup.string().required('Reason is required'),
   });
@@ -153,6 +155,7 @@ const SepratedAttendance = ({route}: any) => {
   };
 
   const handleSepratedAttendance = async () => {
+
     if (!connected) {
       Toast.show({
         type: 'error',
@@ -184,17 +187,18 @@ const SepratedAttendance = ({route}: any) => {
     attendanceID: selectedItem?.id,
     accessToken: accessToken,
   });
+console.log(AttendanceQuery);
 
   const handlequery = async () => {
+
     try {
       const response = await AttendanceQuery;
       if (
         (response?.data?.messageDetail?.message_code === 200 &&
-          response?.data !== undefined) ||
-        null
+          response?.data !== undefined) && response?.data !== null
       ) {
         SetAttendanceQueryData(response?.data?.data);
-        SetLoad(true);
+        // SetLoad(true);
       }
     } catch (error) {}
   };
@@ -236,6 +240,8 @@ const SepratedAttendance = ({route}: any) => {
           : 0,
       reason: values.reason,
     };
+    console.log(data);
+
     try {
       const response = await AskAttendanceQuery({data, accessToken});
 
@@ -776,133 +782,125 @@ const SepratedAttendance = ({route}: any) => {
           )}
 
           {selectedItem?.queryStatus?.label != 'Default' ? (
-            load === false ? (
-              <>
-                <View style={{marginVertical: 5}} />
-                <PlaceholderCard />
-              </>
-            ) : (
-              <View>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 18,
-                    fontFamily: 'Lato-Bold',
-                    marginBottom: 6,
-                    marginLeft: 15,
-                  }}>
-                  Record data
-                </Text>
-                <Card
-                  style={{
-                    backgroundColor: isDark ? Colors.black : Colors.background,
-                    marginVertical: 10,
-                    borderColor: Colors.background,
-                    borderWidth: 0.5,
-                    marginHorizontal: 16,
-                  }}>
-                  <Card.Content>
-                    <View
-                      style={{
-                        justifyContent: 'space-between',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                      }}>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontSize: 14,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        {selectedItem?.date
-                          ? moment(selectedItem?.date).format('DD MMM, YYYY')
-                          : 'N/A'}
-                      </Text>
-
-                      <View>
-                        <Text
-                          style={{
-                            color: isDark ? Colors.white : Colors.black,
-                            fontSize: 16,
-                            fontFamily: 'Lato-Semibold',
-                          }}>
-                          {AttendanceQueryData?.suggestedStartTime
-                            ? moment(
-                                AttendanceQueryData?.suggestedStartTime,
-                                'M/D/YYYY h:mm:ss A',
-                              ).format('hh:mm A')
-                            : 'N/A'}{' '}
-                          {' - '}
-                          {AttendanceQueryData?.suggestedEndtTime
-                            ? moment(
-                                AttendanceQueryData?.suggestedEndtTime,
-                                'M/D/YYYY h:mm:ss A',
-                              ).format('hh:mm A')
-                            : 'N/A'}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View
-                      style={{
-                        justifyContent: 'space-between',
-                        flexDirection: 'row',
-                        marginTop: 5,
-                        flexWrap: 'wrap',
-                      }}>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontSize: 14,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        Actual Hours :
-                        {AttendanceQueryData?.actualHour
-                          ? AttendanceQueryData?.actualHour
-                          : 'N/A'}
-                      </Text>
-
-                      <View>
-                        <Text
-                          style={{
-                            color:
-                              selectedItem?.queryStatus?.label === 'Pending'
-                                ? 'orange'
-                                : selectedItem?.queryStatus?.label ===
-                                  'Approved'
-                                ? 'green'
-                                : Colors.error,
-                            fontSize: 16,
-                            fontFamily: 'Lato-Semibold',
-                          }}>
-                          {AttendanceQueryData?.statusReason?.label
-                            ? AttendanceQueryData?.statusReason?.label
-                            : 'N/A'}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginTop: 10,
-                      }}>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontSize: 14,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        Reason : {AttendanceQueryData?.reason}
-                      </Text>
-                    </View>
-                  </Card.Content>
-                </Card>
-              </View>
-            )
-          ) : (
             <View>
+              <Text
+                style={{
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 18,
+                  fontFamily: 'Lato-Bold',
+                  marginBottom: 6,
+                  marginLeft: 15,
+                }}>
+                Record data
+              </Text>
+              <Card
+                style={{
+                  backgroundColor: isDark ? Colors.black : Colors.background,
+                  marginVertical: 10,
+                  borderColor: Colors.background,
+                  borderWidth: 0.5,
+                  marginHorizontal: 16,
+                }}>
+                <Card.Content>
+                  <View
+                    style={{
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                      flexWrap: 'wrap',
+                    }}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                      }}>
+                      {selectedItem?.date
+                        ? moment(selectedItem?.date).format('DD MMM, YYYY')
+                        : 'N/A'}
+                    </Text>
+
+                    <View>
+                      <Text
+                        style={{
+                          color: isDark ? Colors.white : Colors.black,
+                          fontSize: 16,
+                          fontFamily: 'Lato-Semibold',
+                        }}>
+                        {AttendanceQueryData?.suggestedStartTime
+                          ? moment(
+                              AttendanceQueryData?.suggestedStartTime,
+                              'M/D/YYYY h:mm:ss A',
+                            ).format('hh:mm A')
+                          : 'N/A'}{' '}
+                        {' - '}
+                        {AttendanceQueryData?.suggestedEndtTime
+                          ? moment(
+                              AttendanceQueryData?.suggestedEndtTime,
+                              'M/D/YYYY h:mm:ss A',
+                            ).format('hh:mm A')
+                          : 'N/A'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                      marginTop: 5,
+                      flexWrap: 'wrap',
+                    }}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                      }}>
+                      Actual Hours :
+                      {AttendanceQueryData?.actualHour
+                        ? AttendanceQueryData?.actualHour
+                        : 'N/A'}
+                    </Text>
+
+                    <View>
+                      <Text
+                        style={{
+                          color:
+                            selectedItem?.queryStatus?.label === 'Pending'
+                              ? 'orange'
+                              : selectedItem?.queryStatus?.label === 'Approved'
+                              ? 'green'
+                              : Colors.error,
+                          fontSize: 16,
+                          fontFamily: 'Lato-Semibold',
+                        }}>
+                        {AttendanceQueryData?.statusReason?.label
+                          ? AttendanceQueryData?.statusReason?.label
+                          : 'N/A'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginTop: 10,
+                    }}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                      }}>
+                      Reason : {AttendanceQueryData?.reason}
+                    </Text>
+                  </View>
+                </Card.Content>
+              </Card>
+            </View>
+          ) : (
+            <>
               <Formik
                 initialValues={{
                   startTime: '',
@@ -1079,7 +1077,7 @@ const SepratedAttendance = ({route}: any) => {
                 }}
               </Formik>
               <View style={{height: 200}} />
-            </View>
+            </>
           )}
         </ScrollView>
       </BottomSheet>

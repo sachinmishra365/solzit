@@ -11,8 +11,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import CustomTextInput from '../Components/CustomTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
-// import {Formik} from 'formik';
-import Formik from 'react-native-formik'
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {Colors} from '../constants/Colors';
 import {SCREEN_WIDTH} from '../constants/Screen';
