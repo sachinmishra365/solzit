@@ -18,7 +18,6 @@ import {
 import {useSelector} from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
-import Placeholder from '../Placeholder/Placeholder';
 import Toast from 'react-native-toast-message';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
@@ -35,7 +34,7 @@ const LeaveRequest = ({navigation}: any) => {
 
   const {data, isLoading, isSuccess, refetch} = useEmployeeAppliedLeavesQuery({
     accessToken:accessToken,
-  }); 
+  });
 
   useEffect(() => {
     if (data && isSuccess && data.data !==null) {
@@ -189,7 +188,7 @@ const LeaveRequest = ({navigation}: any) => {
     </Card>
   );
 
-  const [CanceleLeave, result] = useEmployeeCancelLeavesMutation();  
+  const [CanceleLeave, result] = useEmployeeCancelLeavesMutation();
 
   const handlecancel = async ({item}: any) => {
     if (!connected) {
@@ -207,7 +206,7 @@ const LeaveRequest = ({navigation}: any) => {
       });
       return;
     }
-    
+
     const data = {
       leaveApplicationId: item?.leaveApplicationId,
       leaveCancellationMessage:''
@@ -218,7 +217,7 @@ const LeaveRequest = ({navigation}: any) => {
         Toast.show({
           type: 'success',
           text1: 'Leave Status',
-          text2: 'Leave cancelled Successfully', 
+          text2: 'Leave cancelled Successfully',
           topOffset: 80,
           visibilityTime: 5000,
         });

@@ -5,16 +5,17 @@ import {
   NavigationContainer,
 } from '@react-navigation/native';
 import {Provider} from 'react-redux';
+import {configureFonts, MD3LightTheme, PaperProvider as PaperProvider} from 'react-native-paper';
 import {PersistGate} from 'redux-persist/integration/react';
 import {persistor, store} from './src/AppStore/Store/store';
 import {
+  Platform,
   SafeAreaView,
   StatusBar,
   Text,
   useColorScheme,
   View,
 } from 'react-native';
-import {PaperProvider} from 'react-native-paper';
 import StackNavigator from './src/AppNavigator/StackNavigator';
 import Toast, {BaseToast, ErrorToast} from 'react-native-toast-message';
 import NetInfo from '@react-native-community/netinfo';
@@ -72,14 +73,16 @@ const App = () => {
   }, [colorScheme]);
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state: any) => {      
-      setIsConnected(state.isConnected);
-      showToast(state.isConnected);
+    const unsubscribe = NetInfo.addEventListener((state: any) => {
+      if(!state.isConnected){
+        setIsConnected(state.isConnected);
+        showToast(state.isConnected);
+      }
     });
 
     return () => unsubscribe();
   }, [isConnected]);
-  
+
 
   const showToast = (connected: any) => {
     Toast.show({
@@ -92,26 +95,28 @@ const App = () => {
     });
   };
 
+  const theme = {
+    ...MD3LightTheme,
+    roundness: 2,
+  };
+
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <PaperProvider>
-          <SafeAreaView style={{flex: 1}}>
-            <NavigationContainer ref={navigationRef}>
-              <StackNavigator />
-              <StatusBar
-                barStyle= {isDark === 'dark' ? "light-content" :"dark-content"}
-                animated={true}
-                backgroundColor={
-                  isDark === 'dark' ? Colors.black : Colors.white
-                }
-              />
-            </NavigationContainer>
-          </SafeAreaView>
-          <Toast config={toastConfig} />
-        </PaperProvider>
-      </PersistGate>
-    </Provider>
+    <>
+      <SafeAreaView style={{flex: 0, marginTop: Platform.Version > 34 ? 38 : 0 }} />
+      <SafeAreaView  style={{ flex: 1}}>
+        <StatusBar backgroundColor={isDark === 'dark' ? Colors.black : Colors.white}/>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <PaperProvider theme={theme}>
+              <NavigationContainer ref={navigationRef}>
+                <StackNavigator />
+                <Toast config={toastConfig} />
+              </NavigationContainer>
+            </PaperProvider>
+          </PersistGate>
+        </Provider>
+      </SafeAreaView>
+    </>
   );
 };
 

@@ -57,7 +57,7 @@ react {
  */
  def enableSeparateBuildPerCPUArchitecture = false
 
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)

@@ -58,8 +58,7 @@ const SepratedAttendance = ({route}: any) => {
   }, [pickStartTime, pickEndTime]);
 
   const [AttendanceQueryData, SetAttendanceQueryData] = useState({});
-  console.log('aqd',AttendanceQueryData);
-  
+
 
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
@@ -187,7 +186,6 @@ const SepratedAttendance = ({route}: any) => {
     attendanceID: selectedItem?.id,
     accessToken: accessToken,
   });
-console.log(AttendanceQuery);
 
   const handlequery = async () => {
 
@@ -240,7 +238,6 @@ console.log(AttendanceQuery);
           : 0,
       reason: values.reason,
     };
-    console.log(data);
 
     try {
       const response = await AskAttendanceQuery({data, accessToken});
