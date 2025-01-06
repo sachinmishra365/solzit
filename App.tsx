@@ -5,7 +5,11 @@ import {
   NavigationContainer,
 } from '@react-navigation/native';
 import {Provider} from 'react-redux';
-import {configureFonts, MD3LightTheme, PaperProvider as PaperProvider} from 'react-native-paper';
+import {
+  configureFonts,
+  MD3LightTheme,
+  PaperProvider as PaperProvider,
+} from 'react-native-paper';
 import {PersistGate} from 'redux-persist/integration/react';
 import {persistor, store} from './src/AppStore/Store/store';
 import {
@@ -74,7 +78,7 @@ const App = () => {
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state: any) => {
-      if(!state.isConnected){
+      if (!state.isConnected) {
         setIsConnected(state.isConnected);
         showToast(state.isConnected);
       }
@@ -82,7 +86,6 @@ const App = () => {
 
     return () => unsubscribe();
   }, [isConnected]);
-
 
   const showToast = (connected: any) => {
     Toast.show({
@@ -102,9 +105,14 @@ const App = () => {
 
   return (
     <>
-      <SafeAreaView style={{flex: 0, marginTop: Platform.Version > 34 ? 38 : 0 }} />
-      <SafeAreaView  style={{ flex: 1}}>
-        <StatusBar backgroundColor={isDark === 'dark' ? Colors.black : Colors.white}/>
+      <SafeAreaView
+        style={{flex: 0}}
+      />
+      <SafeAreaView style={{flex: 1}}>
+        <StatusBar
+          barStyle={isDark === 'dark' ? 'light-content' : 'dark-content'}
+          backgroundColor={isDark === 'dark' ? Colors.black : Colors.white}
+        />
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <PaperProvider theme={theme}>
