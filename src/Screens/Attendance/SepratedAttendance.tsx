@@ -59,7 +59,6 @@ const SepratedAttendance = ({route}: any) => {
 
   const [AttendanceQueryData, SetAttendanceQueryData] = useState({});
 
-
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -91,10 +90,10 @@ const SepratedAttendance = ({route}: any) => {
 
   const validationSchema = Yup.object().shape({
     startTime: Yup.string()
-      .required('Start time is required')
+      .required('Start time is required.')
       .test('Start time can not be 00:00', value => value !== '00:00'),
     endTime: Yup.string()
-      .required('End time is required')
+      .required('End time is required.')
       .test('End time can not be 00:00', value => value !== '00:00'),
     // actualHours: Yup.number()
     //   .required('Actual hours are required')
@@ -103,7 +102,7 @@ const SepratedAttendance = ({route}: any) => {
     //   .min(1, 'Must be at least 1')
     //   .max(24, 'Must be less than 24'),
 
-    reason: Yup.string().required('Reason is required'),
+    reason: Yup.string().required('Reason is required.'),
   });
 
   const onChangeStartTime = (
@@ -154,7 +153,6 @@ const SepratedAttendance = ({route}: any) => {
   };
 
   const handleSepratedAttendance = async () => {
-
     if (!connected) {
       Toast.show({
         type: 'error',
@@ -188,12 +186,12 @@ const SepratedAttendance = ({route}: any) => {
   });
 
   const handlequery = async () => {
-
     try {
       const response = await AttendanceQuery;
       if (
-        (response?.data?.messageDetail?.message_code === 200 &&
-          response?.data !== undefined) && response?.data !== null
+        response?.data?.messageDetail?.message_code === 200 &&
+        response?.data !== undefined &&
+        response?.data !== null
       ) {
         SetAttendanceQueryData(response?.data?.data);
         // SetLoad(true);
@@ -1017,6 +1015,12 @@ const SepratedAttendance = ({route}: any) => {
                         readOnly
                         style={styles(isDark).input}
                       />
+                      {actualTime < 0 && (
+                        <Text style={{color: Colors.error, marginTop: 5,marginHorizontal:16}}>
+                          Actual hours cannot be negative,
+                          Please select end time after start time.
+                        </Text>
+                      )}
                       <View style={{marginVertical: 16}} />
                       <CustomTextInput
                         label="Reason"
@@ -1052,6 +1056,7 @@ const SepratedAttendance = ({route}: any) => {
                           alignSelf: 'center',
                           borderRadius: 3,
                         }}
+                        disabled={actualTime < 0 ? true : false}
                         onPress={async () => {
                           handleSubmit();
                         }}>

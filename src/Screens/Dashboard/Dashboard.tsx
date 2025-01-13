@@ -150,9 +150,9 @@ const Dashboard = ({navigation}: any) => {
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'space-evenly',
             alignItems: 'center',
-            elevation: 15,
+            elevation: 5,
             shadowColor: isDark ? Colors.white : Colors.black,
           }}>
           <View>

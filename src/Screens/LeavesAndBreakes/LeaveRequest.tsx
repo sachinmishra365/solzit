@@ -33,11 +33,11 @@ const LeaveRequest = ({navigation}: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const {data, isLoading, isSuccess, refetch} = useEmployeeAppliedLeavesQuery({
-    accessToken:accessToken,
+    accessToken: accessToken,
   });
 
   useEffect(() => {
-    if (data && isSuccess && data.data !==null) {
+    if (data && isSuccess && data.data !== null) {
       const sortedData: any = [...data?.data].sort((a, b) =>
         moment(a.leaveStartDate).isBefore(moment(b?.leaveStartDate)) ? -1 : 1,
       );
@@ -144,13 +144,15 @@ const LeaveRequest = ({navigation}: any) => {
           </Text>
           <TouchableOpacity
             style={{
-              width: SCREEN_WIDTH - 280,
+              // width: '50%',
               height: 'auto',
               backgroundColor: Colors.primary,
               justifyContent: 'center',
               alignSelf: 'center',
               borderRadius: 3,
               minHeight: 33,
+              alignItems: 'center',
+              flexDirection: 'row',
             }}
             disabled={result.isLoading}
             onPress={() => {
@@ -160,7 +162,7 @@ const LeaveRequest = ({navigation}: any) => {
                 [
                   {
                     text: 'No',
-                    onPress: () =>{},
+                    onPress: () => {},
                     style: 'cancel',
                   },
                   {
@@ -179,6 +181,7 @@ const LeaveRequest = ({navigation}: any) => {
                 fontFamily: 'Lato-Bold',
                 color: Colors.white,
                 flexWrap: 'wrap',
+                margin: 12,
               }}>
               Cancel Leave
             </Text>
@@ -209,11 +212,11 @@ const LeaveRequest = ({navigation}: any) => {
 
     const data = {
       leaveApplicationId: item?.leaveApplicationId,
-      leaveCancellationMessage:''
+      leaveCancellationMessage: '',
     };
     try {
-      const response = await CanceleLeave({data,accessToken});
-      if(response?.data?.isSuccessful === true){
+      const response = await CanceleLeave({data, accessToken});
+      if (response?.data?.isSuccessful === true) {
         Toast.show({
           type: 'success',
           text1: 'Leave Status',

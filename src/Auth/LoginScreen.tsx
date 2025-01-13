@@ -1,4 +1,11 @@
-import {View, Text, TouchableOpacity, Image, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Dimensions,
+} from 'react-native';
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
@@ -20,7 +27,8 @@ const LoginScreen = ({navigation}: any) => {
     (state: any) => state?.appState?.authCredential,
   );
   const connected = useSelector((state: any) => state?.appState?.connected);
-
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
   const [showPassword, setShowPassword] = useState(true);
   const [iscredential, setIsCredential] = useState(false);
   const [userAuthenticationlogin, {isLoading, error}] =
@@ -34,7 +42,6 @@ const LoginScreen = ({navigation}: any) => {
   });
 
   const handleLogin = async (values: {username: string; password: string}) => {
-
     if (!connected) {
       Toast.show({
         type: 'error',
@@ -76,8 +83,7 @@ const LoginScreen = ({navigation}: any) => {
           {cancelable: true},
         );
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   return (
@@ -109,19 +115,26 @@ const LoginScreen = ({navigation}: any) => {
             <View>
               <View
                 style={{
-                  justifyContent: 'center',
                   alignItems: 'center',
                   marginVertical: 16,
                 }}>
                 {isDark ? (
                   <Image
                     source={require('../Assets/Images/Logo/SOLZIT_LOGO.png')}
-                    style={{width: '80%', height: 70}}
+                    style={{
+                      width: windowWidth * 0.9,
+                      height: windowHeight * 0.1,
+                      // resizeMode: 'contain',
+                    }}
                   />
                 ) : (
                   <Image
                     source={require('../Assets/Images/Solzlogo.png')}
-                    style={{width: '90%', height: 70}}
+                    style={{
+                      width: windowWidth * 0.9,
+                      height: windowHeight * 0.1,
+                      resizeMode: 'contain',
+                    }}
                   />
                 )}
               </View>
