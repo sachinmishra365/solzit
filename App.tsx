@@ -104,7 +104,10 @@ const App = () => {
     <>
       <SafeAreaView style={{flex: 0, marginTop: Platform.Version > 34 ? 38 : 0 }} />
       <SafeAreaView  style={{ flex: 1}}>
-        <StatusBar backgroundColor={isDark === 'dark' ? Colors.black : Colors.white}/>
+      <StatusBar
+          barStyle={isDark === 'dark' ? 'light-content' : 'dark-content'}
+          backgroundColor={isDark === 'dark' ? Colors.black : Colors.white}
+        />
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <PaperProvider theme={theme}>

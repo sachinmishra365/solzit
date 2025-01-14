@@ -272,7 +272,7 @@ const SepratedAttendance = ({route}: any) => {
           backgroundColor: isDark ? Colors.black : Colors.background,
           marginVertical: 10,
           borderColor: Colors.background,
-          borderWidth: 0.5,
+          borderWidth: 1,
           marginHorizontal: 16,
         }}>
         <Card.Content>
@@ -654,7 +654,7 @@ const SepratedAttendance = ({route}: any) => {
                   backgroundColor: isDark ? Colors.black : Colors.background,
                   marginVertical: 10,
                   borderColor: Colors.background,
-                  borderWidth: 0.5,
+                  borderWidth: 1,
                   marginHorizontal: 16,
                 }}>
                 <Card.Content>
@@ -1051,7 +1051,7 @@ const SepratedAttendance = ({route}: any) => {
                         style={{
                           width: SCREEN_WIDTH - 90,
                           height: 45,
-                          backgroundColor: Colors.primary,
+                          backgroundColor: actualTime < 0 ? Colors.tertiary : Colors.primary,
                           justifyContent: 'center',
                           alignSelf: 'center',
                           borderRadius: 3,

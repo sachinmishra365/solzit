@@ -54,8 +54,7 @@ const Attendance = ({navigation}: any) => {
       ) {
         SetAttendanceMonthData(result?.data);
       }
-    } catch (err) {
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -77,14 +76,18 @@ const Attendance = ({navigation}: any) => {
           backgroundColor: isDark ? Colors.black : Colors.background,
           marginVertical: 10,
           borderColor: Colors.background,
-          borderWidth: 0.5,
+          borderWidth: 1,
           marginHorizontal: 16,
           elevation: 15,
           shadowColor: isDark ? Colors.white : Colors.black,
         }}>
         <Card.Content>
-          <View style={{justifyContent: 'space-between', flexDirection: 'row',flexWrap:'wrap'
-}}>
+          <View
+            style={{
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+            }}>
             <Text
               style={{
                 color: isDark ? Colors.white : Colors.black,

@@ -25,11 +25,9 @@ import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 const LeaveRequest = ({navigation}: any) => {
   const [items, setItems] = useState<any>([]);
   const isDark = useSelector(isDarkTheme);
-
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
-
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const {data, isLoading, isSuccess, refetch} = useEmployeeAppliedLeavesQuery({

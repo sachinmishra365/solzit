@@ -454,6 +454,7 @@ const styles = (isDark: any) =>
       borderColor: '#ccc',
       justifyContent: 'center',
       alignItems: 'center',
+      padding:10
     },
     image: {
       width: '100%',
