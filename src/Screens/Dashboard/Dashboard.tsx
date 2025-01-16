@@ -56,39 +56,16 @@ const Dashboard = ({navigation}: any) => {
     const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
     const currentTime = moment().toISOString();
     const isTokenExpired = moment(tokenExpiry).isSameOrBefore(currentTime);
-
     if (isTokenExpired) {
       dispatch(auth(undefined));
     } else {
-      // console.log('Token is still valid.');
+      console.log('Token is still valid.');
     }
   }, []);
 
   const {data, error, isLoading, refetch} = useSoluzioneHolidaysQuery({
     accessToken: accessToken,
   });
-
-  useEffect(() => {
-    handleholiday();
-  }, []);
-
-  const handleholiday = async () => {
-    try {
-      const response = await data;
-      if (
-        response &&
-        response?.data &&
-        response?.messageDetail?.message_code === 200
-      ) {
-        setHolyDays(response?.data);
-      } else if (error) {
-        dispatch(auth(undefined));
-        if (!Assesstoken || Assesstoken === undefined) {
-          navigation.navigate('Login');
-        }
-      }
-    } catch (error) {}
-  };
 
   const {data: AppliedLeave, refetch: refetchapplies} =
     useEmployeeAppliedLeavesQuery({
@@ -98,6 +75,11 @@ const Dashboard = ({navigation}: any) => {
   const ProcessedLeaves = useProcessedLeavesQuery({
     accessToken: accessToken,
   });
+
+  useEffect(() => {
+    handleholiday();
+  }, []);
+
 
   useEffect(() => {
     if (
@@ -127,9 +109,85 @@ const Dashboard = ({navigation}: any) => {
     setCurrentDate(date);
   }, []);
 
+  useEffect(() => {
+    handleholiday();
+  }, [data]);
+
+  useEffect(() => {
+    const marked: any = {};
+    const today = moment(currentDate, 'YYYY-MM-DD');
+    HolyDays.forEach((holiday: any) => {
+      const date = moment(holiday.date).format('YYYY-MM-DD');
+      marked[date] = {
+        customStyles: {
+          container: {
+            backgroundColor: Colors.error,
+            borderRadius: 50,
+          },
+          text: {
+            color: Colors.white,
+            fontWeight: 'bold',
+          },
+        },
+      };
+    });
+
+    if (processed !== null) {
+      processed.forEach((proceed: any) => {
+        const startDate = moment(proceed.leaveStartDate, 'YYYY-MM-DD');
+        const endDate = moment(proceed.leaveEndDate, 'YYYY-MM-DD');
+        const isApproved = proceed?.status?.label === 'Approved';
+        if (isApproved) {
+          let current = startDate.clone();
+          while (current.isSameOrBefore(endDate)) {
+            const formattedDate = current.format('YYYY-MM-DD');
+            marked[formattedDate] = {
+              customStyles: {
+                container: {
+                  backgroundColor: 'green',
+                  borderRadius: 50,
+                },
+                text: {
+                  color: Colors.white,
+                  fontWeight: 'bold',
+                },
+              },
+            };
+            current.add(1, 'day');
+          }
+        }
+      });
+    }
+
+    marked[currentDate] = {
+      selected: true,
+      marked: true,
+      selectedColor: Colors.primary,
+    };
+
+    setMarkedDates(marked);
+  }, [HolyDays, processed, currentDate]);
   const handleImagePress = (image: any) => {
     setSelectedImage(image);
     setModalVisible(true);
+  };
+
+  const handleholiday = async () => {
+    try {
+      const response = await data;
+      if (
+        response &&
+        response?.data &&
+        response?.messageDetail?.message_code === 200
+      ) {
+        setHolyDays(response?.data);
+      } else if (error) {
+        dispatch(auth(undefined));
+        if (!Assesstoken || Assesstoken === undefined) {
+          navigation.navigate('Login');
+        }
+      }
+    } catch (error) {}
   };
 
   const getImageSource = (holidayName: any) => {
@@ -157,20 +215,23 @@ const Dashboard = ({navigation}: any) => {
           }}>
           <View>
             {image ? (
-              <TouchableOpacity onPress={() => handleImagePress(HolidayImage)}>
+              <TouchableOpacity onPress={() => handleImagePress(HolidayImage)} style={{minHeight:38,minWidth:38}}>  
                 <Image
                   source={{uri: HolidayImage}}
                   style={styles(isDark).Holidaylogo}
+                  accessibilityLabel='Image'
                 />
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
                 onPress={() =>
                   handleImagePress(getImageSource(item?.holidayName))
-                }>
+                }
+                style={{minHeight:38,minWidth:38}}  >
                 <Image
                   source={getImageSource(item?.holidayName)}
                   style={styles(isDark).Holidaylogo}
+                  accessibilityLabel='Image'
                 />
               </TouchableOpacity>
             )}
@@ -239,67 +300,6 @@ const Dashboard = ({navigation}: any) => {
     );
   };
 
-  useEffect(() => {
-    handleholiday();
-  }, [data]);
-
-  useEffect(() => {
-    const marked: any = {};
-    const today = moment(currentDate, 'YYYY-MM-DD');
-    HolyDays.forEach((holiday: any) => {
-      const date = moment(holiday.date).format('YYYY-MM-DD');
-      marked[date] = {
-        customStyles: {
-          container: {
-            backgroundColor: Colors.error,
-            borderRadius: 50,
-          },
-          text: {
-            color: Colors.white,
-            fontWeight: 'bold',
-          },
-        },
-      };
-    });
-
-    if (processed !== null) {
-      processed.forEach((proceed: any) => {
-        const startDate = moment(proceed.leaveStartDate, 'YYYY-MM-DD');
-        const endDate = moment(proceed.leaveEndDate, 'YYYY-MM-DD');
-        const isApproved = proceed?.status?.label === 'Approved';
-        if (isApproved) {
-          let current = startDate.clone();
-          while (current.isSameOrBefore(endDate)) {
-            const formattedDate = current.format('YYYY-MM-DD');
-
-            marked[formattedDate] = {
-              customStyles: {
-                container: {
-                  backgroundColor: 'green',
-                  borderRadius: 50,
-                },
-                text: {
-                  color: Colors.white,
-                  fontWeight: 'bold',
-                },
-              },
-            };
-
-            current.add(1, 'day');
-          }
-        }
-      });
-    }
-
-    marked[currentDate] = {
-      selected: true,
-      marked: true,
-      selectedColor: Colors.primary,
-    };
-
-    setMarkedDates(marked);
-  }, [HolyDays, processed, currentDate]);
-
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -325,19 +325,7 @@ const Dashboard = ({navigation}: any) => {
           const extractMonth = moment(date).format('MM-YYYY');
           setOnMonth(() => extractMonth.toString());
         }}
-        hideExtraDays={false}
-        // disableArrowLeft={
-        //   moment(calendarDate).format('YYYY-MM') ===
-        //   moment(financialYearStart).format('YYYY-MM')
-        //     ? true
-        //     : false
-        // }
-        // disableArrowRight={
-        //   moment(calendarDate).format('YYYY-MM') ===
-        //   moment(financialYearEnd).format('YYYY-MM')
-        //     ? true
-        //     : false
-        // }
+        hideExtraDays={true}
         theme={{
           calendarBackground: 'transparent',
           textSectionTitleColor: Colors.dark_gray,
@@ -350,6 +338,7 @@ const Dashboard = ({navigation}: any) => {
         }}
         enableSwipeMonths={false}
         disableAllTouchEventsForDisabledDays={true}
+        
       />
 
       {isLoading ? (
@@ -390,7 +379,7 @@ const Dashboard = ({navigation}: any) => {
                   color: isDark ? Colors.white : Colors.dark_gray,
                   fontFamily: 'Lato-Bold',
                   textAlign: 'center',
-                  fontSize: 14,
+                  fontSize: 16,
                 }}>
                 No Records
               </Text>
@@ -407,6 +396,7 @@ const Dashboard = ({navigation}: any) => {
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles(isDark).modalContainer}>
           <Image
+          //@ts-ignore
             source={
               typeof selectedImage === 'string'
                 ? {uri: selectedImage}
@@ -417,7 +407,7 @@ const Dashboard = ({navigation}: any) => {
           <TouchableOpacity
             onPress={() => setModalVisible(false)}
             style={styles(isDark).closeButton}>
-            <Text style={{color: Colors.white}}>Close</Text>
+            <Text style={{color: Colors.white,fontSize:17,fontFamily:'Lato-Bold',}}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -456,8 +446,8 @@ const styles = (isDark: any) =>
       alignItems: 'center',
     },
     Holidaylogo: {
-      width: 45,
-      height: 45,
+      width: 50,
+      height: 50,
       borderRadius: 25,
     },
     modalContainer: {
@@ -475,6 +465,8 @@ const styles = (isDark: any) =>
       position: 'absolute',
       top: 40,
       right: 20,
+      padding:10,
+      minHeight:37,
     },
   });
 

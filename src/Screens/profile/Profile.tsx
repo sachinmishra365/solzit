@@ -190,6 +190,7 @@ const Profile = () => {
             iconColor={Colors.primary}
             size={30}
             onPress={openModal}
+            accessibilityLabel='Edit Profile' 
           />
           <TouchableOpacity
             style={{alignItems: 'center', marginBottom: 40}}
@@ -329,20 +330,22 @@ const Profile = () => {
               }}>
               <TouchableOpacity
                 style={{
-                  height: 'auto',
-                  backgroundColor: '#FEBE05',
+                  backgroundColor: '#916918',
                   justifyContent: 'center',
                   alignSelf: 'center',
                   borderRadius: 3,
                   alignItems: 'center',
                   flexDirection: 'row',
+                  minHeight:38,
+                  height: 'auto',
                 }}
                 onPress={() => pickSingleWithCamera(true)}>
                 <IconButton
                   style={{margin: -2}}
                   icon="camera"
                   iconColor={Colors.white}
-                  size={18}
+                  size={25}
+                  accessibilityLabel='Camera' 
                 />
                 <Text
                   style={{
@@ -351,6 +354,7 @@ const Profile = () => {
                     color: Colors.white,
                     flexWrap: 'wrap',
                     marginRight: 12,
+                    fontSize: 16,
                   }}>
                   Camera
                 </Text>
@@ -365,13 +369,15 @@ const Profile = () => {
                   alignItems: 'center',
                   flexDirection: 'row',
                   height: 'auto',
+                  minHeight:38,
                 }}
                 onPress={() => pickSingleWithGallary(true)}>
                 <IconButton
                   style={{margin: -2}}
                   icon="account-box"
                   iconColor={Colors.white}
-                  size={18}
+                  size={25}
+                  accessibilityLabel='Gallery'
                 />
                 <Text
                   style={{
@@ -380,8 +386,9 @@ const Profile = () => {
                     color: Colors.white,
                     flexWrap: 'wrap',
                     marginRight: 12,
+                    fontSize: 16,
                   }}>
-                  Gallary
+                  Gallery
                 </Text>
               </TouchableOpacity>
             </View>
@@ -392,6 +399,7 @@ const Profile = () => {
               iconColor={Colors.error}
               size={30}
               onPress={() => setModalVisible(false)}
+              accessibilityLabel='Close' 
             />
           </View>
         </View>

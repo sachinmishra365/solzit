@@ -1,18 +1,18 @@
 const Colors = {
   primary: '#00539f',
-  secondary: '#0caeef',
+  // secondary: '#0585b7',
+  secondary: '#307CE8',
   accent: '#af292e',
   tertiary: '#a2a5a4',
   white: '#fff',
   black: '#000',
   gray: '#292929',
   medium_gray: '#999',
-  dark_gray: '#666',
+  dark_gray: '#808080',
   error: '#BD0101',
   dispatched: '#83B100',
   background: '#EDEDED',
 };
-
 const FontSize = {
   mini: 10,
   small: 12,

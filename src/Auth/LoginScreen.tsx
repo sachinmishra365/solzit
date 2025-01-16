@@ -150,18 +150,13 @@ const LoginScreen = ({navigation}: any) => {
                 onBlur={handleBlur('username')}
                 leftIconName="email"
                 editable={true}
+                accessibilityLabelLeft="Email" 
+                accessibilityLabelRight="Blank"
               />
 
               {touched.username && errors.username && (
-                <Text
-                  style={{
-                    color: Colors.error,
-                    marginLeft: 20,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  {errors.username}
-                </Text>
-              )}
+                //@ts-ignore  
+                <Text style={{color: Colors.error,marginLeft: 20,fontFamily: 'Lato-Regular',}}>{errors.username}</Text>)}
 
               <View style={{marginVertical: 16}} />
 
@@ -177,18 +172,13 @@ const LoginScreen = ({navigation}: any) => {
                 onPress={() => {
                   setShowPassword(!showPassword);
                 }}
+                accessibilityLabelLeft="Lock" 
+                accessibilityLabelRight="Eye"
               />
 
               {touched.password && errors.password && (
-                <Text
-                  style={{
-                    color: Colors.error,
-                    marginLeft: 20,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  {errors.password}
-                </Text>
-              )}
+                //@ts-ignore
+                <Text style={{color: Colors.error,marginLeft: 20,fontFamily: 'Lato-Regular',}}>{errors.password}</Text>)}
 
               <View
                 style={{
@@ -205,8 +195,8 @@ const LoginScreen = ({navigation}: any) => {
                     onPress={() => {
                       setIsCredential(!iscredential);
                     }}
-                    color={Colors.primary}
-                    uncheckedColor={Colors.primary}
+                    color={isDark ? Colors.secondary : Colors.primary}
+                    uncheckedColor={isDark ? Colors.secondary : Colors.primary}
                   />
                 </View>
 
@@ -214,7 +204,7 @@ const LoginScreen = ({navigation}: any) => {
                   style={{
                     fontSize: 14,
                     fontFamily: 'Lato-Semibold',
-                    color: Colors.primary,
+                    color: isDark ? Colors.secondary : Colors.primary,
                     marginLeft: 35,
                   }}>
                   Remember me
@@ -230,7 +220,7 @@ const LoginScreen = ({navigation}: any) => {
                   style={{
                     fontSize: 16,
                     fontFamily: 'Lato-Semibold',
-                    color: Colors.primary,
+                    color: isDark ? Colors.secondary : Colors.primary,
                     position: 'absolute',
                     right: 0,
                   }}>

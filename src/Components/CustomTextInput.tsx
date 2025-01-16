@@ -24,6 +24,8 @@ const CustomTextInput = ({
   keyboardType = 'default',
   contentStyle,
   numberOfLines,
+  accessibilityLabelRight,
+  accessibilityLabelLeft
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -36,6 +38,7 @@ const CustomTextInput = ({
         autoFocus={autoFocus}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
+        accessibilityLabel='Custom Text Input'
         textColor={
           disable !== true
             ? isDark
@@ -75,6 +78,7 @@ const CustomTextInput = ({
           lefticon ? (
             <TextInput.Icon
               icon={leftIconName}
+              size={25}
               color={
                 disable !== true
                   ? isDark
@@ -82,12 +86,14 @@ const CustomTextInput = ({
                     : Colors.primary
                   : Colors.dark_gray
               }
+              accessibilityLabel={accessibilityLabelLeft}
             />
           ) : null
         }
         right={
           <TextInput.Icon
             icon={rightIconName}
+            size={25}
             color={
               disable !== true
                 ? isDark
@@ -96,6 +102,7 @@ const CustomTextInput = ({
                 : Colors.dark_gray
             }
             onPress={onPress}
+            accessibilityLabel={accessibilityLabelRight}
           />
         }
         style={[styles(isDark).input, style]}

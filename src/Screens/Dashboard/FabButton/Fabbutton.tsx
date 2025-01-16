@@ -2,12 +2,12 @@ import {useNavigation} from '@react-navigation/native';
 import * as React from 'react';
 import {FAB} from 'react-native-paper';
 import {Colors} from '../../../constants/Colors';
-import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../../AppStore/Reducers/appState';
-import { StyleSheet } from 'react-native';
+import {useSelector} from 'react-redux';
+import {isDarkTheme} from '../../../AppStore/Reducers/appState';
+import {StyleSheet} from 'react-native';
 
 const Fabbutton = () => {
-  const navigation:any = useNavigation();
+  const navigation: any = useNavigation();
   const isDark = useSelector(isDarkTheme);
 
   const [state, setState] = React.useState({open: false});
@@ -22,48 +22,70 @@ const Fabbutton = () => {
       visible
       icon={open ? 'close' : 'plus'}
       color={isDark ? Colors.white : Colors.white}
-      style={{elevation:5}}
+      style={{elevation: 5}}
+      accessibilityLabel="Fab Button Screen"
       actions={[
         {
           icon: 'card-account-details',
-          color:isDark ? Colors.white : Colors.white,
-          labelStyle:{color:isDark ? Colors.white : Colors.black, fontFamily:'Lato-Bold'},
+          color: isDark ? Colors.white : Colors.white,
+          labelStyle: {
+            color: isDark ? Colors.white : Colors.black,
+            fontFamily: 'Lato-Bold',
+            marginVertical:5,
+            fontSize: 18,
+          },
           label: 'Processed Leaves',
           onPress: () => navigation.navigate('LeaveBalance'),
-          style: {backgroundColor: isDark ? Colors.gray : Colors.primary,},
+          style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
+          accessibilityLabel: 'Processed Leaves',
+          size:'medium'
         },
         {
           icon: 'calendar-clock',
           label: 'My Leave Requests',
-          color:isDark ? Colors.white : Colors.white,
-          labelStyle:{color:isDark ? Colors.white : Colors.black, fontFamily:'Lato-Bold'},
+          color: isDark ? Colors.white : Colors.white,
+          labelStyle: {
+            color: isDark ? Colors.white : Colors.black,
+            fontFamily: 'Lato-Bold',
+            marginVertical:5,
+            fontSize: 18,
+          },
           onPress: () => navigation.navigate('LeaveRequest'),
           style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
+          accessibilityLabel: 'My Leave Requests',
+          size:'medium'
+
         },
         {
           icon: 'airplane',
           label: 'Apply Leave',
-          color:isDark ? Colors.white : Colors.white,
-          labelStyle:{color:isDark ? Colors.white : Colors.black, fontFamily:'Lato-Bold'},
+          color: isDark ? Colors.white : Colors.white,
+          labelStyle: {
+            color: isDark ? Colors.white : Colors.black,
+            fontFamily: 'Lato-Bold',
+            marginVertical:5,
+            fontSize: 18,
+          },
           onPress: () => navigation.navigate('ApplyLeave'),
           style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
+          accessibilityLabel: 'Apply Leave',
+          size:'medium'
         },
       ]}
       onStateChange={onStateChange}
-      backdropColor={isDark ? Colors.black : Colors.background}
+      backdropColor={isDark ? Colors.black : Colors.white}
       fabStyle={{
-        backgroundColor:isDark ? Colors.gray : Colors.primary,
-        elevation:10}}
-      onPress={() => {
-        if (open) {
-        }
+        backgroundColor: isDark ? Colors.gray : Colors.primary,
+        elevation: 10,
       }}
+      // onPress={() => {
+      //   if (open) {
+      //     console.log('FAB Button is close');  
+      //   }
+      // }}
     />
   );
 };
 
 export default Fabbutton;
-const styles = (isDark: any) =>
-  StyleSheet.create({
-
-});
+const styles = (isDark: any) => StyleSheet.create({});

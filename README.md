@@ -80,19 +80,10 @@ To learn more about React Native, take a look at the following resources:
 
 #node module changes
 
-#agenda >> index.js
-#const HEADER_HEIGHT = 0;
-const KNOB_HEIGHT = 0;
-
-
-#agenda >> style.js
-marginTop: 0, //reservations
-backgroundColor: 'black' //reservations
-height: 0, //knob container
-backgroundColor: 'black' //knobContainer
- height: 0, //header
- width: 0 //header
- width: 0 //dayHeader
+#calendar
+#day>>style.js>>base >>
+width = 40,
+height=40,
 
 1. yarn install && npx react-native setup-ios-permissions
 2. kill $(ps aux | grep 'Xcode' | awk '{print $2}')

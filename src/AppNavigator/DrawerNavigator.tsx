@@ -10,14 +10,14 @@ import {
   useColorScheme,
   PanResponder,
 } from 'react-native';
-import {Icon} from 'react-native-paper';
+import {Icon, IconButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
 import Dashboard from '../Screens/Dashboard/Dashboard';
 import {auth, isDarkTheme, theme} from '../AppStore/Reducers/appState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useRef, useState} from 'react';
-import { SCREEN_WIDTH } from '../constants/Screen';
+import {SCREEN_WIDTH} from '../constants/Screen';
 
 const DrawerNavigator = ({navigation}: any) => {
   const dispatch = useDispatch();
@@ -54,7 +54,7 @@ const DrawerNavigator = ({navigation}: any) => {
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderMove: (evt, gestureState) => {
-            if (gestureState.dx > 0 && gestureState.x0 < SCREEN_WIDTH * 0.1) {
+      if (gestureState.dx > 0 && gestureState.x0 < SCREEN_WIDTH * 0.1) {
         setShowMenu(true);
         Animated.timing(scaleValue, {
           toValue: 0.9,
@@ -144,7 +144,7 @@ const DrawerNavigator = ({navigation}: any) => {
             onPress={() => {
               toggleMenu();
             }}
-            style={[styles(isDark).drawerBtn, {marginTop: 16}]}>
+            style={[styles(isDark).drawerBtn, ]}>
             <Icon
               source="calendar-clock"
               color={isDark ? Colors.white : Colors.primary}
@@ -160,7 +160,7 @@ const DrawerNavigator = ({navigation}: any) => {
             onPress={() => {
               toggleMenu();
             }}
-            style={[styles(isDark).drawerBtn, {marginVertical: 16}]}>
+            style={[styles(isDark).drawerBtn, ]}>
             <Icon
               source="airplane"
               color={isDark ? Colors.white : Colors.primary}
@@ -192,7 +192,7 @@ const DrawerNavigator = ({navigation}: any) => {
             onPress={() => {
               toggleMenu();
             }}
-            style={[styles(isDark).drawerBtn, {marginTop: 16}]}>
+            style={[styles(isDark).drawerBtn, ]}>
             <Icon
               source="account"
               color={isDark ? Colors.white : Colors.primary}
@@ -208,7 +208,7 @@ const DrawerNavigator = ({navigation}: any) => {
             onPress={() => {
               toggleMenu();
             }}
-            style={[styles(isDark).drawerBtn, {marginVertical: 16}]}>
+            style={[styles(isDark).drawerBtn, ]}>
             <Icon
               source="cog"
               color={isDark ? Colors.white : Colors.primary}
@@ -233,7 +233,7 @@ const DrawerNavigator = ({navigation}: any) => {
       </View>
 
       <Animated.View
-      //  {...panResponder.panHandlers}
+        //  {...panResponder.panHandlers}
         style={[
           styles(isDark).screenHeaderContainer,
           {
@@ -250,24 +250,33 @@ const DrawerNavigator = ({navigation}: any) => {
           }}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <View style={styles(isDark).screenHeader}>
-              <Pressable onPress={toggleMenu}>
-                <Image
-                  source={
-                    showMenu
-                      ? require('../Assets/Images/close.png')
-                      : require('../Assets/Images/menu.png')
-                  }
-                  style={styles(isDark).headerIcons}
-                />
-              </Pressable>
+              {/* <Pressable onPress={toggleMenu}> */}
+                {showMenu ? (
+                  <IconButton
+                    icon="close"
+                    iconColor={isDark ? Colors.white : Colors.black}
+                    size={25}
+                    onPress={toggleMenu}
+                    accessibilityLabel='close'
+                  />
+                ) : (
+                  <IconButton
+                    icon="menu"
+                    iconColor={isDark ? Colors.white : Colors.black}
+                    size={25}
+                    onPress={toggleMenu}
+                    accessibilityLabel='menu'
+                  />
+                )}
+              {/* </Pressable> */}
               <Text style={styles(isDark).headerTxt}>Soluzione</Text>
             </View>
-            <View style={{position: 'absolute', right: 10}}>
+            {/* <View style={{position: 'absolute', right: 10}}>
               <Image
                 source={require('../Assets/Images/Logo/solzitLogo.png')}
                 style={{width: 30, height: 30, borderRadius: 10}}
               />
-            </View>
+            </View> */}
           </View>
         </Animated.View>
         <Dashboard />
@@ -286,8 +295,8 @@ const styles = (isDark: any) =>
     },
     drawerContainer: {justifyContent: 'flex-start', padding: 15},
     logo: {
-      width: 60,
-      height: 60,
+      width: 90,
+      height: 90,
       borderRadius: 10,
       marginTop: 8,
     },
@@ -303,8 +312,8 @@ const styles = (isDark: any) =>
       alignItems: 'center',
       backgroundColor: 'transparent',
       paddingLeft: 13,
-
       borderRadius: 8,
+      minHeight: 36,
     },
     drawerBtnTxt: {
       marginLeft: 15,
@@ -326,7 +335,6 @@ const styles = (isDark: any) =>
     screenHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginVertical: 10,
     },
     headerIcons: {
       width: 20,

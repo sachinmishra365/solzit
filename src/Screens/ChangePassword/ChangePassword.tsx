@@ -97,6 +97,7 @@ const ChangePassword = ({navigation}: any) => {
       Toast.show({
         type: 'error',
         text1: 'Password Change Status',
+        //@ts-ignore
         text2: err?.data?.messageDetail?.message,
         text1Style: {fontFamily: 'Lato-Regular'},
         text2Style: {
@@ -112,7 +113,8 @@ const ChangePassword = ({navigation}: any) => {
 
   useEffect(() => {
     if (isSuccess) {
-      // Handle success, if needed (e.g., navigate or reset form)
+      console.log('success');
+      
     }
   }, [isSuccess]);
 
@@ -158,16 +160,12 @@ const ChangePassword = ({navigation}: any) => {
               secureTextEntry={false}
               leftIconName="email"
               readOnly={true}
+              accessibilityLabelLeft="Email"
+              accessibilityLabelRight="Blank"
             />
             {touched.email && errors.email && (
-              <Text
-                style={{
-                  color: Colors.error,
-                  marginLeft: 20,
-                  fontFamily: 'Lato-Regular',
-                }}>
-                {errors?.email}
-              </Text>
+              //@ts-ignore
+              <Text style={{color: Colors.error,marginLeft: 20,fontFamily: 'Lato-Regular',}}>{errors?.email}</Text>
             )}
             <View style={{marginVertical: 16}} />
             <CustomTextInput
@@ -182,6 +180,8 @@ const ChangePassword = ({navigation}: any) => {
               onPress={() => {
                 setShowPassword(!showPassword);
               }}
+              accessibilityLabelLeft="Lock"
+              accessibilityLabelRight="Eye"
             />
             {touched.Oldpassword && errors.Oldpassword && (
               <Text
@@ -206,6 +206,8 @@ const ChangePassword = ({navigation}: any) => {
               onPress={() => {
                 setShowNewPassword(!showNewPassword);
               }}
+              accessibilityLabelLeft="Lock"
+              accessibilityLabelRight="Eye"
             />
             {touched.Newpassword && errors.Newpassword && (
               <Text
@@ -230,6 +232,8 @@ const ChangePassword = ({navigation}: any) => {
               onPress={() => {
                 setShowConfirmPassword(!showConfirmPassword);
               }}
+              accessibilityLabelLeft="Lock"
+              accessibilityLabelRight="Eye"
             />
             {touched.ConfirmPassword && errors.ConfirmPassword && (
               <Text

@@ -103,7 +103,7 @@ const LeaveBalance = ({navigation}: any) => {
                   item?.status?.label === 'Applied'
                     ? Colors.primary
                     : item?.status?.label === 'Cancelled'
-                    ? '#9e2d2d'
+                    ? '#E0514D'
                     : item?.status?.label === 'Declined'
                     ? Colors.error
                     : item?.status?.label === 'Approved'
@@ -253,9 +253,10 @@ const LeaveBalance = ({navigation}: any) => {
                   : isDark
                   ? Colors.gray
                   : Colors.white,
-              paddingHorizontal: 10,
-              paddingVertical: 5,
+              paddingHorizontal: 16,
+              paddingVertical: 7,
               borderRadius: 20,
+              minHeight:37
             }}
             onPress={() => filterByStatus(status)}>
             <Text
@@ -284,7 +285,9 @@ const LeaveBalance = ({navigation}: any) => {
 
       {isLoading ? (
         <ShimmerPlaceHolder />
-      ) : filteredItems && filteredItems?.length !== 0 ? (
+      ) : 
+      //@ts-ignore
+      filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
           style={{marginHorizontal: 16}}
           data={filteredItems}
@@ -306,6 +309,8 @@ const LeaveBalance = ({navigation}: any) => {
               color: isDark ? Colors.white : Colors.black,
               alignSelf: 'center',
               fontFamily: 'Lato-Bold',
+              height:38,
+              padding:7
             }}>
             No Records
           </Text>

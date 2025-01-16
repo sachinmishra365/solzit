@@ -24,6 +24,7 @@ const CustomHeader = ({
           iconColor={isDark ? Colors.white : Colors.black}
           size={25}
           onPress={onPress}
+          accessibilityLabel='Back' 
         />
       ) : (
         <IconButton
@@ -31,6 +32,7 @@ const CustomHeader = ({
           iconColor={isDark ? Colors.white : Colors.black}
           size={25}
           onPress={onPress}
+          accessibilityLabel='Menu' 
         />
       )}
       <Text style={styles(isDark).title}>{title}</Text>
@@ -41,6 +43,7 @@ const CustomHeader = ({
           size={25}
           onPress={searchOnPress}
           style={styles(isDark).searchIcon}
+          accessibilityLabel='Search' 
         />
       )}
     </View>

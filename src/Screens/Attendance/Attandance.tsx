@@ -144,12 +144,13 @@ const Attendance = ({navigation}: any) => {
             <TouchableOpacity
               style={{
                 height: 'auto',
-                backgroundColor: '#FEBE05',
+                backgroundColor: '#916918',
                 justifyContent: 'center',
                 alignSelf: 'center',
                 borderRadius: 3,
                 alignItems: 'center',
                 flexDirection: 'row',
+                minHeight:38
               }}
               // disabled={result.isLoading}
               onPress={() => {
@@ -159,7 +160,7 @@ const Attendance = ({navigation}: any) => {
                 style={{margin: -2}}
                 icon="information"
                 iconColor={Colors.white}
-                size={18}
+                size={25}
               />
               <Text
                 style={{
@@ -168,6 +169,7 @@ const Attendance = ({navigation}: any) => {
                   color: Colors.white,
                   flexWrap: 'wrap',
                   marginRight: 12,
+                  fontSize: 16,
                 }}>
                 Summary
               </Text>
@@ -182,6 +184,7 @@ const Attendance = ({navigation}: any) => {
                 alignItems: 'center',
                 flexDirection: 'row',
                 height: 'auto',
+                minHeight:38
               }}
               onPress={() => {
                 navigation.navigate('SepratedAttendance', item);
@@ -190,7 +193,7 @@ const Attendance = ({navigation}: any) => {
                 style={{margin: -2}}
                 icon="account-box"
                 iconColor={Colors.white}
-                size={18}
+                size={25}
               />
               <Text
                 style={{
@@ -198,8 +201,8 @@ const Attendance = ({navigation}: any) => {
                   fontFamily: 'Lato-Bold',
                   color: Colors.white,
                   flexWrap: 'wrap',
-                  fontSize: 12,
-                  marginRight: 5,
+                  marginRight: 12,
+                  fontSize: 16,
                 }}>
                 Attendance
               </Text>
