@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   createNavigationContainerRef,
   NavigationContainer,
@@ -102,6 +102,7 @@ const App = () => {
 
   return (
     <>
+     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={{flex: 0, marginTop: Platform.Version > 34 ? 38 : 0 }} />
       <SafeAreaView  style={{ flex: 1}}>
       <StatusBar
@@ -119,6 +120,7 @@ const App = () => {
           </PersistGate>
         </Provider>
       </SafeAreaView>
+      </GestureHandlerRootView>
     </>
   );
 };

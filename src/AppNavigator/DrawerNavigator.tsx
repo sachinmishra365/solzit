@@ -18,6 +18,7 @@ import {auth, isDarkTheme, theme} from '../AppStore/Reducers/appState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useEffect, useRef, useState} from 'react';
 import {SCREEN_WIDTH} from '../constants/Screen';
+import React from 'react';
 
 const DrawerNavigator = ({navigation}: any) => {
   const dispatch = useDispatch();
@@ -136,6 +137,21 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Profile</Text>
           </Pressable>
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('SoluzioneDirectory');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={styles(isDark).drawerBtn}>
+            <Icon
+              source="book-open-page-variant"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>Soluzione Directory</Text>
+          </Pressable>
 
           <Pressable
             onPressIn={() => {
@@ -203,18 +219,50 @@ const DrawerNavigator = ({navigation}: any) => {
 
           <Pressable
             onPressIn={() => {
-              navigation.navigate('ChangePassword');
+              navigation.navigate('OpenPositions');
             }}
             onPress={() => {
               toggleMenu();
             }}
             style={[styles(isDark).drawerBtn, ]}>
             <Icon
-              source="cog"
+              source="account-group-outline"
               color={isDark ? Colors.white : Colors.primary}
               size={20}
             />
-            <Text style={styles(isDark).drawerBtnTxt}>Change Password</Text>
+            <Text style={styles(isDark).drawerBtnTxt}>Open Positions</Text>
+          </Pressable>
+
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('MyReferences');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={[styles(isDark).drawerBtn, ]}>
+            <Icon
+              source="account-group"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>My References</Text>
+          </Pressable>
+          
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('Feedback');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={[styles(isDark).drawerBtn, ]}>
+            <Icon
+              source="chat-processing"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>Feedback</Text>
           </Pressable>
 
           <TouchableOpacity
@@ -229,6 +277,8 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Logout</Text>
           </TouchableOpacity>
+
+         
         </View>
       </View>
 

@@ -11,6 +11,16 @@ import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
 import Summary from '../Screens/Attendance/Summary';
 import {PermissionHandler} from '../permissions';
 import {useEffect} from 'react';
+import MySkills from '../Screens/profile/MySkills';
+import MyAssets from '../Screens/profile/MyAssets';
+import OpenPositions from '../Screens/Hiring Recruitment/OpenPositions';
+import MyReferences from '../Screens/Hiring Recruitment/MyReferences';
+import AddReference from '../Screens/Hiring Recruitment/AddReference';
+import PositionDetail from '../Screens/Hiring Recruitment/PositionDetails';
+import Feedback from '../Screens/Feedback/Feedback';
+import AddFeedback from '../Screens/Feedback/AddFeedback';
+import SoluzioneDirectory from '../Screens/Soluzione Directory/SoluzioneDirectory';
+import ViewFeedback from '../Screens/Feedback/ViewFeedback';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +38,16 @@ const RootStack = () => {
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="Attandance" component={Attandance} />
+      <Stack.Screen name="OpenPositions" component={OpenPositions} />
+      <Stack.Screen name="MyReferences" component={MyReferences} />
+      <Stack.Screen name="AddReference" component={AddReference} />
+      <Stack.Screen name="PositionDetail" component={PositionDetail} />
+      <Stack.Screen name="Feedback" component={Feedback} />
+      <Stack.Screen name="AddFeedback" component={AddFeedback} />
+      <Stack.Screen name="ViewFeedback" component={ViewFeedback} />
+      <Stack.Screen name="MySkills" component={MySkills} />
+      <Stack.Screen name="MyAssets" component={MyAssets} />
+      <Stack.Screen name="SoluzioneDirectory" component={SoluzioneDirectory} />
       <Stack.Screen name="SepratedAttendance" component={SepratedAttendance} />
       <Stack.Screen name="Summary" component={Summary} />
     </Stack.Navigator>

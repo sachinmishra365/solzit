@@ -27,12 +27,12 @@ import ImageCropPicker, {
   Video as CropVideo,
 } from 'react-native-image-crop-picker';
 
-const Profile = () => {
-  const navigation = useNavigation();
+const Profile = ({navigation}: any) => {
+  // const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const Profiledata = EmployeeId?.userProfile;
-   
+
   const connected = useSelector((state: any) => state?.appState?.connected);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
@@ -43,7 +43,7 @@ const Profile = () => {
   // );
 
   const [imageAsset, setImageAsset] = useState<any>(null);
-  
+
   const [modalVisible, setModalVisible] = useState(false);
 
   const handlePick = async (
@@ -95,7 +95,7 @@ const Profile = () => {
       }),
     );
   };
-  
+
   const pickSingleWithGallary = (
     cropping = false,
     mediaType: 'photo' | 'video' = 'photo',
@@ -136,8 +136,8 @@ const Profile = () => {
         profileImage: imageAsset?.base64 || imageAsset.uri || imageAsset.data,
       };
 
-      const response = await updateProfile({data,accessToken});     
-      
+      const response = await updateProfile({data, accessToken});
+
       if (response?.data?.isSuccessful === true) {
         Toast.show({
           type: 'success',
@@ -190,7 +190,7 @@ const Profile = () => {
             iconColor={Colors.primary}
             size={30}
             onPress={openModal}
-            accessibilityLabel='Edit Profile' 
+            accessibilityLabel="Edit Profile"
           />
           <TouchableOpacity
             style={{alignItems: 'center', marginBottom: 40}}
@@ -206,9 +206,9 @@ const Profile = () => {
                   left: 10,
                 }}
                 source={{
-                  uri: imageAsset?.data ?
-                  `data:image/jpeg;base64,${imageAsset?.data}`
-                  : base64Image,
+                  uri: imageAsset?.data
+                    ? `data:image/jpeg;base64,${imageAsset?.data}`
+                    : base64Image,
                 }}
               />
             ) : (
@@ -292,7 +292,64 @@ const Profile = () => {
           </View>
         </Card>
       )}
+      <View>
+        <TouchableOpacity
+          style={styles(isDark).smallCard}
+          onPress={() => navigation.navigate('MySkills')}>
+          <IconButton
+            icon="translate"
+            iconColor={isDark ? Colors.white : Colors.primary}
+            size={25}
+            style={{marginRight: 10}}
+          />
+          <Text style={[styles(isDark).usename, {fontSize: 18, flex: 1}]}>
+            My Skills
+          </Text>
+          <IconButton
+            icon="chevron-right"
+            iconColor={isDark ? Colors.white : Colors.black}
+            size={25}
+          />
+        </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles(isDark).smallCard}
+          onPress={() => navigation.navigate('MyAssets')}>
+          <IconButton
+            icon="cart"
+            iconColor={isDark ? Colors.white : Colors.primary}
+            size={25}
+            style={{marginRight: 10}}
+          />
+          <Text style={[styles(isDark).usename, {fontSize: 18, flex: 1}]}>
+            My Assets
+          </Text>
+          <IconButton
+            icon="chevron-right"
+            iconColor={isDark ? Colors.white : Colors.black}
+            size={25}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles(isDark).smallCard}
+          onPress={() => navigation.navigate('ChangePassword')}>
+          <IconButton
+            icon="cog"
+            iconColor={isDark ? Colors.white : Colors.primary}
+            size={25}
+            style={{marginRight: 10}}
+          />
+          <Text style={[styles(isDark).usename, {fontSize: 18, flex: 1}]}>
+            Change Password
+          </Text>
+          <IconButton
+            icon="chevron-right"
+            iconColor={isDark ? Colors.white : Colors.black}
+            size={25}
+          />
+        </TouchableOpacity>
+      </View>
       <Modal
         visible={modalVisible}
         transparent={false}
@@ -336,7 +393,7 @@ const Profile = () => {
                   borderRadius: 3,
                   alignItems: 'center',
                   flexDirection: 'row',
-                  minHeight:38,
+                  minHeight: 38,
                   height: 'auto',
                 }}
                 onPress={() => pickSingleWithCamera(true)}>
@@ -345,7 +402,7 @@ const Profile = () => {
                   icon="camera"
                   iconColor={Colors.white}
                   size={25}
-                  accessibilityLabel='Camera' 
+                  accessibilityLabel="Camera"
                 />
                 <Text
                   style={{
@@ -369,7 +426,7 @@ const Profile = () => {
                   alignItems: 'center',
                   flexDirection: 'row',
                   height: 'auto',
-                  minHeight:38,
+                  minHeight: 38,
                 }}
                 onPress={() => pickSingleWithGallary(true)}>
                 <IconButton
@@ -377,7 +434,7 @@ const Profile = () => {
                   icon="account-box"
                   iconColor={Colors.white}
                   size={25}
-                  accessibilityLabel='Gallery'
+                  accessibilityLabel="Gallery"
                 />
                 <Text
                   style={{
@@ -399,7 +456,7 @@ const Profile = () => {
               iconColor={Colors.error}
               size={30}
               onPress={() => setModalVisible(false)}
-              accessibilityLabel='Close' 
+              accessibilityLabel="Close"
             />
           </View>
         </View>
@@ -462,11 +519,24 @@ const styles = (isDark: any) =>
       borderColor: '#ccc',
       justifyContent: 'center',
       alignItems: 'center',
-      padding:10
+      padding: 10,
     },
     image: {
       width: '100%',
       height: '100%',
       borderRadius: 10,
+    },
+    smallCard: {
+      marginTop: 10,
+      marginHorizontal: 16,
+      padding: 5,
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      color: isDark ? Colors.white : Colors.black,
+      borderRadius: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderWidth: 0.5,
+      borderColor: Colors.white,
+      elevation: 2,
     },
   });

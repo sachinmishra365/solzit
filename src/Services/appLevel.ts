@@ -24,8 +24,8 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
 export const appLevelApi = createApi({
   reducerPath: 'AppLevel_SolzitApi',
   baseQuery: axiosBaseQuery({
-    // baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1/Auth/', //dev
-    baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1/Auth/', //pro
+    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1/Auth/', //dev
+    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1/Auth/', //pro
   }),
 
   endpoints: builder => ({

@@ -24,11 +24,11 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
 export const services = createApi({
   reducerPath: 'parsApi',
   baseQuery: axiosBaseQuery({
-    baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
+    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
 
-    // baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
+    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
   }),
-  tagTypes: ['Hello', 'Hello1', 'attendance'],
+  tagTypes: ['Hello', 'Hello1', 'attendance','hi','feedback'],
 
   endpoints: builder => ({
     EmployeeAppliedLeaves: builder.query({
@@ -161,6 +161,146 @@ export const services = createApi({
         };
       },
     }),
+    EmployeeInventoryAllocation: builder.query({
+      query: ({accessToken }) => ({
+        url: `/EmployeeRecord/GetEmployeeInventoryAllocation/`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    }),
+
+    EmployeeSkills: builder.query({
+      query: ({accessToken}) => {
+        return {
+          url: `/Dashboard/GetEmployeeSkills`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+    
+    CreateMyFeedBacks: builder.mutation({
+      query: ({data, accessToken}) => {
+        return {
+          url: `/Feedbacks/CreateMyFeedBacks`,
+          method: 'POST',
+          body: data,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['feedback'],
+    }),
+    
+    GetMyFeedbacksListByEmpId: builder.query({
+      query: ({accessToken}) => {
+        return {
+          url: `/Feedbacks/GetMyFeedbacksListByEmpId`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ['feedback'],
+    }),
+
+    GetMyFeedbacksByFeedBackId: builder.query({
+      query: ({FeedBackId,accessToken}) => {
+        return {
+          url: `/Feedbacks/GetMyFeedbacksByFeedBackId?FeedBackId=${FeedBackId}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+    
+    GetListOfOpenPosition: builder.query({
+      query: ({accessToken}) => {
+        return {
+          url: `/HiringRecruitment/GetListOfOpenPosition`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+    
+    CreateCandidateApplication: builder.mutation({
+      query: ({data, accessToken}) => {
+        return {
+          url: `/HiringRecruitment/CreateCandidateApplication`,
+          method: 'POST',
+          body: data,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['hi'],
+    }),
+
+    GetCandidateApplicationByEmployeeId: builder.query({
+      query: ({accessToken}) => {
+        return {
+          url: `/HiringRecruitment/GetCandidateApplicationByEmployeeId`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+
+    AttachFileInSharePoint: builder.mutation({
+      query: ({data, accessToken}) => {
+        return {
+          url: `/Sharepoint/AttachFileInSharePoint`,
+          method: 'POST',
+          body: data,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+      invalidatesTags: ['hi'],
+    }),
+
+    GetAttachmentFromSharePoint: builder.query({
+      query: ({entityId,entityName,accessToken}) => {
+        return {
+          url: `/Sharepoint/GetAttachmentFromSharePoint?entityId=${entityId}&entityName=${entityName}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+
+    GetSoluzioneUpcomingBirthdays: builder.query({
+      query: ({entityId,entityName,accessToken}) => {
+        return {
+          url: `/Dashboard/GetSoluzioneUpcomingBirthdays`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+    
   }),
 });
 
@@ -176,4 +316,16 @@ export const {
   useEmployeeAttendanceQueryQuery,
   useAskEmployeeAttendanceQueryMutation,
   useEmployeeLeaveRecordsQuery,
+  useEmployeeInventoryAllocationQuery,
+  useEmployeeSkillsQuery,
+  useCreateMyFeedBacksMutation,
+  useGetMyFeedbacksByFeedBackIdQuery,
+  useGetMyFeedbacksListByEmpIdQuery,
+  useGetListOfOpenPositionQuery,
+  useCreateCandidateApplicationMutation,
+  useGetCandidateApplicationByEmployeeIdQuery,
+  useAttachFileInSharePointMutation,
+  useGetAttachmentFromSharePointQuery,
+  useGetSoluzioneUpcomingBirthdaysQuery,
+
 } = services;
