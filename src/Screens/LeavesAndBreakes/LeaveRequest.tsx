@@ -57,7 +57,7 @@ const LeaveRequest = ({navigation}: any) => {
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 10,
+        marginVertical: 7,
         borderColor: Colors.background,
         borderWidth: 0.5,
         marginHorizontal: 5,
@@ -148,7 +148,7 @@ const LeaveRequest = ({navigation}: any) => {
               justifyContent: 'center',
               alignSelf: 'center',
               borderRadius: 3,
-              minHeight: 33,
+              minHeight: 25,
               alignItems: 'center',
               flexDirection: 'row',
             }}

@@ -270,7 +270,7 @@ const SepratedAttendance = ({route}: any) => {
       <Card
         style={{
           backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 10,
+          marginVertical: 7,
           borderColor: Colors.background,
           borderWidth: 1,
           marginHorizontal: 16,

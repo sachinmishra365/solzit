@@ -74,10 +74,11 @@ const SoluzioneDirectory = ({navigation}: any) => {
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 10,
+        marginVertical: 7,
         borderColor: Colors.background,
         borderWidth: 0.5,
         marginHorizontal: 16,
+        elevation: 5,
       }}>
       <Card.Content>
         <View style={styles(isDark).row}>
@@ -109,8 +110,8 @@ const SoluzioneDirectory = ({navigation}: any) => {
           ]}>
           {item.designation}
         </Text>
-        <Text style={styles(isDark).email}>{item.email}</Text>
-        <Text style={styles(isDark).email}>{item.mobile}</Text>
+        <Text style={styles(isDark).email}>{item.email}{' '}|{' '}{item.mobile}</Text>
+        {/* <Text style={styles(isDark).email}>{item.mobile}</Text> */}
       </Card.Content>
     </Card>
   );

@@ -78,10 +78,11 @@ const MySkills = ({navigation}: any) => {
       <Card
         style={{
           backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 10,
+          marginVertical: 7,
           borderColor: Colors.background,
           borderWidth: 0.5,
           marginHorizontal: 16,
+         
         }}>
         <Card.Content>
           <View>
@@ -188,7 +189,7 @@ const styles = (isDark: boolean) =>
       color: isDark ? Colors.white : Colors.black,
     },
     progressBar: {
-      height: 8,
+      height: 6,
       borderRadius: 2,
       marginVertical: 5,
       backgroundColor: isDark ? Colors.gray : Colors.white,

@@ -61,7 +61,7 @@ const MyAssets = ({navigation}: any) => {
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 10,
+        marginVertical: 7,
         borderColor: Colors.background,
         borderWidth: 0.5,
         marginHorizontal: 16,

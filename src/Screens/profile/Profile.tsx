@@ -298,11 +298,11 @@ const Profile = ({navigation}: any) => {
           onPress={() => navigation.navigate('MySkills')}>
           <IconButton
             icon="translate"
-            iconColor={isDark ? Colors.white : Colors.primary}
+            iconColor={isDark ? Colors.white : Colors.black}
             size={25}
             style={{marginRight: 10}}
           />
-          <Text style={[styles(isDark).usename, {fontSize: 18, flex: 1}]}>
+          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
             My Skills
           </Text>
           <IconButton
@@ -316,12 +316,12 @@ const Profile = ({navigation}: any) => {
           style={styles(isDark).smallCard}
           onPress={() => navigation.navigate('MyAssets')}>
           <IconButton
-            icon="cart"
-            iconColor={isDark ? Colors.white : Colors.primary}
+            icon="cart-outline"
+            iconColor={isDark ? Colors.white : Colors.black}
             size={25}
             style={{marginRight: 10}}
           />
-          <Text style={[styles(isDark).usename, {fontSize: 18, flex: 1}]}>
+          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
             My Assets
           </Text>
           <IconButton
@@ -335,12 +335,12 @@ const Profile = ({navigation}: any) => {
           style={styles(isDark).smallCard}
           onPress={() => navigation.navigate('ChangePassword')}>
           <IconButton
-            icon="cog"
-            iconColor={isDark ? Colors.white : Colors.primary}
+            icon="cog-outline"
+            iconColor={isDark ? Colors.white : Colors.black}
             size={25}
             style={{marginRight: 10}}
           />
-          <Text style={[styles(isDark).usename, {fontSize: 18, flex: 1}]}>
+          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
             Change Password
           </Text>
           <IconButton
@@ -529,7 +529,7 @@ const styles = (isDark: any) =>
     smallCard: {
       marginTop: 10,
       marginHorizontal: 16,
-      padding: 5,
+      padding:3,
       backgroundColor: isDark ? Colors.black : Colors.background,
       color: isDark ? Colors.white : Colors.black,
       borderRadius: 5,
