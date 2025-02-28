@@ -8,7 +8,7 @@ import {useGetListOfOpenPositionQuery} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import {Card, Icon, IconButton} from 'react-native-paper';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const OpenPositions = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -73,9 +73,9 @@ const OpenPositions = ({navigation}: any) => {
         marginHorizontal: 16,
       }}>
       <Card.Content>
-        <View style={[styles(isDark).titleContainer,{marginBottom: 8,}]}>
-            <Text style={styles(isDark).title}>{item.hiringPosition}</Text>
-          <View style={styles(isDark, item.urgency).urgencyBox}>
+        <View style={[styles(isDark).titleContainer, {marginBottom: 8}]}>
+          <Text style={styles(isDark).title}>{item.hiringPosition}</Text>
+          <View>
             <Text style={styles(isDark, item.urgency).urgencyText}>
               {item.urgency}
             </Text>
@@ -83,38 +83,51 @@ const OpenPositions = ({navigation}: any) => {
         </View>
 
         <View style={styles(isDark).rowContainer}>
-          <View style={styles(isDark).rowItem}>
-            <Text style={styles(isDark).label}>Experience Range</Text>
+          <View>
+            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              Experience Range
+            </Text>
             <Text style={styles(isDark).value}>{item.experienceRange}</Text>
           </View>
-          <View style={styles(isDark).rowItem}>
-            <Text style={styles(isDark).label}>Number of Positions</Text>
+          <View>
+            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              Number of Positions
+            </Text>
             <Text style={styles(isDark).value}>{item.numberOfPosition}</Text>
           </View>
         </View>
 
         <View style={styles(isDark).rowContainer}>
-          <View style={styles(isDark).rowItem}>
-            <Text style={styles(isDark).label}>Is Work From Home?</Text>
+          <View>
+            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              Is Work From Home?
+            </Text>
             <Text style={styles(isDark).value}>
               {item.isWorkFromHomeAvailable}
             </Text>
           </View>
-          <View style={styles(isDark).rowItem}>
-            <Text style={styles(isDark).label}>Work Location</Text>
+          <View>
+            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              Work Location
+            </Text>
             <Text style={styles(isDark).value}>{item.location || 'N/A'}</Text>
           </View>
-          </View>
-          <View  style={[styles(isDark).titleContainer,{marginTop: 10}]}>   
-           <TouchableOpacity  style={styles(isDark).addReferenceButton}
-             onPress={() =>navigation.navigate('PositionDetail', {position: item})}>
-            <Icon source='eye' size={25} color={Colors.white} />
+        </View>
+        <View style={[styles(isDark).titleContainer, {marginTop: 10}]}>
+          <TouchableOpacity
+            style={[styles(isDark).addReferenceButton,{backgroundColor: '#916918',}]}
+            onPress={() =>
+              navigation.navigate('PositionDetail', {position: item})
+            }>
+            <Icon source="eye" size={25} color={Colors.white} />
             <Text style={styles(isDark).addReferenceText}>Position Detail</Text>
           </TouchableOpacity>
-          <TouchableOpacity  style={styles(isDark).addReferenceButton}
-           onPress={() => navigation.navigate('AddReference', { reference: item.hiringId, hiringPosition: item.hiringPosition })}
->
-            <Icon source='plus' size={25} color={Colors.white} />
+          <TouchableOpacity
+            style={styles(isDark).addReferenceButton}
+            onPress={() =>
+              navigation.navigate('AddReference', {position: item})
+            }>
+            <Icon source="plus" size={25} color={Colors.white} />
             <Text style={styles(isDark).addReferenceText}>Add Reference</Text>
           </TouchableOpacity>
         </View>
@@ -176,15 +189,9 @@ const styles = (isDark: boolean, urgency?: string) =>
       justifyContent: 'space-between',
       marginBottom: 10,
     },
-    rowItem: {},
-    label: {
-      fontSize: 14,
-      fontFamily: 'Lato-Bold',
-      color: isDark ? Colors.white : Colors.black,
-    },
+
     value: {
       fontSize: 14,
-      fontFamily: 'Lato-Medium',
       color: isDark ? Colors.white : Colors.black,
       alignSelf: 'center',
     },
@@ -194,7 +201,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       color: isDark ? Colors.white : Colors.black,
     },
     urgencyText: {
-      fontSize: 14,
+      fontSize: 16,
       fontFamily: 'Lato-Bold',
       color:
         urgency === 'Urgent'
@@ -203,11 +210,7 @@ const styles = (isDark: boolean, urgency?: string) =>
           ? '#916918'
           : 'green',
     },
-    urgencyBox: {
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 5,
-    },
+
     titleContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -218,8 +221,8 @@ const styles = (isDark: boolean, urgency?: string) =>
       backgroundColor: Colors.primary,
       justifyContent: 'center',
       borderRadius: 3,
-      paddingVertical:5,
-      paddingHorizontal:5,
+      paddingVertical: 5,
+      paddingHorizontal: 6,
       alignItems: 'center',
       flexDirection: 'row',
       height: 'auto',
@@ -229,7 +232,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       fontSize: 16,
       fontFamily: 'Lato-Bold',
       color: Colors.white,
-      marginLeft: 5,
+      marginLeft: 3,
     },
   });
 

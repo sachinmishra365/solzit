@@ -1,4 +1,4 @@
-import {Dimensions, StyleSheet, Text, View} from'react-native';
+import {Dimensions, StyleSheet, Text, TouchableOpacity, View} from'react-native';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
 import {Colors} from '../constants/Colors';
@@ -13,6 +13,8 @@ const CustomHeader = ({
   title,
   searchOnPress,
   showSearchIcon = false,
+  AddFeedbackIcon = false,
+  addFeedbackOnPress,
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -46,6 +48,16 @@ const CustomHeader = ({
           accessibilityLabel='Search' 
         />
       )}
+      {AddFeedbackIcon && (
+        <IconButton
+          icon="plus-circle"
+          iconColor={Colors.primary}
+          size={30}
+          onPress={addFeedbackOnPress}
+          style={styles(isDark).searchIcon}
+          accessibilityLabel='Add' 
+        />
+      )}
     </View>
   );
 };
@@ -74,6 +86,7 @@ const styles = (isDark: any) =>
   },
   searchIcon: {
     position: 'absolute',
-    right: 0,
+    right: 16,
   },
+  
 });

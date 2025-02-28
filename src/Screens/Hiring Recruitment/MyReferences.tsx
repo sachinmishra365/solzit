@@ -76,37 +76,49 @@ const MyReferences = ({navigation}: any) => {
         <View style={[styles(isDark).status]}>
           <Text
             style={[
-              styles(isDark).label,
-              {fontSize: 16, color:isDark?Colors.white:Colors.black},
+              styles(isDark).value,
+              {
+                fontSize: 16,
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Bold',
+              },
             ]}>
-            Status{' '}:{' '}
+            Status :{' '}
           </Text>
           <Text
             style={[
               styles(isDark).value,
-              {fontSize: 16, color: Colors.primary, fontFamily: 'Lato-Bold',},
+              {fontSize: 16, color: Colors.primary, fontFamily: 'Lato-Bold'},
             ]}>
             {item.applicationStatus?.label}
           </Text>
         </View>
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).label}>Name:</Text>
+          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+            Name:
+          </Text>
           <Text style={styles(isDark).value}>
             {item.firstName} {item.lastName}
           </Text>
         </View>
 
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).label}>Mobile:</Text>
+          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+            Mobile:
+          </Text>
           <Text style={styles(isDark).value}>{item.mobileNumber}</Text>
         </View>
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).label}>Email:</Text>
+          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+            Email:
+          </Text>
           <Text style={styles(isDark).value}>{item.email}</Text>
         </View>
 
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).label}>Position:</Text>
+          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+            Position:
+          </Text>
           <Text style={styles(isDark).value}>
             {item.position?.name || 'N/A'}
           </Text>
@@ -134,7 +146,6 @@ const MyReferences = ({navigation}: any) => {
             data={ReferenceData}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
-          
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -165,21 +176,14 @@ const styles = (isDark: boolean) =>
       justifyContent: 'space-between',
       marginBottom: 10,
     },
-
-    label: {
-      fontFamily: 'Lato-Bold',
-      color: isDark ? Colors.white : Colors.black,
-    },
     value: {
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
     },
-   
     status: {
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      borderColor: isDark ? Colors.gray : Colors.white,
     },
   });
 

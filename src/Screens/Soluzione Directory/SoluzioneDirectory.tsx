@@ -1,4 +1,11 @@
-import {View, Text, StyleSheet, FlatList, RefreshControl, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  Image,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
@@ -17,9 +24,10 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const [directoryData, setDirectoryData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const {data, error, isLoading, refetch} = useGetSoluzioneUpcomingBirthdaysQuery({
-    accessToken: EmployeeId?.authToken?.accessToken,
-  });
+  const {data, error, isLoading, refetch} =
+    useGetSoluzioneUpcomingBirthdaysQuery({
+      accessToken: EmployeeId?.authToken?.accessToken,
+    });
 
   const handleDirectory = async () => {
     if (!connected) {
@@ -72,21 +80,37 @@ const SoluzioneDirectory = ({navigation}: any) => {
         marginHorizontal: 16,
       }}>
       <Card.Content>
-      <View style={styles(isDark).row}>
-            {item.employeeImg && (
-              <Image
-                source={{ uri: `data:image/png;base64,${item.employeeImg}` }}
-                style={styles(isDark).image}
-              />
-            )}
-            <View style={styles(isDark).textContainer}>
-              <Text style={styles(isDark).name}>{item.fullName}</Text>
-            </View>
+        <View style={styles(isDark).row}>
+          {item.employeeImg ? (
+            <Image
+              source={{uri: `data:image/png;base64,${item.employeeImg}`}}
+              style={styles(isDark).image}
+            />
+          ) : (
+            <Image
+              source={require('../../Assets/Images/EmpBoy.png')}
+              style={styles(isDark).image}
+            />
+          )}
+          <View style={styles(isDark).textContainer}>
+            <Text
+              style={[
+                styles(isDark).name,
+                {fontSize: 18, fontFamily: 'Lato-Bold'},
+              ]}>
+              {item.fullName}
+            </Text>
           </View>
-          <Text style={styles(isDark).designation}>{item.designation}</Text>
-          <Text style={styles(isDark).email}>{item.email}</Text>
-          <Text style={styles(isDark).mobile}>{item.mobile}</Text>
-        
+        </View>
+        <Text
+          style={[
+            styles(isDark).name,
+            {fontSize: 16, fontFamily: 'Lato-Semibold'},
+          ]}>
+          {item.designation}
+        </Text>
+        <Text style={styles(isDark).email}>{item.email}</Text>
+        <Text style={styles(isDark).email}>{item.mobile}</Text>
       </Card.Content>
     </Card>
   );
@@ -98,7 +122,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
         title="Soluzione Directory"
         onPress={() => navigation.goBack()}
       />
-      
+
       <View style={styles(isDark).divider} />
       {isLoading ? (
         <ShimmerPlaceHolder />
@@ -146,20 +170,12 @@ const styles = (isDark: boolean) =>
       marginRight: 15,
       borderWidth: 1,
       borderColor: '#ddd',
+
     },
     textContainer: {
       flex: 1,
     },
     name: {
-      fontSize: 18,
-      fontFamily: 'Lato-Bold',
-      color: isDark ? Colors.white : Colors.black,
-    },
-    
-    designation: {
-      fontSize: 16,
-      fontFamily: 'Lato-Semibold',
-      marginTop: 5,
       color: isDark ? Colors.white : Colors.black,
     },
     email: {
@@ -168,20 +184,6 @@ const styles = (isDark: boolean) =>
       color: isDark ? Colors.white : Colors.black,
       marginTop: 5,
     },
-    mobile: {
-      fontSize: 14,
-      fontFamily: 'Lato-Regular',
-      color: isDark ? Colors.white : Colors.black,
-      marginTop: 5,
-    },
-    emptyText: {
-      textAlign: 'center',
-      fontFamily: 'Lato-Regular',
-      marginTop: 20,
-      fontSize: 16,
-      color: isDark ? Colors.white : Colors.black,
-    },
-
   });
 
 export default SoluzioneDirectory;

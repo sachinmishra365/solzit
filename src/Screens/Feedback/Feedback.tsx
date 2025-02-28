@@ -23,7 +23,6 @@ const Feedback = ({navigation}: any) => {
     accessToken: EmployeeId?.authToken?.accessToken,
   });
 
-
   const handleFeedback = async () => {
     if (!connected) {
       Toast.show({
@@ -40,13 +39,15 @@ const Feedback = ({navigation}: any) => {
       });
       return;
     }
-  
+
     if (data && data?.messageDetail?.message_code === 200 && data?.data) {
-      const sortedData = [...data.data].sort((a, b) => b.feedBackId - a.feedBackId);
+      const sortedData = [...data.data].sort(
+        (a, b) => b.feedBackId - a.feedBackId,
+      );
       setFeedbackData(sortedData);
     }
   };
-  
+
   useEffect(() => {
     handleFeedback();
   }, [data]);
@@ -69,35 +70,50 @@ const Feedback = ({navigation}: any) => {
         marginHorizontal: 16,
       }}>
       <Card.Content>
-        <Text style={[styles(isDark).dateText, {textAlign: 'right'}]}>
-          {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM YYYY')}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+          }}>
+          <Text
+            style={[styles(isDark).title, {flex: 1, fontSize: 16}]}
+            numberOfLines={0}
+            ellipsizeMode="tail">
+            {item.feedBackTitle}
+          </Text>
+
+          <View style={{minWidth: '30%', alignItems: 'flex-end', marginLeft: 7}}>
+            <Text style={[styles(isDark).title, {fontSize: 16}]}>
+              {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM,YYYY')}
+            </Text>
+          </View>
+        </View>
+
+        <Text style={[styles(isDark).title, {fontSize: 14,fontFamily:'Lato-Regular',marginTop:-5}]}>
+          Status: {item.status.label}
         </Text>
-
-        <Text style={styles(isDark).title}>{item.feedBackTitle}</Text>
-
-        <Text style={styles(isDark).status}>Status: {item.status.label}</Text>
 
         <View>
           <TouchableOpacity
             style={styles(isDark).viewFeedback}
             onPress={() =>
-              navigation.navigate('ViewFeedback', {
-                feedbackId: item.feedBackId,
-                feedBackTitle: item.feedBackTitle,
-              })
+              navigation.navigate('ViewFeedback', {feedbackData: item})
             }>
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                borderWidth: 0.5,
-                borderColor: Colors.primary,
-                padding: 10,
+                padding:6,
                 borderRadius: 3,
-                backgroundColor: isDark ? Colors.gray : Colors.white,
+                backgroundColor: Colors.primary,
+                
               }}>
-              <Icon source="eye" size={20} color={Colors.primary} />
-              <Text style={styles(isDark).viewText}>View Feedback</Text>
+              <Icon source="eye" size={24} color={Colors.white} />
+              <Text
+                style={[styles(isDark).addButtonText, {color: Colors.white,marginLeft:4}]}>
+                View Feedback
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -110,19 +126,12 @@ const Feedback = ({navigation}: any) => {
       <CustomHeader
         showBackIcon={true}
         title="Feedback"
+        AddFeedbackIcon={true}
         onPress={() => navigation.goBack()}
+        addFeedbackOnPress={() => navigation.navigate('AddFeedback')}
       />
       <View style={styles(isDark).divider} />
-      <View style={styles(isDark).topBar}>
 
-        <TouchableOpacity
-            style={styles(isDark).commonButton}
-            onPress={() => navigation.navigate('AddFeedback')}>
-            <Icon source="plus" size={25} color={Colors.white} />
-            <Text style={styles(isDark).addButtonText}>Add Feedback</Text>
-          </TouchableOpacity>
-      </View>
-      
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
@@ -157,61 +166,26 @@ const styles = (isDark: boolean) =>
       backgroundColor: isDark ? Colors.white : 'transparent',
       borderColor: isDark ? Colors.black : 'transparent',
     },
-    topBar: {
-      marginTop: 10,
-      alignItems: 'flex-end',
-      marginHorizontal: 16,
-    },
-    commonButton: {
-      backgroundColor: Colors.primary,
-      borderRadius: 3,
-      paddingHorizontal: 5,
-      alignItems: 'center',
-      flexDirection: 'row',
-      height: 'auto',
-      minHeight: 38,
-      padding:10,
-    },
     addButtonText: {
-      color:  Colors.white,
       fontSize: 14,
-      fontFamily: 'Lato-Bold',
-    },
-    dateText: {
-      fontSize: 14,
-      color: isDark ? Colors.white : Colors.black,
-      marginBottom: 5,
       fontFamily: 'Lato-Bold',
     },
     title: {
-      fontSize: 16,
       fontFamily: 'Lato-Bold',
       marginBottom: 5,
       color: isDark ? Colors.white : Colors.black,
     },
     status: {
       fontSize: 14,
-      fontFamily: 'Lato-SemiBold',
+      fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
       marginBottom: 10,
     },
     viewFeedback: {
       flexDirection: 'row',
       alignItems: 'center',
-    },
-    viewText: {
-      color: Colors.primary,
-      marginLeft: 5,
-      fontFamily: 'Lato-Bold',
      
     },
-    rowBetween: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 5,
-    },
-
   });
 
 export default Feedback;

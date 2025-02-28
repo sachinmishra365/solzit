@@ -4,14 +4,14 @@ const Colors = {
   secondary: '#307CE8',
   accent: '#af292e',
   tertiary: '#a2a5a4',
-  white: '#fff',
+  white: '#FAFAFA',
   black: '#000',
   gray: '#292929',
   medium_gray: '#999',
   dark_gray: '#808080',
   error: '#BD0101',
   dispatched: '#83B100',
-  background: '#EDEDED',
+  background: '#FFFFFF',
 };
 const FontSize = {
   mini: 10,

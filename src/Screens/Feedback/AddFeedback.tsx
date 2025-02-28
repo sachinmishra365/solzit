@@ -21,7 +21,6 @@ import * as Yup from 'yup';
 import {SCREEN_WIDTH} from '../../constants/Screen';
 
 const regardingOptions = [
-  {label: 'Select', value: null},
   {label: 'HR', value: 674180000},
   {label: 'Administration', value: 674180001},
   {label: 'Operational', value: 674180002},
@@ -42,11 +41,19 @@ const FeedbackSchema = Yup.object().shape({
     })
     .nullable()
     .required('Please select a category'),
-  feedBackTitle: Yup.string().trim().required('Title is required'),
-  feedBackDescription: Yup.string().trim().required('Description is required'),
+
+  feedBackTitle: Yup.string()
+    .trim()
+    .required('Please fill out this field!')
+    .min(20, ' Minimum 20 characters required.'),
+
+  feedBackDescription: Yup.string()
+    .trim()
+    .required('Please fill out this field!')
+    .min(20, ' Minimum 20 characters required.'),
 });
 
-const AddFeedback = ({navigation,route}: any) => {
+const AddFeedback = ({navigation, route}: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -55,8 +62,6 @@ const AddFeedback = ({navigation,route}: any) => {
   const [CreateMyFeedBacks] = useCreateMyFeedBacksMutation();
 
   const [expanded, setExpanded] = useState(false);
-
-
 
   const handleSubmit = async (values: any) => {
     if (!connected) {
@@ -80,11 +85,10 @@ const AddFeedback = ({navigation,route}: any) => {
             value: values.regardingTo.value,
           },
           reportedBy: auth.userProfile.fullName,
-          reportedById:auth.userProfile.userId,
-         
+          reportedById: auth.userProfile.userId,
         },
       }).unwrap();
-     
+
       if (
         response?.isSuccessful &&
         response?.messageDetail?.message_code === 201
@@ -143,20 +147,23 @@ const AddFeedback = ({navigation,route}: any) => {
         Soluzione values your feedback. Please feel free to share your thoughts.
       </Text>
 
-      <ScrollView contentContainerStyle={styles(isDark).formContainer}>
+      <ScrollView contentContainerStyle={{marginHorizontal: 16}}>
         <Formik
           initialValues={{
             regardingTo: {label: 'Select', value: null},
             feedBackTitle: '',
             feedBackDescription: '',
+            resume: { filename: '', filetype: '', bytes: '' }
           }}
           validationSchema={FeedbackSchema}
-          onSubmit={handleSubmit}>
+          onSubmit={handleSubmit}
+          validateOnChange={true}>
           {({
             values,
             handleChange,
             handleSubmit,
             setFieldValue,
+            setFieldTouched,
             errors,
             touched,
           }) => (
@@ -170,8 +177,16 @@ const AddFeedback = ({navigation,route}: any) => {
                   color: isDark ? Colors.white : Colors.black,
                   fontFamily: 'Lato-Bold',
                 }}
-                style={{backgroundColor: isDark ? Colors.gray : Colors.background}}
-                right={props => <List.Icon {...props} icon="chevron-down" color={isDark ? Colors.white : Colors.black} />}>
+                style={{
+                  backgroundColor: isDark ? Colors.gray : Colors.background,
+                }}
+                right={props => (
+                  <List.Icon
+                    {...props}
+                    icon="chevron-down"
+                    color={isDark ? Colors.white : Colors.black}
+                  />
+                )}>
                 {regardingOptions.map(option => (
                   <List.Item
                     key={option.value}
@@ -200,9 +215,15 @@ const AddFeedback = ({navigation,route}: any) => {
               <TextInput
                 style={styles(isDark).input}
                 placeholder="Enter Title"
-                placeholderTextColor={isDark ? Colors.dark_gray : Colors.medium_gray}
+                placeholderTextColor={
+                  isDark ? Colors.dark_gray : Colors.medium_gray
+                }
                 value={values.feedBackTitle}
-                onChangeText={handleChange('feedBackTitle')}
+                onChangeText={(text) => {
+                  handleChange('feedBackTitle')(text);
+                  setFieldValue('feedBackTitle', text);
+                  setFieldTouched('feedBackTitle', true, false);
+                }}
               />
               {touched.feedBackTitle && errors.feedBackTitle && (
                 <Text style={styles(isDark).error}>{errors.feedBackTitle}</Text>
@@ -210,11 +231,20 @@ const AddFeedback = ({navigation,route}: any) => {
 
               <Text style={styles(isDark).label}>Description:</Text>
               <TextInput
-                style={styles(isDark).textarea}
+                style={[
+                  styles(isDark).input,
+                  {height: 100, textAlignVertical: 'top'},
+                ]}
                 placeholder="Enter Description"
-                placeholderTextColor={isDark ? Colors.dark_gray : Colors.medium_gray}
+                placeholderTextColor={
+                  isDark ? Colors.dark_gray : Colors.medium_gray
+                }
                 value={values.feedBackDescription}
-                onChangeText={handleChange('feedBackDescription')}
+                onChangeText={(text) => {
+                  handleChange('feedBackDescription')(text);
+                  setFieldValue('feedBackDescription', text);
+                  setFieldTouched('feedBackDescription', true, false);
+                }}
                 multiline
               />
               {touched.feedBackDescription && errors.feedBackDescription && (
@@ -223,8 +253,8 @@ const AddFeedback = ({navigation,route}: any) => {
                 </Text>
               )}
 
-       <Text style={styles(isDark).label}>Attachments:</Text>
-       <TouchableOpacity
+              <Text style={styles(isDark).label}>Attachments:</Text>
+              <TouchableOpacity
                 onPress={() => pickDocument(setFieldValue)}
                 style={styles(isDark).uploadButton}>
                 <IconButton
@@ -240,7 +270,7 @@ const AddFeedback = ({navigation,route}: any) => {
               <TouchableOpacity
                 style={styles(isDark).submitButton}
                 onPress={() => handleSubmit()}>
-                <Text style={styles(isDark).submitButtonText}>Submit</Text>
+                <Text style={[styles(isDark).uploadButtonText,{ color: Colors.white, textAlign: 'center',}]}>Submit</Text>
               </TouchableOpacity>
             </>
           )}
@@ -263,9 +293,6 @@ const styles = (isDark: boolean) =>
       borderColor: isDark ? Colors.black : 'transparent',
       marginBottom: 16,
     },
-    formContainer: {
-      padding: 16,
-    },
     label: {
       fontSize: 16,
       fontFamily: 'Lato-Bold',
@@ -274,21 +301,9 @@ const styles = (isDark: boolean) =>
     },
     input: {
       borderWidth: 0.5,
-      borderColor: isDark ? Colors.white : Colors.black,
-      borderRadius: 8,
-      padding: 10,
-      marginBottom: 12,
-      backgroundColor: isDark ? Colors.gray : Colors.background,
-      fontFamily: 'Lato-Regular',
-      color: isDark ? Colors.white : Colors.black,
-    },
-    textarea: {
-      borderWidth: 0.5,
-      borderColor: isDark ? Colors.white : Colors.black,
+      borderColor: isDark ? Colors.dark_gray : Colors.medium_gray,
       borderRadius: 3,
       padding: 10,
-      height: 100,
-      textAlignVertical: 'top',
       marginBottom: 12,
       backgroundColor: isDark ? Colors.gray : Colors.background,
       fontFamily: 'Lato-Regular',
@@ -315,11 +330,6 @@ const styles = (isDark: boolean) =>
     },
     uploadButtonText: {
       color: isDark ? Colors.white : Colors.black,
-      fontFamily: 'Lato-Bold',
-    },
-    submitButtonText: {
-      textAlign: 'center',
-      color: Colors.white,
       fontFamily: 'Lato-Bold',
     },
     error: {

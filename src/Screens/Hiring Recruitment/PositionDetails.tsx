@@ -11,11 +11,10 @@ const PositionDetail = ({route, navigation}: any) => {
 
   const position = route.params.position;
 
-
   if (!position) {
     return (
       <View style={styles(isDark).maincontainer}>
-        <Text style={styles(isDark).noDataText}>
+        <Text style={styles(isDark).hiringPosition}>
           No Position Details Available
         </Text>
       </View>
@@ -39,28 +38,36 @@ const PositionDetail = ({route, navigation}: any) => {
             marginHorizontal: 16,
           }}>
           <Card.Content>
-            <Text style={styles(isDark).hiringPosition}>
+            <Text style={[styles(isDark).hiringPosition, {fontSize: 18}]}>
               {position.hiringPosition}
             </Text>
 
             <View style={styles(isDark).row}>
-              <Text style={styles(isDark).label}>Experience Range: </Text>
+              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+                Experience Range:{' '}
+              </Text>
               <Text style={styles(isDark).value}>
                 {position.experienceRange} years
               </Text>
             </View>
 
             <View style={styles(isDark).row}>
-              <Text style={styles(isDark).label}>Is Work From Home? </Text>
+              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+                Is Work From Home?{' '}
+              </Text>
               <Text style={styles(isDark).value}>
                 {position.isWorkFromHomeAvailable}
               </Text>
             </View>
 
-            <Text style={styles(isDark).sectionTitle}>Skills Required:</Text>
+            <Text style={[styles(isDark).hiringPosition, {fontSize: 16}]}>
+              Skills Required:
+            </Text>
             <Text style={styles(isDark).value}>{position.skillsRequired}</Text>
 
-            <Text style={styles(isDark).sectionTitle}>Job Description:</Text>
+            <Text style={[styles(isDark).hiringPosition, {fontSize: 16}]}>
+              Job Description:
+            </Text>
             <Text style={styles(isDark).value}>{position.jobDescription}</Text>
           </Card.Content>
         </Card>
@@ -86,28 +93,10 @@ const styles = (isDark: boolean) =>
       alignItems: 'center',
       marginBottom: 5,
     },
-    label: {
-      fontSize: 14,
-      fontFamily: 'Lato-Bold',
-      color: isDark ? Colors.white : Colors.black,
-    },
     value: {
       fontSize: 14,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
-    },
-    sectionTitle: {
-      fontSize: 16,
-      fontFamily: 'Lato-Bold',
-      color: Colors.primary,
-      marginTop: 10,
-    },
-    noDataText: {
-      fontSize: 18,
-      fontFamily: 'Lato-Regular',
-      color: Colors.accent,
-      textAlign: 'center',
-      marginTop: 20,
     },
   });
 

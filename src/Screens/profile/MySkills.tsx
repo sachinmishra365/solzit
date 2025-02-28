@@ -87,7 +87,7 @@ const MySkills = ({navigation}: any) => {
           <View>
             <Text style={styles(isDark).skillName}>{item.skillName}</Text>
             <View style={styles(isDark).levelContainer}>
-              <Text style={styles(isDark).skillDetail}>Level - </Text>
+              <Text style={styles(isDark).skillDetail}>Level-{''}</Text>
               <Text
                 style={[
                   styles(isDark).skillDetail,
@@ -103,7 +103,7 @@ const MySkills = ({navigation}: any) => {
               style={styles(isDark).progressBar}
             />
 
-            <View style={styles(isDark).certificationContainer}>
+            <View style={[styles(isDark).rowContainer, {alignItems: 'center'}]}>
               <Text style={styles(isDark).skillDetail}>Certification :</Text>
               <Text style={styles(isDark).skillDetail}>
                 {' '}
@@ -114,10 +114,10 @@ const MySkills = ({navigation}: any) => {
             {item.hasCertification?.label === 'Yes' && (
               <View style={styles(isDark).rowContainer}>
                 <Text style={{fontFamily: 'Lato-Bold', fontSize: 16}}>
-                {item.typeOfCertification?.label}{' '}:{' '}
+                  {item.typeOfCertification?.label} :{' '}
                 </Text>
-                  <Text style={{fontFamily: 'Lato-Bold', fontSize: 16}}>
-                    {item.certificationName} 
+                <Text style={{fontFamily: 'Lato-Bold', fontSize: 16}}>
+                  {item.certificationName}
                 </Text>
               </View>
             )}
@@ -188,7 +188,7 @@ const styles = (isDark: boolean) =>
       color: isDark ? Colors.white : Colors.black,
     },
     progressBar: {
-      height:8,
+      height: 8,
       borderRadius: 2,
       marginVertical: 5,
       backgroundColor: isDark ? Colors.gray : Colors.white,
@@ -198,14 +198,8 @@ const styles = (isDark: boolean) =>
       justifyContent: 'flex-end',
       marginTop: -10,
     },
-    certificationContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 5,
-    },
     rowContainer: {
       flexDirection: 'row',
-     
       marginTop: 5,
     },
   });

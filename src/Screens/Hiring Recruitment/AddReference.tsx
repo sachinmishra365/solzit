@@ -78,24 +78,23 @@ const AddReference = ({navigation, route}: any) => {
       });
       return;
     }
-  
+
     const candidateData = {
       firstName: values.firstName.trim(),
       lastName: values.lastName.trim(),
       email: values.email,
       mobileNumber: values.mobileNumber,
-      position: { id: hiringId },
+      position: {id: hiringId},
     };
-  
+
     try {
-    
       const response = await createCandidateApplication({
         accessToken: EmployeeId?.authToken?.accessToken,
         data: candidateData,
       }).unwrap();
-  
+
       console.log('API Response:', response);
-  
+
       if (
         response?.isSuccessful &&
         response?.messageDetail?.message_shortcode ===
@@ -105,7 +104,6 @@ const AddReference = ({navigation, route}: any) => {
           type: 'success',
           text1: 'Candidate Added Successfully',
         });
-  
 
         if (values.resume?.filename) {
           try {
@@ -120,16 +118,19 @@ const AddReference = ({navigation, route}: any) => {
                 },
               ],
             };
-  
+
             await attachFileInSharePoint({
               accessToken: EmployeeId?.authToken?.accessToken,
               data: fileData,
             }).unwrap();
-  
+
             console.log('Resume uploaded successfully');
           } catch (fileError: any) {
-            console.error('Error uploading file:', JSON.stringify(fileError, null, 2));
-  
+            console.error(
+              'Error uploading file:',
+              JSON.stringify(fileError, null, 2),
+            );
+
             Toast.show({
               type: 'error',
               text1: 'File Upload Failed',
@@ -137,8 +138,6 @@ const AddReference = ({navigation, route}: any) => {
             });
           }
         }
-  
-     
         navigation.goBack();
       } else {
         throw new Error(
@@ -147,7 +146,7 @@ const AddReference = ({navigation, route}: any) => {
       }
     } catch (error: any) {
       console.error('Error adding candidate:', JSON.stringify(error, null, 2));
-  
+
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -155,7 +154,6 @@ const AddReference = ({navigation, route}: any) => {
       });
     }
   };
-  
 
   return (
     <View style={styles(isDark).maincontainer}>
@@ -166,7 +164,7 @@ const AddReference = ({navigation, route}: any) => {
       />
       <View style={styles(isDark).divider} />
       <View style={{marginHorizontal: 16}}>
-        <Text style={styles(isDark).label}>
+        <Text style={[styles(isDark).label, {marginBottom: -5}]}>
           Hiring Position:
           <Text style={{color: Colors.primary, fontFamily: 'Lato-Bold'}}>
             {' '}
@@ -182,8 +180,8 @@ const AddReference = ({navigation, route}: any) => {
             resume: {filename: '', filetype: '', bytes: ''},
           }}
           validationSchema={validationSchema}
-          validateOnChange={true} 
-          validateOnBlur={true}   
+          validateOnChange={true}
+          validateOnBlur={true}
           onSubmit={handleSubmit}>
           {({
             handleChange,
@@ -193,6 +191,7 @@ const AddReference = ({navigation, route}: any) => {
             errors,
             touched,
             setFieldValue,
+            setFieldTouched,
           }) => (
             <>
               <CustomTextInput
@@ -204,7 +203,7 @@ const AddReference = ({navigation, route}: any) => {
                 editable={true}
                 accessibilityLabelLeft="account"
                 accessibilityLabelRight="Blank"
-                style={{marginBottom: 5}}
+                style={{marginTop: 10}}
                 keyboardType="default"
               />
               {touched.firstName && errors.firstName && (
@@ -220,7 +219,7 @@ const AddReference = ({navigation, route}: any) => {
                 editable={true}
                 accessibilityLabelLeft="account"
                 accessibilityLabelRight="Blank"
-                style={{marginBottom: 5}}
+                style={{marginTop: 10}}
                 keyboardType="default"
               />
               {touched.lastName && errors.lastName && (
@@ -236,7 +235,7 @@ const AddReference = ({navigation, route}: any) => {
                 editable={true}
                 accessibilityLabelLeft="email"
                 accessibilityLabelRight="Blank"
-                style={{marginBottom: 5}}
+                style={{marginTop: 10}}
                 keyboardType="default"
               />
               {touched.email && errors.email && (
@@ -246,21 +245,26 @@ const AddReference = ({navigation, route}: any) => {
               <CustomTextInput
                 label="Mobile Number"
                 value={values.mobileNumber}
-                onChangeText={handleChange('mobileNumber')}
+                onChangeText={(text:any) => {
+                  if (/^\d*$/.test(text)) {
+                    setFieldValue('mobileNumber', text);
+                    setFieldTouched('mobileNumber', true, false); 
+                  }
+                }}
                 onBlur={handleBlur('mobileNumber')}
                 leftIconName="phone"
                 editable={true}
                 accessibilityLabelLeft="phone"
                 accessibilityLabelRight="Blank"
-                style={{marginBottom: 5}}
+                style={{marginTop: 10}}
                 keyboardType="phone-pad"
-               
               />
               {touched.mobileNumber && errors.mobileNumber && (
                 <Text style={styles(isDark).error}>{errors.mobileNumber}</Text>
               )}
 
-              <Text style={styles(isDark).label}>Upload Resume:</Text>
+              <Text style={[styles(isDark).label,{ marginTop: 10}
+              ]}>Upload Resume:</Text>
               <TouchableOpacity
                 onPress={() => pickDocument(setFieldValue)}
                 style={styles(isDark).uploadButton}>
@@ -269,7 +273,11 @@ const AddReference = ({navigation, route}: any) => {
                   iconColor={isDark ? Colors.white : Colors.black}
                   size={30}
                 />
-                <Text style={styles(isDark).uploadButtonText}>
+                <Text
+                  style={[
+                    styles(isDark).ButtonText,
+                    {color: isDark ? Colors.white : Colors.black},
+                  ]}>
                   {' '}
                   {values.resume?.filename || 'Upload Here'}
                 </Text>
@@ -283,7 +291,10 @@ const AddReference = ({navigation, route}: any) => {
                 style={styles(isDark).submitButton}
                 onPress={() => handleSubmit()}
                 disabled={!values.resume}>
-                <Text style={styles(isDark).submitButtonText}>Submit</Text>
+                <Text
+                  style={[styles(isDark).ButtonText, {color: Colors.white}]}>
+                  Submit
+                </Text>
               </TouchableOpacity>
             </>
           )}
@@ -312,15 +323,6 @@ const styles = (isDark: boolean) =>
       marginBottom: 8,
       color: isDark ? Colors.white : Colors.black,
     },
-    input: {
-      borderWidth: 1,
-      borderColor: Colors.gray,
-      padding: 10,
-      marginBottom: 10,
-      borderRadius: 3,
-      color: isDark ? Colors.white : Colors.black,
-      fontFamily: 'Lato-Regular',
-    },
     uploadButton: {
       backgroundColor: isDark ? Colors.gray : Colors.background,
       borderWidth: 1,
@@ -338,21 +340,17 @@ const styles = (isDark: boolean) =>
       justifyContent: 'center',
       alignSelf: 'center',
       borderRadius: 3,
-      marginTop:10,
+      marginTop: 10,
     },
-    uploadButtonText: {
-      color: isDark ? Colors.white : Colors.black,
+    ButtonText: {
       fontFamily: 'Lato-Bold',
-    },
-    submitButtonText: {
       textAlign: 'center',
-      color: Colors.white,
-      fontFamily: 'Lato-Bold',
     },
     error: {
       color: 'red',
       fontSize: 12,
-      marginBottom:10,
-  },});
+      // marginBottom: 10,
+    },
+  });
 
 export default AddReference;
