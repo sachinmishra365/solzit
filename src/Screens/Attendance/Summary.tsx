@@ -114,7 +114,7 @@ const Summary = ({route}: any) => {
                 fontFamily: 'Lato-Semibold',
                 marginBottom: 6,
               }}>
-              Total lop leave: {records.totallopleave ? records.totallopleave :0}
+              Total LOP: {records.totallopleave ? records.totallopleave :0}
             </Text>
             <Text
               style={{

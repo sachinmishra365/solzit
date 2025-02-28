@@ -22,6 +22,8 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [directoryData, setDirectoryData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
   const {data, error, isLoading, refetch} =
@@ -54,6 +56,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
         result !== null
       ) {
         setDirectoryData(result?.data);
+        setFilteredData(result?.data);
       }
     } catch (err) {}
   };
@@ -70,6 +73,19 @@ const SoluzioneDirectory = ({navigation}: any) => {
     }, 1000);
   };
 
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+    if (text) {
+      const filtered = directoryData.filter((item: any) =>
+        item.fullName.toLowerCase().includes(text.toLowerCase()) ||
+        item.designation.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(directoryData);
+    }
+  };
+  
   const renderItem = ({item}: any) => (
     <Card
       style={{
@@ -122,6 +138,9 @@ const SoluzioneDirectory = ({navigation}: any) => {
         showBackIcon={true}
         title="Soluzione Directory"
         onPress={() => navigation.goBack()}
+        showSearch={true}
+        searchValue={searchText}
+        onSearchChange={handleSearch}
       />
 
       <View style={styles(isDark).divider} />
@@ -131,7 +150,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
         data &&
         data !== null && (
           <FlatList
-            data={directoryData}
+            data={filteredData}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={

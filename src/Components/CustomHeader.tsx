@@ -1,4 +1,4 @@
-import {Dimensions, StyleSheet, Text, TouchableOpacity, View} from'react-native';
+import {Dimensions, StyleSheet, Text, TextInput, TouchableOpacity, View} from'react-native';
 import React from 'react';
 import {IconButton} from 'react-native-paper';
 import {Colors} from '../constants/Colors';
@@ -13,6 +13,9 @@ const CustomHeader = ({
   title,
   searchOnPress,
   showSearchIcon = false,
+  onSearchChange,
+  searchValue,
+  showSearch = false,
   AddFeedbackIcon = false,
   addFeedbackOnPress,
 }: any) => {
@@ -51,13 +54,21 @@ const CustomHeader = ({
       {AddFeedbackIcon && (
         <IconButton
           icon="plus-circle"
-          iconColor={Colors.primary}
+          iconColor={isDark?Colors.white:Colors.primary}
           size={30}
           onPress={addFeedbackOnPress}
           style={styles(isDark).searchIcon}
           accessibilityLabel='Add' 
         />
       )}
+      {showSearch && (
+        <TextInput
+          style={styles(isDark).searchInput}
+          placeholder="Search name/designation"
+          placeholderTextColor={isDark ? Colors.medium_gray : Colors.dark_gray}
+          value={searchValue}
+          onChangeText={onSearchChange}
+        />)}
     </View>
   );
 };
@@ -87,6 +98,18 @@ const styles = (isDark: any) =>
   searchIcon: {
     position: 'absolute',
     right: 16,
+  },
+  searchInput: {
+    flex: 1,  
+    height: 40,
+    backgroundColor: isDark ? Colors.gray : Colors.background,
+    borderRadius: 10,
+    borderColor: isDark ? Colors.background : Colors.black,
+    borderWidth: 0.5,
+    fontSize: 12,
+    fontFamily: 'Lato-Semibold',
+    marginHorizontal:16,
+    color: isDark ? Colors.white : Colors.black,
   },
   
 });

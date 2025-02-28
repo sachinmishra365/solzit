@@ -162,6 +162,8 @@ const MySkills = ({navigation}: any) => {
           />
         )
       )}
+
+      
     </View>
   );
 };

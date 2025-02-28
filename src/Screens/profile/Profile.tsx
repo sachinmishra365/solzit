@@ -187,7 +187,7 @@ const Profile = ({navigation}: any) => {
           <IconButton
             style={{position: 'absolute', top: -10, right: -5}}
             icon="account-edit"
-            iconColor={Colors.primary}
+            iconColor={isDark?Colors.white:Colors.primary}
             size={30}
             onPress={openModal}
             accessibilityLabel="Edit Profile"
