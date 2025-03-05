@@ -15,7 +15,7 @@ import {useCreateMyFeedBacksMutation} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
-import {List, IconButton} from 'react-native-paper';
+import {List, IconButton, Checkbox} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {SCREEN_WIDTH} from '../../constants/Screen';
@@ -51,6 +51,17 @@ const FeedbackSchema = Yup.object().shape({
     .trim()
     .required('Please fill out this field!')
     .min(20, ' Minimum 20 characters required.'),
+
+    isAttachmentRequired: Yup.boolean(),
+    upload: Yup.object()
+    .shape({
+      filename: Yup.string().required('Please upload a file'),
+    })
+    .when('isAttachmentRequired', {
+      is: true,
+      then: schema => schema.required('Please upload a file'),
+      otherwise: schema => schema.notRequired(),
+    }),
 });
 
 const AddFeedback = ({navigation, route}: any) => {
@@ -123,7 +134,7 @@ const AddFeedback = ({navigation, route}: any) => {
 
       const base64File = await RNFS.readFile(res.uri, 'base64');
 
-      setFieldValue('resume', {
+      setFieldValue('upload', {
         filename: res.name,
         filetype: res.type,
         bytes: base64File,
@@ -153,7 +164,8 @@ const AddFeedback = ({navigation, route}: any) => {
             regardingTo: {label: 'Select', value: null},
             feedBackTitle: '',
             feedBackDescription: '',
-            resume: { filename: '', filetype: '', bytes: '' }
+            isAttachmentRequired: false,
+            upload:{filename: '', filetype: '', bytes: ''},
           }}
           validationSchema={FeedbackSchema}
           onSubmit={handleSubmit}
@@ -179,6 +191,9 @@ const AddFeedback = ({navigation, route}: any) => {
                 }}
                 style={{
                   backgroundColor: isDark ? Colors.gray : Colors.background,
+                  borderColor: isDark ? Colors.dark_gray : Colors.medium_gray,
+                  borderWidth: 0.5,
+                  borderRadius: 1,
                 }}
                 right={props => (
                   <List.Icon
@@ -194,6 +209,12 @@ const AddFeedback = ({navigation, route}: any) => {
                     titleStyle={{
                       color: isDark ? Colors.white : Colors.black,
                       fontFamily: 'Lato-Regular',
+                    }}
+                    style={{
+                      backgroundColor: isDark ? Colors.gray : Colors.background,
+                      // borderWidth: 0.5,
+                      // borderColor: isDark ? Colors.dark_gray : Colors.medium_gray,
+                      borderRadius: 1,
                     }}
                     onPress={() => {
                       setFieldValue('regardingTo', option);
@@ -211,7 +232,9 @@ const AddFeedback = ({navigation, route}: any) => {
                 </Text>
               )}
 
-              <Text style={styles(isDark).label}>Title:</Text>
+              <Text style={[styles(isDark).label, {marginTop: 12}]}>
+                Title:
+              </Text>
               <TextInput
                 style={styles(isDark).input}
                 placeholder="Enter Title"
@@ -219,7 +242,7 @@ const AddFeedback = ({navigation, route}: any) => {
                   isDark ? Colors.dark_gray : Colors.medium_gray
                 }
                 value={values.feedBackTitle}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   handleChange('feedBackTitle')(text);
                   setFieldValue('feedBackTitle', text);
                   setFieldTouched('feedBackTitle', true, false);
@@ -240,7 +263,7 @@ const AddFeedback = ({navigation, route}: any) => {
                   isDark ? Colors.dark_gray : Colors.medium_gray
                 }
                 value={values.feedBackDescription}
-                onChangeText={(text) => {
+                onChangeText={text => {
                   handleChange('feedBackDescription')(text);
                   setFieldValue('feedBackDescription', text);
                   setFieldTouched('feedBackDescription', true, false);
@@ -253,24 +276,52 @@ const AddFeedback = ({navigation, route}: any) => {
                 </Text>
               )}
 
-              <Text style={styles(isDark).label}>Attachments:</Text>
-              <TouchableOpacity
-                onPress={() => pickDocument(setFieldValue)}
-                style={styles(isDark).uploadButton}>
-                <IconButton
-                  icon="tray-arrow-up"
-                  iconColor={isDark ? Colors.white : Colors.black}
-                  size={30}
+              <View style={{flexDirection: 'row', alignItems: 'center',marginHorizontal:-8,}}>
+                <Checkbox
+                  status={values.isAttachmentRequired ? 'checked' : 'unchecked'}
+                  onPress={() =>
+                    setFieldValue(
+                      'isAttachmentRequired',
+                      !values.isAttachmentRequired,
+                    )
+                  }
+                  color={isDark ? Colors.secondary : Colors.primary}
+                  uncheckedColor={isDark ? Colors.secondary : Colors.primary}
                 />
-                <Text style={styles(isDark).uploadButtonText}>
-                  {' '}
-                  {values.resume?.filename || 'Upload Here'}
-                </Text>
-              </TouchableOpacity>
+                <Text style={styles(isDark).label}>Attachments</Text>
+              </View>
+              {values.isAttachmentRequired && (
+                <>
+                  <TouchableOpacity
+                    onPress={() => pickDocument(setFieldValue)}
+                    style={styles(isDark).uploadButton}>
+                    <IconButton
+                      icon="tray-arrow-up"
+                      iconColor={isDark ? Colors.white : Colors.black}
+                      size={30}
+                    />
+                    <Text style={styles(isDark).uploadButtonText}>
+                      {values.upload.filename || 'Add Attachment'}
+                    </Text>
+                  </TouchableOpacity>
+                  {touched.upload && errors.upload?.filename && (
+                    <Text style={styles(isDark).error}>
+                      {errors.upload.filename}
+                    </Text>
+                  )}
+                </>
+              )}
+              
               <TouchableOpacity
                 style={styles(isDark).submitButton}
                 onPress={() => handleSubmit()}>
-                <Text style={[styles(isDark).uploadButtonText,{ color: Colors.white, textAlign: 'center',}]}>Submit</Text>
+                <Text
+                  style={[
+                    styles(isDark).uploadButtonText,
+                    {color: Colors.white, textAlign: 'center'},
+                  ]}>
+                  Submit
+                </Text>
               </TouchableOpacity>
             </>
           )}

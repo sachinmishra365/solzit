@@ -21,10 +21,11 @@ import {Card, IconButton} from 'react-native-paper';
 import moment from 'moment';
 import Share from 'react-native-share';
 
-const ViewFeedback = ({navigation, route}: any) => {
+const ViewFeedback = ({ feedbackData }: { feedbackData: any }) => {
+
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const feedbackData = route.params.feedbackData;
+
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -72,12 +73,6 @@ const ViewFeedback = ({navigation, route}: any) => {
 
   return (
     <View style={styles(isDark).mainContainer}>
-      <CustomHeader
-        showBackIcon
-        title="View Feedback"
-        onPress={() => navigation.goBack()}
-      />
-      <View style={styles(isDark).divider} />
       {isLoading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator size="large" color={Colors.primary} />
@@ -90,11 +85,10 @@ const ViewFeedback = ({navigation, route}: any) => {
           }>
           <Card
             style={{
-              backgroundColor: isDark ? Colors.black : Colors.background,
-              marginVertical: 10,
+              backgroundColor: isDark ? Colors.black : Colors.white,
+              borderRadius:1,
               borderColor: Colors.background,
               borderWidth: 0.5,
-              marginHorizontal: 16,
             }}>
             <Card.Content>
               <Text

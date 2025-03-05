@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, FlatList, RefreshControl} from 'react-native';
+import {View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
@@ -8,7 +8,7 @@ import {useGetListOfOpenPositionQuery} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import {Card, Icon, IconButton} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+
 
 const OpenPositions = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -64,6 +64,9 @@ const OpenPositions = ({navigation}: any) => {
   };
 
   const renderItem = ({item}: any) => (
+    <TouchableOpacity
+    onPress={() => navigation.navigate('PositionDetail', { position: item })}
+  >
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
@@ -75,64 +78,39 @@ const OpenPositions = ({navigation}: any) => {
       <Card.Content>
         <View style={[styles(isDark).titleContainer, {marginBottom: 8}]}>
           <Text style={styles(isDark).title}>{item.hiringPosition}</Text>
-          <View>
             <Text style={styles(isDark, item.urgency).urgencyText}>
               {item.urgency}
             </Text>
-          </View>
         </View>
 
         <View style={styles(isDark).rowContainer}>
-          <View>
             <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Experience Range
+              Experience Range:{' '}{item.experienceRange}
             </Text>
-            <Text style={styles(isDark).value}>{item.experienceRange}</Text>
-          </View>
-          <View>
-            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Number of Positions
+          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              Is Work From Home?{' '}{item.isWorkFromHomeAvailable}
             </Text>
-            <Text style={styles(isDark).value}>{item.numberOfPosition}</Text>
-          </View>
         </View>
 
-        <View style={styles(isDark).rowContainer}>
-          <View>
+        <View style={styles(isDark).rowContainer}> 
+          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              Number of Positions:{' '}{item.numberOfPosition}
+            </Text>
             <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Is Work From Home?
+             Location:{' '}{item.location || 'N/A'}
             </Text>
-            <Text style={styles(isDark).value}>
-              {item.isWorkFromHomeAvailable}
-            </Text>
-          </View>
-          <View>
-            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Work Location
-            </Text>
-            <Text style={styles(isDark).value}>{item.location || 'N/A'}</Text>
-          </View>
         </View>
-        <View style={[styles(isDark).titleContainer, {marginTop: 10}]}>
-          <TouchableOpacity
-            style={[styles(isDark).addReferenceButton,{backgroundColor: '#916918',}]}
-            onPress={() =>
-              navigation.navigate('PositionDetail', {position: item})
-            }>
-            <Icon source="eye" size={25} color={Colors.white} />
-            <Text style={styles(isDark).addReferenceText}>Position Detail</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+        <TouchableOpacity
             style={styles(isDark).addReferenceButton}
             onPress={() =>
-              navigation.navigate('AddReference', {position: item})
+              navigation.navigate('PositionDetail', {position: item})
             }>
             <Icon source="plus" size={25} color={Colors.white} />
             <Text style={styles(isDark).addReferenceText}>Add Reference</Text>
           </TouchableOpacity>
-        </View>
       </Card.Content>
     </Card>
+    </TouchableOpacity>
   );
 
   return (
@@ -195,11 +173,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       color: isDark ? Colors.white : Colors.black,
       alignSelf: 'center',
     },
-    text: {
-      fontSize: 14,
-      fontFamily: 'Lato-Regular',
-      color: isDark ? Colors.white : Colors.black,
-    },
+   
     urgencyText: {
       fontSize: 16,
       fontFamily: 'Lato-Bold',
@@ -216,7 +190,6 @@ const styles = (isDark: boolean, urgency?: string) =>
       justifyContent: 'space-between',
       alignItems: 'center',
     },
-
     addReferenceButton: {
       backgroundColor: Colors.primary,
       justifyContent: 'center',

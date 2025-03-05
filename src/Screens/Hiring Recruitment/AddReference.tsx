@@ -45,7 +45,10 @@ const AddReference = ({navigation, route}: any) => {
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
-  const {reference: hiringId, hiringPosition} = route.params;
+  const { reference: hiringId, hiringPosition } = route.params;
+
+  console.log('Route Params:', route.params);
+
   const [createCandidateApplication] = useCreateCandidateApplicationMutation();
   const [attachFileInSharePoint] = useAttachFileInSharePointMutation();
 

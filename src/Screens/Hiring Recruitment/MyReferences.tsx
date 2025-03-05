@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, RefreshControl, FlatList} from 'react-native';
+import {View, Text, StyleSheet, RefreshControl, FlatList, TouchableOpacity, Linking} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
@@ -7,7 +7,7 @@ import {Colors} from '../../constants/Colors';
 import Toast from 'react-native-toast-message';
 import {useGetCandidateApplicationByEmployeeIdQuery} from '../../Services/services';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card} from 'react-native-paper';
+import {Card, Icon} from 'react-native-paper';
 
 const MyReferences = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -73,60 +73,40 @@ const MyReferences = ({navigation}: any) => {
         marginHorizontal: 16,
       }}>
       <Card.Content>
-        <View style={[styles(isDark).status]}>
-          <Text
-            style={[
-              styles(isDark).value,
-              {
-                fontSize: 16,
-                color: isDark ? Colors.white : Colors.black,
-                fontFamily: 'Lato-Bold',
-              },
-            ]}>
-            Status :{' '}
-          </Text>
-          <Text
-            style={[
-              styles(isDark).value,
-              {fontSize: 16, color: Colors.primary, fontFamily: 'Lato-Bold'},
-            ]}>
-            {item.applicationStatus?.label}
-          </Text>
-        </View>
-        <View style={styles(isDark).rowContainer}>
-          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-            Name:
-          </Text>
-          <Text style={styles(isDark).value}>
-            {item.firstName} {item.lastName}
+      <View style={styles(isDark).status}>
+          <Text style={{fontSize: 15,
+      fontFamily: 'Lato-Semibold',
+      color: isDark ? Colors.white : Colors.black,}}>Status:</Text>
+          <Text style={[styles(isDark).status, { color: Colors.primary }]}>
+          {' '}{item.applicationStatus?.label}
           </Text>
         </View>
 
-        <View style={styles(isDark).rowContainer}>
-          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-            Mobile:
-          </Text>
-          <Text style={styles(isDark).value}>{item.mobileNumber}</Text>
+        <View style={styles(isDark).infoRow}>
+          <Icon source="account" size={20} color={isDark?Colors.white:Colors.primary} />
+          <Text style={[styles(isDark).infoText,{fontFamily:'Lato-Bold'}]}>{item.firstName} {item.lastName}</Text>
         </View>
-        <View style={styles(isDark).rowContainer}>
-          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-            Email:
-          </Text>
-          <Text style={styles(isDark).value}>{item.email}</Text>
+        <TouchableOpacity onPress={() => Linking.openURL(`tel:${item.mobileNumber}`)}>
+        <View style={styles(isDark).infoRow}>
+          <Icon source="phone" size={20} color={isDark?Colors.white:Colors.primary} />
+          <Text style={[styles(isDark).infoText,{color:Colors.primary}]}>{item.mobileNumber}</Text>
         </View>
+        </TouchableOpacity>
 
-        <View style={styles(isDark).rowContainer}>
-          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-            Position:
-          </Text>
-          <Text style={styles(isDark).value}>
-            {item.position?.name || 'N/A'}
-          </Text>
+       <TouchableOpacity onPress={() => Linking.openURL(`mailto:${item.email}`)}>
+        <View style={styles(isDark).infoRow}>
+          <Icon source="email" size={20} color={isDark?Colors.white:Colors.primary} />
+          <Text style={[styles(isDark).infoText,{color:Colors.primary,textDecorationLine:'underline'}]}>{item.email}</Text>
+        </View>
+       </TouchableOpacity>
+
+        <View style={styles(isDark).infoRow}>
+          <Icon source="briefcase" size={20} color={isDark?Colors.white:Colors.primary} />
+          <Text style={[styles(isDark).infoText,{fontFamily:'Lato-Bold'}]}>{item.position?.name || 'N/A'}</Text>
         </View>
       </Card.Content>
     </Card>
   );
-
   return (
     <View style={styles(isDark).maincontainer}>
       <CustomHeader
@@ -171,19 +151,21 @@ const styles = (isDark: boolean) =>
       backgroundColor: isDark ? Colors.white : 'transparent',
       borderColor: isDark ? Colors.black : 'transparent',
     },
-    rowContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 10,
-    },
-    value: {
-      fontFamily: 'Lato-Regular',
-      color: isDark ? Colors.white : Colors.black,
-    },
     status: {
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
+    },
+    infoRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 5,
+    },
+    infoText: {
+      marginLeft: 10,
+      fontSize: 15,
+      fontFamily: 'Lato-Medium',
+      color: isDark ? Colors.white : Colors.black,
     },
   });
 

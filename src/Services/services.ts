@@ -42,6 +42,16 @@ export const services = createApi({
       providesTags: ['Hello'],
     }),
 
+    GetBalanceLeaveDashboard: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/Dashboard/GetBalanceLeaveDashboard`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    }),
+
     EmployeeLeaveApply: builder.mutation({
       query: ({data, accessToken}) => ({
         url: `/LeaveRecords/ApplyNewLeaveRequest`,
@@ -306,6 +316,7 @@ export const services = createApi({
 
 export const {
   useEmployeeLeaveApplyMutation,
+  useGetBalanceLeaveDashboardQuery,
   useEmployeeAppliedLeavesQuery,
   useEmployeeCancelLeavesMutation,
   useProcessedLeavesQuery,

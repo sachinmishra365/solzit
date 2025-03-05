@@ -5,6 +5,8 @@ import {
   FlatList,
   RefreshControl,
   Image,
+  TouchableOpacity,
+  Linking,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
@@ -14,7 +16,8 @@ import {Colors} from '../../constants/Colors';
 import {useGetSoluzioneUpcomingBirthdaysQuery} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card, Icon, IconButton} from 'react-native-paper';
+import {Card, Icon} from 'react-native-paper';
+import moment from 'moment';
 
 const SoluzioneDirectory = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -25,6 +28,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+
 
   const {data, error, isLoading, refetch} =
     useGetSoluzioneUpcomingBirthdaysQuery({
@@ -76,9 +80,10 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const handleSearch = (text: string) => {
     setSearchText(text);
     if (text) {
-      const filtered = directoryData.filter((item: any) =>
-        item.fullName.toLowerCase().includes(text.toLowerCase()) ||
-        item.designation.toLowerCase().includes(text.toLowerCase())
+      const filtered = directoryData.filter(
+        (item: any) =>
+          item.fullName.toLowerCase().includes(text.toLowerCase()) ||
+          item.designation.toLowerCase().includes(text.toLowerCase()),
       );
       setFilteredData(filtered);
     } else {
@@ -86,51 +91,112 @@ const SoluzioneDirectory = ({navigation}: any) => {
     }
   };
   
-  const renderItem = ({item}: any) => (
-    <Card
-      style={{
-        backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 7,
-        borderColor: Colors.background,
-        borderWidth: 0.5,
-        marginHorizontal: 16,
-        elevation: 5,
-      }}>
-      <Card.Content>
-        <View style={styles(isDark).row}>
-          {item.employeeImg ? (
-            <Image
-              source={{uri: `data:image/png;base64,${item.employeeImg}`}}
-              style={styles(isDark).image}
-            />
-          ) : (
-            <Image
-              source={require('../../Assets/Images/EmpBoy.png')}
-              style={styles(isDark).image}
-            />
-          )}
-          <View style={styles(isDark).textContainer}>
-            <Text
-              style={[
-                styles(isDark).name,
-                {fontSize: 18, fontFamily: 'Lato-Bold'},
-              ]}>
-              {item.fullName}
-            </Text>
+  const renderItem = ({item}: any) => {
+    return (
+      <Card
+        style={{
+          backgroundColor: isDark ? Colors.black : Colors.background,
+          marginVertical: 7,
+          borderColor: Colors.background,
+          borderWidth: 0.5,
+          marginHorizontal: 16,
+          paddingBottom: 15,
+          overflow: 'hidden',
+        }}>
+        <Card.Content>
+          <View style={[styles(isDark).row]}>
+            <View style={styles(isDark).imageContainer}>
+              <Image
+                source={
+                  item.employeeImg
+                    ? {uri: `data:image/png;base64,${item.employeeImg}`}
+                    : require('../../Assets/Images/EmpBoy.png')
+                }
+                style={styles(isDark).image}
+              />
+              <View style={[styles(isDark).row]}>
+                <Icon
+                  source="cake"
+                  size={23}
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+                <Text style={styles(isDark).birthday}>
+                  {' '}
+                  {moment(item.birthdayDate).format('MMM, D')}
+                </Text>
+              </View>
+            </View>
+            <View style={{flex: 1, marginRight: 8}}>
+              <View style={[styles(isDark).row, {marginVertical: 3}]}>
+                <Icon
+                  source="account"
+                  size={23}
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+                <Text
+                  style={[
+                    styles(isDark).name,
+                    {fontFamily: 'Lato-Bold', fontSize: 18},
+                  ]}>
+                  {item.fullName}
+                </Text>
+              </View>
+              <View style={[styles(isDark).row, {marginVertical: 3}]}>
+                <Icon
+                  source="briefcase"
+                  size={23}
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+                <Text
+                  style={[
+                    styles(isDark).name,
+                    {fontFamily: 'Lato-Semibold', fontSize: 16},
+                  ]}>
+                  {item.designation}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(`mailto:${item.email}`)}>
+                <View style={[styles(isDark).row, {marginVertical: 3}]}>
+                  <Icon
+                    source="email"
+                    size={23}
+                    color={isDark ? Colors.white : Colors.primary}
+                  />
+                  <Text
+                    style={[
+                      styles(isDark).email,
+                      {
+                        fontFamily: 'Lato-Semibold',
+                        fontSize: 14,
+                        textDecorationLine: 'underline',
+                        textDecorationColor: isDark
+                          ? Colors.primary
+                          : Colors.primary,
+                      },
+                    ]}>
+                    {item.email}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(`tel:${item.mobile}`)}>
+                <View style={[styles(isDark).row, {marginVertical: 3}]}>
+                  <Icon
+                    source="phone"
+                    size={23}
+                    color={isDark ? Colors.white : Colors.primary}
+                  />
+                  <Text style={styles(isDark).email}>{item.mobile}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <Text
-          style={[
-            styles(isDark).name,
-            {fontSize: 16, fontFamily: 'Lato-Semibold'},
-          ]}>
-          {item.designation}
-        </Text>
-        <Text style={styles(isDark).email}>{item.email}{' '}|{' '}{item.mobile}</Text>
-        {/* <Text style={styles(isDark).email}>{item.mobile}</Text> */}
-      </Card.Content>
-    </Card>
-  );
+          
+        </Card.Content>
+      </Card>
+    );
+  };
 
   return (
     <View style={styles(isDark).maincontainer}>
@@ -162,6 +228,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
           />
         )
       )}
+    
     </View>
   );
 };
@@ -181,28 +248,34 @@ const styles = (isDark: boolean) =>
     row: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 10,
     },
     image: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
+      width: 80,
+      height: 80,
+      borderRadius: 50,
       marginRight: 15,
-      borderWidth: 1,
-      borderColor: '#ddd',
-
-    },
-    textContainer: {
-      flex: 1,
+      borderWidth: 0.5,
+      borderColor: isDark ? Colors.black : Colors.background,
     },
     name: {
+      marginLeft: 10,
       color: isDark ? Colors.white : Colors.black,
     },
-    email: {
+    birthday: {
       fontSize: 14,
-      fontFamily: 'Lato-Regular',
-      color: isDark ? Colors.white : Colors.black,
-      marginTop: 5,
+      fontFamily: 'Lato-Bold',
+      color: isDark ? Colors.white : Colors.primary,
+      marginRight: 15,
+      marginBottom: -9,
+    },
+    email: {
+      marginLeft: 10,
+      fontSize: 14,
+      fontFamily: 'Lato-Medium',
+      color: Colors.primary,
+    },
+    imageContainer: {
+      alignItems: 'center',
     },
   });
 

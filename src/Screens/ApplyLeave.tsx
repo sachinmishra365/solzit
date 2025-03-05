@@ -15,7 +15,7 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {Colors} from '../constants/Colors';
 import {SCREEN_WIDTH} from '../constants/Screen';
-import {useEmployeeLeaveApplyMutation} from '../Services/services';
+import {useEmployeeLeaveApplyMutation,useGetBalanceLeaveDashboardQuery} from '../Services/services';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../Components/CustomHeader';
@@ -23,6 +23,7 @@ import {useNavigation} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import {isDarkTheme} from '../AppStore/Reducers/appState';
 import Placeholder from './Placeholder/Placeholder';
+
 
 const validationSchema = Yup.object().shape({
   LeaveDayType: Yup.string().required('Leave Day Type is required'),
@@ -38,6 +39,7 @@ const validationSchema = Yup.object().shape({
 const ApplyLeave = () => {
   const navigation: any = useNavigation();
   const isDark = useSelector(isDarkTheme);
+   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const CheckStatus = useSelector((state: any) => state?.appState?.authToken);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -57,6 +59,8 @@ const ApplyLeave = () => {
   }, []);
 
   const [ApplyLeave, {isLoading, error}] = useEmployeeLeaveApplyMutation();
+  const [elAvailable, setElAvailable] = useState<number | null>(null);
+
 
   const onChangeStart = (event: any, selectedDate: Date) => {
     const currentDate = selectedDate || startDate;
@@ -193,6 +197,16 @@ const ApplyLeave = () => {
     }
   };
 
+  const { data, refetch } = useGetBalanceLeaveDashboardQuery({
+     accessToken: EmployeeId.authToken?.accessToken,
+   });
+  useEffect(() => {
+    if (data?.data) {
+      setElAvailable(data?.data?.earnedLeave);
+    }
+  }, [data]);
+  
+
   return (
     <View
       style={{
@@ -240,6 +254,27 @@ const ApplyLeave = () => {
               <View style={{marginVertical: 16}} />
 
               <View style={{marginHorizontal: 16}}>
+                <Text
+                  style={{
+                    color: isDark ? Colors.white : Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Lato-Bold',
+                    textAlign: 'left',
+                    marginBottom: 10,
+                  }}>
+                  Current EL Balance:{' '}
+                  {elAvailable !== null ? elAvailable : 'Loading...'}
+                  {elAvailable === 0 && (
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 16,
+                      }}>
+                      {'  '}(Leave applied will be marked as Loss of Pay)
+                    </Text>
+                  )}
+                </Text>
+
                 <Text
                   style={{
                     color: isDark ? Colors.white : Colors.black,
@@ -615,7 +650,7 @@ const ApplyLeave = () => {
                     [
                       {
                         text: 'No',
-                        onPress: () =>{},
+                        onPress: () => {},
                         style: 'cancel',
                       },
                       {

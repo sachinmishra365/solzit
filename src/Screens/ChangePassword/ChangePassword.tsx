@@ -158,7 +158,7 @@ const ChangePassword = ({navigation}: any) => {
               value={values.email}
               autoFocus={false}
               secureTextEntry={false}
-              leftIconName="email"
+              leftIconName="account"
               readOnly={true}
               accessibilityLabelLeft="Email"
               accessibilityLabelRight="Blank"
