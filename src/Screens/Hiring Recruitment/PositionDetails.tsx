@@ -10,9 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 const PositionDetail = ({route}: any) => {
   const isDark = useSelector(isDarkTheme);
   const navigation: any = useNavigation();
-  const [state, setState] = useState({ open: false });
 
-const onStateChange = ({ open }: any) => setState({ open });
   const position = route.params.position;
 
   if (!position) {
@@ -32,7 +30,7 @@ const onStateChange = ({ open }: any) => setState({ open });
         title="Position Detail"
         onPress={() => navigation.goBack()}
       />
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false} >
         <Card
           style={{
             backgroundColor: isDark ? Colors.black : Colors.background,
@@ -76,41 +74,20 @@ const onStateChange = ({ open }: any) => setState({ open });
           </Card.Content>
         </Card>
       </ScrollView>
-      <FAB.Group
-        open={state.open}
-        visible
-        icon={state.open ? 'close' : 'plus'}
-        color={isDark ? Colors.white : Colors.white}
-        style={{elevation: 5}}
-        fabStyle={{
-          backgroundColor: isDark ? Colors.gray : Colors.primary,
-          elevation: 10,
-        }}
-        backdropColor={isDark ? Colors.black : Colors.white}
-        accessibilityLabel="Fab Button Screen"
-        onStateChange={({open}) => setState({open})} 
-        actions={[
-           {
-                    icon: 'account-plus',
-                    color: isDark ? Colors.white : Colors.white,
-                    labelStyle: {
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Bold',
-                      marginVertical:5,
-                      fontSize: 18,
-                    },
-                    label: 'Add Reference',
-                    onPress: () =>
-                      navigation.navigate('AddReference', {
-                        reference: position.hiringId,
-                        hiringPosition: position.hiringPosition,
-                      }),
-                    style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
-                    accessibilityLabel: 'Add Reference',
-                    size:'medium'
-                  },
-        ]}
-      />
+
+      <FAB
+              style={styles(isDark).fab}
+              color={Colors.white}
+              onPress={() =>
+                navigation.navigate('AddReference', {
+                  reference: position.hiringId,
+                  hiringPosition: position.hiringPosition,
+                })
+              }
+              accessibilityLabel="Add Reference"
+              icon="plus"
+            />
+     
     </View>
   );
 };
@@ -125,7 +102,7 @@ const styles = (isDark: boolean) =>
       fontSize: 18,
       fontFamily: 'Lato-Bold',
       color: Colors.primary,
-      marginBottom: 8,
+    
     },
     row: {
       flexDirection: 'row',

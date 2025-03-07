@@ -300,7 +300,7 @@ export const services = createApi({
     }),
 
     GetSoluzioneUpcomingBirthdays: builder.query({
-      query: ({entityId,entityName,accessToken}) => {
+      query: ({accessToken}) => {
         return {
           url: `/Dashboard/GetSoluzioneUpcomingBirthdays`,
           method: 'GET',

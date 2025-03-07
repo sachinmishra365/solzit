@@ -25,6 +25,9 @@ const Feedback = ({ navigation }: any) => {
 
   const handleOpenBottomSheet = (feedback: any) => {
     setSelectedFeedback(feedback);
+    setTimeout(() => {
+      bottomSheetRef.current?.expand(); 
+    }, 50);
   };
   
   
@@ -123,6 +126,7 @@ const Feedback = ({ navigation }: any) => {
         <ShimmerPlaceHolder />
       ) : (
         <FlatList
+        showsVerticalScrollIndicator={false}
           data={FeedbackData}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}

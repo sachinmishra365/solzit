@@ -21,7 +21,7 @@ import moment from 'moment';
 
 const SoluzioneDirectory = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
-  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [directoryData, setDirectoryData] = useState([]);
@@ -32,7 +32,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
 
   const {data, error, isLoading, refetch} =
     useGetSoluzioneUpcomingBirthdaysQuery({
-      accessToken: EmployeeId?.authToken?.accessToken,
+      accessToken: accessToken?.authToken?.accessToken,
     });
 
   const handleDirectory = async () => {
@@ -100,7 +100,6 @@ const SoluzioneDirectory = ({navigation}: any) => {
           borderColor: Colors.background,
           borderWidth: 0.5,
           marginHorizontal: 16,
-          paddingBottom: 15,
           overflow: 'hidden',
         }}>
         <Card.Content>
@@ -127,7 +126,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
               </View>
             </View>
             <View style={{flex: 1, marginRight: 8}}>
-              <View style={[styles(isDark).row, {marginVertical: 3}]}>
+              <View style={[styles(isDark).row, {}]}>
                 <Icon
                   source="account"
                   size={23}
@@ -166,7 +165,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
                   <Text
                     style={[
                       styles(isDark).email,
-                      {
+                      { marginTop:-5,
                         fontFamily: 'Lato-Semibold',
                         fontSize: 14,
                         textDecorationLine: 'underline',
@@ -216,6 +215,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
         data &&
         data !== null && (
           <FlatList
+          showsVerticalScrollIndicator={false}
             data={filteredData}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}

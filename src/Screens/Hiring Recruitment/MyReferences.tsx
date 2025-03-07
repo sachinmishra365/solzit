@@ -67,43 +67,75 @@ const MyReferences = ({navigation}: any) => {
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical:7,
+        marginVertical: 7,
         borderColor: Colors.background,
         borderWidth: 0.5,
         marginHorizontal: 16,
       }}>
       <Card.Content>
-      <View style={styles(isDark).status}>
-          <Text style={{fontSize: 15,
-      fontFamily: 'Lato-Semibold',
-      color: isDark ? Colors.white : Colors.black,}}>Status:</Text>
-          <Text style={[styles(isDark).status, { color: Colors.primary }]}>
-          {' '}{item.applicationStatus?.label}
+      <View >
+      <Text style={[styles(isDark).infoText, {fontFamily: 'Lato-Bold',fontSize:18}]}>
+            {item.position?.name || 'N/A'}
+          </Text>
+        </View>
+
+      <View style={[styles(isDark).status,{marginVertical:3}]}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: 'Lato-Semibold',
+              color: isDark ? Colors.white : Colors.black,
+            }}>
+            Status{' '}:
+          </Text>
+          <Text style={{color: Colors.primary, fontFamily: 'Lato-Semibold',}}>
+            {' '}
+            {item.applicationStatus?.label}
           </Text>
         </View>
 
         <View style={styles(isDark).infoRow}>
-          <Icon source="account" size={20} color={isDark?Colors.white:Colors.primary} />
-          <Text style={[styles(isDark).infoText,{fontFamily:'Lato-Bold'}]}>{item.firstName} {item.lastName}</Text>
+          <Icon
+            source="account"
+            size={20}
+            color={isDark ? Colors.white : Colors.primary}
+          />
+          <Text style={[styles(isDark).infoText, {fontFamily: 'Lato-Bold',marginLeft: 10,}]}>
+            {item.firstName} {item.lastName}
+          </Text>
         </View>
-        <TouchableOpacity onPress={() => Linking.openURL(`tel:${item.mobileNumber}`)}>
-        <View style={styles(isDark).infoRow}>
-          <Icon source="phone" size={20} color={isDark?Colors.white:Colors.primary} />
-          <Text style={[styles(isDark).infoText,{color:Colors.primary}]}>{item.mobileNumber}</Text>
-        </View>
+        <TouchableOpacity
+          onPress={() => Linking.openURL(`mailto:${item.email}`)}>
+          <View style={styles(isDark).infoRow}>
+            <Icon
+              source="email"
+              size={20}
+              color={isDark ? Colors.white : Colors.primary}
+            />
+            <Text
+              style={[
+                styles(isDark).infoText,
+                {color: Colors.primary, textDecorationLine: 'underline',marginLeft: 10,
+                  marginTop:-5
+                },
+              ]}>
+              {item.email}
+            </Text>
+          </View>
         </TouchableOpacity>
-
-       <TouchableOpacity onPress={() => Linking.openURL(`mailto:${item.email}`)}>
-        <View style={styles(isDark).infoRow}>
-          <Icon source="email" size={20} color={isDark?Colors.white:Colors.primary} />
-          <Text style={[styles(isDark).infoText,{color:Colors.primary,textDecorationLine:'underline'}]}>{item.email}</Text>
-        </View>
-       </TouchableOpacity>
-
-        <View style={styles(isDark).infoRow}>
-          <Icon source="briefcase" size={20} color={isDark?Colors.white:Colors.primary} />
-          <Text style={[styles(isDark).infoText,{fontFamily:'Lato-Bold'}]}>{item.position?.name || 'N/A'}</Text>
-        </View>
+        <TouchableOpacity
+          onPress={() => Linking.openURL(`tel:${item.mobileNumber}`)}>
+          <View style={styles(isDark).infoRow}>
+            <Icon
+              source="phone"
+              size={20}
+              color={isDark ? Colors.white : Colors.primary}
+            />
+            <Text style={[styles(isDark).infoText, {color: Colors.primary,marginLeft: 10,}]}>
+              {item.mobileNumber}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </Card.Content>
     </Card>
   );
@@ -162,8 +194,7 @@ const styles = (isDark: boolean) =>
       paddingVertical: 5,
     },
     infoText: {
-      marginLeft: 10,
-      fontSize: 15,
+      fontSize: 14,
       fontFamily: 'Lato-Medium',
       color: isDark ? Colors.white : Colors.black,
     },

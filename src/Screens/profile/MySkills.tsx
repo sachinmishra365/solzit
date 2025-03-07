@@ -5,9 +5,10 @@ import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
 import {Colors} from '../../constants/Colors';
 import {useEmployeeSkillsQuery} from '../../Services/services';
-import {Card, ProgressBar} from 'react-native-paper';
+import {Card,} from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
+import { Bar as ProgressBar } from 'react-native-progress';
 
 const MySkills = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -101,7 +102,12 @@ const MySkills = ({navigation}: any) => {
             <ProgressBar
               progress={skillText}
               color={Colors.primary}
-              style={styles(isDark).progressBar}
+              borderColor={
+                isDark ? Colors.gray : Colors.white
+              }
+              style={{ marginTop: 10, backgroundColor:isDark?Colors.gray: Colors.white }}
+              // style={styles(isDark).progressBar}
+              width={null}
             />
 
             <View style={[styles(isDark).rowContainer, {alignItems: 'center'}]}>
@@ -130,13 +136,7 @@ const MySkills = ({navigation}: any) => {
 
   return (
     <View
-      style={styles(isDark).maincontainer}
-      onLayout={() => {
-        setRefreshing(true);
-        setTimeout(() => {
-          setRefreshing(false);
-        }, 1000);
-      }}>
+      style={styles(isDark).maincontainer}>
       <CustomHeader
         showBackIcon={true}
         title="My Skills"
@@ -189,12 +189,6 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
-    },
-    progressBar: {
-      height: 6,
-      borderRadius: 2,
-      marginVertical: 5,
-      backgroundColor: isDark ? Colors.gray : Colors.white,
     },
     levelContainer: {
       flexDirection: 'row',

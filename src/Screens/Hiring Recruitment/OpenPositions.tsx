@@ -100,14 +100,7 @@ const OpenPositions = ({navigation}: any) => {
              Location:{' '}{item.location || 'N/A'}
             </Text>
         </View>
-        <TouchableOpacity
-            style={styles(isDark).addReferenceButton}
-            onPress={() =>
-              navigation.navigate('PositionDetail', {position: item})
-            }>
-            <Icon source="plus" size={25} color={Colors.white} />
-            <Text style={styles(isDark).addReferenceText}>Add Reference</Text>
-          </TouchableOpacity>
+      
       </Card.Content>
     </Card>
     </TouchableOpacity>
@@ -128,6 +121,7 @@ const OpenPositions = ({navigation}: any) => {
         data &&
         data !== null && (
           <FlatList
+          showsVerticalScrollIndicator={false}
             data={OpenPositionData}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
@@ -190,23 +184,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       justifyContent: 'space-between',
       alignItems: 'center',
     },
-    addReferenceButton: {
-      backgroundColor: Colors.primary,
-      justifyContent: 'center',
-      borderRadius: 3,
-      paddingVertical: 5,
-      paddingHorizontal: 6,
-      alignItems: 'center',
-      flexDirection: 'row',
-      height: 'auto',
-      minHeight: 38,
-    },
-    addReferenceText: {
-      fontSize: 16,
-      fontFamily: 'Lato-Bold',
-      color: Colors.white,
-      marginLeft: 3,
-    },
+   
   });
 
 export default OpenPositions;

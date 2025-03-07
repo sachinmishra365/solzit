@@ -47,7 +47,6 @@ const AddReference = ({navigation, route}: any) => {
 
   const { reference: hiringId, hiringPosition } = route.params;
 
-  console.log('Route Params:', route.params);
 
   const [createCandidateApplication] = useCreateCandidateApplicationMutation();
   const [attachFileInSharePoint] = useAttachFileInSharePointMutation();
@@ -67,8 +66,12 @@ const AddReference = ({navigation, route}: any) => {
       });
 
       console.log('File selected:', res.name);
-    } catch (err) {
-      console.error('Document picking error:', err);
+    } catch (err: any) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log('User canceled document picker');
+      } else {
+        console.error('Document picking error:', err);
+      }
     }
   };
 
@@ -95,9 +98,6 @@ const AddReference = ({navigation, route}: any) => {
         accessToken: EmployeeId?.authToken?.accessToken,
         data: candidateData,
       }).unwrap();
-
-      console.log('API Response:', response);
-
       if (
         response?.isSuccessful &&
         response?.messageDetail?.message_shortcode ===
@@ -198,7 +198,7 @@ const AddReference = ({navigation, route}: any) => {
           }) => (
             <>
               <CustomTextInput
-                label="First Name"
+                label="First Name*"
                 value={values.firstName}
                 onChangeText={handleChange('firstName')}
                 onBlur={handleBlur('firstName')}
@@ -214,7 +214,7 @@ const AddReference = ({navigation, route}: any) => {
               )}
 
               <CustomTextInput
-                label="Last Name"
+                label="Last Name*"
                 value={values.lastName}
                 onChangeText={handleChange('lastName')}
                 onBlur={handleBlur('lastName')}
@@ -230,7 +230,7 @@ const AddReference = ({navigation, route}: any) => {
               )}
 
               <CustomTextInput
-                label="Email"
+                label="Email*"
                 value={values.email}
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
@@ -246,7 +246,7 @@ const AddReference = ({navigation, route}: any) => {
               )}
 
               <CustomTextInput
-                label="Mobile Number"
+                label="Mobile Number*"
                 value={values.mobileNumber}
                 onChangeText={(text:any) => {
                   if (/^\d*$/.test(text)) {
@@ -267,7 +267,12 @@ const AddReference = ({navigation, route}: any) => {
               )}
 
               <Text style={[styles(isDark).label,{ marginTop: 10}
-              ]}>Upload Resume:</Text>
+              ]}>Upload Resume*: {touched.resume && errors.resume?.filename && (
+                <Text style={[styles(isDark).error]}>
+                  {errors.resume.filename}
+                </Text>
+              )}</Text>
+
               <TouchableOpacity
                 onPress={() => pickDocument(setFieldValue)}
                 style={styles(isDark).uploadButton}>
@@ -285,11 +290,11 @@ const AddReference = ({navigation, route}: any) => {
                   {values.resume?.filename || 'Upload Here'}
                 </Text>
               </TouchableOpacity>
-              {touched.resume && errors.resume?.filename && (
+              {/* {touched.resume && errors.resume?.filename && (
                 <Text style={styles(isDark).error}>
                   {errors.resume.filename}
                 </Text>
-              )}
+              )} */}
               <TouchableOpacity
                 style={styles(isDark).submitButton}
                 onPress={() => handleSubmit()}
@@ -352,7 +357,7 @@ const styles = (isDark: boolean) =>
     error: {
       color: 'red',
       fontSize: 12,
-      // marginBottom: 10,
+      fontFamily:'Lato-Regular',
     },
   });
 

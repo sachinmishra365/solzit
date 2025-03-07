@@ -44,7 +44,7 @@ const RootStack = () => {
       <Stack.Screen name="PositionDetail" component={PositionDetail} />
       <Stack.Screen name="Feedback" component={Feedback} />
       <Stack.Screen name="AddFeedback" component={AddFeedback} />
-      <Stack.Screen name="ViewFeedback" component={ViewFeedback} />
+      {/* <Stack.Screen name="ViewFeedback" component={ViewFeedback} /> */}
       <Stack.Screen name="MySkills" component={MySkills} />
       <Stack.Screen name="MyAssets" component={MyAssets} />
       <Stack.Screen name="SoluzioneDirectory" component={SoluzioneDirectory} />

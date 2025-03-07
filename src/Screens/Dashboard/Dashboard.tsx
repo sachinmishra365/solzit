@@ -28,13 +28,8 @@ const Dashboard = ({ navigation }: any) => {
   const [calendarDate, setCalendarDate] = useState();
   const [refreshing, setRefreshing] = React.useState(false);
   const [confettiKey, setConfettiKey] = useState(0);
+  const [confettiActive, setConfettiActive] = useState(true);
   
- 
-  const approvedLeaves = [
-    { startDate: "2025-06-10", endDate: "2025-06-14" },
-    { startDate: "2025-06-20", endDate: "2025-06-25" }
-  ];
- 
   const processed = useSelector((state: any) => state?.appState?.processed);
  
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
@@ -71,7 +66,11 @@ const Dashboard = ({ navigation }: any) => {
  
   useEffect(() => {
     handleholiday();
+    setTimeout(() => {
+      setConfettiActive(false);
+    }, 10000);
   }, []);
+
  
   useEffect(() => {
     if (
@@ -119,7 +118,7 @@ const Dashboard = ({ navigation }: any) => {
   useEffect(() => {
     let marked: any = {};
     const today = moment(currentDate, 'YYYY-MM-DD');
-    HolyDays.forEach((holiday: any) => {
+    HolyDays?.forEach((holiday: any) => {
       const date = moment(holiday.date).format('YYYY-MM-DD');
       marked[date] = {
         color: Colors.error, // Leave background color
@@ -129,7 +128,7 @@ const Dashboard = ({ navigation }: any) => {
       };
     });
  
-    processed.forEach((leave: any) => {
+    processed?.forEach((leave: any) => {
       const { leaveStartDate, leaveEndDate } = leave;
  
       const isApproved = leave?.status?.label === 'Approved';
@@ -204,10 +203,7 @@ const Dashboard = ({ navigation }: any) => {
     }
   };
  
-  // const handleConfetti = () => {
-  //   setConfettiKey(prevKey => prevKey + 1);
-  // };
-  // const [confettiActive, setConfettiActive] = useState(false);
+ 
   
   const renderBirthdays = ({ item }: any) => {
     const base64 = `data:image/jpeg;base64`;
@@ -258,6 +254,7 @@ const Dashboard = ({ navigation }: any) => {
               width: '80%',
               marginLeft: 15,
               justifyContent: 'center',
+              elevation:1,
             }}>
             {item?.fullName && (
               <Text
@@ -268,23 +265,7 @@ const Dashboard = ({ navigation }: any) => {
                 🎉 Happy Birthday,{' '}{item?.fullName}! 🎂
               </Text>
             )}
-            {/* {isBirthday && (
-              <TouchableOpacity
-                onPress={() => handleConfetti()}
-                style={{
-                  backgroundColor:'#d44e65',
-                  padding: 5,
-                  borderRadius: 3,
-                  marginTop: 10,
-                  alignItems: 'center',
-                  alignSelf:'flex-end',
-                }}>
-                <Text
-                  style={{color: 'white', fontSize: 16, fontWeight: 'bold'}}>
-                  🎉 Celebrate!
-                </Text>
-              </TouchableOpacity>
-            )} */}
+           
             </View>
       </View>
     </View>
@@ -338,6 +319,7 @@ const Dashboard = ({ navigation }: any) => {
               width: '80%',
               marginLeft: 15,
               justifyContent: 'center',
+              elevation:1,
             }}>
             {item?.holidayName && (
               <Text
@@ -443,19 +425,19 @@ const Dashboard = ({ navigation }: any) => {
     <FlatList
       data={[...birthdayData, ...appliedLeave, ...HolyDays]?.filter(item => {
         if (
+          item?.birthdayDate &&
+          moment(item?.birthdayDate).format('MM-YYYY') === onMonth
+        ) {
+          return item;}
+          else if (
           moment(item?.leaveStartDate).format('MM-YYYY') === onMonth &&
-          !item?.holidayName &&
-          !item?.birthdayDate
+          !item?.holidayName 
+
         ) {
           return item;
         } else if (
           moment(item?.date).format('MM-YYYY') === onMonth &&
           item?.holidayName
-        ) {
-          return item;
-        } else if (
-          item?.birthdayDate &&
-          moment(item?.birthdayDate).format('MMM, D') === moment().format('MMM, D')
         ) {
           return item;
         }
@@ -470,12 +452,12 @@ const Dashboard = ({ navigation }: any) => {
           item?.birthdayDate &&
           moment(item?.birthdayDate).format('MMM, D') === moment().format('MMM, D')
         ) {
-          return renderBirthdays({ item,
-            // confettiActive 
-          });
+          return renderBirthdays({item});
+
         }
         return null;
       }}
+
       keyExtractor={(item, index) => index.toString()}
       style={{ margin: 5 }}
       showsVerticalScrollIndicator={false}
@@ -497,22 +479,20 @@ const Dashboard = ({ navigation }: any) => {
         </View>
       }
     />
-    {/* {confettiKey>0 && (
-      <ConfettiCannon
-        key={confettiKey}
-        count={400}
-        origin={{ x: 200, y: 900 }}
-        explosionSpeed={Math.random() * (800 - 500) + 500}
-        fallSpeed={500}
-        fadeOut
-      />
-    )} */}
+     {confettiActive && (
+            <ConfettiCannon
+              count={200}
+              origin={{x: -10, y: 0}}
+              explosionSpeed={800}
+            />
+          )}
+
   </>
 )}   
 
 <Fabbutton />  
 
- 
+
       <Modal
         visible={modalVisible}
         transparent={false}
