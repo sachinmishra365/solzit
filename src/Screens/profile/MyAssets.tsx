@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors, FontSize} from '../../constants/Colors';
+import {Colors} from '../../constants/Colors';
 import moment from 'moment';
 import {useEmployeeInventoryAllocationQuery} from '../../Services/services';
 import Toast from 'react-native-toast-message';
@@ -58,6 +58,8 @@ const MyAssets = ({navigation}: any) => {
   }, [refetch]);
 
   const renderItem = ({item}: any) => (
+    console.log(item),
+    
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
@@ -68,7 +70,9 @@ const MyAssets = ({navigation}: any) => {
       }}>
       <Card.Content>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <View style={styles(isDark).dateCard}>
+          {
+            item.allocationDate && (
+              <View style={styles(isDark).dateCard}>
             <Text style={styles(isDark).dateNumber}>
               {moment(item.allocationDate).format('DD')}
             </Text>
@@ -83,6 +87,8 @@ const MyAssets = ({navigation}: any) => {
               {moment(item.allocationDate).format('YYYY')}
             </Text>
           </View>
+            )
+          }
 
           <View style={styles(isDark).assetDetails}>
             <View style={styles(isDark).row}>
@@ -118,6 +124,7 @@ const MyAssets = ({navigation}: any) => {
               </Text>
               <Text style={[styles(isDark).value]}>{item.inventoryNumber}</Text>
             </View>
+
           </View>
         </View>
       </Card.Content>
@@ -184,7 +191,6 @@ const styles = (isDark: boolean) =>
       fontFamily: 'Lato-SemiBold',
     },
     assetDetails: {
-      // width: '70%',
       flex: 1,
     },
     row: {

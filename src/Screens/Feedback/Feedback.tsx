@@ -16,8 +16,6 @@ import ViewFeedback from './ViewFeedback';
 const Feedback = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const connected = useSelector((state: any) => state?.appState?.connected);
-
   const [FeedbackData, setFeedbackData] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const bottomSheetRef = useRef<IBottomSheetRef>(null);
@@ -26,17 +24,17 @@ const Feedback = ({ navigation }: any) => {
   const handleOpenBottomSheet = (feedback: any) => {
     setSelectedFeedback(feedback);
     setTimeout(() => {
-      bottomSheetRef.current?.expand(); 
+      bottomSheetRef.current?.expand();
     }, 50);
   };
-  
-  
+
+
   useEffect(() => {
     if (selectedFeedback && bottomSheetRef.current) {
       bottomSheetRef.current.expand();
     }
   }, [selectedFeedback]);
-  
+
   useEffect(() => {
     if (!bottomSheetRef.current) {
       console.log("BottomSheet ref is not assigned yet.");
@@ -79,40 +77,45 @@ const Feedback = ({ navigation }: any) => {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'flex-start',
-          }}
-        >
-          <Text style={[styles(isDark).title, { flex: 1, fontSize: 16 }]}>
+          }}>
+          <Text style={[styles(isDark).txt, {
+            fontFamily: 'Lato-Bold',
+          }]}>
+            {'Status : '}{item.status.label}
+          </Text>
+          <Text style={[styles(isDark).txt, { fontSize: 16,fontFamily: 'Lato-Bold' }]}>
+            {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
+          </Text>
+        </View>
+        <View>
+
+      <View style={{flexDirection: 'row',}}>
+      <Text style={[styles(isDark).txt,{fontFamily: 'Lato-Bold'}]}>
+          {'Title : '}
+          </Text>
+          <Text style={[styles(isDark).txt,{flexWrap:'wrap',flex:1}]}>
             {item.feedBackTitle}
           </Text>
+      </View>
 
-          <View style={{ minWidth: '30%', alignItems: 'flex-end', marginLeft: 7 }}>
-            <Text style={[styles(isDark).title, { fontSize: 16 }]}>
-              {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
-            </Text>
-          </View>
+          <TouchableOpacity style={styles(isDark).viewFeedback} onPress={() => handleOpenBottomSheet(item)}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 6,
+                borderRadius: 3,
+                backgroundColor: Colors.primary,
+              }}
+            >
+              <Icon source="eye" size={24} color={Colors.white} />
+              <Text style={[styles(isDark).addButtonText, { color: Colors.white, marginLeft: 4 }]}>
+                View Feedback
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
-        <Text style={[styles(isDark).title, { fontSize: 14, marginTop: -5 }]}>
-          Status: {item.status.label}
-        </Text>
-
-        <TouchableOpacity style={styles(isDark).viewFeedback} onPress={() => handleOpenBottomSheet(item)}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: 6,
-              borderRadius: 3,
-              backgroundColor: Colors.primary,
-            }}
-          >
-            <Icon source="eye" size={24} color={Colors.white} />
-            <Text style={[styles(isDark).addButtonText, { color: Colors.white, marginLeft: 4 }]}>
-              View Feedback
-            </Text>
-          </View>
-        </TouchableOpacity>
       </Card.Content>
     </Card>
   );
@@ -124,15 +127,33 @@ const Feedback = ({ navigation }: any) => {
 
       {isLoading ? (
         <ShimmerPlaceHolder />
-      ) : (
-        <FlatList
-        showsVerticalScrollIndicator={false}
-          data={FeedbackData}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        />
-      )}
+      ) :
+        FeedbackData.length > 0 ?
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={FeedbackData}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+
+          : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: isDark ? Colors.white : Colors.black,
+                  alignSelf: 'center',
+                  fontFamily: 'Lato-Bold',
+                }}>
+                No Records
+              </Text>
+            </View>
+          )}
 
       <FAB
         style={styles(isDark).fab}
@@ -142,14 +163,14 @@ const Feedback = ({ navigation }: any) => {
         icon="plus"
       />
 
-     
+
       <BottomSheet ref={bottomSheetRef}>
-  {selectedFeedback ? (
-    <ViewFeedback feedbackData={selectedFeedback} />
-  ) : (
-    <Text style={{ padding: 20, textAlign: 'center' }}>No Feedback Selected</Text>
-  )}
-</BottomSheet>
+        {selectedFeedback ? (
+          <ViewFeedback feedbackData={selectedFeedback} />
+        ) : (
+          <Text style={{ padding: 20, textAlign: 'center' }}>No Feedback Selected</Text>
+        )}
+      </BottomSheet>
 
     </View>
   );
@@ -171,14 +192,16 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Bold',
     },
-    title: {
-      fontFamily: 'Lato-Bold',
+    txt: {
+      fontFamily: 'Lato-SemiBold',
       marginBottom: 5,
       color: isDark ? Colors.white : Colors.black,
+      fontSize: 14
     },
     viewFeedback: {
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'flex-end'
     },
     fab: {
       position: 'absolute',

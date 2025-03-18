@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DrawerNavigator from './DrawerNavigator';
 import ApplyLeave from '../Screens/ApplyLeave';
 import LeaveRequest from '../Screens/LeavesAndBreakes/LeaveRequest';
@@ -9,8 +9,8 @@ import Attandance from '../Screens/Attendance/Attandance';
 import ChangePassword from '../Screens/ChangePassword/ChangePassword';
 import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
 import Summary from '../Screens/Attendance/Summary';
-import {PermissionHandler} from '../permissions';
-import {useEffect} from 'react';
+import { PermissionHandler } from '../permissions';
+import { useEffect, useState } from 'react';
 import MySkills from '../Screens/profile/MySkills';
 import MyAssets from '../Screens/profile/MyAssets';
 import OpenPositions from '../Screens/Hiring Recruitment/OpenPositions';
@@ -21,16 +21,44 @@ import Feedback from '../Screens/Feedback/Feedback';
 import AddFeedback from '../Screens/Feedback/AddFeedback';
 import SoluzioneDirectory from '../Screens/Soluzione Directory/SoluzioneDirectory';
 import ViewFeedback from '../Screens/Feedback/ViewFeedback';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEmployeeAppliedLeavesQuery, useGetSoluzioneUpcomingBirthdaysQuery, useProcessedLeavesQuery, useSoluzioneHolidaysQuery } from '../Services/services';
+import { SetMetaData } from '../AppStore/Reducers/appState';
 
 const Stack = createNativeStackNavigator();
 
 const RootStack = () => {
+  const dispatch = useDispatch();
+  const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
+  const accessToken = Assesstoken?.authToken?.accessToken;
+
+  const { data: upcomingBirthdayData, refetch: refetchBirthday } = useGetSoluzioneUpcomingBirthdaysQuery({ accessToken: accessToken, });
+
+  const { data:holidaysData, error, isLoading, refetch } = useSoluzioneHolidaysQuery({ accessToken: accessToken, });
+
+  const { data: AppliedLeave, refetch: refetchapplies } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken, });
+
+  const ProcessedLeaves = useProcessedLeavesQuery({ accessToken: accessToken, });
+
+  const [mergedData, setMergedData] = useState([]);
+
+useEffect(() => {
+  if (upcomingBirthdayData && holidaysData && AppliedLeave && ProcessedLeaves) {
+    const merged:any = [
+      ...(upcomingBirthdayData?.data || []),
+      ...(holidaysData?.data || []),
+    ];
+    dispatch(SetMetaData(merged))
+  }
+}, [upcomingBirthdayData, holidaysData]);
+
   useEffect(() => {
     PermissionHandler.requestAllPermissions();
   }, []);
+  
 
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
       <Stack.Screen name="ApplyLeave" component={ApplyLeave} />
       <Stack.Screen name="LeaveRequest" component={LeaveRequest} />

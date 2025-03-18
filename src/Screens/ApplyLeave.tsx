@@ -1,13 +1,4 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Pressable,
-  Keyboard,
-  Alert,
-  StyleSheet,
-} from 'react-native';
+import {View,Text,TouchableOpacity,ActivityIndicator,Pressable,Keyboard,Alert,StyleSheet,} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import CustomTextInput from '../Components/CustomTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -39,7 +30,7 @@ const validationSchema = Yup.object().shape({
 const ApplyLeave = () => {
   const navigation: any = useNavigation();
   const isDark = useSelector(isDarkTheme);
-   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const CheckStatus = useSelector((state: any) => state?.appState?.authToken);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());

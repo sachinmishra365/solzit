@@ -1,28 +1,19 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Button,
-  TouchableOpacity,
-} from 'react-native';
-import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, } from 'react-native';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
+import { Colors } from '../../constants/Colors';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
-import {
-  useCreateCandidateApplicationMutation,
-  useAttachFileInSharePointMutation,
-} from '../../Services/services';
+import { useCreateCandidateApplicationMutation, useAttachFileInSharePointMutation, } from '../../Services/services';
 import RNFS from 'react-native-fs';
-import {IconButton} from 'react-native-paper';
-import {Formik} from 'formik';
+import { IconButton } from 'react-native-paper';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CustomTextInput from '../../Components/CustomTextInput';
-import {SCREEN_WIDTH} from '../../constants/Screen';
+import { SCREEN_WIDTH } from '../../constants/Screen';
+import Placeholder from '../Placeholder/Placeholder';
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required('First name is required'),
@@ -34,38 +25,34 @@ const validationSchema = Yup.object().shape({
   resume: Yup.object()
     .shape({
       filename: Yup.string().required('Resume is required'),
-      filetype: Yup.string(),
-      bytes: Yup.string(),
+      filetype: Yup.string().required('Filetype is required'),
+      bytes: Yup.string().required('File data is required'),
     })
     .required('Resume is required'),
 });
 
-const AddReference = ({navigation, route}: any) => {
+const AddReference = ({ navigation, route }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
-  const { reference: hiringId, hiringPosition } = route.params;
+  const { reference: hiringId, hiringPosition, } = route.params;
 
-
-  const [createCandidateApplication] = useCreateCandidateApplicationMutation();
-  const [attachFileInSharePoint] = useAttachFileInSharePointMutation();
+  const [createCandidateApplication, { isLoading }] = useCreateCandidateApplicationMutation();
+  const [attachFileInSharePoint, result] = useAttachFileInSharePointMutation();
 
   const pickDocument = async (setFieldValue: any) => {
     try {
       const res = await DocumentPicker.pickSingle({
-        type: [DocumentPicker.types.allFiles],
+        type: [DocumentPicker.types.pdf],
       });
-
       const base64File = await RNFS.readFile(res.uri, 'base64');
-
       setFieldValue('resume', {
         filename: res.name,
         filetype: res.type,
         bytes: base64File,
       });
 
-      console.log('File selected:', res.name);
     } catch (err: any) {
       if (DocumentPicker.isCancel(err)) {
         console.log('User canceled document picker');
@@ -84,79 +71,101 @@ const AddReference = ({navigation, route}: any) => {
       });
       return;
     }
-
-    const candidateData = {
+    const data = {
       firstName: values.firstName.trim(),
       lastName: values.lastName.trim(),
       email: values.email,
       mobileNumber: values.mobileNumber,
-      position: {id: hiringId},
+      hiringPosition: '',
+      location: '',
+      position: { id: hiringId, name: '' },
     };
 
     try {
       const response = await createCandidateApplication({
         accessToken: EmployeeId?.authToken?.accessToken,
-        data: candidateData,
+        data,
       }).unwrap();
+
       if (
         response?.isSuccessful &&
         response?.messageDetail?.message_shortcode ===
-          'SOLZIT_REFERENCE_CREATED_SUCCESSFULLY'
+        'SOLZIT_REFERENCE_CREATED_SUCCESSFULLY'
       ) {
+        const Id = response?.data;
+
+        if (values.resume.name) {
+          await handleUploadDocument(Id, values.resume);
+        }
+
         Toast.show({
           type: 'success',
           text1: 'Candidate Added Successfully',
         });
 
-        if (values.resume?.filename) {
-          try {
-            const fileData = {
-              itemDetails: [
-                {
-                  filename: values.resume.filename,
-                  filetype: values.resume.filetype,
-                  bytes: values.resume.bytes,
-                  ID: hiringId,
-                  Name: hiringPosition,
-                },
-              ],
-            };
-
-            await attachFileInSharePoint({
-              accessToken: EmployeeId?.authToken?.accessToken,
-              data: fileData,
-            }).unwrap();
-
-            console.log('Resume uploaded successfully');
-          } catch (fileError: any) {
-            console.error(
-              'Error uploading file:',
-              JSON.stringify(fileError, null, 2),
-            );
-
-            Toast.show({
-              type: 'error',
-              text1: 'File Upload Failed',
-              text2: fileError?.data?.message || 'Could not upload resume',
-            });
-          }
-        }
         navigation.goBack();
       } else {
         throw new Error(
-          response?.messageDetail?.message || 'Failed to add candidate',
+          response?.messageDetail?.message || 'Failed to add candidate'
         );
       }
     } catch (error: any) {
-      console.error('Error adding candidate:', JSON.stringify(error, null, 2));
-
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: error?.data?.message || error.message || 'Unknown error',
-      });
+      Alert.alert('Error', error?.data?.messageDetail?.message || error.message || 'Unknown error', [
+        { text: 'OK', onPress: () => { } },
+      ]);
+      // Toast.show({
+      //   type: 'error',
+      //   text1: 'Error',
+      //   text2: error?.data?.messageDetail?.message || error.message || 'Unknown error',
+      //   topOffset: 80,
+      //   text2Style: {
+      //     flexWrap: 'wrap',
+      //     fontSize: 20,
+      //     fontFamily: 'Lato-Regular',
+      //     width: '100%',
+      //     height:300,
+      //   },
+      //   visibilityTime: 5000,
+      // });
     }
   };
+
+
+  const handleUploadDocument = async (Id: string, file: any) => {
+    const data = {
+      "itemDetails": [
+        {
+          "filename": file.filename,
+          "filetype": file.filetype,
+          "bytes": file.bytes,
+          "ID": Id,
+          "Name": "solz_candidateapplication"
+        }
+      ]
+    }
+
+    try {
+      const response = await attachFileInSharePoint({
+        accessToken: EmployeeId?.authToken?.accessToken,
+        data
+      }).unwrap();
+      if (response?.isSuccessful) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Record created successfully',
+        });
+      } else {
+        throw new Error(response?.messageDetail?.message || 'File upload failed');
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Upload Error',
+        text2: (error as any)?.message || 'Unknown error',
+      });
+    }
+  }
 
   return (
     <View style={styles(isDark).maincontainer}>
@@ -165,149 +174,153 @@ const AddReference = ({navigation, route}: any) => {
         title="Add Reference"
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
-      <View style={{marginHorizontal: 16}}>
-        <Text style={[styles(isDark).label, {marginBottom: -5}]}>
-          Hiring Position:
-          <Text style={{color: Colors.primary, fontFamily: 'Lato-Bold'}}>
-            {' '}
-            {hiringPosition}
-          </Text>
-        </Text>
-        <Formik
-          initialValues={{
-            firstName: '',
-            lastName: '',
-            email: '',
-            mobileNumber: '',
-            resume: {filename: '', filetype: '', bytes: ''},
-          }}
-          validationSchema={validationSchema}
-          validateOnChange={true}
-          validateOnBlur={true}
-          onSubmit={handleSubmit}>
-          {({
-            handleChange,
-            handleSubmit,
-            handleBlur,
-            values,
-            errors,
-            touched,
-            setFieldValue,
-            setFieldTouched,
-          }) => (
-            <>
-              <CustomTextInput
-                label="First Name*"
-                value={values.firstName}
-                onChangeText={handleChange('firstName')}
-                onBlur={handleBlur('firstName')}
-                leftIconName="account"
-                editable={true}
-                accessibilityLabelLeft="account"
-                accessibilityLabelRight="Blank"
-                style={{marginTop: 10}}
-                keyboardType="default"
-              />
-              {touched.firstName && errors.firstName && (
-                <Text style={styles(isDark).error}>{errors.firstName}</Text>
-              )}
-
-              <CustomTextInput
-                label="Last Name*"
-                value={values.lastName}
-                onChangeText={handleChange('lastName')}
-                onBlur={handleBlur('lastName')}
-                leftIconName="account"
-                editable={true}
-                accessibilityLabelLeft="account"
-                accessibilityLabelRight="Blank"
-                style={{marginTop: 10}}
-                keyboardType="default"
-              />
-              {touched.lastName && errors.lastName && (
-                <Text style={styles(isDark).error}>{errors.lastName}</Text>
-              )}
-
-              <CustomTextInput
-                label="Email*"
-                value={values.email}
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                leftIconName="email"
-                editable={true}
-                accessibilityLabelLeft="email"
-                accessibilityLabelRight="Blank"
-                style={{marginTop: 10}}
-                keyboardType="default"
-              />
-              {touched.email && errors.email && (
-                <Text style={styles(isDark).error}>{errors.email}</Text>
-              )}
-
-              <CustomTextInput
-                label="Mobile Number*"
-                value={values.mobileNumber}
-                onChangeText={(text:any) => {
-                  if (/^\d*$/.test(text)) {
-                    setFieldValue('mobileNumber', text);
-                    setFieldTouched('mobileNumber', true, false); 
-                  }
-                }}
-                onBlur={handleBlur('mobileNumber')}
-                leftIconName="phone"
-                editable={true}
-                accessibilityLabelLeft="phone"
-                accessibilityLabelRight="Blank"
-                style={{marginTop: 10}}
-                keyboardType="phone-pad"
-              />
-              {touched.mobileNumber && errors.mobileNumber && (
-                <Text style={styles(isDark).error}>{errors.mobileNumber}</Text>
-              )}
-
-              <Text style={[styles(isDark).label,{ marginTop: 10}
-              ]}>Upload Resume*: {touched.resume && errors.resume?.filename && (
-                <Text style={[styles(isDark).error]}>
-                  {errors.resume.filename}
-                </Text>
-              )}</Text>
-
-              <TouchableOpacity
-                onPress={() => pickDocument(setFieldValue)}
-                style={styles(isDark).uploadButton}>
-                <IconButton
-                  icon="tray-arrow-up"
-                  iconColor={isDark ? Colors.white : Colors.black}
-                  size={30}
-                />
-                <Text
-                  style={[
-                    styles(isDark).ButtonText,
-                    {color: isDark ? Colors.white : Colors.black},
-                  ]}>
+      {
+        isLoading || result.isLoading ? (
+          <Placeholder />
+        ) : (
+          <>
+            <View style={styles(isDark).divider} />
+            <View style={{ marginHorizontal: 16 }}>
+              <Text style={[styles(isDark).label, { marginBottom: -5 }]}>
+                Hiring Position:
+                <Text style={{ color: Colors.primary, fontFamily: 'Lato-Bold' }}>
                   {' '}
-                  {values.resume?.filename || 'Upload Here'}
+                  {hiringPosition}
                 </Text>
-              </TouchableOpacity>
-              {/* {touched.resume && errors.resume?.filename && (
-                <Text style={styles(isDark).error}>
-                  {errors.resume.filename}
-                </Text>
-              )} */}
-              <TouchableOpacity
-                style={styles(isDark).submitButton}
-                onPress={() => handleSubmit()}
-                disabled={!values.resume}>
-                <Text
-                  style={[styles(isDark).ButtonText, {color: Colors.white}]}>
-                  Submit
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </Formik>
-      </View>
+              </Text>
+              <Formik
+                initialValues={{
+                  firstName: '',
+                  lastName: '',
+                  email: '',
+                  mobileNumber: '',
+                  resume: { filename: '', filetype: '', bytes: '' },
+                }}
+                validationSchema={validationSchema}
+                validateOnChange={true}
+                validateOnBlur={true}
+                onSubmit={handleSubmit}>
+                {({
+                  handleChange,
+                  handleSubmit,
+                  handleBlur,
+                  values,
+                  errors,
+                  touched,
+                  setFieldValue,
+                  setFieldTouched,
+                }) => (
+                  <>
+                    <CustomTextInput
+                      label="First Name*"
+                      value={values.firstName}
+                      onChangeText={handleChange('firstName')}
+                      onBlur={handleBlur('firstName')}
+                      leftIconName="account"
+                      editable={true}
+                      accessibilityLabelLeft="account"
+                      accessibilityLabelRight="Blank"
+                      style={{ marginTop: 10 }}
+                      keyboardType="default"
+                    />
+                    {touched.firstName && errors.firstName && (
+                      <Text style={styles(isDark).error}>{errors.firstName}</Text>
+                    )}
+
+                    <CustomTextInput
+                      label="Last Name*"
+                      value={values.lastName}
+                      onChangeText={handleChange('lastName')}
+                      onBlur={handleBlur('lastName')}
+                      leftIconName="account"
+                      editable={true}
+                      accessibilityLabelLeft="account"
+                      accessibilityLabelRight="Blank"
+                      style={{ marginTop: 10 }}
+                      keyboardType="default"
+                    />
+                    {touched.lastName && errors.lastName && (
+                      <Text style={styles(isDark).error}>{errors.lastName}</Text>
+                    )}
+
+                    <CustomTextInput
+                      label="Email*"
+                      value={values.email}
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      leftIconName="email"
+                      editable={true}
+                      accessibilityLabelLeft="email"
+                      accessibilityLabelRight="Blank"
+                      style={{ marginTop: 10 }}
+                      keyboardType="default"
+                    />
+                    {touched.email && errors.email && (
+                      <Text style={styles(isDark).error}>{errors.email}</Text>
+                    )}
+
+                    <CustomTextInput
+                      label="Mobile Number*"
+                      value={values.mobileNumber}
+                      onChangeText={(text: any) => {
+                        if (/^\d*$/.test(text)) {
+                          setFieldValue('mobileNumber', text);
+                          setFieldTouched('mobileNumber', true, false);
+                        }
+                      }}
+                      onBlur={handleBlur('mobileNumber')}
+                      leftIconName="phone"
+                      editable={true}
+                      accessibilityLabelLeft="phone"
+                      accessibilityLabelRight="Blank"
+                      style={{ marginTop: 10 }}
+                      keyboardType="phone-pad"
+                    />
+                    {touched.mobileNumber && errors.mobileNumber && (
+                      <Text style={styles(isDark).error}>{errors.mobileNumber}</Text>
+                    )}
+
+                    <Text style={[styles(isDark).label, { marginTop: 10 }
+                    ]}>Upload Resume*: {touched.resume && errors.resume?.filename && (
+                      <Text style={[styles(isDark).error]}>
+                        {errors.resume.filename}
+                      </Text>
+                    )}</Text>
+
+                    <TouchableOpacity
+                      onPress={() => pickDocument(setFieldValue)}
+                      style={styles(isDark).uploadButton}>
+                      <IconButton
+                        icon="tray-arrow-up"
+                        iconColor={isDark ? Colors.white : Colors.black}
+                        size={30}
+                      />
+                      <Text
+                        style={[
+                          styles(isDark).ButtonText,
+                          { color: isDark ? Colors.white : Colors.black },
+                        ]}>
+                        {' '}
+                        {values.resume?.filename || 'Upload Here'}
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles(isDark).submitButton}
+                      onPress={() => handleSubmit()}
+                      disabled={!values.resume}>
+                      <Text
+                        style={[styles(isDark).ButtonText, { color: Colors.white }]}>
+                        Submit
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </Formik>
+            </View>
+          </>
+        )
+      }
     </View>
   );
 };
@@ -357,7 +370,7 @@ const styles = (isDark: boolean) =>
     error: {
       color: 'red',
       fontSize: 12,
-      fontFamily:'Lato-Regular',
+      fontFamily: 'Lato-Regular',
     },
   });
 

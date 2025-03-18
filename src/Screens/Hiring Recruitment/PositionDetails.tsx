@@ -113,6 +113,7 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
+      lineHeight:27
     },
     fab: {
       position: 'absolute',

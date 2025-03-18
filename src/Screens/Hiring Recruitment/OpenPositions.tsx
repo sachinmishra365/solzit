@@ -64,9 +64,6 @@ const OpenPositions = ({navigation}: any) => {
   };
 
   const renderItem = ({item}: any) => (
-    <TouchableOpacity
-    onPress={() => navigation.navigate('PositionDetail', { position: item })}
-  >
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
@@ -74,9 +71,10 @@ const OpenPositions = ({navigation}: any) => {
         borderColor: Colors.background,
         borderWidth: 0.5,
         marginHorizontal: 16,
-      }}>
+      }}
+      onPress={() => navigation.navigate('PositionDetail', { position: item })}>
       <Card.Content>
-        <View style={[styles(isDark).titleContainer, {marginBottom: 8}]}>
+        <View style={[styles(isDark).titleContainer, {marginBottom: 8,flexWrap:'wrap'}]}>
           <Text style={styles(isDark).title}>{item.hiringPosition}</Text>
             <Text style={styles(isDark, item.urgency).urgencyText}>
               {item.urgency}
@@ -103,7 +101,6 @@ const OpenPositions = ({navigation}: any) => {
       
       </Card.Content>
     </Card>
-    </TouchableOpacity>
   );
 
   return (

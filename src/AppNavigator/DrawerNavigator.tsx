@@ -1,15 +1,4 @@
-import {
-  Animated,
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  Pressable,
-  View,
-  TouchableOpacity,
-  useColorScheme,
-  PanResponder,
-} from 'react-native';
+import {Animated,Image,SafeAreaView,StyleSheet,Text,Pressable,View,TouchableOpacity,useColorScheme,PanResponder,} from 'react-native';
 import {Icon, IconButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {Colors} from '../constants/Colors';
@@ -30,10 +19,29 @@ const DrawerNavigator = ({navigation}: any) => {
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeButtonOffset = useRef(new Animated.Value(0)).current;
+  
+  const [Loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTheme = async () => {
+      const storedTheme = await AsyncStorage.getItem('theme');
+      if (storedTheme) {
+        const themeValue = storedTheme === 'dark';
+        setIsSwitchOn(themeValue);
+        dispatch(theme(storedTheme));
+      } else {
+        const initialTheme = colorScheme === 'dark' ? 'dark' : 'light';
+        setIsSwitchOn(initialTheme === 'dark');
+        dispatch(theme(initialTheme));
+      }
+      setLoading(false);
+    };
+    loadTheme();
+  }, [dispatch, colorScheme]);
+
 
   const toggleMenu = () => {
     const newShowMenu = !showMenu;
-
     Animated.timing(scaleValue, {
       toValue: newShowMenu ? 0.9 : 1,
       duration: 300,
@@ -82,26 +90,7 @@ const DrawerNavigator = ({navigation}: any) => {
       }
     },
   });
-
-  const [Loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadTheme = async () => {
-      const storedTheme = await AsyncStorage.getItem('theme');
-      if (storedTheme) {
-        const themeValue = storedTheme === 'dark';
-        setIsSwitchOn(themeValue);
-        dispatch(theme(storedTheme));
-      } else {
-        const initialTheme = colorScheme === 'dark' ? 'dark' : 'light';
-        setIsSwitchOn(initialTheme === 'dark');
-        dispatch(theme(initialTheme));
-      }
-      setLoading(false);
-    };
-    loadTheme();
-  }, [dispatch, colorScheme]);
-
+  
   if (Loading) {
     return null;
   }

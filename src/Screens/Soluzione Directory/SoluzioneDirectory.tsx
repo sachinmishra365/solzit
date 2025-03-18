@@ -1,13 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  RefreshControl,
-  Image,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
+import {View,Text,StyleSheet,FlatList,RefreshControl,Image,TouchableOpacity,Linking} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
@@ -29,11 +20,8 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
-
-  const {data, error, isLoading, refetch} =
-    useGetSoluzioneUpcomingBirthdaysQuery({
-      accessToken: accessToken?.authToken?.accessToken,
-    });
+  const {data, error, isLoading, refetch} = useGetSoluzioneUpcomingBirthdaysQuery({accessToken: accessToken?.authToken?.accessToken});
+console.log(isLoading);
 
   const handleDirectory = async () => {
     if (!connected) {
@@ -41,11 +29,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
         type: 'error',
         text1: 'Network Error',
         text2: 'Please check your internet connection',
-        text2Style: {
-          flexWrap: 'wrap',
-          fontSize: 20,
-          fontFamily: 'Lato-Regular',
-        },
+        text2Style: {flexWrap: 'wrap',fontSize: 20,fontFamily: 'Lato-Regular',},
         topOffset: 80,
         visibilityTime: 5000,
       });
@@ -53,16 +37,13 @@ const SoluzioneDirectory = ({navigation}: any) => {
     }
     try {
       const result = await data;
-
-      if (
-        result !== undefined &&
-        result?.messageDetail?.message_code === 200 &&
-        result !== null
-      ) {
+      if (result !== undefined && result?.messageDetail?.message_code === 200 && result !== null) {
         setDirectoryData(result?.data);
         setFilteredData(result?.data);
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -113,10 +94,10 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 }
                 style={styles(isDark).image}
               />
-              <View style={[styles(isDark).row]}>
+              <View style={[styles(isDark).row,{marginTop:5}]}>
                 <Icon
                   source="cake"
-                  size={23}
+                  size={20}
                   color={isDark ? Colors.white : Colors.primary}
                 />
                 <Text style={styles(isDark).birthday}>
@@ -129,7 +110,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
               <View style={[styles(isDark).row, {}]}>
                 <Icon
                   source="account"
-                  size={23}
+                  size={20}
                   color={isDark ? Colors.white : Colors.primary}
                 />
                 <Text
@@ -140,10 +121,10 @@ const SoluzioneDirectory = ({navigation}: any) => {
                   {item.fullName}
                 </Text>
               </View>
-              <View style={[styles(isDark).row, {marginVertical: 3}]}>
+              <View style={[styles(isDark).row, {marginVertical: 5}]}>
                 <Icon
                   source="briefcase"
-                  size={23}
+                  size={20}
                   color={isDark ? Colors.white : Colors.primary}
                 />
                 <Text
@@ -156,10 +137,10 @@ const SoluzioneDirectory = ({navigation}: any) => {
               </View>
               <TouchableOpacity
                 onPress={() => Linking.openURL(`mailto:${item.email}`)}>
-                <View style={[styles(isDark).row, {marginVertical: 3}]}>
+                <View style={[styles(isDark).row, {marginVertical: 5}]}>
                   <Icon
                     source="email"
-                    size={23}
+                    size={20}
                     color={isDark ? Colors.white : Colors.primary}
                   />
                   <Text
@@ -180,10 +161,10 @@ const SoluzioneDirectory = ({navigation}: any) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => Linking.openURL(`tel:${item.mobile}`)}>
-                <View style={[styles(isDark).row, {marginVertical: 3}]}>
+                <View style={[styles(isDark).row, {marginVertical: 5}]}>
                   <Icon
                     source="phone"
-                    size={23}
+                    size={20}
                     color={isDark ? Colors.white : Colors.primary}
                   />
                   <Text style={styles(isDark).email}>{item.mobile}</Text>

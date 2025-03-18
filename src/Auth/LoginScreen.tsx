@@ -99,8 +99,8 @@ const LoginScreen = ({navigation}: any) => {
       ) : (
         <Formik
           initialValues={{
-            username: authCredential?.username || '',
-            password: authCredential?.password || '',
+            username: authCredential?.username || 'samiya.m@solzit.com',
+            password: authCredential?.password || 'Samya@100',
           }}
           validationSchema={validationSchema}
           onSubmit={handleLogin}>

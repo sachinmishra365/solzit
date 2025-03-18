@@ -22,6 +22,8 @@ const MySkills = ({navigation}: any) => {
     accessToken: EmployeeId?.authToken?.accessToken,
   });
 
+  console.log(JSON.stringify(data));
+  
   const handleSkills = async () => {
     if (!connected) {
       Toast.show({
@@ -102,6 +104,7 @@ const MySkills = ({navigation}: any) => {
             <ProgressBar
               progress={skillText}
               color={Colors.primary}
+              animated={true}
               borderColor={
                 isDark ? Colors.gray : Colors.white
               }
@@ -120,10 +123,10 @@ const MySkills = ({navigation}: any) => {
 
             {item.hasCertification?.label === 'Yes' && (
               <View style={styles(isDark).rowContainer}>
-                <Text style={{fontFamily: 'Lato-Bold', fontSize: 16}}>
+                <Text style={{fontFamily: 'Lato-Bold', fontSize: 16,}}>
                   {item.typeOfCertification?.label} :{' '}
                 </Text>
-                <Text style={{fontFamily: 'Lato-Bold', fontSize: 16}}>
+                <Text style={{fontFamily: 'Lato-Bold', fontSize: 16,}}>
                   {item.certificationName}
                 </Text>
               </View>
@@ -198,6 +201,7 @@ const styles = (isDark: boolean) =>
     rowContainer: {
       flexDirection: 'row',
       marginTop: 5,
+      flexWrap:'wrap'
     },
   });
 

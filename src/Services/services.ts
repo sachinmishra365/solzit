@@ -273,7 +273,7 @@ export const services = createApi({
     }),
 
     AttachFileInSharePoint: builder.mutation({
-      query: ({data, accessToken}) => {
+      query: ({accessToken,data}) => {
         return {
           url: `/Sharepoint/AttachFileInSharePoint`,
           method: 'POST',

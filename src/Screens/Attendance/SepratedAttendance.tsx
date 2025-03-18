@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Alert,
   BackHandler,
   FlatList,
   ScrollView,
@@ -28,9 +27,7 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {BottomSheet, IBottomSheetRef} from '../BottomSheet/BottomSheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import ShimmerPlaceHolder, {
-  PlaceholderCard,
-} from '../Placeholder/ShimmerPlaceHolder';
+import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import Toast from 'react-native-toast-message';
 
 const SepratedAttendance = ({route}: any) => {

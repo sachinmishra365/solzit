@@ -64,6 +64,7 @@ export const navigationRef = createNavigationContainerRef();
 
 const App = () => {
   const colorScheme = useColorScheme();
+  console.log(colorScheme)
 
   const [isDark, setIsDark] = useState(colorScheme);
   const [isConnected, setIsConnected] = useState(null);
@@ -107,7 +108,7 @@ const App = () => {
       <SafeAreaView  style={{ flex: 1}}>
       <StatusBar
           barStyle={isDark === 'dark' ? 'light-content' : 'dark-content'}
-          backgroundColor={isDark === 'dark' ? Colors.black : Colors.white}
+          backgroundColor={colorScheme === 'dark' ? Colors.black : Colors.white}
         />
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
