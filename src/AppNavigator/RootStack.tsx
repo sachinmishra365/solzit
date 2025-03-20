@@ -36,16 +36,11 @@ const RootStack = () => {
 
   const { data:holidaysData, error, isLoading, refetch } = useSoluzioneHolidaysQuery({ accessToken: accessToken, });
 
-  const { data: AppliedLeave, refetch: refetchapplies } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken, });
-
-  const ProcessedLeaves = useProcessedLeavesQuery({ accessToken: accessToken, });
-
-  const [mergedData, setMergedData] = useState([]);
 
 useEffect(() => {
-  if (upcomingBirthdayData && holidaysData && AppliedLeave && ProcessedLeaves) {
+  if (upcomingBirthdayData && holidaysData ) {
     const merged:any = [
-      ...(upcomingBirthdayData?.data || []),
+      // ...(upcomingBirthdayData?.data || []),
       ...(holidaysData?.data || []),
     ];
     dispatch(SetMetaData(merged))
@@ -72,7 +67,7 @@ useEffect(() => {
       <Stack.Screen name="PositionDetail" component={PositionDetail} />
       <Stack.Screen name="Feedback" component={Feedback} />
       <Stack.Screen name="AddFeedback" component={AddFeedback} />
-      {/* <Stack.Screen name="ViewFeedback" component={ViewFeedback} /> */}
+      <Stack.Screen name="ViewFeedback" component={ViewFeedback} />
       <Stack.Screen name="MySkills" component={MySkills} />
       <Stack.Screen name="MyAssets" component={MyAssets} />
       <Stack.Screen name="SoluzioneDirectory" component={SoluzioneDirectory} />

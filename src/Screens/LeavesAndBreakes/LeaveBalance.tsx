@@ -188,6 +188,28 @@ const LeaveBalance = ({navigation}: any) => {
             </View>
           )}
         </View>
+        {item?.declinedReason && (
+          <>
+            <View>
+              <Text
+                style={{
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 14,
+                  fontFamily: 'Lato-Bold',
+                }}>
+                Declined Reason :{' '}
+              </Text>
+              <Text
+                style={{
+                  color: isDark ? Colors.white : Colors.black,
+                  fontSize: 14,
+                  fontFamily: 'Lato-Regular',
+                }}>
+                {item?.declinedReason ? item?.declinedReason : 'N/A'}
+              </Text>
+            </View>
+          </>
+        )}
       </Card.Content>
     </Card>
   );
@@ -256,7 +278,7 @@ const LeaveBalance = ({navigation}: any) => {
               paddingHorizontal: 16,
               paddingVertical: 7,
               borderRadius: 20,
-              minHeight:37
+              minHeight: 37,
             }}
             onPress={() => filterByStatus(status)}>
             <Text
@@ -285,8 +307,7 @@ const LeaveBalance = ({navigation}: any) => {
 
       {isLoading ? (
         <ShimmerPlaceHolder />
-      ) : 
-      //@ts-ignore
+      ) : //@ts-ignore
       filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
           style={{marginHorizontal: 16}}
@@ -309,8 +330,8 @@ const LeaveBalance = ({navigation}: any) => {
               color: isDark ? Colors.white : Colors.black,
               alignSelf: 'center',
               fontFamily: 'Lato-Bold',
-              height:38,
-              padding:7
+              height: 38,
+              padding: 7,
             }}>
             No Records
           </Text>

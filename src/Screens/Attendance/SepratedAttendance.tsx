@@ -821,14 +821,14 @@ const SepratedAttendance = ({route}: any) => {
                         {AttendanceQueryData?.suggestedStartTime
                           ? moment(
                               AttendanceQueryData?.suggestedStartTime,
-                              'M/D/YYYY h:mm:ss A',
+                              'YYYY-MM-DDTHH:mm:ss',
                             ).format('hh:mm A')
-                          : 'N/A'}{' '}
+                          : 'N/A'}
                         {' - '}
                         {AttendanceQueryData?.suggestedEndtTime
                           ? moment(
                               AttendanceQueryData?.suggestedEndtTime,
-                              'M/D/YYYY h:mm:ss A',
+                              'YYYY-MM-DDTHH:mm:ss',
                             ).format('hh:mm A')
                           : 'N/A'}
                       </Text>
@@ -1013,9 +1013,14 @@ const SepratedAttendance = ({route}: any) => {
                         style={styles(isDark).input}
                       />
                       {actualTime < 0 && (
-                        <Text style={{color: Colors.error, marginTop: 5,marginHorizontal:16}}>
-                          Actual hours cannot be negative,
-                          Please select end time after start time.
+                        <Text
+                          style={{
+                            color: Colors.error,
+                            marginTop: 5,
+                            marginHorizontal: 16,
+                          }}>
+                          Actual hours cannot be negative, Please select end
+                          time after start time.
                         </Text>
                       )}
                       <View style={{marginVertical: 16}} />
@@ -1028,8 +1033,9 @@ const SepratedAttendance = ({route}: any) => {
                         onBlur={handleBlur('reason')}
                         editable={true}
                         style={[styles(isDark).input]}
-                        contentStyle={{height: 100, paddingBottom: 50}}
-                        numberOfLines={4}
+                        contentStyle={{height: 100, paddingBottom: 10}}
+                        numberOfLines={5}
+                        multiline={true}
                       />
                       {touched.reason && errors.reason && (
                         <Text
@@ -1048,7 +1054,8 @@ const SepratedAttendance = ({route}: any) => {
                         style={{
                           width: SCREEN_WIDTH - 90,
                           height: 45,
-                          backgroundColor: actualTime < 0 ? Colors.tertiary : Colors.primary,
+                          backgroundColor:
+                            actualTime < 0 ? Colors.tertiary : Colors.primary,
                           justifyContent: 'center',
                           alignSelf: 'center',
                           borderRadius: 3,

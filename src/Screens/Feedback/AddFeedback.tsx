@@ -20,6 +20,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { SCREEN_WIDTH } from '../../constants/Screen';
 import Placeholder from '../Placeholder/Placeholder';
+import CustomTextInput from '../../Components/CustomTextInput';
 
 const regardingOptions = [
   { label: 'HR', value: 674180000 },
@@ -27,8 +28,8 @@ const regardingOptions = [
   { label: 'Operational', value: 674180002 },
   { label: 'Parking', value: 674180003 },
   { label: 'Canteen', value: 674180004 },
-  { label: 'Soluzione ESS Portal', value: 674180005 },
-  { label: 'Other', value: 674180006 },
+  { label: 'Soluzione ESS Portal', value: 674180006 },
+  { label: 'Other', value: 674180005 },
 ];
 
 const FeedbackSchema = Yup.object().shape({
@@ -196,6 +197,10 @@ const AddFeedback = ({ navigation, route }: any) => {
     }
   };
 
+  function handleBlur(arg0: string) {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <View style={styles(isDark).maincontainer}>
       <CustomHeader
@@ -203,188 +208,200 @@ const AddFeedback = ({ navigation, route }: any) => {
         title="Add Feedback"
         onPress={() => navigation.goBack()}
       />
-      {
-        isLoading || result?.isLoading? (
-          <Placeholder />
-        ) : (
-          <>
-            <View style={styles(isDark).divider} />
-            <Text style={[styles(isDark).label, { marginHorizontal: 16 }]}>
-              Soluzione values your feedback. Please feel free to share your thoughts.
-            </Text>
+      {isLoading || result?.isLoading ? (
+        <Placeholder />
+      ) : (
+        <>
+          <View style={styles(isDark).divider} />
+          <Text style={[styles(isDark).label, {marginHorizontal: 16}]}>
+            Soluzione values your feedback. Please feel free to share your
+            thoughts.
+          </Text>
 
-            <ScrollView contentContainerStyle={{ marginHorizontal: 16 }}>
-              <Formik
-                initialValues={{
-                  regardingTo: { label: 'Select', value: null },
-                  feedBackTitle: '',
-                  feedBackDescription: '',
-                  isAttachmentRequired: false,
-                  upload: { filename: '', filetype: '', bytes: '' },
-                }}
-                validationSchema={FeedbackSchema}
-                onSubmit={handleSubmit}
-                validateOnChange={true}>
-                {({
-                  values,
-                  handleChange,
-                  handleSubmit,
-                  setFieldValue,
-                  setFieldTouched,
-                  errors,
-                  touched,
-                }) => (
-                  <>
-                    <Text style={styles(isDark).label}>Regarding</Text>
-                    <List.Accordion
-                      title={values.regardingTo.label || 'Select a category'}
-                      expanded={expanded}
-                      onPress={() => setExpanded(!expanded)}
-                      titleStyle={{
-                        color: isDark ? Colors.white : Colors.black,
-                        fontFamily: 'Lato-Bold',
-                      }}
-                      style={{
-                        backgroundColor: isDark ? Colors.gray : Colors.background,
-                        borderColor: isDark ? Colors.dark_gray : Colors.medium_gray,
-                        borderWidth: 0.5,
-                        borderRadius: 1,
-                      }}
-                      right={props => (
-                        <List.Icon
-                          {...props}
-                          icon="chevron-down"
-                          color={isDark ? Colors.white : Colors.black}
-                        />
-                      )}>
-                      {regardingOptions.map(option => (
-                        <List.Item
-                          key={option.value}
-                          title={option.label}
-                          titleStyle={{
-                            color: isDark ? Colors.white : Colors.black,
-                            fontFamily: 'Lato-Regular',
-                          }}
-                          style={{
-                            backgroundColor: isDark ? Colors.gray : Colors.background,
-                            // borderWidth: 0.5,
-                            // borderColor: isDark ? Colors.dark_gray : Colors.medium_gray,
-                            borderRadius: 1,
-                          }}
-                          onPress={() => {
-                            setFieldValue('regardingTo', option);
-                            setExpanded(false);
-                          }}
-                        />
-                      ))}
-                    </List.Accordion>
+          <ScrollView contentContainerStyle={{marginHorizontal: 16}}>
+            <Formik
+              initialValues={{
+                regardingTo: {label: 'Select', value: null},
+                feedBackTitle: '',
+                feedBackDescription: '',
+                isAttachmentRequired: false,
+                upload: {filename: '', filetype: '', bytes: ''},
+              }}
+              validationSchema={FeedbackSchema}
+              onSubmit={handleSubmit}
+              validateOnChange={true}>
+              {({
+                values,
+                handleChange,
+                handleSubmit,
+                setFieldValue,
+                setFieldTouched,
+                handleBlur,
+                errors,
+                touched,
+              }) => (
+                <>
+                <View style={{marginVertical: 10}} />
+                  <Text style={styles(isDark).label}>Regarding</Text>
+                  <List.Accordion
+                    title={values.regardingTo.label || 'Select a category'}
+                    expanded={expanded}
+                    onPress={() => setExpanded(!expanded)}
+                    titleStyle={{
+                      color: isDark ? Colors.white : Colors.black,
+                      fontFamily: 'Lato-Bold',
+                    }}
+                    style={{
+                      backgroundColor: isDark ? Colors.gray : Colors.background,
+                      borderColor: isDark
+                        ? Colors.background
+                        : Colors.primary,
+                      borderWidth:1,
+                      borderRadius: 1,
+                    }}
+                    right={props => (
+                      <List.Icon
+                        {...props}
+                        icon="chevron-down"
+                        color={isDark ? Colors.white : Colors.black}
+                      />
+                    )}>
+                    {regardingOptions.map(option => (
+                      <List.Item
+                        key={option.value}
+                        title={option.label}
+                        titleStyle={{
+                          color: isDark ? Colors.white : Colors.black,
+                          fontFamily: 'Lato-Regular',
+                        }}
+                        style={{
+                          backgroundColor: isDark
+                            ? Colors.gray
+                            : Colors.background,
+                          borderRadius: 1,
+                        }}
+                        onPress={() => {
+                          setFieldValue('regardingTo', option);
+                          setExpanded(false);
+                        }}
+                      />
+                    ))}
+                  </List.Accordion>
 
-                    {touched.regardingTo && errors.regardingTo && (
-                      <Text style={styles(isDark).error}>
-                        {typeof errors.regardingTo === 'string'
-                          ? errors.regardingTo
-                          : errors.regardingTo.value}
-                      </Text>
-                    )}
-
-                    <Text style={[styles(isDark).label, { marginTop: 12 }]}>
-                      Title:
+                  {touched.regardingTo && errors.regardingTo && (
+                    <Text style={styles(isDark).error}>
+                      {typeof errors.regardingTo === 'string'
+                        ? errors.regardingTo
+                        : errors.regardingTo.value}
                     </Text>
-                    <TextInput
-                      style={styles(isDark).input}
-                      placeholder="Enter Title"
-                      placeholderTextColor={
-                        isDark ? Colors.dark_gray : Colors.medium_gray
-                      }
-                      value={values.feedBackTitle}
-                      onChangeText={text => {
-                        handleChange('feedBackTitle')(text);
-                        setFieldValue('feedBackTitle', text);
-                        setFieldTouched('feedBackTitle', true, false);
-                      }}
-                    />
-                    {touched.feedBackTitle && errors.feedBackTitle && (
-                      <Text style={styles(isDark).error}>{errors.feedBackTitle}</Text>
-                    )}
+                  )}
 
-                    <Text style={styles(isDark).label}>Description:</Text>
-                    <TextInput
-                      style={[
-                        styles(isDark).input,
-                        { height: 100, textAlignVertical: 'top' },
-                      ]}
-                      placeholder="Enter Description"
-                      placeholderTextColor={
-                        isDark ? Colors.dark_gray : Colors.medium_gray
-                      }
-                      value={values.feedBackDescription}
-                      onChangeText={text => {
-                        handleChange('feedBackDescription')(text);
-                        setFieldValue('feedBackDescription', text);
-                        setFieldTouched('feedBackDescription', true, false);
-                      }}
-                      multiline
-                    />
-                    {touched.feedBackDescription && errors.feedBackDescription && (
+                  <View style={{marginVertical: 12}} />
+                  <CustomTextInput
+                    label="Title"
+                    value={values.feedBackTitle}
+                    secureTextEntry={false}
+                    leftIconName="clipboard-text-outline"
+                    onChangeText={(text: string ) => {
+                      handleChange('feedBackTitle')(text);
+                      setFieldValue('feedBackTitle', text);
+                      setFieldTouched('feedBackTitle', true, false);
+                    }}
+                    onBlur={handleBlur('feedBackTitle')}
+                    editable={true}   
+                  />
+                  {touched.feedBackTitle && errors.feedBackTitle && (
+                    <Text style={styles(isDark).error}>
+                      {errors.feedBackTitle}
+                    </Text>
+                  )}
+
+                  <View style={{marginVertical: 12}} />
+                  <CustomTextInput
+                    label="Description"
+                    value={values.feedBackDescription}
+                    secureTextEntry={false}
+                    leftIconName="message-reply-text-outline"
+                    onChangeText={(text: string ) => {
+                      handleChange('feedBackDescription')(text);
+                      setFieldValue('feedBackDescription', text);
+                      setFieldTouched('feedBackDescription', true, false);
+                    }}
+                    onBlur={handleBlur('feedBackDescription')}
+                    editable={true}
+                    contentStyle={{height: 100}}
+                    numberOfLines={5}
+                    multiline={true}
+                  />
+                  {touched.feedBackDescription &&
+                    errors.feedBackDescription && (
                       <Text style={styles(isDark).error}>
                         {errors.feedBackDescription}
                       </Text>
                     )}
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: -8, }}>
-                      <Checkbox
-                        status={values.isAttachmentRequired ? 'checked' : 'unchecked'}
-                        onPress={() =>
-                          setFieldValue(
-                            'isAttachmentRequired',
-                            !values.isAttachmentRequired,
-                          )
-                        }
-                        color={isDark ? Colors.secondary : Colors.primary}
-                        uncheckedColor={isDark ? Colors.secondary : Colors.primary}
-                      />
-                      <Text style={styles(isDark).label}>Attachments</Text>
-                    </View>
-                    {values.isAttachmentRequired && (
-                      <>
-                        <TouchableOpacity
-                          onPress={() => pickDocument(setFieldValue)}
-                          style={styles(isDark).uploadButton}>
-                          <IconButton
-                            icon="tray-arrow-up"
-                            iconColor={isDark ? Colors.white : Colors.black}
-                            size={30}
-                          />
-                          <Text style={styles(isDark).uploadButtonText}>
-                            {values.upload.filename || 'Add Attachment'}
-                          </Text>
-                        </TouchableOpacity>
-                        {touched.upload && errors.upload?.filename && (
-                          <Text style={styles(isDark).error}>
-                            {errors.upload.filename}
-                          </Text>
-                        )}
-                      </>
-                    )}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginHorizontal: -8,
+                    }}>
+                    <Checkbox
+                      status={
+                        values.isAttachmentRequired ? 'checked' : 'unchecked'
+                      }
+                      onPress={() =>
+                        setFieldValue(
+                          'isAttachmentRequired',
+                          !values.isAttachmentRequired,
+                        )
+                      }
+                      color={isDark ? Colors.secondary : Colors.primary}
+                      uncheckedColor={
+                        isDark ? Colors.secondary : Colors.primary
+                      }
+                    />
+                    <Text style={styles(isDark).label}>Attachments</Text>
+                  </View>
+                  {values.isAttachmentRequired && (
+                    <>
+                      <TouchableOpacity
+                        onPress={() => pickDocument(setFieldValue)}
+                        style={styles(isDark).uploadButton}>
+                        <IconButton
+                          icon="tray-arrow-up"
+                          iconColor={isDark ? Colors.white : Colors.black}
+                          size={30}
+                        />
+                        <Text style={styles(isDark).uploadButtonText}>
+                          {values.upload.filename || 'Add Attachment'}
+                        </Text>
+                      </TouchableOpacity>
+                      {touched.upload && errors.upload?.filename && (
+                        <Text style={styles(isDark).error}>
+                          {errors.upload.filename}
+                        </Text>
+                      )}
+                    </>
+                  )}
 
-                    <TouchableOpacity
-                      style={styles(isDark).submitButton}
-                      onPress={() => handleSubmit()}>
-                      <Text
-                        style={[
-                          styles(isDark).uploadButtonText,
-                          { color: Colors.white, textAlign: 'center' },
-                        ]}>
-                        Submit
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-              </Formik>
-            </ScrollView>
-          </>
-        )
-      }
+                  <TouchableOpacity
+                    style={styles(isDark).submitButton}
+                    onPress={() => handleSubmit()}>
+                    <Text
+                      style={[
+                        styles(isDark).uploadButtonText,
+                        {color: Colors.white, textAlign: 'center'},
+                      ]}>
+                      Submit
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </Formik>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 };
@@ -408,16 +425,7 @@ const styles = (isDark: boolean) =>
       marginBottom: 4,
       color: isDark ? Colors.white : Colors.black,
     },
-    input: {
-      borderWidth: 0.5,
-      borderColor: isDark ? Colors.dark_gray : Colors.medium_gray,
-      borderRadius: 3,
-      padding: 10,
-      marginBottom: 12,
-      backgroundColor: isDark ? Colors.gray : Colors.background,
-      fontFamily: 'Lato-Regular',
-      color: isDark ? Colors.white : Colors.black,
-    },
+
     uploadButton: {
       backgroundColor: isDark ? Colors.gray : Colors.background,
       borderWidth: 1,

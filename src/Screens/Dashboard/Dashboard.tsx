@@ -1,20 +1,37 @@
-import { StyleSheet, Text, View, FlatList, Image, Modal, TouchableOpacity, RefreshControl, } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Image,
+  Modal,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
+import {Calendar} from 'react-native-calendars';
 import moment from 'moment';
 import Fabbutton from './FabButton/Fabbutton';
-import { Colors } from '../../constants/Colors';
-import { useEmployeeAppliedLeavesQuery, useProcessedLeavesQuery, } from '../../Services/services';
-import { useDispatch, useSelector } from 'react-redux';
-import { applied, auth, isDarkTheme, processedLeaves, } from '../../AppStore/Reducers/appState';
-import { Dimensions } from 'react-native';
+import {Colors} from '../../constants/Colors';
+import {
+  useEmployeeAppliedLeavesQuery,
+  useProcessedLeavesQuery,
+} from '../../Services/services';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  applied,
+  auth,
+  isDarkTheme,
+  processedLeaves,
+} from '../../AppStore/Reducers/appState';
+import {Dimensions} from 'react-native';
 import ImageShimmerPlaceHolder from '../Placeholder/ImageShimmerPlaceHolder';
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import React from 'react';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
-const { height, width } = Dimensions.get('window');
+const {height, width} = Dimensions.get('window');
 
-const Dashboard = ({ navigation }: any) => {
+const Dashboard = ({navigation}: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
   const [currentDate, setCurrentDate] = useState('');
@@ -23,9 +40,9 @@ const Dashboard = ({ navigation }: any) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [markedDates, setMarkedDates] = useState({});
   const [onMonth, setOnMonth] = useState(moment().format('MM-YYYY'));
-  const [todaybirthday, setTodaybirthday] = useState(moment().format('DD-MM-YYYY'));
+  const [todaybirthday, setTodaybirthday] = useState(moment().format('DD-MM'));
   const [refreshing, setRefreshing] = React.useState(false);
-  const [confettiActive, setConfettiActive] = useState(true);
+  // const [confettiActive, setConfettiActive] = useState(true);
 
   const processed = useSelector((state: any) => state?.appState?.processed);
   const metadata = useSelector((state: any) => state?.appState?.metadata);
@@ -33,9 +50,13 @@ const Dashboard = ({ navigation }: any) => {
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
-  const { data: AppliedLeave, refetch: refetchapplies, isLoading } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken, });
+  const {
+    data: AppliedLeave,
+    refetch: refetchapplies,
+    isLoading,
+  } = useEmployeeAppliedLeavesQuery({accessToken: accessToken});
 
-  const ProcessedLeaves = useProcessedLeavesQuery({ accessToken: accessToken });
+  const ProcessedLeaves = useProcessedLeavesQuery({accessToken: accessToken});
 
   useEffect(() => {
     const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
@@ -48,28 +69,24 @@ const Dashboard = ({ navigation }: any) => {
     } else {
       console.log('Token is still valid.');
     }
-    // setTimeout(() => {
-    //   setConfettiActive(false);
-    // }, 10000);
 
-    const today = moment().format('MM-DD');
-    const hasBirthdayToday = metadata?.some(
-      (item: any) => moment(item.birthdayDate).format('MM-DD') === today
+   
+    const todayBirthday = moment().format('DD-MM');
+
+    const isBirthday = metadata?.filter(
+      (item: any) =>
+        moment(item.birthdayDate).format('DD-MM') === todayBirthday,
     );
-    const isBirthday = metadata?.filter((item: any) => {
-      moment(item.birthdayDate)?.format('DD-MM-YYYY') === moment()?.format('DD-MM-YYYY') && moment(item.birthdayDate)?.format('DD-MM-YYYY') === todaybirthday
-    })
 
-    const birthdayLength = isBirthday.length > 0;
-
-    setConfettiActive(birthdayLength);
-    if (birthdayLength) {
-      setTimeout(() => {
-        setConfettiActive(false);
-      }, 6000);
-    }
+    // if (isBirthday) {
+    //   setConfettiActive(true);
+    //   setTimeout(() => {
+    //     setConfettiActive(false);
+    //   }, 6000);
+    // } else {
+    //   setConfettiActive(false);
+    // }
   }, []);
-
 
   useEffect(() => {
     if (
@@ -89,8 +106,7 @@ const Dashboard = ({ navigation }: any) => {
     ) {
       dispatch(processedLeaves(ProcessedLeaves?.data?.data));
     }
-  }, [AppliedLeave, ProcessedLeaves,]);
-
+  }, [AppliedLeave, ProcessedLeaves]);
 
   useEffect(() => {
     let marked: any = {};
@@ -106,30 +122,34 @@ const Dashboard = ({ navigation }: any) => {
     });
 
     processed?.forEach((leave: any) => {
-      const { leaveStartDate, leaveEndDate } = leave;
+      const {leaveStartDate, leaveEndDate} = leave;
       const isApproved = leave?.status?.label === 'Approved';
       if (isApproved) {
-        for (const d = moment(leaveStartDate); d.isSameOrBefore(leaveEndDate); d.add(1, 'days')) {
+        for (
+          const d = moment(leaveStartDate);
+          d.isSameOrBefore(leaveEndDate);
+          d.add(1, 'days')
+        ) {
           const formattedDate = d?.format('YYYY-MM-DD');
 
           marked[formattedDate] = {
             color: 'green', // Leave background color
-            textColor: 'white'
+            textColor: 'white',
           };
-          const start = moment(leaveStartDate)?.format('YYYY-MM-DD')
-          const end = moment(leaveEndDate)?.format('YYYY-MM-DD')
+          const start = moment(leaveStartDate)?.format('YYYY-MM-DD');
+          const end = moment(leaveEndDate)?.format('YYYY-MM-DD');
 
           if (formattedDate === start) {
             marked[formattedDate] = {
               ...marked[formattedDate],
-              startingDay: true
+              startingDay: true,
             };
           }
 
           if (formattedDate === end) {
             marked[formattedDate] = {
               ...marked[formattedDate],
-              endingDay: true
+              endingDay: true,
             };
           }
         }
@@ -141,11 +161,9 @@ const Dashboard = ({ navigation }: any) => {
       textColor: 'white',
       startingDay: true,
       endingDay: true,
-
     };
     setMarkedDates(marked);
   }, [metadata, processed, currentDate]);
-
 
   const handleImagePress = (image: any) => {
     setSelectedImage(image);
@@ -160,78 +178,79 @@ const Dashboard = ({ navigation }: any) => {
     }
   };
 
-  const renderBirthdays = ({ item }: any) => {
+  const renderBirthdays = ({item}: any) => {
     const base64 = `data:image/jpeg;base64`;
     const image = item?.employeeImg;
-    const birthdayImage = image ? `${base64},${image}` : require('../../Assets/Images/EmpBoy.png');
+    const birthdayImage = image
+      ? `${base64},${image}`
+      : require('../../Assets/Images/EmpBoy.png');
     const isBirthday =
-      moment(item?.birthdayDate).format('DD-MM-YYYY') === moment()?.format('DD-MM-YYYY') && moment(item?.birthdayDate)?.format('DD-MM-YYYY') === todaybirthday
+      moment(item?.birthdayDate).format('DD-MM') ===
+        moment()?.format('DD-MM') &&
+      moment(item?.birthdayDate)?.format('DD-MM') === todaybirthday;
 
     return (
       <View style={styles(isDark).BithdayItem}>
-        {isBirthday &&
-          (
+        {isBirthday && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+              elevation: 5,
+              shadowColor: isDark ? Colors.white : Colors.black,
+            }}>
+            <View>
+              {image ? (
+                <TouchableOpacity
+                  onPress={() => handleImagePress(birthdayImage)}
+                  style={{minHeight: 38, minWidth: 38}}>
+                  <Image
+                    source={{uri: birthdayImage}}
+                    style={styles(isDark).Holidaylogo}
+                    accessibilityLabel="Image"
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => handleImagePress(birthdayImage)}
+                  style={{minHeight: 38, minWidth: 38}}>
+                  <Image
+                    source={birthdayImage}
+                    style={styles(isDark).Holidaylogo}
+                    accessibilityLabel="Image"
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-                elevation: 5,
-                shadowColor: isDark ? Colors.white : Colors.black,
+                backgroundColor: isDark ? Colors.gray : Colors.background,
+                padding: 10,
+                height: 70,
+                borderRadius: 10,
+                width: '80%',
+                marginLeft: 15,
+                justifyContent: 'center',
+                elevation: 1,
               }}>
-              <View>
-                {image ? (
-                  <TouchableOpacity
-                    onPress={() => handleImagePress(birthdayImage)}
-                    style={{ minHeight: 38, minWidth: 38 }}>
-                    <Image
-                      source={{ uri: birthdayImage }}
-                      style={styles(isDark).Holidaylogo}
-                      accessibilityLabel="Image"
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => handleImagePress(birthdayImage)}
-                    style={{ minHeight: 38, minWidth: 38 }}>
-                    <Image
-                      source={birthdayImage}
-                      style={styles(isDark).Holidaylogo}
-                      accessibilityLabel="Image"
-                    />
-                  </TouchableOpacity>
-                )}
-              </View>
-              <View
-                style={{
-                  backgroundColor: isDark ? Colors.gray : Colors.background,
-                  padding: 10,
-                  height: 70,
-                  borderRadius: 10,
-                  width: '80%',
-                  marginLeft: 15,
-                  justifyContent: 'center',
-                  elevation: 1,
-                }}>
-                {item?.fullName && (
-                  <Text
-                    style={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Semibold',
-                    }}>
-                    🎉 Happy Birthday,{' '}{item?.fullName}! 🎂
-                  </Text>
-                )}
-
-              </View>
+              {item?.fullName && (
+                <Text
+                  style={{
+                    color: isDark ? Colors.white : Colors.black,
+                    fontFamily: 'Lato-Semibold',
+                  }}>
+                  🎉 Happy Birthday, {item?.fullName}! 🎂
+                </Text>
+              )}
             </View>
-          )
-        }
+          </View>
+        )}
       </View>
     );
   };
 
-  const renderHolidays = ({ item }: any) => {
+  const renderHolidays = ({item}: any) => {
     const base64 = `data:image/jpeg;base64`;
     const image = item?.holidayImage;
     const HolidayImage = `${base64},${image}`;
@@ -247,11 +266,13 @@ const Dashboard = ({ navigation }: any) => {
           }}>
           <View>
             {image ? (
-              <TouchableOpacity onPress={() => handleImagePress(HolidayImage)} style={{ minHeight: 38, minWidth: 38 }}>
+              <TouchableOpacity
+                onPress={() => handleImagePress(HolidayImage)}
+                style={{minHeight: 38, minWidth: 38}}>
                 <Image
-                  source={{ uri: HolidayImage }}
+                  source={{uri: HolidayImage}}
                   style={styles(isDark).Holidaylogo}
-                  accessibilityLabel='Image'
+                  accessibilityLabel="Image"
                 />
               </TouchableOpacity>
             ) : (
@@ -259,11 +280,11 @@ const Dashboard = ({ navigation }: any) => {
                 onPress={() =>
                   handleImagePress(getImageSource(item?.holidayName))
                 }
-                style={{ minHeight: 38, minWidth: 38 }}  >
+                style={{minHeight: 38, minWidth: 38}}>
                 <Image
                   source={getImageSource(item?.holidayName)}
                   style={styles(isDark).Holidaylogo}
-                  accessibilityLabel='Image'
+                  accessibilityLabel="Image"
                 />
               </TouchableOpacity>
             )}
@@ -339,7 +360,7 @@ const Dashboard = ({ navigation }: any) => {
       setRefreshing(false);
       refetchapplies();
     }, 1000);
-  }, [refetchapplies,]);
+  }, [refetchapplies]);
 
   return (
     <View
@@ -353,9 +374,9 @@ const Dashboard = ({ navigation }: any) => {
         onMonthChange={(month: any) => {
           const date = month?.dateString;
           const extractMonth = moment(date).format('MM-YYYY');
-          const birthDate = moment(date).format('DD-MM-YYYY');
+          const birthDate = moment(date).format('DD-MM');
           setOnMonth(() => extractMonth.toString());
-          setTodaybirthday(() => birthDate.toString())
+          setTodaybirthday(() => birthDate.toString());
         }}
         hideExtraDays={true}
         theme={{
@@ -368,7 +389,7 @@ const Dashboard = ({ navigation }: any) => {
           monthTextColor: Colors.dark_gray,
           textDisabledColor: Colors.error,
         }}
-        enableSwipeMonths={false}
+        enableSwipeMonths={true}
         disableAllTouchEventsForDisabledDays={true}
       />
 
@@ -379,21 +400,41 @@ const Dashboard = ({ navigation }: any) => {
           <FlatList
             data={[...metadata, ...appliedLeave]?.filter((item: any) => {
               if (
-                moment(item?.date).format('MM-YYYY') === onMonth &&
-                item?.holidayName || (item?.birthdayDate && moment(item?.birthdayDate).format('MMM, D') === moment().format('MMM, D'))
-                || (moment(item?.leaveStartDate).format('MM-YYYY') === onMonth &&
-                  !item?.holidayName && !item?.birthdayDate)
-              ) { return item; }
+                (moment(item?.date).format('MM-YYYY') === onMonth &&
+                  item?.holidayName) ||
+                (item?.birthdayDate &&
+                  moment(item?.birthdayDate).format('MMM, D') ===
+                    moment().format('MMM, D')) ||
+                (moment(item?.leaveStartDate).format('MM-YYYY') === onMonth &&
+                  !item?.holidayName &&
+                  !item?.birthdayDate)
+              ) {
+                return item;
+              }
             })}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={() => onRefresh()} />
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => onRefresh()}
+              />
             }
-            renderItem={({ item }) => {
-              if (item?.holidayName || (item?.birthdayDate && moment(item?.birthdayDate).format('MMM, D') === moment().format('MMM, D'))
-                || (moment(item?.leaveStartDate).format('MM-YYYY') === onMonth && !item?.holidayName && !item?.birthdayDate)) {
-
-                const holidayComponent = item?.holidayName || item?.leaveStartDate ? renderHolidays({ item }) : null;
-                const birthdayComponent = item?.birthdayDate ? renderBirthdays({ item }) : null;
+            renderItem={({item}) => {
+              if (
+                item?.holidayName ||
+                (item?.birthdayDate &&
+                  moment(item?.birthdayDate).format('MMM, D') ===
+                    moment().format('MMM, D')) ||
+                (moment(item?.leaveStartDate).format('MM-YYYY') === onMonth &&
+                  !item?.holidayName &&
+                  !item?.birthdayDate)
+              ) {
+                const holidayComponent =
+                  item?.holidayName || item?.leaveStartDate
+                    ? renderHolidays({item})
+                    : null;
+                const birthdayComponent = item?.birthdayDate
+                  ? renderBirthdays({item})
+                  : null;
                 return (
                   <>
                     {holidayComponent}
@@ -403,9 +444,8 @@ const Dashboard = ({ navigation }: any) => {
               }
               return null;
             }}
-
             keyExtractor={(item, index) => index.toString()}
-            style={{ margin: 5 }}
+            style={{margin: 5}}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <View
@@ -425,14 +465,13 @@ const Dashboard = ({ navigation }: any) => {
               </View>
             }
           />
-          {confettiActive && (
+          {/* {confettiActive && (
             <ConfettiCannon
               count={200}
-              origin={{ x: -10, y: 0 }}
+              origin={{x: -10, y: 0}}
               explosionSpeed={800}
             />
-          )}
-
+          )} */}
         </>
       )}
 
@@ -448,7 +487,7 @@ const Dashboard = ({ navigation }: any) => {
             // @ts-ignore
             source={
               typeof selectedImage === 'string'
-                ? { uri: selectedImage }
+                ? {uri: selectedImage}
                 : selectedImage
             }
             style={styles(isDark).modalImage}
@@ -456,11 +495,17 @@ const Dashboard = ({ navigation }: any) => {
           <TouchableOpacity
             onPress={() => setModalVisible(false)}
             style={styles(isDark).closeButton}>
-            <Text style={{ color: Colors.white, fontSize: 17, fontFamily: 'Lato-Bold', }}>Close</Text>
+            <Text
+              style={{
+                color: Colors.white,
+                fontSize: 17,
+                fontFamily: 'Lato-Bold',
+              }}>
+              Close
+            </Text>
           </TouchableOpacity>
         </View>
       </Modal>
-
     </View>
   );
 };

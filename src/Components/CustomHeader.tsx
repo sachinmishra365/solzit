@@ -59,10 +59,11 @@ const CustomHeader = ({
       {showSearch && (
         <TextInput
           style={styles(isDark).searchInput}
-          placeholder="Search name/designation"
+          placeholder=" Search "
           placeholderTextColor={isDark ? Colors.medium_gray : Colors.dark_gray}
           value={searchValue}
           onChangeText={onSearchChange}
+          
         />
       )}
     </View>

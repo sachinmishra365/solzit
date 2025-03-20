@@ -74,6 +74,7 @@ const CustomTextInput = ({
         keyboardType={keyboardType}
         contentStyle={contentStyle}
         numberOfLines={numberOfLines}
+        multiline={true}
         left={
           lefticon ? (
             <TextInput.Icon

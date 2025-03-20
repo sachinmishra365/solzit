@@ -21,7 +21,6 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const {data, error, isLoading, refetch} = useGetSoluzioneUpcomingBirthdaysQuery({accessToken: accessToken?.authToken?.accessToken});
-console.log(isLoading);
 
   const handleDirectory = async () => {
     if (!connected) {

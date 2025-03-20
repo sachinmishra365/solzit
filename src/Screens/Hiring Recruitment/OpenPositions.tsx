@@ -83,19 +83,19 @@ const OpenPositions = ({navigation}: any) => {
 
         <View style={styles(isDark).rowContainer}>
             <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Experience Range:{' '}{item.experienceRange}
+              Experience Range{' : '}{item.experienceRange}
             </Text>
           <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Is Work From Home?{' '}{item.isWorkFromHomeAvailable}
+               WFH{' : '}{item.isWorkFromHomeAvailable}
             </Text>
         </View>
 
         <View style={styles(isDark).rowContainer}> 
           <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Number of Positions:{' '}{item.numberOfPosition}
+              Number of Positions{' : '}{item.numberOfPosition}
             </Text>
             <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-             Location:{' '}{item.location || 'N/A'}
+             Location{' : '}{item.location || 'N/A'}
             </Text>
         </View>
       
@@ -110,8 +110,14 @@ const OpenPositions = ({navigation}: any) => {
         title="Open Positions"
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
-
+           <View
+             style={{
+               borderWidth: 1,
+               height: 1,
+               backgroundColor: isDark ? Colors.white : 'transparent',
+               borderColor: isDark ? Colors.black : 'transparent',
+             }}
+           />
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (

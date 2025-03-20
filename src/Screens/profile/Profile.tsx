@@ -11,9 +11,9 @@ import {
 import React, {useEffect, useMemo, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Card, IconButton} from 'react-native-paper';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import {auth, isDarkTheme} from '../../AppStore/Reducers/appState';
 // import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {Colors} from '../../constants/Colors';
 import {useEmployeeUpdateProfileMutation} from '../../Services/appLevel';
@@ -28,7 +28,8 @@ import ImageCropPicker, {
 } from 'react-native-image-crop-picker';
 
 const Profile = ({navigation}: any) => {
-  // const navigation = useNavigation();
+
+  const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const Profiledata = EmployeeId?.userProfile;
@@ -163,6 +164,8 @@ const Profile = ({navigation}: any) => {
     }
   }, [imageAsset]);
 
+ 
+
   return (
     <View style={styles(isDark).maincontainer}>
       <CustomHeader
@@ -187,7 +190,7 @@ const Profile = ({navigation}: any) => {
           <IconButton
             style={{position: 'absolute', top: -10, right: -5}}
             icon="account-edit"
-            iconColor={isDark?Colors.white:Colors.primary}
+            iconColor={isDark ? Colors.white : Colors.primary}
             size={30}
             onPress={openModal}
             accessibilityLabel="Edit Profile"
@@ -297,7 +300,7 @@ const Profile = ({navigation}: any) => {
           style={styles(isDark).smallCard}
           onPress={() => navigation.navigate('MySkills')}>
           <IconButton
-            icon="translate"
+            icon="head-lightbulb"
             iconColor={isDark ? Colors.white : Colors.black}
             size={25}
             style={{marginRight: 10}}
@@ -342,6 +345,27 @@ const Profile = ({navigation}: any) => {
           />
           <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
             Change Password
+          </Text>
+          <IconButton
+            icon="chevron-right"
+            iconColor={isDark ? Colors.white : Colors.black}
+            size={25}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles(isDark).smallCard}
+          onPress={() => {
+            dispatch(auth(undefined));
+
+          }}>
+          <IconButton
+            icon="logout"
+            iconColor={isDark ? Colors.white : Colors.black}
+            size={25}
+            style={{marginRight: 10}}
+          />
+          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
+            Logout
           </Text>
           <IconButton
             icon="chevron-right"

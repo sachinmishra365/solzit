@@ -254,7 +254,7 @@ const DrawerNavigator = ({navigation}: any) => {
             <Text style={styles(isDark).drawerBtnTxt}>Feedback</Text>
           </Pressable>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               dispatch(auth(undefined));
             }}
@@ -265,7 +265,7 @@ const DrawerNavigator = ({navigation}: any) => {
               size={20}
             />
             <Text style={styles(isDark).drawerBtnTxt}>Logout</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
          
         </View>

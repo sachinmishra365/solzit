@@ -1,45 +1,21 @@
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, BackHandler } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
 import { Colors } from '../../constants/Colors';
 import { useGetMyFeedbacksListByEmpIdQuery } from '../../Services/services';
-import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import { Card, FAB, Icon } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import moment from 'moment';
-import { BottomSheet, IBottomSheetRef } from '../BottomSheet/BottomSheet';
-import ViewFeedback from './ViewFeedback';
+
 
 const Feedback = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const [FeedbackData, setFeedbackData] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const bottomSheetRef = useRef<IBottomSheetRef>(null);
-  const [selectedFeedback, setSelectedFeedback] = useState(null);
-
-  const handleOpenBottomSheet = (feedback: any) => {
-    setSelectedFeedback(feedback);
-    setTimeout(() => {
-      bottomSheetRef.current?.expand();
-    }, 50);
-  };
-
-
-  useEffect(() => {
-    if (selectedFeedback && bottomSheetRef.current) {
-      bottomSheetRef.current.expand();
-    }
-  }, [selectedFeedback]);
-
-  useEffect(() => {
-    if (!bottomSheetRef.current) {
-      console.log("BottomSheet ref is not assigned yet.");
-    }
-  }, []);
 
   const { data, isLoading, refetch } = useGetMyFeedbacksListByEmpIdQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
@@ -98,7 +74,7 @@ const Feedback = ({ navigation }: any) => {
           </Text>
       </View>
 
-          <TouchableOpacity style={styles(isDark).viewFeedback} onPress={() => handleOpenBottomSheet(item)}>
+          <TouchableOpacity style={styles(isDark).viewFeedback} onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}>
             <View
               style={{
                 flexDirection: 'row',
@@ -122,7 +98,8 @@ const Feedback = ({ navigation }: any) => {
 
   return (
     <View style={styles(isDark).maincontainer}>
-      <CustomHeader showBackIcon={true} title="Feedback" onPress={() => navigation.goBack()} />
+      <CustomHeader showBackIcon={true} title="Feedback"  onPress={() => navigation.goBack()}
+       />
       <View style={styles(isDark).divider} />
 
       {isLoading ? (
@@ -162,15 +139,6 @@ const Feedback = ({ navigation }: any) => {
         accessibilityLabel="Add Feedback"
         icon="plus"
       />
-
-
-      <BottomSheet ref={bottomSheetRef}>
-        {selectedFeedback ? (
-          <ViewFeedback feedbackData={selectedFeedback} />
-        ) : (
-          <Text style={{ padding: 20, textAlign: 'center' }}>No Feedback Selected</Text>
-        )}
-      </BottomSheet>
 
     </View>
   );
