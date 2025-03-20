@@ -190,7 +190,7 @@ const LeaveBalance = ({navigation}: any) => {
         </View>
         {item?.declinedReason && (
           <>
-            <View>
+            <View style={{marginVertical:10}}>
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,

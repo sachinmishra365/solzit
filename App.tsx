@@ -64,8 +64,6 @@ export const navigationRef = createNavigationContainerRef();
 
 const App = () => {
   const colorScheme = useColorScheme();
-  console.log(colorScheme)
-
   const [isDark, setIsDark] = useState(colorScheme);
   const [isConnected, setIsConnected] = useState(null);
 

@@ -58,8 +58,7 @@ const MyAssets = ({navigation}: any) => {
   }, [refetch]);
 
   const renderItem = ({item}: any) => (
-    console.log(item),
-    
+
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
@@ -156,6 +155,7 @@ const MyAssets = ({navigation}: any) => {
                   onRefresh={() => onRefresh()}
                 />
               }
+              ListFooterComponent={<View style={{height: 100}} />}
             />
           )
         )}

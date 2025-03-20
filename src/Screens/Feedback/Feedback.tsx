@@ -112,6 +112,7 @@ const Feedback = ({ navigation }: any) => {
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            ListFooterComponent={<View style={{height: 100}} />}
           />
 
           : (
@@ -173,8 +174,8 @@ const styles = (isDark: boolean) =>
     },
     fab: {
       position: 'absolute',
-      right: 16,
-      bottom: 16,
+      right: 32,
+      bottom: 32,
       backgroundColor: isDark ? Colors.gray : Colors.primary,
       elevation: 10,
     },

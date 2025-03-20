@@ -1,16 +1,16 @@
-import {View,Text,StyleSheet,FlatList,RefreshControl,Image,TouchableOpacity,Linking} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { View, Text, StyleSheet, FlatList, RefreshControl, Image, TouchableOpacity, Linking } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
-import {useGetSoluzioneUpcomingBirthdaysQuery} from '../../Services/services';
+import { Colors } from '../../constants/Colors';
+import { useGetSoluzioneUpcomingBirthdaysQuery } from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card, Icon} from 'react-native-paper';
+import { Card, Icon } from 'react-native-paper';
 import moment from 'moment';
 
-const SoluzioneDirectory = ({navigation}: any) => {
+const SoluzioneDirectory = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -20,7 +20,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
-  const {data, error, isLoading, refetch} = useGetSoluzioneUpcomingBirthdaysQuery({accessToken: accessToken?.authToken?.accessToken});
+  const { data, error, isLoading, refetch } = useGetSoluzioneUpcomingBirthdaysQuery({ accessToken: accessToken?.authToken?.accessToken });
 
   const handleDirectory = async () => {
     if (!connected) {
@@ -28,7 +28,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
         type: 'error',
         text1: 'Network Error',
         text2: 'Please check your internet connection',
-        text2Style: {flexWrap: 'wrap',fontSize: 20,fontFamily: 'Lato-Regular',},
+        text2Style: { flexWrap: 'wrap', fontSize: 20, fontFamily: 'Lato-Regular', },
         topOffset: 80,
         visibilityTime: 5000,
       });
@@ -70,8 +70,8 @@ const SoluzioneDirectory = ({navigation}: any) => {
       setFilteredData(directoryData);
     }
   };
-  
-  const renderItem = ({item}: any) => {
+
+  const renderItem = ({ item }: any) => {
     return (
       <Card
         style={{
@@ -88,12 +88,12 @@ const SoluzioneDirectory = ({navigation}: any) => {
               <Image
                 source={
                   item.employeeImg
-                    ? {uri: `data:image/png;base64,${item.employeeImg}`}
+                    ? { uri: `data:image/png;base64,${item.employeeImg}` }
                     : require('../../Assets/Images/EmpBoy.png')
                 }
                 style={styles(isDark).image}
               />
-              <View style={[styles(isDark).row,{marginTop:5}]}>
+              <View style={[styles(isDark).row, { marginTop: 5 }]}>
                 <Icon
                   source="cake"
                   size={20}
@@ -105,7 +105,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 </Text>
               </View>
             </View>
-            <View style={{flex: 1, marginRight: 8}}>
+            <View style={{ flex: 1, marginRight: 8 }}>
               <View style={[styles(isDark).row, {}]}>
                 <Icon
                   source="account"
@@ -115,12 +115,12 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 <Text
                   style={[
                     styles(isDark).name,
-                    {fontFamily: 'Lato-Bold', fontSize: 18},
+                    { fontFamily: 'Lato-Bold', fontSize: 18 },
                   ]}>
                   {item.fullName}
                 </Text>
               </View>
-              <View style={[styles(isDark).row, {marginVertical: 5}]}>
+              <View style={[styles(isDark).row, { marginVertical: 5 }]}>
                 <Icon
                   source="briefcase"
                   size={20}
@@ -129,14 +129,14 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 <Text
                   style={[
                     styles(isDark).name,
-                    {fontFamily: 'Lato-Semibold', fontSize: 16},
+                    { fontFamily: 'Lato-Semibold', fontSize: 16 },
                   ]}>
                   {item.designation}
                 </Text>
               </View>
               <TouchableOpacity
                 onPress={() => Linking.openURL(`mailto:${item.email}`)}>
-                <View style={[styles(isDark).row, {marginVertical: 5}]}>
+                <View style={[styles(isDark).row, { marginVertical: 5 }]}>
                   <Icon
                     source="email"
                     size={20}
@@ -145,7 +145,8 @@ const SoluzioneDirectory = ({navigation}: any) => {
                   <Text
                     style={[
                       styles(isDark).email,
-                      { marginTop:-5,
+                      {
+                        marginTop: -5,
                         fontFamily: 'Lato-Semibold',
                         fontSize: 14,
                         textDecorationLine: 'underline',
@@ -160,7 +161,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => Linking.openURL(`tel:${item.mobile}`)}>
-                <View style={[styles(isDark).row, {marginVertical: 5}]}>
+                <View style={[styles(isDark).row, { marginVertical: 5 }]}>
                   <Icon
                     source="phone"
                     size={20}
@@ -171,7 +172,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
               </TouchableOpacity>
             </View>
           </View>
-          
+
         </Card.Content>
       </Card>
     );
@@ -195,7 +196,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
         data &&
         data !== null && (
           <FlatList
-          showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             data={filteredData}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
@@ -205,10 +206,11 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 onRefresh={() => onRefresh()}
               />
             }
+            ListFooterComponent={<View style={{ height: 100 }} />}
           />
         )
       )}
-    
+
     </View>
   );
 };

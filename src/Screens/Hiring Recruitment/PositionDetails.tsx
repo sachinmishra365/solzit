@@ -1,13 +1,13 @@
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
-import {Card,FAB} from 'react-native-paper';
+import { Colors } from '../../constants/Colors';
+import { Card, FAB } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
-const PositionDetail = ({route}: any) => {
+const PositionDetail = ({ route }: any) => {
   const isDark = useSelector(isDarkTheme);
   const navigation: any = useNavigation();
 
@@ -38,14 +38,15 @@ const PositionDetail = ({route}: any) => {
             borderColor: Colors.background,
             borderWidth: 0.5,
             marginHorizontal: 16,
+            marginBottom:100
           }}>
           <Card.Content>
-            <Text style={[styles(isDark).hiringPosition, {fontSize: 18}]}>
+            <Text style={[styles(isDark).hiringPosition, { fontSize: 18 }]}>
               {position.hiringPosition}
             </Text>
 
             <View style={styles(isDark).row}>
-              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
                 Experience Range:{' '}
               </Text>
               <Text style={styles(isDark).value}>
@@ -54,7 +55,7 @@ const PositionDetail = ({route}: any) => {
             </View>
 
             <View style={styles(isDark).row}>
-              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
                 Is Work From Home?{' '}
               </Text>
               <Text style={styles(isDark).value}>
@@ -62,12 +63,12 @@ const PositionDetail = ({route}: any) => {
               </Text>
             </View>
 
-            <Text style={[styles(isDark).hiringPosition, {fontSize: 16}]}>
+            <Text style={[styles(isDark).hiringPosition, { fontSize: 16 }]}>
               Skills Required:
             </Text>
             <Text style={styles(isDark).value}>{position.skillsRequired}</Text>
 
-            <Text style={[styles(isDark).hiringPosition, {fontSize: 16}]}>
+            <Text style={[styles(isDark).hiringPosition, { fontSize: 16 }]}>
               Job Description:
             </Text>
             <Text style={styles(isDark).value}>{position.jobDescription}</Text>
@@ -76,18 +77,18 @@ const PositionDetail = ({route}: any) => {
       </ScrollView>
 
       <FAB
-              style={styles(isDark).fab}
-              color={Colors.white}
-              onPress={() =>
-                navigation.navigate('AddReference', {
-                  reference: position.hiringId,
-                  hiringPosition: position.hiringPosition,
-                })
-              }
-              accessibilityLabel="Add Reference"
-              icon="plus"
-            />
-     
+        style={styles(isDark).fab}
+        color={Colors.white}
+        onPress={() =>
+          navigation.navigate('AddReference', {
+            reference: position.hiringId,
+            hiringPosition: position.hiringPosition,
+          })
+        }
+        accessibilityLabel="Add Reference"
+        icon="plus"
+      />
+
     </View>
   );
 };
@@ -102,7 +103,7 @@ const styles = (isDark: boolean) =>
       fontSize: 18,
       fontFamily: 'Lato-Bold',
       color: Colors.primary,
-    
+
     },
     row: {
       flexDirection: 'row',
@@ -113,12 +114,12 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
-      lineHeight:27
+      lineHeight: 27
     },
     fab: {
       position: 'absolute',
-      right: 16,
-      bottom: 16,
+      right: 32,
+      bottom: 32,
       backgroundColor: isDark ? Colors.gray : Colors.primary,
       elevation: 10,
     },

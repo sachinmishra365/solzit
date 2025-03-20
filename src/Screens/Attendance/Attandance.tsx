@@ -6,17 +6,17 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
-import {useSelector} from 'react-redux';
-import {Colors} from '../../constants/Colors';
-import {useAttendanceListQuery} from '../../Services/services';
-import {Card, IconButton} from 'react-native-paper';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { useSelector } from 'react-redux';
+import { Colors } from '../../constants/Colors';
+import { useAttendanceListQuery } from '../../Services/services';
+import { Card, IconButton } from 'react-native-paper';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import Toast from 'react-native-toast-message';
 
-const Attendance = ({navigation}: any) => {
+const Attendance = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -24,7 +24,7 @@ const Attendance = ({navigation}: any) => {
   const [attendanceMonthData, SetAttendanceMonthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const {data, error, isLoading, refetch} = useAttendanceListQuery({
+  const { data, error, isLoading, refetch } = useAttendanceListQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
   });
 
@@ -54,7 +54,7 @@ const Attendance = ({navigation}: any) => {
       ) {
         SetAttendanceMonthData(result?.data);
       }
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -69,12 +69,12 @@ const Attendance = ({navigation}: any) => {
     }, 1000);
   }, [refetch]);
 
-  const renderAttendance = ({item}: any) => {
+  const renderAttendance = ({ item }: any) => {
     return (
       <Card
         style={{
           backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical:7,
+          marginVertical: 7,
           borderColor: Colors.background,
           borderWidth: 1,
           marginHorizontal: 16,
@@ -150,14 +150,14 @@ const Attendance = ({navigation}: any) => {
                 borderRadius: 3,
                 alignItems: 'center',
                 flexDirection: 'row',
-                minHeight:38
+                minHeight: 38
               }}
               // disabled={result.isLoading}
               onPress={() => {
                 navigation.navigate('Summary', item);
               }}>
               <IconButton
-                style={{margin: -2}}
+                style={{ margin: -2 }}
                 icon="information"
                 iconColor={Colors.white}
                 size={25}
@@ -184,13 +184,13 @@ const Attendance = ({navigation}: any) => {
                 alignItems: 'center',
                 flexDirection: 'row',
                 height: 'auto',
-                minHeight:38
+                minHeight: 38
               }}
               onPress={() => {
                 navigation.navigate('SepratedAttendance', item);
               }}>
               <IconButton
-                style={{margin: -2}}
+                style={{ margin: -2 }}
                 icon="account-box"
                 iconColor={Colors.white}
                 size={25}
@@ -240,6 +240,7 @@ const Attendance = ({navigation}: any) => {
                 onRefresh={() => onRefresh()}
               />
             }
+            ListFooterComponent={<View style={{ height: 100 }} />}
           />
         )
       )}

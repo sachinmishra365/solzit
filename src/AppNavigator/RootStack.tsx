@@ -33,7 +33,6 @@ const RootStack = () => {
   const accessToken = Assesstoken?.authToken?.accessToken;
 
   const { data: upcomingBirthdayData, refetch: refetchBirthday } = useGetSoluzioneUpcomingBirthdaysQuery({ accessToken: accessToken, });
-
   const { data:holidaysData, error, isLoading, refetch } = useSoluzioneHolidaysQuery({ accessToken: accessToken, });
 
 

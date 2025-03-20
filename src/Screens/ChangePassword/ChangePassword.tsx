@@ -114,7 +114,6 @@ const ChangePassword = ({navigation}: any) => {
   useEffect(() => {
     if (isSuccess) {
       console.log('success');
-      
     }
   }, [isSuccess]);
 

@@ -24,9 +24,8 @@ const axiosBaseQuery = (baseUrl: any) => async (payload: any) => {
 export const services = createApi({
   reducerPath: 'parsApi',
   baseQuery: axiosBaseQuery({
-    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
-
-    baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
+    baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
+    // baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
   }),
   tagTypes: ['Hello', 'Hello1', 'attendance','hi','feedback'],
 

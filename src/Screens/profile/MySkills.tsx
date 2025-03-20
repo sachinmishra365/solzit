@@ -1,16 +1,16 @@
-import {View, Text, StyleSheet, FlatList, RefreshControl} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
-import {useEmployeeSkillsQuery} from '../../Services/services';
-import {Card,} from 'react-native-paper';
+import { Colors } from '../../constants/Colors';
+import { useEmployeeSkillsQuery } from '../../Services/services';
+import { Card, } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import { Bar as ProgressBar } from 'react-native-progress';
 
-const MySkills = ({navigation}: any) => {
+const MySkills = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -18,12 +18,11 @@ const MySkills = ({navigation}: any) => {
   const [skillData, setSkillData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const {data, isLoading, error, refetch} = useEmployeeSkillsQuery({
+  const { data, isLoading, error, refetch } = useEmployeeSkillsQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
   });
 
-  console.log(JSON.stringify(data));
-  
+
   const handleSkills = async () => {
     if (!connected) {
       Toast.show({
@@ -44,7 +43,7 @@ const MySkills = ({navigation}: any) => {
       if (data?.data?.skills && data?.messageDetail?.message_code === 200) {
         setSkillData(data.data.skills);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -59,23 +58,23 @@ const MySkills = ({navigation}: any) => {
     }, 1000);
   }, [refetch]);
 
-  const renderItem = ({item}: any) => {
+  const renderItem = ({ item }: any) => {
     const skillText =
       item.levelofskill === 'Beginner'
         ? 0.33
         : item.levelofskill === 'Intermediate'
-        ? 0.66
-        : item.levelofskill === 'Expert'
-        ? 1
-        : 0;
+          ? 0.66
+          : item.levelofskill === 'Expert'
+            ? 1
+            : 0;
     const skillTextColor =
       item.levelofskill === 'Beginner'
         ? Colors.secondary
         : item.levelofskill === 'Intermediate'
-        ? '#916918'
-        : item.levelofskill === 'Expert'
-        ? 'green'
-        : Colors.gray;
+          ? '#916918'
+          : item.levelofskill === 'Expert'
+            ? 'green'
+            : Colors.gray;
 
     return (
       <Card
@@ -85,7 +84,6 @@ const MySkills = ({navigation}: any) => {
           borderColor: Colors.background,
           borderWidth: 0.5,
           marginHorizontal: 16,
-         
         }}>
         <Card.Content>
           <View>
@@ -95,7 +93,7 @@ const MySkills = ({navigation}: any) => {
               <Text
                 style={[
                   styles(isDark).skillDetail,
-                  {color: skillTextColor, fontFamily: 'Lato-Bold'},
+                  { color: skillTextColor, fontFamily: 'Lato-Bold' },
                 ]}>
                 {' '}
                 {item.levelofskill}
@@ -108,12 +106,12 @@ const MySkills = ({navigation}: any) => {
               borderColor={
                 isDark ? Colors.gray : Colors.white
               }
-              style={{ marginTop: 10, backgroundColor:isDark?Colors.gray: Colors.white }}
+              style={{ marginTop: 10, backgroundColor: isDark ? Colors.gray : Colors.white }}
               // style={styles(isDark).progressBar}
               width={null}
             />
 
-            <View style={[styles(isDark).rowContainer, {alignItems: 'center'}]}>
+            <View style={[styles(isDark).rowContainer, { alignItems: 'center' }]}>
               <Text style={styles(isDark).skillDetail}>Certification :</Text>
               <Text style={styles(isDark).skillDetail}>
                 {' '}
@@ -123,10 +121,10 @@ const MySkills = ({navigation}: any) => {
 
             {item.hasCertification?.label === 'Yes' && (
               <View style={styles(isDark).rowContainer}>
-                <Text style={{fontFamily: 'Lato-Bold', fontSize: 16,}}>
+                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16,color:isDark?Colors.white:Colors.black }}>
                   {item.typeOfCertification?.label} :{' '}
                 </Text>
-                <Text style={{fontFamily: 'Lato-Bold', fontSize: 16,}}>
+                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16,color:isDark?Colors.white:Colors.black }}>
                   {item.certificationName}
                 </Text>
               </View>
@@ -148,25 +146,39 @@ const MySkills = ({navigation}: any) => {
       <View style={styles(isDark).divider} />
       {isLoading ? (
         <ShimmerPlaceHolder />
+      ) : data?.data === null ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text
+            style={{
+              color: isDark ? Colors.white : Colors.black,
+              alignSelf: 'center',
+              fontFamily: 'Lato-Bold',
+            }}>
+            No Records
+          </Text>
+        </View>
       ) : (
-        data &&
-        data !== null && (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={skillData}
-            renderItem={item => renderItem(item)}
-            keyExtractor={(item, index) => index.toString()}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => onRefresh()}
-              />
-            }
-          />
-        )
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={skillData}
+          renderItem={item => renderItem(item)}
+          keyExtractor={(item, index) => index.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
+          }
+          ListFooterComponent={<View style={{height: 100}} />}
+        />
       )}
 
-      
+
     </View>
   );
 };
@@ -201,7 +213,7 @@ const styles = (isDark: boolean) =>
     rowContainer: {
       flexDirection: 'row',
       marginTop: 5,
-      flexWrap:'wrap'
+      flexWrap: 'wrap'
     },
   });
 

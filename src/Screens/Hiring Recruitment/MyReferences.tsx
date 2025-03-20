@@ -1,15 +1,15 @@
-import {View, Text, StyleSheet, RefreshControl, FlatList, TouchableOpacity, Linking} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { View, Text, StyleSheet, RefreshControl, FlatList, TouchableOpacity, Linking } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
+import { Colors } from '../../constants/Colors';
 import Toast from 'react-native-toast-message';
-import {useGetCandidateApplicationByEmployeeIdQuery} from '../../Services/services';
+import { useGetCandidateApplicationByEmployeeIdQuery } from '../../Services/services';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card, Icon} from 'react-native-paper';
+import { Card, Icon } from 'react-native-paper';
 
-const MyReferences = ({navigation}: any) => {
+const MyReferences = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -17,7 +17,7 @@ const MyReferences = ({navigation}: any) => {
   const [ReferenceData, setReferenceDataData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const {data, error, isLoading, refetch} =
+  const { data, error, isLoading, refetch } =
     useGetCandidateApplicationByEmployeeIdQuery({
       accessToken: EmployeeId?.authToken?.accessToken,
     });
@@ -48,7 +48,7 @@ const MyReferences = ({navigation}: any) => {
       ) {
         setReferenceDataData(result?.data);
       }
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const MyReferences = ({navigation}: any) => {
     }, 1000);
   };
 
-  const renderItem = ({item}: any) => (
+  const renderItem = ({ item }: any) => (
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
@@ -73,13 +73,17 @@ const MyReferences = ({navigation}: any) => {
         marginHorizontal: 16,
       }}>
       <Card.Content>
-      <View >
-      <Text style={[styles(isDark).infoText, {fontFamily: 'Lato-Bold',fontSize:18}]}>
+       {
+        item?.position?.name && (
+          <View >
+          <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Bold', fontSize: 18 }]}>
             {item.position?.name || 'N/A'}
           </Text>
         </View>
+        )
+       }
 
-      <View style={[styles(isDark).status,{marginVertical:3}]}>
+        <View style={[styles(isDark).status, { marginVertical: 3 }]}>
           <Text
             style={{
               fontSize: 16,
@@ -88,7 +92,7 @@ const MyReferences = ({navigation}: any) => {
             }}>
             Status{' '}:
           </Text>
-          <Text style={{color: Colors.primary, fontFamily: 'Lato-Semibold',}}>
+          <Text style={{ color: Colors.primary, fontFamily: 'Lato-Semibold', }}>
             {' '}
             {item.applicationStatus?.label}
           </Text>
@@ -100,7 +104,7 @@ const MyReferences = ({navigation}: any) => {
             size={20}
             color={isDark ? Colors.white : Colors.primary}
           />
-          <Text style={[styles(isDark).infoText, {fontFamily: 'Lato-Bold',marginLeft: 10,}]}>
+          <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Bold', marginLeft: 10, }]}>
             {item.firstName} {item.lastName}
           </Text>
         </View>
@@ -115,8 +119,9 @@ const MyReferences = ({navigation}: any) => {
             <Text
               style={[
                 styles(isDark).infoText,
-                {color: Colors.primary, textDecorationLine: 'underline',marginLeft: 10,
-                  marginTop:-5
+                {
+                  color: Colors.primary, textDecorationLine: 'underline', marginLeft: 10,
+                  marginTop: -5
                 },
               ]}>
               {item.email}
@@ -131,7 +136,7 @@ const MyReferences = ({navigation}: any) => {
               size={20}
               color={isDark ? Colors.white : Colors.primary}
             />
-            <Text style={[styles(isDark).infoText, {color: Colors.primary,marginLeft: 10,}]}>
+            <Text style={[styles(isDark).infoText, { color: Colors.primary, marginLeft: 10, }]}>
               {item.mobileNumber}
             </Text>
           </View>
@@ -150,22 +155,36 @@ const MyReferences = ({navigation}: any) => {
 
       {isLoading ? (
         <ShimmerPlaceHolder />
+      ) : data?.data === null ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text
+            style={{
+              color: isDark ? Colors.white : Colors.black,
+              alignSelf: 'center',
+              fontFamily: 'Lato-Bold',
+            }}>
+            No Records
+          </Text>
+        </View>
       ) : (
-        data &&
-        data !== null && (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={ReferenceData}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => onRefresh()}
-              />
-            }
-          />
-        )
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={ReferenceData}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
+          }
+          ListFooterComponent={<View style={{height: 100}} />}
+        />
       )}
     </View>
   );

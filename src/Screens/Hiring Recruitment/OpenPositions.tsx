@@ -1,16 +1,16 @@
-import {View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
-import {useGetListOfOpenPositionQuery} from '../../Services/services';
+import { Colors } from '../../constants/Colors';
+import { useGetListOfOpenPositionQuery } from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card, Icon, IconButton} from 'react-native-paper';
+import { Card, Icon, IconButton } from 'react-native-paper';
 
 
-const OpenPositions = ({navigation}: any) => {
+const OpenPositions = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -18,7 +18,7 @@ const OpenPositions = ({navigation}: any) => {
   const [OpenPositionData, setOpenPositionData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const {data, error, isLoading, refetch} = useGetListOfOpenPositionQuery({
+  const { data, error, isLoading, refetch } = useGetListOfOpenPositionQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
   });
 
@@ -48,7 +48,7 @@ const OpenPositions = ({navigation}: any) => {
       ) {
         setOpenPositionData(result?.data);
       }
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const OpenPositions = ({navigation}: any) => {
     }, 1000);
   };
 
-  const renderItem = ({item}: any) => (
+  const renderItem = ({ item }: any) => (
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
@@ -74,31 +74,31 @@ const OpenPositions = ({navigation}: any) => {
       }}
       onPress={() => navigation.navigate('PositionDetail', { position: item })}>
       <Card.Content>
-        <View style={[styles(isDark).titleContainer, {marginBottom: 8,flexWrap:'wrap'}]}>
+        <View style={[styles(isDark).titleContainer, { marginBottom: 8, flexWrap: 'wrap' }]}>
           <Text style={styles(isDark).title}>{item.hiringPosition}</Text>
-            <Text style={styles(isDark, item.urgency).urgencyText}>
-              {item.urgency}
-            </Text>
+          <Text style={styles(isDark, item.urgency).urgencyText}>
+            {item.urgency}
+          </Text>
         </View>
 
         <View style={styles(isDark).rowContainer}>
-            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Experience Range{' : '}{item.experienceRange}
-            </Text>
-          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-               WFH{' : '}{item.isWorkFromHomeAvailable}
-            </Text>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+            Experience Range{' : '}{item.experienceRange}
+          </Text>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+            WFH{' : '}{item.isWorkFromHomeAvailable}
+          </Text>
         </View>
 
-        <View style={styles(isDark).rowContainer}> 
-          <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Number of Positions{' : '}{item.numberOfPosition}
-            </Text>
-            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-             Location{' : '}{item.location || 'N/A'}
-            </Text>
+        <View style={styles(isDark).rowContainer}>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+            Number of Positions{' : '}{item.numberOfPosition}
+          </Text>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+            Location{' : '}{item.location || 'N/A'}
+          </Text>
         </View>
-      
+
       </Card.Content>
     </Card>
   );
@@ -110,21 +110,21 @@ const OpenPositions = ({navigation}: any) => {
         title="Open Positions"
         onPress={() => navigation.goBack()}
       />
-           <View
-             style={{
-               borderWidth: 1,
-               height: 1,
-               backgroundColor: isDark ? Colors.white : 'transparent',
-               borderColor: isDark ? Colors.black : 'transparent',
-             }}
-           />
+      <View
+        style={{
+          borderWidth: 1,
+          height: 1,
+          backgroundColor: isDark ? Colors.white : 'transparent',
+          borderColor: isDark ? Colors.black : 'transparent',
+        }}
+      />
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
         data &&
         data !== null && (
           <FlatList
-          showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             data={OpenPositionData}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
@@ -134,6 +134,7 @@ const OpenPositions = ({navigation}: any) => {
                 onRefresh={() => onRefresh()}
               />
             }
+            ListFooterComponent={<View style={{ height: 100 }} />}
           />
         )
       )}
@@ -170,7 +171,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       color: isDark ? Colors.white : Colors.black,
       alignSelf: 'center',
     },
-   
+
     urgencyText: {
       fontSize: 16,
       fontFamily: 'Lato-Bold',
@@ -178,8 +179,8 @@ const styles = (isDark: boolean, urgency?: string) =>
         urgency === 'Urgent'
           ? Colors.accent
           : urgency === 'High'
-          ? '#916918'
-          : 'green',
+            ? '#916918'
+            : 'green',
     },
 
     titleContainer: {
@@ -187,7 +188,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       justifyContent: 'space-between',
       alignItems: 'center',
     },
-   
+
   });
 
 export default OpenPositions;

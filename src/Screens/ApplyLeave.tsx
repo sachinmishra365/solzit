@@ -52,7 +52,6 @@ const ApplyLeave = () => {
   const [ApplyLeave, {isLoading, error}] = useEmployeeLeaveApplyMutation();
   const [elAvailable, setElAvailable] = useState<number | null>(null);
 
-
   const onChangeStart = (event: any, selectedDate: Date) => {
     const currentDate = selectedDate || startDate;
     setShowStart(false);
@@ -191,9 +190,10 @@ const ApplyLeave = () => {
   const { data, refetch } = useGetBalanceLeaveDashboardQuery({
      accessToken: EmployeeId.authToken?.accessToken,
    });
+   
   useEffect(() => {
     if (data?.data) {
-      setElAvailable(data?.data?.earnedLeave);
+      setElAvailable(data?.data?.earnleaveremaining);
     }
   }, [data]);
   
@@ -254,7 +254,7 @@ const ApplyLeave = () => {
                     marginBottom: 10,
                   }}>
                   Current EL Balance:{' '}
-                  {elAvailable !== null ? elAvailable : 'Loading...'}
+                  {elAvailable !== null ? elAvailable : ''}
                   {elAvailable === 0 && (
                     <Text
                       style={{

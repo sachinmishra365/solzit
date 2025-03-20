@@ -278,22 +278,6 @@ const LeaveRequest = ({navigation}: any) => {
           renderItem={item => renderItem(item)}
           keyExtractor={(item, index) => index.toString()}
           ListFooterComponent={<View style={{height: 100}} />}
-          ListEmptyComponent={
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  alignSelf: 'center',
-                }}>
-                No Records
-              </Text>
-            </View>
-          }
           showsVerticalScrollIndicator={false}
         />
       )}

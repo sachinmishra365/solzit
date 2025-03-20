@@ -4,7 +4,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -106,7 +105,6 @@ const AddFeedback = ({ navigation, route }: any) => {
           reportedById: auth.userProfile.userId,
         },
       }).unwrap();
-      console.log('response', response);
 
       if (
         response?.isSuccessful &&
@@ -139,7 +137,6 @@ const AddFeedback = ({ navigation, route }: any) => {
   };
 
   const handleUploadDocument = async (feedbackId: string, file: any) => {
-    console.log(feedbackId);
 
     const data = {
       "itemDetails": [
@@ -157,7 +154,6 @@ const AddFeedback = ({ navigation, route }: any) => {
         accessToken: EmployeeId?.authToken?.accessToken,
         data
       }).unwrap();
-      console.log('u', response);
 
       if (response?.isSuccessful) {
         Toast.show({
@@ -252,12 +248,13 @@ const AddFeedback = ({ navigation, route }: any) => {
                       fontFamily: 'Lato-Bold',
                     }}
                     style={{
-                      backgroundColor: isDark ? Colors.gray : Colors.background,
+                      backgroundColor: isDark ? Colors.black : Colors.background,
                       borderColor: isDark
                         ? Colors.background
                         : Colors.primary,
                       borderWidth:1,
                       borderRadius: 1,
+                      height:57
                     }}
                     right={props => (
                       <List.Icon

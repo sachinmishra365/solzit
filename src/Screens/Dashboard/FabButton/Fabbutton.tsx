@@ -11,7 +11,6 @@ const Fabbutton = () => {
   const isDark = useSelector(isDarkTheme);
 
   const [state, setState] = React.useState({open: false});
-
   const onStateChange = ({open}: any) => setState({open});
 
   const {open} = state;
@@ -22,7 +21,7 @@ const Fabbutton = () => {
       visible
       icon={open ? 'close' : 'plus'}
       color={isDark ? Colors.white : Colors.white}
-      style={{elevation: 5}}
+      style={{elevation: 5,margin:16}}
       accessibilityLabel="Fab Button Screen"
       actions={[
         {
@@ -78,11 +77,7 @@ const Fabbutton = () => {
         backgroundColor: isDark ? Colors.gray : Colors.primary,
         elevation: 10,
       }}
-      // onPress={() => {
-      //   if (open) {
-      //     console.log('FAB Button is close');  
-      //   }
-      // }}
+      
     />
   );
 };
