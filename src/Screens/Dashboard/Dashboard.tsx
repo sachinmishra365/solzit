@@ -70,7 +70,6 @@ const Dashboard = ({navigation}: any) => {
       console.log('Token is still valid.');
     }
 
-   
     const todayBirthday = moment().format('DD-MM');
 
     const isBirthday = metadata?.filter(
