@@ -2,6 +2,7 @@ import {StyleSheet, View, FlatList, Dimensions} from 'react-native';
 import {Text} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
+import React from 'react';
 
 const ImageShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 

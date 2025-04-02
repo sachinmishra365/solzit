@@ -192,6 +192,22 @@ const DrawerNavigator = ({navigation}: any) => {
 
           <Pressable
             onPressIn={() => {
+              navigation.navigate('Worklog');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={[styles(isDark).drawerBtn, ]}>
+            <Icon
+              source="account"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>WorkLog</Text>
+          </Pressable>
+
+          <Pressable
+            onPressIn={() => {
               navigation.navigate('Attandance');
             }}
             onPress={() => {
@@ -310,12 +326,6 @@ const DrawerNavigator = ({navigation}: any) => {
               {/* </Pressable> */}
               <Text style={styles(isDark).headerTxt}>Soluzione</Text>
             </View>
-            {/* <View style={{position: 'absolute', right: 10}}>
-              <Image
-                source={require('../Assets/Images/Logo/solzitLogo.png')}
-                style={{width: 30, height: 30, borderRadius: 10}}
-              />
-            </View> */}
           </View>
         </Animated.View>
         <Dashboard />

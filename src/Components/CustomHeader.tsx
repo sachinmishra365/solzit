@@ -23,6 +23,8 @@ const CustomHeader = ({
   onSearchChange,
   searchValue,
   showSearch = false,
+  showFilterIcon=false,
+  filterOnPress
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -54,6 +56,16 @@ const CustomHeader = ({
           onPress={searchOnPress}
           style={styles(isDark).searchIcon}
           accessibilityLabel="Search"
+        />
+      )}
+      {showFilterIcon && (
+        <IconButton
+          icon="filter"
+          iconColor={isDark ? Colors.white : Colors.primary}
+          size={25}
+          onPress={filterOnPress}
+          style={styles(isDark).searchIcon}
+          accessibilityLabel="filter"
         />
       )}
       {showSearch && (

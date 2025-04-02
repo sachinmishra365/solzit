@@ -1,10 +1,11 @@
-import {combineReducers, configureStore} from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {persistReducer, persistStore} from 'redux-persist';
-import {setupListeners} from '@reduxjs/toolkit/query';
-import {services} from '../../Services/services';
+import { persistReducer, persistStore } from 'redux-persist';
+import { setupListeners } from '@reduxjs/toolkit/query';
+import { services } from '../../Services/services';
 import appStateSlice from '../Reducers/appState';
-import {appLevelApi} from '../../Services/appLevel';
+import { appLevelApi } from '../../Services/appLevel';
+import { workloglevelApi } from '../../Services/workloglevel';
 
 const persistConfig = {
   key: 'root',
@@ -14,6 +15,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   [appLevelApi.reducerPath]: appLevelApi.reducer,
   [services.reducerPath]: services.reducer,
+  [workloglevelApi.reducerPath]: workloglevelApi.reducer,
   appState: appStateSlice,
 });
 
@@ -26,7 +28,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
       immutableCheck: false,
-    }).concat(services.middleware, appLevelApi.middleware),
+    }).concat(services.middleware, appLevelApi.middleware, workloglevelApi.middleware),
 });
 
 export const persistor = persistStore(store);

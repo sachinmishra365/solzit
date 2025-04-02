@@ -193,9 +193,7 @@ const AddFeedback = ({ navigation, route }: any) => {
     }
   };
 
-  function handleBlur(arg0: string) {
-    throw new Error('Function not implemented.');
-  }
+
 
   return (
     <View style={styles(isDark).maincontainer}>

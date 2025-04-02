@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
-} from 'react-native';
+import {StyleSheet,Text,View,FlatList,TouchableOpacity,RefreshControl,} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import { isDarkTheme } from '../../AppStore/Reducers/appState';

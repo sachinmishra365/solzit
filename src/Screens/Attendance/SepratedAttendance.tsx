@@ -92,13 +92,6 @@ const SepratedAttendance = ({ route }: any) => {
     endTime: Yup.string()
       .required('End time is required.')
       .test('End time can not be 00:00', value => value !== '00:00'),
-    // actualHours: Yup.number()
-    //   .required('Actual hours are required')
-    //   .positive('Must be a positive number')
-    //   .integer('Must be an integer')
-    //   .min(1, 'Must be at least 1')
-    //   .max(24, 'Must be less than 24'),
-
     reason: Yup.string().required('Reason is required.'),
   });
 

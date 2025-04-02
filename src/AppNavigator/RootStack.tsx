@@ -10,20 +10,22 @@ import ChangePassword from '../Screens/ChangePassword/ChangePassword';
 import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
 import Summary from '../Screens/Attendance/Summary';
 import { PermissionHandler } from '../permissions';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import MySkills from '../Screens/profile/MySkills';
 import MyAssets from '../Screens/profile/MyAssets';
 import OpenPositions from '../Screens/Hiring Recruitment/OpenPositions';
 import MyReferences from '../Screens/Hiring Recruitment/MyReferences';
 import AddReference from '../Screens/Hiring Recruitment/AddReference';
 import PositionDetail from '../Screens/Hiring Recruitment/PositionDetails';
+import Worklog from '../Screens/Worklogs/Worklog';
 import Feedback from '../Screens/Feedback/Feedback';
 import AddFeedback from '../Screens/Feedback/AddFeedback';
 import SoluzioneDirectory from '../Screens/Soluzione Directory/SoluzioneDirectory';
 import ViewFeedback from '../Screens/Feedback/ViewFeedback';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEmployeeAppliedLeavesQuery, useGetSoluzioneUpcomingBirthdaysQuery, useProcessedLeavesQuery, useSoluzioneHolidaysQuery } from '../Services/services';
+import { useGetSoluzioneUpcomingBirthdaysQuery, useSoluzioneHolidaysQuery } from '../Services/services';
 import { SetMetaData } from '../AppStore/Reducers/appState';
+import FilterWorklogs from '../Screens/Worklogs/FilterWorklogs';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +66,7 @@ useEffect(() => {
       <Stack.Screen name="MyReferences" component={MyReferences} />
       <Stack.Screen name="AddReference" component={AddReference} />
       <Stack.Screen name="PositionDetail" component={PositionDetail} />
+      <Stack.Screen name="Worklog" component={Worklog} />
       <Stack.Screen name="Feedback" component={Feedback} />
       <Stack.Screen name="AddFeedback" component={AddFeedback} />
       <Stack.Screen name="ViewFeedback" component={ViewFeedback} />
@@ -72,6 +75,7 @@ useEffect(() => {
       <Stack.Screen name="SoluzioneDirectory" component={SoluzioneDirectory} />
       <Stack.Screen name="SepratedAttendance" component={SepratedAttendance} />
       <Stack.Screen name="Summary" component={Summary} />
+      {/* <Stack.Screen name="FilterWorklogs" component={FilterWorklogs} /> */}
     </Stack.Navigator>
   );
 };
