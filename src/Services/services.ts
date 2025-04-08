@@ -309,7 +309,18 @@ export const services = createApi({
         };
       },
     }),
-    
+
+    EmployeeAttendanceList: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/EmployeeAttendance/EmployeeAttendanceList`,
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
   }),
 });
 
@@ -337,5 +348,5 @@ export const {
   useAttachFileInSharePointMutation,
   useGetAttachmentFromSharePointQuery,
   useGetSoluzioneUpcomingBirthdaysQuery,
-
+  useEmployeeAttendanceListMutation,
 } = services;

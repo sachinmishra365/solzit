@@ -29,6 +29,14 @@ import FilterWorklogs from '../Screens/Worklogs/FilterWorklogs';
 import AddToDo from '../Screens/Worklogs/AddNewToDo/AddToDo';
 import AddWorklog from '../Screens/Worklogs/AddWorklog';
 import WorklogDetails from '../Screens/Worklogs/WorklogDetails';
+import PlanMyDay from '../Screens/My Work/Plan My Day/PlanMyDay';
+import AddToMyPlan from '../Screens/My Work/Plan My Day/AddToMyPlan';
+import ToDoDetails from '../Screens/My Work/Plan My Day/ToDoDetails';
+import MyPlans from '../Screens/My Work/My Plans/MyPlans';
+import TaskDetails from '../Screens/My Work/My Plans/TaskDetails';
+import ProjectAllocation from '../Screens/My Work/My Projects/ProjectAllocation';
+import LateArrivalTime from '../Screens/LeavesAndBreakes/LateArrivalTime';
+import WorkFromHome from '../Screens/WorkFromHome/WorkFromHome';
 
 const Stack = createNativeStackNavigator();
 
@@ -78,6 +86,14 @@ useEffect(() => {
       <Stack.Screen name="SoluzioneDirectory" component={SoluzioneDirectory} />
       <Stack.Screen name="SepratedAttendance" component={SepratedAttendance} />
       <Stack.Screen name="Summary" component={Summary} />
+      <Stack.Screen name="PlanMyDay" component={PlanMyDay} />
+      <Stack.Screen name="AddToMyPlan" component={AddToMyPlan} />
+      <Stack.Screen name="ToDoDetails" component={ToDoDetails} />
+      <Stack.Screen name="MyPlans" component={MyPlans} />
+      <Stack.Screen name="TaskDetails" component={TaskDetails} />
+      <Stack.Screen name="ProjectAllocation" component={ProjectAllocation} />
+      <Stack.Screen name="LateArrivalTime" component={LateArrivalTime} />
+      <Stack.Screen name="WorkFromHome" component={WorkFromHome} />
       {/* <Stack.Screen name="FilterWorklogs" component={FilterWorklogs} /> */}
       <Stack.Screen name="AddToDo" component={AddToDo} />
       <Stack.Screen name="AddWorklog" component={AddWorklog} />

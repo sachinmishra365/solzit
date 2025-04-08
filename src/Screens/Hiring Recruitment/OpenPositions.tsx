@@ -74,7 +74,7 @@ const OpenPositions = ({ navigation }: any) => {
       }}
       onPress={() => navigation.navigate('PositionDetail', { position: item })}>
       <Card.Content>
-        <View style={[styles(isDark).titleContainer, { marginBottom: 8, flexWrap: 'wrap' }]}>
+        <View style={[styles(isDark).titleContainer, { marginBottom: 8, }]}>
           <Text style={styles(isDark).title}>{item.hiringPosition}</Text>
           <Text style={styles(isDark, item.urgency).urgencyText}>
             {item.urgency}
@@ -164,6 +164,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginBottom: 10,
+      flexWrap: 'wrap',
     },
 
     value: {
@@ -187,6 +188,7 @@ const styles = (isDark: boolean, urgency?: string) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      flexWrap: 'wrap',
     },
 
   });

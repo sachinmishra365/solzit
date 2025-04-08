@@ -142,6 +142,54 @@ export const workloglevelApi = createApi({
         body: data,
       }),
     }),
+
+    GetMonthlyReportPlansList: builder.query({
+      query: ({accessToken}) => {
+        return {
+          url: `/DayReport/GetMonthlyReportPlansList`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+
+    GetDayTaskReportDetails: builder.query({
+      query: ({accessToken, Date}) => {
+        return {
+          url: `/DayReport/GetDayTaskReportDetails?Date=${Date}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+
+    GetToDoDetailsByToDoId: builder.query({
+      query: ({accessToken, ItemId}) => {
+        return {
+          url: `/ToDos/GetToDoDetailsByToDoId?ItemId=${ItemId}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+
+    GetemployeeProjectAllocation: builder.query({
+      query: ({accessToken}) => {
+        return {
+          url: `/EmployeeRecord/GetemployeeProjectAllocation`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -156,5 +204,9 @@ export const {
   useGetGeneralTaskListInMyProjectQuery,
   useGetActiveItemsInMyProjectQuery,
   useSaveWorkLogMutation,
-  useGetWorkLogsByEmpIdOnTodoQuery
+  useGetWorkLogsByEmpIdOnTodoQuery,
+  useGetMonthlyReportPlansListQuery,
+  useGetDayTaskReportDetailsQuery,
+  useGetToDoDetailsByToDoIdQuery,
+  useGetemployeeProjectAllocationQuery,
 } = workloglevelApi;

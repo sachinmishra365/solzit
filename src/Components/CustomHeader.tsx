@@ -16,11 +16,12 @@ const CustomHeader = ({
   onSearchChange,
   searchValue,
   showSearch = false,
-  showFilterIcon = false,
-  filterOnPress,
   showRightIcon = false,
   rightIconPress,
   rightIconName,
+  showFilterIcon=false,
+  filterOnPress,
+  onMenuSelect,
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -71,6 +72,8 @@ const CustomHeader = ({
           placeholderTextColor={isDark ? Colors.medium_gray : Colors.dark_gray}
           value={searchValue}
           onChangeText={onSearchChange}
+          onPress={filterOnPress}
+
         />
       )}
       {

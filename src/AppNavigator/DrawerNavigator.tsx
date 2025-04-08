@@ -141,6 +141,66 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Soluzione Directory</Text>
           </Pressable>
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('Worklog');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={styles(isDark).drawerBtn}>
+            <Icon
+              source="clipboard-list-outline"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>My To-Dos</Text>
+          </Pressable>
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('PlanMyDay');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={styles(isDark).drawerBtn}>
+            <Icon
+              source="calendar-check-outline"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>Plan My Day</Text>
+          </Pressable>
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('MyPlans');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={styles(isDark).drawerBtn}>
+            <Icon
+              source="calendar"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>My Plans</Text>
+          </Pressable>
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('ProjectAllocation');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={styles(isDark).drawerBtn}>
+            <Icon
+              source="folder-open"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>My Projects</Text>
+          </Pressable>
 
           <Pressable
             onPressIn={() => {
@@ -189,23 +249,36 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Processed Leaves</Text>
           </Pressable>
-
           <Pressable
             onPressIn={() => {
-              navigation.navigate('Worklog');
+              navigation.navigate('LateArrivalTime');
             }}
             onPress={() => {
               toggleMenu();
             }}
-            style={[styles(isDark).drawerBtn, ]}>
+            style={styles(isDark).drawerBtn}>
             <Icon
-              source="account"
+              source="clock-outline"
               color={isDark ? Colors.white : Colors.primary}
               size={20}
             />
-            <Text style={styles(isDark).drawerBtnTxt}>WorkLog</Text>
+            <Text style={styles(isDark).drawerBtnTxt}>Late Arrival Time</Text>
           </Pressable>
-
+          <Pressable
+            onPressIn={() => {
+              navigation.navigate('WorkFromHome');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={styles(isDark).drawerBtn}>
+            <Icon
+              source="monitor"
+              color={isDark ? Colors.white : Colors.primary}
+              size={20}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>Work From Home</Text>
+          </Pressable>
           <Pressable
             onPressIn={() => {
               navigation.navigate('Attandance');
@@ -269,21 +342,6 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Feedback</Text>
           </Pressable>
-
-          {/* <TouchableOpacity
-            onPress={() => {
-              dispatch(auth(undefined));
-            }}
-            style={[styles(isDark).drawerBtn]}>
-            <Icon
-              source="logout"
-              color={isDark ? Colors.white : Colors.primary}
-              size={20}
-            />
-            <Text style={styles(isDark).drawerBtnTxt}>Logout</Text>
-          </TouchableOpacity> */}
-
-         
         </View>
       </View>
 
