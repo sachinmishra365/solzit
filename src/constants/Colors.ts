@@ -21,5 +21,20 @@ const FontSize = {
   xLarge: 20,
   xxLarge: 24,
 };
+const Statuses = {
+  not_started: {label: 'Not Started', color: '#000000'},
+  analysing: {label: 'Analyzing', color: '#2196F3'},
+  work_in_progress: {label: 'Work In Progress', color: '#FF9800'},
+  work_complete: {label: 'Work Complete', color: '#4CAF50'},
+  duplicate: {label: 'Duplicate', color: '#9C27B0'},
+  on_hold: {label: 'On Hold', color: '#FFC107'},
+  need_clarification: {label: 'Need Clarification', color: '#E91E63'},
+  clarification_given: {label: 'Clarification Given', color: '#8BC34A'},
+  new: {label: 'New', color: '#00539f'},
+  ready_for_review: {label: 'Ready for Review', color: '#FFEB3B'},
+  review_passed: {label: 'Review Passed', color: '#4CAF50'},
+  review_failed: {label: 'Review Failed', color: '#F44336'},
+  Submitted_for_approval: {label: 'Submitted for approval', color: '#FF9800'},
+};
 
-export {Colors, FontSize};
+export {Colors, FontSize, Statuses};

@@ -17,10 +17,12 @@ const FILTER_OPTIONS = [
     // { filterID: 'project_items', label: "Active Items in My Projects", itemTypeID: 0 }
 ];
 
-const FilterWorklogs = ({ visible, setVisible, onSelect }: {
+const FilterWorklogs = ({ visible, setVisible, onSelect, onPressGeneral, onPressProjectItem }: {
     visible: boolean;
     setVisible: (value: boolean) => void;
-    onSelect: (filterID: number, itemTypeID: number,label:string) => void;
+    onPressGeneral: () => void;
+    onPressProjectItem: () => void;
+    onSelect: (filterID: number, itemTypeID: number, label: string) => void;
 }) => {
     const isDark = useSelector(isDarkTheme);
     const hideDialog = () => setVisible(false);
@@ -31,12 +33,23 @@ const FilterWorklogs = ({ visible, setVisible, onSelect }: {
                 <Dialog.Content>
                     {FILTER_OPTIONS.map((item, index) => (
                         <React.Fragment key={item.id}>
-                            <TouchableOpacity onPress={() => { onSelect(item.filterID, item.itemTypeID,item?.label); hideDialog(); }}>
+                            <TouchableOpacity onPress={() => { onSelect(item.filterID, item.itemTypeID, item?.label); hideDialog(); }}>
                                 <Text style={styles(isDark).txt}>{item.label}</Text>
                             </TouchableOpacity>
                             {index !== FILTER_OPTIONS.length - 1 && <Divider style={styles(isDark).divider} />}
                         </React.Fragment>
                     ))}
+                    <Divider style={styles(isDark).divider} />
+                    <TouchableOpacity onPress={() => {
+                        onPressGeneral()
+                        hideDialog();
+                    }}>
+                        <Text style={styles(isDark).txt}>{'General Tasks'}</Text>
+                    </TouchableOpacity>
+                    <Divider style={styles(isDark).divider} />
+                    <TouchableOpacity onPress={() => {onPressProjectItem(), hideDialog(); }}>
+                        <Text style={styles(isDark).txt}>{'Active Items in My Project'}</Text>
+                    </TouchableOpacity>
                     <Divider style={styles(isDark).divider} />
                     <TouchableOpacity onPress={hideDialog}>
                         <Text style={styles(isDark).txt}>Cancel</Text>

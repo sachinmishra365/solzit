@@ -26,6 +26,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetSoluzioneUpcomingBirthdaysQuery, useSoluzioneHolidaysQuery } from '../Services/services';
 import { SetMetaData } from '../AppStore/Reducers/appState';
 import FilterWorklogs from '../Screens/Worklogs/FilterWorklogs';
+import AddToDo from '../Screens/Worklogs/AddNewToDo/AddToDo';
+import AddWorklog from '../Screens/Worklogs/AddWorklog';
+import WorklogDetails from '../Screens/Worklogs/WorklogDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -76,6 +79,9 @@ useEffect(() => {
       <Stack.Screen name="SepratedAttendance" component={SepratedAttendance} />
       <Stack.Screen name="Summary" component={Summary} />
       {/* <Stack.Screen name="FilterWorklogs" component={FilterWorklogs} /> */}
+      <Stack.Screen name="AddToDo" component={AddToDo} />
+      <Stack.Screen name="AddWorklog" component={AddWorklog} />
+      <Stack.Screen name="WorklogDetails" component={WorklogDetails} />
     </Stack.Navigator>
   );
 };

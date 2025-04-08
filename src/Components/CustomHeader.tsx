@@ -1,18 +1,11 @@
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Dimensions,StyleSheet,Text,TextInput,View} from 'react-native';
 import React from 'react';
-import {IconButton} from 'react-native-paper';
-import {Colors} from '../constants/Colors';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../AppStore/Reducers/appState';
+import { IconButton } from 'react-native-paper';
+import { Colors } from '../constants/Colors';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../AppStore/Reducers/appState';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const CustomHeader = ({
   showBackIcon = false,
@@ -23,8 +16,11 @@ const CustomHeader = ({
   onSearchChange,
   searchValue,
   showSearch = false,
-  showFilterIcon=false,
-  filterOnPress
+  showFilterIcon = false,
+  filterOnPress,
+  showRightIcon = false,
+  rightIconPress,
+  rightIconName,
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -48,7 +44,7 @@ const CustomHeader = ({
         />
       )}
       <Text style={styles(isDark).title}>{title}</Text>
-      {showSearchIcon && (
+      {/* {showSearchIcon && (
         <IconButton
           icon="card-search-outline"
           iconColor={'#fff'}
@@ -57,7 +53,7 @@ const CustomHeader = ({
           style={styles(isDark).searchIcon}
           accessibilityLabel="Search"
         />
-      )}
+      )} */}
       {showFilterIcon && (
         <IconButton
           icon="filter"
@@ -75,9 +71,19 @@ const CustomHeader = ({
           placeholderTextColor={isDark ? Colors.medium_gray : Colors.dark_gray}
           value={searchValue}
           onChangeText={onSearchChange}
-          
         />
       )}
+      {
+        showRightIcon && (
+          <IconButton
+          icon={rightIconName}
+          iconColor={isDark ? Colors.white : Colors.primary}
+          size={25}
+          onPress={rightIconPress}
+          style={styles(isDark).searchIcon}
+        />
+        )
+      }
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Dialog, Divider, Portal } from 'react-native-paper';
 import { Colors } from '../../constants/Colors';
@@ -37,9 +37,9 @@ const WorkTypeDialog = ({
     const hideDialog = () => setVisibleWorkType(false);
     return (
         <Portal>
-            <Dialog visible={visibleWorkType} style={styles(isDark).container} onDismiss={()=>hideDialog()}>
+            <Dialog visible={visibleWorkType} style={styles(isDark).container} onDismiss={()=>hideDialog()} dismissable={false}>
                 <Dialog.Content>
-                    <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Bold' }]}>{parent}</Text>
+                    <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Bold',fontSize:15 }]}>{parent}</Text>
                     <View style={styles(isDark).contant}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={styles(isDark).txt}>{'Planned Start'}</Text>
@@ -88,6 +88,10 @@ const WorkTypeDialog = ({
                             <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{priority}</Text>
                         </View>
                     </View>
+                    <Divider style={styles(isDark).divider} />
+                    <TouchableOpacity onPress={hideDialog}>
+                        <Text style={[styles(isDark).txt,{textAlign:'center',fontFamily:'Lato-Semibold'}]}>Cancel</Text>
+                    </TouchableOpacity>
                 </Dialog.Content>
             </Dialog>
         </Portal>
@@ -112,5 +116,10 @@ const styles = (isDark: any) => StyleSheet.create({
         // margin: 1,
         flexDirection: 'row',
         marginTop: 10
-    }
+    },
+    divider: {
+        backgroundColor: Colors.medium_gray,
+        height: 1,
+        marginVertical: 10
+    },
 });

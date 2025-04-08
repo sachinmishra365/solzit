@@ -29,10 +29,111 @@ export const workloglevelApi = createApi({
   }),
 
   endpoints: builder => ({
-
     GetToDoListBasedOnFilter: builder.mutation({
-      query: ({data,filterId,itemTypeId,accessToken}) => ({
+      query: ({data, filterId, itemTypeId, accessToken}) => ({
         url: `/ToDos/GetToDoListBasedOnFilter?filter=${filterId}&itemType=${itemTypeId}`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+    }),
+    GetEmployeeProjectsList: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/GetEmployeeProjectsList?IsManager=${false}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    GetGeneralTaskListInMyProject: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/GetGeneralTaskListInMyProject`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    GetActiveItemsInMyProject: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/GetActiveItemsInMyProject`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    GetEmployeePriorityList: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/Master/GetOptionSet?DropDownName=UserPriority`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    GetEmployeeWorkStatusList: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/Master/GetOptionSet?DropDownName=Status`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    GetAllUserStoriesByProjectId: builder.query({
+      query: ({data, projectId, accessToken}) => ({
+        url: `/ToDos/GetAllUserStoriesByProjectId?projectId=${projectId}&itemType=task`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    GetEmployeeByProjectId: builder.query({
+      query: ({data, projectId, accessToken}) => ({
+        url: `/ToDos/GetEmployeeByProjectId?ProjectId=${projectId}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    GetWorkLogsByEmpIdOnTodo: builder.query({
+      query: ({toDoId, accessToken}) => ({
+        url: `/ToDos/GetWorkLogsByEmpIdOnTodo?ToDoId=${toDoId}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    CreateNewTodo: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/CreateNewTodo`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+    }),
+    SaveWorkLog: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/SaveWorkLog`,
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -45,5 +146,15 @@ export const workloglevelApi = createApi({
 });
 
 export const {
-   useGetToDoListBasedOnFilterMutation,
+  useGetToDoListBasedOnFilterMutation,
+  useGetEmployeeProjectsListQuery,
+  useGetAllUserStoriesByProjectIdQuery,
+  useGetEmployeePriorityListQuery,
+  useGetEmployeeByProjectIdQuery,
+  useCreateNewTodoMutation,
+  useGetEmployeeWorkStatusListQuery,
+  useGetGeneralTaskListInMyProjectQuery,
+  useGetActiveItemsInMyProjectQuery,
+  useSaveWorkLogMutation,
+  useGetWorkLogsByEmpIdOnTodoQuery
 } = workloglevelApi;

@@ -2,7 +2,7 @@ import { RefreshControl, StyleSheet, View, FlatList, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import WorklogCard from '../../Components/WorklogCard'
 import CustomHeader from '../../Components/CustomHeader'
-import { useGetToDoListBasedOnFilterMutation } from '../../Services/workloglevel'
+import { useGetActiveItemsInMyProjectQuery, useGetGeneralTaskListInMyProjectQuery, useGetToDoListBasedOnFilterMutation } from '../../Services/workloglevel'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
 import { Colors } from '../../constants/Colors'
@@ -10,6 +10,8 @@ import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder'
 import FilterWorklogs from './FilterWorklogs'
 import { isDarkTheme } from '../../AppStore/Reducers/appState'
 import WorkTypeDialog from './WorkTypeDialog'
+import { FAB } from 'react-native-paper'
+import CustomTextInput from '../../Components/CustomTextInput'
 
 const Worklog = ({ navigation }: any) => {
     const isDark = useSelector(isDarkTheme);
@@ -22,13 +24,50 @@ const Worklog = ({ navigation }: any) => {
     const [visibleWorkType, setVisibleWorkType] = React.useState(false);
     const [selectedId, setSelectedId] = useState<any>({ filterID: 3, itemTypeID: 0, label: "Items I'm Working On" });
     const [selectedItem, setSelectedItem] = useState<any>();
-    console.log(selectedId);
+    const [generalTask, SetGeneralTask] = useState<any>([]);
+    const [myProjectItem, SetMyProjectItem] = useState<any>([]);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const { data: GeneralTask, isLoading: isProjectsLoading } = useGetGeneralTaskListInMyProjectQuery({ accessToken: accessToken })
+    const { data: ActiveItemsInMyProject, isLoading: isActiveItemsInMyProject } = useGetActiveItemsInMyProjectQuery({ accessToken: accessToken })
 
     const [GetToDoList, { isLoading }] = useGetToDoListBasedOnFilterMutation();
 
     useEffect(() => {
         handleWorklogs(selectedId?.filterID, selectedId?.itemTypeID, selectedId?.label);
     }, []);
+
+    const filterData = (data: any) => {
+        return data?.filter((item: any) =>
+            item?.project?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item?.serialNo?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item?.workStatus?.label?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item?.itemType?.label?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    };
+
+    const filteredList = [
+        ...filterData(todoList),
+        ...filterData(generalTask),
+        ...filterData(myProjectItem)
+    ];
+
+
+    const handleGeneralTask = () => {
+        if (GeneralTask?.data !== undefined) {
+            SetGeneralTask(GeneralTask?.data)
+            SetTodoList([]);
+            SetMyProjectItem([]);
+        }
+    }
+    const handleMyProjectActiveItem = () => {
+        if (ActiveItemsInMyProject?.data !== undefined) {
+            SetMyProjectItem(ActiveItemsInMyProject?.data)
+            SetTodoList([]);
+            SetGeneralTask([]);
+        }
+    }
 
     const handleWorklogs = async (filterID: number, itemTypeID: number, label: string) => {
         setRefreshing(true);
@@ -52,9 +91,10 @@ const Worklog = ({ navigation }: any) => {
     };
 
     const handleSelect = (filterID: number, itemTypeID: number, label: string) => {
-        console.log("Selected filterID:", filterID, "itemTypeID:", itemTypeID, label);
         setSelectedId({ filterID, itemTypeID, label });
         handleWorklogs(filterID, itemTypeID, label);
+        SetGeneralTask([]);
+        SetMyProjectItem([]);
     };
 
     const renderItem = ({ item }: any) => (
@@ -67,8 +107,13 @@ const Worklog = ({ navigation }: any) => {
             status={item?.workStatus?.label}
             iconName={item?.itemType?.label === 'To-Do' ? "checkbox-outline" : item?.itemType?.label === 'User Story' ? 'book' : 'bug'}
             iconColor={item?.itemType?.label === 'To-Do' ? "green" : item?.itemType?.label === 'User Story' ? Colors.secondary : item?.itemType?.label === 'Bug' ? Colors.error : null}
-            iconPress={() => { setVisibleWorkType(!visibleWorkType), setSelectedItem(item) }}
-            cardPress={'cardPress'}
+            rightIconName="eye"
+            rightIconColor={Colors.primary}
+            iconPress={() => {
+                setVisibleWorkType(!visibleWorkType), setSelectedItem(item)
+            }}
+            rightIconPress={() => navigation.navigate('WorklogDetails', { item })}
+            cardPress={() => {item?.workStatus?.label === 'Work In Progress' && navigation.navigate('AddWorklog', { item }) }}
         />
     );
 
@@ -76,21 +121,31 @@ const Worklog = ({ navigation }: any) => {
         <View style={styles(isDark).container}>
             <CustomHeader
                 showBackIcon={true}
-                title="WorkLogs"
+                title={generalTask.length ? 'General Task' : myProjectItem.length ? 'Active Item in My Project' : selectedId?.label}
                 onPress={() => navigation.goBack()}
                 showFilterIcon={true}
                 filterOnPress={() => setVisible(!visible)}
             />
             <View
                 style={{
-                    borderWidth: 1,
-                    height: 1,
+                    borderWidth: 1, height: 1,
                     backgroundColor: isDark ? Colors.white : 'transparent',
                     borderColor: isDark ? Colors.black : 'transparent',
                 }}
             />
-            <Text style={styles(isDark).Filterlabel}>{selectedId?.label}</Text>
-            <FilterWorklogs visible={visible} setVisible={setVisible} onSelect={handleSelect} />
+            <CustomTextInput
+                label="Search"
+                value={searchQuery}
+                secureTextEntry={false}
+                lefticon={true}
+                leftIconName="magnify"
+                onChangeText={(text: any) => setSearchQuery(text)}
+                onBlur={() => { }}
+                editable={true}
+                numberOfLines={3}
+                multiline={true}
+            />
+            <FilterWorklogs visible={visible} setVisible={setVisible} onSelect={handleSelect} onPressGeneral={handleGeneralTask} onPressProjectItem={handleMyProjectActiveItem} />
             <WorkTypeDialog
                 visibleWorkType={visibleWorkType}
                 setVisibleWorkType={setVisibleWorkType}
@@ -105,22 +160,30 @@ const Worklog = ({ navigation }: any) => {
                 effort={selectedItem?.toDoSubViewsDtos?.implementationEffort}
                 effortSpent={selectedItem?.toDoSubViewsDtos?.effortSpent}
                 priority={selectedItem?.toDoSubViewsDtos?.userPriority?.label}
-                sprint={selectedItem?.toDoSubViewsDtos?.sprint}
+                sprint={selectedItem?.toDoSubViewsDtos?.sprint?.name}
                 parent={selectedItem?.toDoSubViewsDtos?.userStoryTitle}
             />
             {isLoading ? (
                 <ShimmerPlaceHolder />
             ) : (
                 <FlatList
-                    data={todoList}
+                    data={filteredList}
+                    // data={[...(todoList ?? []), ...(generalTask ?? []), ...(myProjectItem ?? [])]}
                     renderItem={renderItem}
-                    keyExtractor={(item: any, index: any) => item?.id.toString() + index}
+                    keyExtractor={(item: any, index: any) => item?.id?.toString() + index}
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />
                     }
                     ListFooterComponent={<View style={{ height: 100 }} />}
                 />
             )}
+            <FAB
+                style={styles(isDark).fab}
+                color={Colors.white}
+                onPress={() => navigation.navigate('AddToDo')}
+                accessibilityLabel="Add To-Do"
+                icon="plus"
+            />
         </View>
     );
 };
@@ -143,5 +206,12 @@ const styles = (isDark: any) => StyleSheet.create({
         backgroundColor: Colors.medium_gray,
         height: 1,
         marginVertical: 10
+    },
+    fab: {
+        position: 'absolute',
+        right: 32,
+        bottom: 32,
+        backgroundColor: isDark ? Colors.gray : Colors.primary,
+        elevation: 10,
     },
 });
