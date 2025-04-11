@@ -149,10 +149,9 @@ const styles = (isDark: boolean) =>
       marginBottom: 10,
       flexWrap: 'wrap',
     },
-    dateText: {fontSize: 16, fontFamily: 'Lato-Bold', color: Colors.primary},
+    dateText: {fontFamily: 'Lato-Bold', color: Colors.primary},
     taskText: {
-      fontSize: 14,
-      fontFamily: 'Lato-Bold',
+      fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
     },
 

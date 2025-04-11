@@ -35,6 +35,8 @@ const Statuses = {
   review_passed: {label: 'Review Passed', color: '#4CAF50'},
   review_failed: {label: 'Review Failed', color: '#F44336'},
   Submitted_for_approval: {label: 'Submitted for approval', color: '#FF9800'},
+  Approved: {label: 'Approved', color: '#4CAF50'},
+  Rejected: {label: 'Rejected', color: '#BD0101'},
 };
 
 export {Colors, FontSize, Statuses};

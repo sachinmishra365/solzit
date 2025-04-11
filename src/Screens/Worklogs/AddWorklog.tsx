@@ -10,25 +10,30 @@ import { Formik } from 'formik'
 import moment from 'moment'
 import * as Yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useSaveWorkLogMutation } from '../../Services/workloglevel'
+import { useGetWorkLogByIdQuery, useSaveWorkLogMutation } from '../../Services/workloglevel'
 import Placeholder from '../Placeholder/Placeholder'
 
 
 const AddWorklog = ({ navigation, route }: any) => {
     const ref = useRef()
-    const worklogData = route?.params?.item;
+    const statusRef = useRef<string>('');
+    // const worklogData = route?.params?.item;
+    const SubmittedworklogData = route?.params?.item;
+
     const isDark = useSelector(isDarkTheme);
+    const worklogData = useSelector((state: any) => state?.appState?.worklogDetails);
+
     const EmployeeId = useSelector((state: any) => state?.appState?.authToken?.userProfile);
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
-    const [status, setStatus] = useState('');
-
     const [showdate, setShowDate] = useState(false);
+
+    const { data: worklogDetails } = useGetWorkLogByIdQuery({ workLogId: SubmittedworklogData?.id, accessToken: accessToken }, { skip: !accessToken || !SubmittedworklogData?.id });
+    console.log(worklogDetails?.data, 'worklogDetails');
 
     const [saveworklog, result] = useSaveWorkLogMutation();
 
     const validationSchema = Yup.object().shape({
-        description: Yup.string().required('Description is required').min(5, 'Description must be at least 20 characters'),
         hour: Yup.number()
             .typeError('Hour must be a number')
             .required('Hour is required')
@@ -36,30 +41,43 @@ const AddWorklog = ({ navigation, route }: any) => {
             .test('is-quarter-increment', 'Hour must be in 0.25 increments', (value) => {
                 return value % 0.25 === 0;
             }),
+            description: Yup.string().required('Description is required').min(20, 'Description must be at least 20 characters'),
     });
 
     const showDatepickerDate = () => { setShowDate(true); };
 
     const handleSaveWorklog = async (values: any) => {
-        const data = {
-            "projectId": worklogData?.project?.id,
-            "todoID": worklogData?.id,
-            "date": values?.date,
-            "hours": Number(values?.hour),
-            "workLogStatus": status === 'submitted' ? 674180001 : 674180000,
-            "description": values?.description,
-            "loggedBy": {
-                "id": EmployeeId?.userId,
-                "name": EmployeeId?.fullName
+        const data = statusRef.current === 'submitted' ? {
+            projectId: worklogData?.project?.id,
+            todoID: worklogData?.id,
+            date: moment(values?.date).format('YYYY-MM-DD'),
+            hours: Number(values?.hour),
+            worklogStatus: 674180001,
+            description: values?.description,
+            loggedBy: {
+                id: EmployeeId?.userId,
+                name: EmployeeId?.fullName
             },
-            "workLogCategory": 0
+            // "workLogCategory": 0
+        } : {
+            projectId: worklogData?.project?.id,
+            todoID: worklogData?.id,
+            id: statusRef.current === 'submitted' ? '' : SubmittedworklogData?.id,
+            date: moment(values?.date).format('YYYY-MM-DD'),
+            hours: Number(values?.hour),
+            worklogStatus: 674180000,
+            description: values?.description,
+            loggedBy: {
+                id: EmployeeId?.userId,
+                name: EmployeeId?.fullName
+            },
+            // "workLogCategory": 0
         }
 
         try {
             const response = await saveworklog({ data, accessToken }).unwrap();
             if (response?.messageDetail?.message_code === 201) {
                 Alert.alert('Success', 'Work log saved successfully!')
-                setStatus('');
             }
         } catch (err) {
             console.log(err);
@@ -75,7 +93,7 @@ const AddWorklog = ({ navigation, route }: any) => {
                 onPress={() => navigation.goBack()}
                 showRightIcon={true}
                 rightIconName={'eye'}
-                rightIconPress={()=>navigation.navigate('WorklogDetails', { item: worklogData })}
+                rightIconPress={() => navigation.navigate('WorklogDetails', { item: worklogData })}
             />
             <View
                 style={{
@@ -95,17 +113,25 @@ const AddWorklog = ({ navigation, route }: any) => {
                             initialValues={{
                                 task: '',
                                 projectName: '',
-                                date: moment().format('YYYY-MM-DD'),
-                                hour: '',
-                                description: '',
+                                date: SubmittedworklogData?.date
+                                    ? moment(SubmittedworklogData.date, 'DD-MM-YYYY').toDate()
+                                    : new Date(),
+                                hour: SubmittedworklogData?.hours?.toString() || '',
+                                description: SubmittedworklogData?.description || '',
                                 workStatus: ''
                             }}
                             validationSchema={validationSchema}
                             onSubmit={(values: any) => handleSaveWorklog(values)}
                         >
-                            {({ handleSubmit, handleChange, handleBlur, setFieldValue, values, errors, touched }) => {
+                            {({ handleSubmit, handleChange, handleBlur, setFieldValue, values, errors, touched, submitCount }) => {
+
                                 return (
                                     <>
+                                        {submitCount > 0 && Object.keys(errors).length > 0 && (
+                                            <View style={styles(isDark).formErrorBox}>
+                                                <Text style={styles(isDark).formErrorText}>{errors[Object.keys(errors)[0]]}</Text>
+                                            </View>
+                                        )}
                                         <CustomTextInput
                                             label="ProjectName"
                                             value={worklogData?.project?.name}
@@ -116,7 +142,7 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             editable={true}
                                             style={[styles(isDark).input]}
                                             numberOfLines={3}
-                                            readonly={true}
+                                            readOnly={true}
                                         />
                                         <CustomTextInput
                                             label="Task"
@@ -128,11 +154,11 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             editable={true}
                                             style={[styles(isDark).input]}
                                             numberOfLines={3}
-                                            readonly={true}
+                                            readOnly={true}
                                         />
                                         <CustomTextInput
                                             label="Hour"
-                                            value={values.hour}
+                                            value={values.hour || SubmittedworklogData?.hours.toString()}
                                             secureTextEntry={false}
                                             lefticon={false}
                                             onChangeText={handleChange('hour')}
@@ -142,12 +168,9 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             keyboardType="numeric"
                                         // maxLength={2}
                                         />
-                                        {touched.hour && errors.hour && (
-                                            <Text style={styles(isDark).errortxt}>{errors.hour}</Text>
-                                        )}
                                         <CustomTextInput
                                             label="Description"
-                                            value={values.description}
+                                            value={values.description || SubmittedworklogData?.description}
                                             secureTextEntry={false}
                                             lefticon={false}
                                             onChangeText={handleChange('description')}
@@ -157,12 +180,9 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             contentStyle={{ height: 80, paddingBottom: 10 }}
                                             multiline={true}
                                         />
-                                        {touched.description && errors.description && (
-                                            <Text style={styles(isDark).errortxt}>{errors.description}</Text>
-                                        )}
                                         <CustomTextInput
                                             label="date"
-                                            value={values.date}
+                                            value={moment(values.date).format('YYYY-MM-DD')}
                                             secureTextEntry={false}
                                             onChangeText={handleChange('date')}
                                             lefticon={false}
@@ -173,35 +193,86 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             readOnly={true}
                                             style={[styles(isDark).input]}
                                             numberOfLines={3}
-                                            multiline={true}
                                         />
                                         {showdate && (
                                             <DateTimePicker
                                                 testID="dateTimePickerStart"
-                                                value={new Date() || values.date}
+                                                value={new Date() || moment(values.date, 'DD-MM-YYYY').format('YYYY-MM-DD')}
                                                 mode="date"
                                                 display="default"
                                                 onChange={(event: any, selectedDate: any) => {
                                                     if (selectedDate) {
-                                                        setFieldValue('date', moment(selectedDate).format('YYYY-MM-DD'));
+                                                        const currentDate = selectedDate || values.date;
+                                                        setFieldValue('date', currentDate);
                                                         setShowDate(false);
                                                     }
                                                 }}
                                                 minimumDate={moment().subtract(6, 'days').toDate()}
                                                 maximumDate={moment().toDate()} />
                                         )}
+                                        {
+                                            (SubmittedworklogData?.worklogStatusName === 'Approved' || SubmittedworklogData?.worklogStatusName === 'Rejected') && (
+                                                <>
+                                                    <CustomTextInput
+                                                        label="Approved By"
+                                                        value={worklogDetails?.data?.approvedRejectedBy}
+                                                        secureTextEntry={false}
+                                                        lefticon={false}
+                                                        onChangeText={handleChange('task')}
+                                                        onBlur={handleBlur('task')}
+                                                        editable={true}
+                                                        style={[styles(isDark).input]}
+                                                        numberOfLines={3}
+                                                        readOnly={true}
+                                                    />
+                                                    <CustomTextInput
+                                                        label="status"
+                                                        value={worklogDetails?.data?.worklogStatusName}
+                                                        secureTextEntry={false}
+                                                        lefticon={false}
+                                                        onChangeText={handleChange('task')}
+                                                        onBlur={handleBlur('task')}
+                                                        editable={true}
+                                                        style={[styles(isDark).input]}
+                                                        numberOfLines={3}
+                                                        readOnly={true}
+                                                    />
+                                                    {SubmittedworklogData?.worklogStatusName === 'Rejected' && (<CustomTextInput
+                                                        label="Reason for Rejection"
+                                                        value={worklogDetails?.data?.reasonForRejection}
+                                                        secureTextEntry={false}
+                                                        lefticon={false}
+                                                        onChangeText={handleChange('task')}
+                                                        onBlur={handleBlur('task')}
+                                                        editable={true}
+                                                        contentStyle={{ height: 80, paddingBottom: 10 }}
+                                                        style={[styles(isDark).input]}
+                                                        numberOfLines={3}
+                                                        readOnly={true}
+                                                        multiline={true}
+                                                    />)}
+                                                    <CustomTextInput
+                                                        label="Approved On"
+                                                        value={worklogDetails?.data?.approvedRejectedOn}
+                                                        secureTextEntry={false}
+                                                        lefticon={false}
+                                                        onChangeText={handleChange('task')}
+                                                        onBlur={handleBlur('task')}
+                                                        editable={true}
+                                                        style={[styles(isDark).input]}
+                                                        numberOfLines={3}
+                                                        readOnly={true}
+                                                    />
+                                                </>
+                                            )
+                                        }
+
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 16, marginTop: 30 }}>
-                                            <Button mode="contained" onPress={() => {
-                                                setStatus('draft');
-                                                handleSubmit()
-                                            }} buttonColor={Colors.primary} style={{ width: '48%' }}>
+                                            <Button mode="contained" onPress={() => { statusRef.current = 'draft', handleSubmit() }} buttonColor={Colors.primary} style={{ width: '48%' }}>
                                                 Save As Draft
                                             </Button>
 
-                                            <Button mode="contained" onPress={() => {
-                                                setStatus('submitted');
-                                                handleSubmit()
-                                            }} buttonColor={Colors.primary} style={{ width: '48%' }}>
+                                            <Button mode="contained" onPress={() => { statusRef.current = 'submitted', handleSubmit() }} buttonColor={Colors.primary} style={{ width: '48%' }}>
                                                 Submit
                                             </Button>
                                         </View>
@@ -229,5 +300,15 @@ const styles = (isDark: any) => StyleSheet.create({
         color: Colors.error,
         marginLeft: 16,
         fontFamily: 'Lato-Regular'
+    },
+    formErrorBox: {
+        backgroundColor: Colors.error,
+        padding: 10,
+        marginBottom: 10,
+    },
+    formErrorText: {
+        color: Colors.white,
+        fontFamily: 'Lato-Bold',
+        textAlign: 'center',
     },
 });

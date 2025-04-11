@@ -3,18 +3,19 @@ import React, { useEffect, useState } from 'react'
 import WorklogCard from '../../Components/WorklogCard'
 import CustomHeader from '../../Components/CustomHeader'
 import { useGetActiveItemsInMyProjectQuery, useGetGeneralTaskListInMyProjectQuery, useGetToDoListBasedOnFilterMutation } from '../../Services/workloglevel'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 import { Colors } from '../../constants/Colors'
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder'
 import FilterWorklogs from './FilterWorklogs'
-import { isDarkTheme } from '../../AppStore/Reducers/appState'
+import { isDarkTheme, SetWorklogDetails } from '../../AppStore/Reducers/appState'
 import WorkTypeDialog from './WorkTypeDialog'
 import { FAB } from 'react-native-paper'
 import CustomTextInput from '../../Components/CustomTextInput'
 
 const Worklog = ({ navigation }: any) => {
     const isDark = useSelector(isDarkTheme);
+    const dispatch = useDispatch();
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
 
@@ -109,11 +110,12 @@ const Worklog = ({ navigation }: any) => {
             iconColor={item?.itemType?.label === 'To-Do' ? "green" : item?.itemType?.label === 'User Story' ? Colors.secondary : item?.itemType?.label === 'Bug' ? Colors.error : null}
             rightIconName="eye"
             rightIconColor={Colors.primary}
-            iconPress={() => {
-                setVisibleWorkType(!visibleWorkType), setSelectedItem(item)
-            }}
-            rightIconPress={() => navigation.navigate('WorklogDetails', { item })}
-            cardPress={() => {item?.workStatus?.label === 'Work In Progress' && navigation.navigate('AddWorklog', { item }) }}
+            rightIconPress={() => {navigation.navigate('WorklogDetails',{item}),dispatch(SetWorklogDetails(item))}}
+            rightIconColor2={Colors.primary}
+            showRightIcon2={true}
+            rightIconName2="plus-circle"
+            rightIconPress2={() => {item?.workStatus?.label === 'Work In Progress' && navigation.navigate('AddWorklog'),dispatch(SetWorklogDetails(item)) }}
+            cardPress={() => {setVisibleWorkType(!visibleWorkType), setSelectedItem(item) }}
         />
     );
 

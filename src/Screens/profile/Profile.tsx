@@ -8,17 +8,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
-import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
-import {Card, IconButton} from 'react-native-paper';
-import {auth, isDarkTheme} from '../../AppStore/Reducers/appState';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { Card, IconButton } from 'react-native-paper';
+import { auth, isDarkTheme } from '../../AppStore/Reducers/appState';
 // import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {Colors} from '../../constants/Colors';
-import {useEmployeeUpdateProfileMutation} from '../../Services/appLevel';
+import { Colors } from '../../constants/Colors';
+import { useEmployeeUpdateProfileMutation } from '../../Services/appLevel';
 import Toast from 'react-native-toast-message';
-import {PERMISSION_TYPE, PermissionHandler} from '../../permissions';
+import { PERMISSION_TYPE, PermissionHandler } from '../../permissions';
 import Placeholder from '../Placeholder/Placeholder';
 
 import ImageCropPicker, {
@@ -27,7 +27,7 @@ import ImageCropPicker, {
   Video as CropVideo,
 } from 'react-native-image-crop-picker';
 
-const Profile = ({navigation}: any) => {
+const Profile = ({ navigation }: any) => {
 
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
@@ -113,7 +113,7 @@ const Profile = ({navigation}: any) => {
     );
   };
 
-  const [updateProfile, {isLoading}] = useEmployeeUpdateProfileMutation();
+  const [updateProfile, { isLoading }] = useEmployeeUpdateProfileMutation();
 
   const handleUpdateImage = async () => {
     if (!connected) {
@@ -137,7 +137,7 @@ const Profile = ({navigation}: any) => {
         profileImage: imageAsset?.base64 || imageAsset.uri || imageAsset.data,
       };
 
-      const response = await updateProfile({data, accessToken});
+      const response = await updateProfile({ data, accessToken });
 
       if (response?.data?.isSuccessful === true) {
         Toast.show({
@@ -164,7 +164,7 @@ const Profile = ({navigation}: any) => {
     }
   }, [imageAsset]);
 
- 
+
 
   return (
     <View style={styles(isDark).maincontainer}>
@@ -188,7 +188,7 @@ const Profile = ({navigation}: any) => {
       ) : (
         <Card style={styles(isDark).cardcontainer}>
           <IconButton
-            style={{position: 'absolute', top: -10, right: -5}}
+            style={{ position: 'absolute', top: -10, right: -5 }}
             icon="account-edit"
             iconColor={isDark ? Colors.white : Colors.primary}
             size={30}
@@ -196,7 +196,7 @@ const Profile = ({navigation}: any) => {
             accessibilityLabel="Edit Profile"
           />
           <TouchableOpacity
-            style={{alignItems: 'center', marginBottom: 40}}
+            style={{ alignItems: 'center', marginBottom: 40 }}
             onPress={openModal}>
             {Profiledata?.employeeImg ? (
               <Image
@@ -254,7 +254,7 @@ const Profile = ({navigation}: any) => {
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
               }}>
-              <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
+              <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
                 Email{' : '}
               </Text>
               <Text style={styles(isDark).txt}>
@@ -268,10 +268,10 @@ const Profile = ({navigation}: any) => {
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
               }}>
-              <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
+              <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
                 Employee ID{' : '}
               </Text>
-              <Text style={[styles(isDark).txt, {marginVertical: 10}]}>
+              <Text style={[styles(isDark).txt, { marginVertical: 10 }]}>
                 {Profiledata?.userName ? Profiledata?.userName : 'N/A'}
               </Text>
             </View>
@@ -282,7 +282,7 @@ const Profile = ({navigation}: any) => {
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
               }}>
-              <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Semibold'}]}>
+              <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
                 Reporting Manager{' : '}
               </Text>
 
@@ -303,9 +303,9 @@ const Profile = ({navigation}: any) => {
             icon="head-lightbulb"
             iconColor={isDark ? Colors.white : Colors.black}
             size={25}
-            style={{marginRight: 10}}
+            style={{ marginRight: 10 }}
           />
-          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
+          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
             My Skills
           </Text>
           <IconButton
@@ -322,9 +322,9 @@ const Profile = ({navigation}: any) => {
             icon="cart-outline"
             iconColor={isDark ? Colors.white : Colors.black}
             size={25}
-            style={{marginRight: 10}}
+            style={{ marginRight: 10 }}
           />
-          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
+          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
             My Assets
           </Text>
           <IconButton
@@ -341,9 +341,9 @@ const Profile = ({navigation}: any) => {
             icon="cog-outline"
             iconColor={isDark ? Colors.white : Colors.black}
             size={25}
-            style={{marginRight: 10}}
+            style={{ marginRight: 10 }}
           />
-          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
+          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
             Change Password
           </Text>
           <IconButton
@@ -362,9 +362,9 @@ const Profile = ({navigation}: any) => {
             icon="logout"
             iconColor={isDark ? Colors.white : Colors.black}
             size={25}
-            style={{marginRight: 10}}
+            style={{ marginRight: 10 }}
           />
-          <Text style={[styles(isDark).usename, {fontSize: 16, flex: 1}]}>
+          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
             Logout
           </Text>
           <IconButton
@@ -387,12 +387,12 @@ const Profile = ({navigation}: any) => {
             <View style={styles(isDark).imageContainer}>
               {imageAsset ? (
                 <Image
-                  source={{uri: `data:image/jpeg;base64,${imageAsset?.data}`}}
+                  source={{ uri: `data:image/jpeg;base64,${imageAsset?.data}` }}
                   style={styles(isDark).image}
                 />
               ) : Profiledata?.employeeImg ? (
                 <Image
-                  source={{uri: base64Image}}
+                  source={{ uri: base64Image }}
                   style={styles(isDark).image}
                 />
               ) : (
@@ -422,7 +422,7 @@ const Profile = ({navigation}: any) => {
                 }}
                 onPress={() => pickSingleWithCamera(true)}>
                 <IconButton
-                  style={{margin: -2}}
+                  style={{ margin: -2 }}
                   icon="camera"
                   iconColor={Colors.white}
                   size={25}
@@ -454,7 +454,7 @@ const Profile = ({navigation}: any) => {
                 }}
                 onPress={() => pickSingleWithGallary(true)}>
                 <IconButton
-                  style={{margin: -2}}
+                  style={{ margin: -2 }}
                   icon="account-box"
                   iconColor={Colors.white}
                   size={25}
@@ -475,7 +475,7 @@ const Profile = ({navigation}: any) => {
             </View>
 
             <IconButton
-              style={{position: 'absolute', top: 0, right: 0}}
+              style={{ position: 'absolute', top: 0, right: 0 }}
               icon="close-octagon"
               iconColor={Colors.error}
               size={30}
@@ -553,7 +553,7 @@ const styles = (isDark: any) =>
     smallCard: {
       marginTop: 10,
       marginHorizontal: 16,
-      padding:3,
+      padding: 3,
       backgroundColor: isDark ? Colors.black : Colors.background,
       color: isDark ? Colors.white : Colors.black,
       borderRadius: 5,

@@ -15,11 +15,16 @@ const WorklogCard = ({
     iconName,
     iconColor,
     iconPress,
+    showleftIcon = true,
     cardPress,
     rightIconPress,
     rightIconColor,
     rightIconName,
     showRightIcon = true,
+    rightIconPress2,
+    rightIconColor2,
+    rightIconName2,
+    showRightIcon2 = false,
 }: any) => {
     const isDark = useSelector(isDarkTheme);
     return (
@@ -28,30 +33,31 @@ const WorklogCard = ({
                 <View style={{
                     flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap',
                 }}>
-                    <IconButton
+                  {
+                    showleftIcon && (
+                        <IconButton
                         icon={iconName}
                         iconColor={iconColor}
                         size={25}
                         style={{ marginLeft: -10 }}
                         onPress={iconPress}
                     />
+                    )
+                  }
                     <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', }]}>{projectName}</Text>
                 </View>
-                {
-                    showRightIcon && (
-                        <IconButton
-                            icon={rightIconName}
-                            iconColor={rightIconColor}
-                            size={25}
-                            onPress={rightIconPress}
-                        />
-                    )
-                }
+
             </Card.Content>
             <Card.Content >
                 <Text style={styles(isDark).txt}>{title}</Text>
             </Card.Content>
+
             <Card.Content style={[styles(isDark).cardContant, { marginVertical: 5 }]}>
+                <Text style={[styles(isDark).txt]}>{startDate}</Text>
+                {/* {(startDate && endDate) && (<Text style={[styles(isDark).txt]}>{' - '}</Text>)} */}
+                <Text style={styles(isDark).txt}>{endDate}</Text>
+            </Card.Content>
+            <Card.Content style={[styles(isDark).cardContant]}>
                 <Text style={styles(isDark).txt}>{serialNo}</Text>
                 <Text
                     style={[
@@ -62,10 +68,30 @@ const WorklogCard = ({
                     {status}
                 </Text>
             </Card.Content>
-            <Card.Content style={styles(isDark).cardContant}>
-                <Text style={[styles(isDark).txt]}>{startDate}</Text>
-                {/* {(startDate && endDate) && (<Text style={[styles(isDark).txt]}>{' - '}</Text>)} */}
-                <Text style={styles(isDark).txt}>{endDate}</Text>
+            <Card.Content style={[styles(isDark).cardContant, { justifyContent: 'flex-end',marginTop: 10 }]}>
+                {
+                    showRightIcon2 && (
+                        <IconButton
+                            icon={rightIconName2}
+                            iconColor={rightIconColor2}
+                            size={25}
+                            style={{ marginRight: -10,marginBottom: -15  }}
+                            onPress={rightIconPress2}
+                        />
+                    )
+                }
+                {
+                    showRightIcon && (
+                        <IconButton
+                            icon={rightIconName}
+                            iconColor={rightIconColor}
+                            size={25}
+                            style={{ marginRight: -10,marginBottom: -15  }}
+
+                            onPress={rightIconPress}
+                        />
+                    )
+                }
             </Card.Content>
         </Card>
     )

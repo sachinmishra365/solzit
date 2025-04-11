@@ -9,12 +9,13 @@ import { Colors } from '../../../constants/Colors';
 import moment from 'moment';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
 import { useGetGeneralTaskListInMyProjectQuery, useGetToDoListBasedOnFilterMutation } from '../../../Services/workloglevel';
+import WorklogCard from '../../../Components/WorklogCard';
 
 
-const PlanMyDay = ({ navigation }:any) => {
+const PlanMyDay = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
-  const accessToken = useSelector((state:any) => state?.appState?.authToken);
-  const connected = useSelector((state:any) => state?.appState?.connected);
+  const accessToken = useSelector((state: any) => state?.appState?.authToken);
+  const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [refreshing, setRefreshing] = useState(false);
   const [myToDosData, setMyToDosData] = useState([]);
@@ -23,7 +24,7 @@ const PlanMyDay = ({ navigation }:any) => {
   const [selectedTaskType, setSelectedTaskType] = useState('myActiveItems');
   const [filterVisible, setFilterVisible] = useState(false);
   const [isFilterSelected, setIsFilterSelected] = useState(false);
-  
+
   const [getToDoListBasedOnFilter, { isLoading: isToDoLoading }] = useGetToDoListBasedOnFilterMutation();
   const { data: generalTaskData, isLoading: isGeneralTaskLoading } = useGetGeneralTaskListInMyProjectQuery({
     accessToken: accessToken?.authToken?.accessToken,
@@ -50,11 +51,11 @@ const PlanMyDay = ({ navigation }:any) => {
       });
       return;
     }
-  
+
     try {
-      const filterId = selectedTaskType === 'myActiveItems' ? 1 : 3; 
-      const itemTypeId = selectedTaskType === 'myActiveItems' ? 0 : 1; 
-  
+      const filterId = selectedTaskType === 'myActiveItems' ? 1 : 3;
+      const itemTypeId = selectedTaskType === 'myActiveItems' ? 0 : 1;
+
       const result = await getToDoListBasedOnFilter({
         data: {},
         filterId,
@@ -68,7 +69,7 @@ const PlanMyDay = ({ navigation }:any) => {
       console.log(err);
     }
   };
-  
+
 
   const handleGeneralTasks = () => {
     if (generalTaskData?.data) {
@@ -87,19 +88,19 @@ const PlanMyDay = ({ navigation }:any) => {
     fetchData().finally(() => setRefreshing(false));
   };
 
-  const toggleCheckbox = (id:any) => {
+  const toggleCheckbox = (id: any) => {
     setCheckedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleMenuOptionSelect = (option: any) => {
     setSelectedTaskType(option);
-    setIsFilterSelected(true); 
+    setIsFilterSelected(true);
     setFilterVisible(false);
     fetchData();
   };
-  
 
-  const FilterModal = ({ visible, onClose, onSelect, selectedOption }:any) => {   
+
+  const FilterModal = ({ visible, onClose, onSelect, selectedOption }: any) => {
     return (
       <Modal
         transparent
@@ -111,7 +112,7 @@ const PlanMyDay = ({ navigation }:any) => {
           <View style={styles(isDark).modalContainer}>
             <Text style={styles(isDark).modalTitle}>Select To-Do's</Text>
             <TouchableOpacity
-              style={[styles(isDark).option, selectedOption === 'myActiveItems'&& { backgroundColor: isDark ? Colors.gray : Colors.white, } ]}
+              style={[styles(isDark).option, selectedOption === 'myActiveItems' && { backgroundColor: isDark ? Colors.gray : Colors.white, }]}
               onPress={() => onSelect('myActiveItems')}
             >
               <Text style={styles(isDark).optionText}>My Active Items</Text>
@@ -119,83 +120,38 @@ const PlanMyDay = ({ navigation }:any) => {
             <TouchableOpacity
               style={[
                 styles(isDark).option,
-                selectedOption === 'generalTasks' && { backgroundColor:  isDark ? Colors.gray : Colors.white, }
+                selectedOption === 'generalTasks' && { backgroundColor: isDark ? Colors.gray : Colors.white, }
               ]}
               onPress={() => onSelect('generalTasks')}
             >
               <Text style={styles(isDark).optionText}>General Tasks</Text>
             </TouchableOpacity>
-            <TouchableOpacity  onPress={onClose}>
-              <Text style={[styles(isDark).optionText,{ padding:10,}]} >Close</Text>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={[styles(isDark).optionText, { padding: 10, }]} >Close</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
     );
   };
-  
 
-  const renderItem = ({item}: any) => (
-    <Card
-      style={styles(isDark).card}
-      onPress={() => {
-        navigation.navigate('ToDoDetails', {ToDoDetail: item});
-      }}>
-      <Card.Content>
-        <View style={styles(isDark).topRow}>
-          <Checkbox
-            status={checkedItems[item.id] ? 'checked' : 'unchecked'}
-            onPress={() => toggleCheckbox(item.id)}
-            color={isDark ? Colors.secondary : Colors.primary}
-            uncheckedColor={isDark ? Colors.secondary : Colors.primary}
-          />
-          <Text style={[styles(isDark).label, {fontSize: 16}]}>
-            {item?.project?.name ?? 'No Project Name'}
-          </Text>
-        </View>
 
-        <View style={styles(isDark).row}>
-          <Text style={[styles(isDark).label, {flexShrink: 1}]}>
-            {item?.itemNumber}
-            {' : '}
-            {item?.title}
-          </Text>
-        </View>
-
-        <View style={[styles(isDark).row, {marginTop:5}]}>
-          <Text style={[styles(isDark).label, {fontSize: 14}]}>Start: </Text>
-          <Text style={styles(isDark).value}>
-            {item?.plannedStartDate
-              ? moment(item.plannedStartDate, 'MM/DD/YYYY HH:mm:ss').format(
-                  'DD MMM YYYY',
-                )
-              : 'No Data'}
-          </Text>
-        </View>
-        <View style={styles(isDark).row}>
-          <Text style={[styles(isDark).label, {fontSize: 14}]}>End: </Text>
-          <Text style={styles(isDark).value}>
-            {item?.plannedEndDate
-              ? moment(item.plannedEndDate, 'MM/DD/YYYY HH:mm:ss').format(
-                  'DD MMM YYYY',
-                )
-              : 'No Data'}
-          </Text>
-        </View>
-
-        <View style={[styles(isDark).row, {marginTop:5}]}>
-          <Text style={[styles(isDark).value, {fontSize: 16}]}>
-            Estimated Effort{' : '}
-            <Text style={[styles(isDark).value, {fontSize: 16}]}>
-              {item?.toDoSubViewsDtos?.implementationEffort}
-            </Text>
-          </Text>
-          <Text style={[styles(isDark).label, {fontSize: 16}]}>
-            {item?.workStatus?.label}
-          </Text>
-        </View>
-      </Card.Content>
-    </Card>
+  const renderItem = ({ item }: any) => (
+    <WorklogCard
+      projectName={item?.project?.name}
+      serialNo={item?.itemNumber}
+      title={item?.title}
+      startDate={item?.plannedStartDate ? moment(item?.plannedStartDate, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
+      endDate={item?.plannedEndDate ? moment(item?.plannedEndDate, "MM/DD/YYYY HH:mm:ss").format('DD/MM/YYYY') : null}
+      status={item?.workStatus?.label}
+      iconName={checkedItems[item.id] ? 'checkbox-marked' : 'checkbox-blank-outline'}
+      iconColor={Colors.primary}
+      rightIconColor={Colors.primary}
+      iconPress={() => {toggleCheckbox(item.id)}}
+      showRightIcon2={false}
+      showRightIcon={false}
+      cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
+    />
   );
 
   return (
@@ -212,20 +168,20 @@ const PlanMyDay = ({ navigation }:any) => {
       <View style={styles(isDark).divider} />
 
       <Text
-        style={[styles(isDark).label, {fontSize: 16, marginHorizontal: 16}]}>
+        style={[styles(isDark).label, { fontSize: 16, marginHorizontal: 16 }]}>
         {!isFilterSelected
           ? "Items I'm Working On"
           : selectedTaskType === 'generalTasks'
-          ? 'General Tasks'
-          : 'My Active Items'}
+            ? 'General Tasks'
+            : 'My Active Items'}
       </Text>
 
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (selectedTaskType === 'myActiveItems'
-          ? myToDosData
-          : generalTasksData
-        )?.length === 0 ? (
+        ? myToDosData
+        : generalTasksData
+      )?.length === 0 ? (
         <View
           style={{
             flex: 1,
@@ -254,7 +210,7 @@ const PlanMyDay = ({ navigation }:any) => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           showsVerticalScrollIndicator
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       )}
 
@@ -266,8 +222,8 @@ const PlanMyDay = ({ navigation }:any) => {
             selectedTaskType === 'myActiveItems'
               ? myToDosData
               : generalTasksData
-          ).filter((item:any )=> checkedItems[item.id]);
-          navigation.navigate('AddToMyPlan', {selectedItems});
+          ).filter((item: any) => checkedItems[item.id]);
+          navigation.navigate('AddToMyPlan', { selectedItems });
         }}
         accessibilityLabel="Add To My Plan"
         icon="plus"
@@ -306,7 +262,7 @@ const styles = (isDark: boolean) =>
       alignItems: 'center',
       marginLeft: -10,
     },
-   
+
     row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -364,12 +320,12 @@ const styles = (isDark: boolean) =>
       alignItems: 'center',
       borderBottomWidth: 1,
       borderBottomColor: Colors.medium_gray,
-      padding:10,
+      padding: 10,
     },
     optionText: {
       fontSize: 16,
       fontFamily: 'Lato-SemiBold',
-      color:isDark ? Colors.white : Colors.black,
+      color: isDark ? Colors.white : Colors.black,
     },
   });
 

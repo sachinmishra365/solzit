@@ -120,6 +120,18 @@ export const workloglevelApi = createApi({
         },
       }),
     }),
+
+    GetWorkLogById: builder.query({
+      query: ({workLogId, accessToken}) => ({
+        url: `/ToDos/GetWorkLogById?WorkLogId=${workLogId}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
     CreateNewTodo: builder.mutation({
       query: ({data, accessToken}) => ({
         url: `/ToDos/CreateNewTodo`,
@@ -209,4 +221,5 @@ export const {
   useGetDayTaskReportDetailsQuery,
   useGetToDoDetailsByToDoIdQuery,
   useGetemployeeProjectAllocationQuery,
+  useGetWorkLogByIdQuery
 } = workloglevelApi;

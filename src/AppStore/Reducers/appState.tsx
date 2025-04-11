@@ -10,7 +10,8 @@ export const appStateSlice = createSlice({
     processed: null,
     authCredential: {},
     connected: false,
-    metadata:[]
+    metadata:[],
+    worklogDetails:[],
   },
   reducers: {
     auth: (state, action) => {
@@ -37,6 +38,9 @@ export const appStateSlice = createSlice({
     SetMetaData: (state, action) => {
       state.metadata = action.payload;
     },
+    SetWorklogDetails: (state, action) => {
+      state.worklogDetails = action.payload;
+    },
   },
 });
 export const isDarkTheme = (state: any) =>
@@ -51,6 +55,7 @@ export const {
   credential,
   internet,
   SetMetaData,
+  SetWorklogDetails
 } = appStateSlice.actions;
 
 export default appStateSlice.reducer;

@@ -18,7 +18,7 @@ const WorklogDetails = ({ navigation, route }: any) => {
     const [workLogsDetailData, setWorkLogsDetailData] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
-    const { data: WorkLogsByEmpIdOnTodo, isSuccess, isLoading ,refetch} = useGetWorkLogsByEmpIdOnTodoQuery({ toDoId: worklogDetails?.id, accessToken: accessToken }, { skip: !worklogDetails?.id || !accessToken });
+    const { data: WorkLogsByEmpIdOnTodo, isSuccess, isLoading, refetch } = useGetWorkLogsByEmpIdOnTodoQuery({ toDoId: worklogDetails?.id, accessToken: accessToken }, { skip: !worklogDetails?.id || !accessToken });
 
     useEffect(() => {
         if (isSuccess && WorkLogsByEmpIdOnTodo?.data) {
@@ -33,32 +33,36 @@ const WorklogDetails = ({ navigation, route }: any) => {
     const renderItem = ({ item }: any) => (
         <WorklogCard
             projectName={item?.project}
-            // serialNo={item?.itemNumber}
+            serialNo={`hours: ${item?.hours}`}
             title={item?.description}
             startDate={item?.date ? moment(item?.date, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
             status={item?.worklogStatusName}
-            iconName={item?.worklogStatusName === 'New' ? 'pencil-box-outline' : 'cloud-upload-outline'}
+            iconName={'notebook'}
             iconColor={Colors.primary}
-            showRightIcon={item?.worklogStatusName === 'Submitted for approval' ? false :true}
-            rightIconName="delete-outline"
+            // showleftIcon={false}
+            showRightIcon={item?.worklogStatusName === 'Submitted for approval' || item?.worklogStatusName === 'Approved' ? false : true}
+            rightIconName={(item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' )&& 'delete'}
             rightIconColor={Colors.error}
-            iconPress={() => { }}
-            rightIconPress={() => navigation.navigate('WorklogDetails', { item })}
-            cardPress={() => { item?.workStatus?.label === 'Work In Progress' && navigation.navigate('AddWorklog', { item }) }}
+            rightIconPress={() => { }}
+            rightIconPress2={() => navigation.navigate('AddWorklog', { item })}
+            rightIconColor2={Colors.primary}
+            rightIconName2={item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' ? 'circle-edit-outline' : item?.worklogStatusName === 'Approved' ? 'eye' : 'cloud-upload-outline'}
+            showRightIcon2={true}
+            cardPress={() => { }}
         />
     );
 
     const onRefresh = async () => {
         setRefreshing(true);
         try {
-            await refetch(); 
+            await refetch();
         } catch (err) {
             console.error('Refetch error:', err);
         } finally {
             setRefreshing(false);
         }
     };
-    
+
 
     return (
         <View style={styles(isDark).container}>
@@ -69,17 +73,35 @@ const WorklogDetails = ({ navigation, route }: any) => {
             />
             {isLoading ? (
                 <ShimmerPlaceHolder />
-            ) : (
+            ) : workLogsDetailData?.length !== 0 ? (
                 <FlatList
                     data={workLogsDetailData}
                     renderItem={renderItem}
                     keyExtractor={(item: any, index: any) => item?.id?.toString() + index}
                     refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[Colors?.primary]}
+                        />
                     }
                     ListFooterComponent={<View style={{ height: 100 }} />}
                 />
+            ) : (
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <Text
+                        style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            alignSelf: 'center',
+                            fontFamily: 'Lato-Bold',
+                            height: 38,
+                            padding: 7,
+                        }}>
+                        No Worklogs Found
+                    </Text>
+                </View>
             )}
+
         </View>
     )
 }
