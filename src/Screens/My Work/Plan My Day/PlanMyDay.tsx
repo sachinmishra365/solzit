@@ -167,38 +167,21 @@ const PlanMyDay = ({ navigation }: any) => {
 
       <View style={styles(isDark).divider} />
 
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginHorizontal: 16,
-          marginBottom: 10,
-          marginTop: 8,
-        }}>
-        <Text style={[styles(isDark).label, {fontSize: 16}]}>
-          {!isFilterSelected
-            ? "Items I'm Working On"
-            : selectedTaskType === 'generalTasks'
+      <Text
+        style={[styles(isDark).label, { fontSize: 16, marginHorizontal: 16 }]}>
+        {!isFilterSelected
+          ? "Items I'm Working On"
+          : selectedTaskType === 'generalTasks'
             ? 'General Tasks'
             : 'My Active Items'}
-        </Text>
-
-        <TouchableOpacity
-          style={styles(isDark).showPlanButton}
-          onPress={() => {
-            navigation.navigate('ShowPlan');
-          }}>
-          <Text style={styles(isDark).showPlanText}>Show Plan</Text>
-        </TouchableOpacity>
-      </View>
+      </Text>
 
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (selectedTaskType === 'myActiveItems'
-          ? myToDosData
-          : generalTasksData
-        )?.length === 0 ? (
+        ? myToDosData
+        : generalTasksData
+      )?.length === 0 ? (
         <View
           style={{
             flex: 1,
@@ -227,7 +210,7 @@ const PlanMyDay = ({ navigation }: any) => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           showsVerticalScrollIndicator
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       )}
 
@@ -240,17 +223,7 @@ const PlanMyDay = ({ navigation }: any) => {
               ? myToDosData
               : generalTasksData
           ).filter((item: any) => checkedItems[item.id]);
-
-          if (selectedItems.length === 0) {
-            Toast.show({
-              type: 'error',
-              text1: 'No Tasks Selected',
-              text2: 'Please select at least one task to add to your plan.',
-              topOffset: 80,
-            });
-          } else {
-            navigation.navigate('AddToMyPlan', {selectedItems});
-          }
+          navigation.navigate('AddToMyPlan', { selectedItems });
         }}
         accessibilityLabel="Add To My Plan"
         icon="plus"
@@ -353,17 +326,6 @@ const styles = (isDark: boolean) =>
       fontSize: 16,
       fontFamily: 'Lato-SemiBold',
       color: isDark ? Colors.white : Colors.black,
-    },
-    showPlanButton: {
-      backgroundColor: Colors.primary,
-      paddingVertical: 8,
-      paddingHorizontal: 20,
-      borderRadius: 30,
-    },
-    showPlanText: {
-      color: Colors.white,
-      fontSize: 16,
-      fontFamily: 'Lato-Bold',
     },
   });
 

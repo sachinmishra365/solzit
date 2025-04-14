@@ -1,39 +1,22 @@
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, ScrollView,} from 'react-native';
 import React, {useState} from 'react';
+import CustomHeader from '../../../Components/CustomHeader';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../../AppStore/Reducers/appState';
 import {Colors} from '../../../constants/Colors';
-import {useCreateMyDailyTaskReportMutation} from '../../../Services/workloglevel';
-import Toast from 'react-native-toast-message';
-import CustomHeader from '../../../Components/CustomHeader';
-import {
-  Button,
-  Card,
-  Checkbox,
-  Icon,
-  List,
-  TextInput,
-} from 'react-native-paper';
+import {Card, Icon, List, TextInput} from 'react-native-paper';
+import CustomTextInput from '../../../Components/CustomTextInput';
+
 
 const AddToMyPlan = ({navigation, route}: any) => {
   const isDark = useSelector(isDarkTheme);
-  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const {selectedItems = []} = route.params || {};
   const [selectedWorkStatus, setSelectedWorkStatus] = useState(
     selectedItems?.workStatus?.label ?? '',
   );
-  const [isCommitting, setIsCommitting] = useState(false);
-  const [createTaskReport] = useCreateMyDailyTaskReportMutation();
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const [estimatedEfforts, setEstimatedEfforts] = useState<
-    Record<string, string>
-  >({});
-  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<
-    Record<string, string>
-  >({});
-  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>(
-    {},
-  );
+  const [expanded, setExpanded] = useState(false);
+  const [estimatedEffort, setEstimatedEffort] = useState('');
+
   const WORK_STATUS_OPTIONS = [
     {
       value: 674180000,
@@ -44,79 +27,6 @@ const AddToMyPlan = ({navigation, route}: any) => {
       label: 'Will be completed',
     },
   ];
-
-  const toggleCheckbox = (id: any) => {
-    setCheckedItems(prev => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const handleCommit = async () => {
-
-    const checked = selectedItems?.filter((item:any) => checkedItems[item.id]) || [];
-
-    const payload = checked.map((item:any )=> {
-      const effort = parseFloat(estimatedEfforts[item.id]);
-      const selectedStatus = selectedWorkStatuses[item.id];
-      const statusObj = WORK_STATUS_OPTIONS.find(opt => opt.label === selectedStatus);
-  
-      if (!effort || effort < 0.25 || !statusObj) return null;
-  
-      return {
-      reportDate: new Date().toISOString().split('T')[0], 
-      toDoId: item.id,
-      taskEstimatedEffort: effort,
-      plannedEffortforDay: effort,
-      eodCommittedWorkStatus: {
-        value: statusObj.value,
-        label: statusObj.label,
-      },
-    };
-    }).filter(Boolean); 
-  
-    if (payload.length === 0) {
-      Toast.show({
-        type: 'error',
-        text1: 'Validation Error',
-        text2: 'Please select at least one valid task',
-      });
-      return;
-    }
-  
-    console.log('Final Payload to API:', payload);
-  
-    setIsCommitting(true);
-  
-    try {
-      const res = await createTaskReport({
-        accessToken: EmployeeId?.authToken?.accessToken,
-        data: payload, 
-      }).unwrap();
-  
-      console.log('API Response:', res);
-  
-      if (res?.isSuccessful && res?.messageDetail?.message_code === 201) {
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: res?.messageDetail?.message || 'Tasks committed successfully',
-        });
-        navigation.goBack();
-      } 
-    } catch (error: any) {
-      console.error('Commit error:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Commit Failed',
-        text2: error?.message || 'Something went wrong while committing tasks',
-      });
-    } finally {
-      setIsCommitting(false);
-    }
-  };
-  
-
   return (
     <View style={styles(isDark).mainContainer}>
       <CustomHeader
@@ -150,21 +60,9 @@ const AddToMyPlan = ({navigation, route}: any) => {
           selectedItems.map((item: any, index: number) => (
             <Card key={item.id} style={styles(isDark).card}>
               <Card.Content>
-                <View style={styles(isDark).topRow}>
-                  <Checkbox
-                    status={checkedItems[item.id] ? 'checked' : 'unchecked'}
-                    onPress={() => toggleCheckbox(item.id)}
-                    color={isDark ? Colors.secondary : Colors.primary}
-                    uncheckedColor={isDark ? Colors.secondary : Colors.primary}
-                  />
-                  <Text
-                    style={[
-                      styles(isDark).label,
-                      {fontSize: 16, flexShrink: 1},
-                    ]}>
-                    {item?.project?.name ?? 'No Project Name'}
-                  </Text>
-                </View>
+                <Text style={[styles(isDark).label, {fontSize: 16}]}>
+                  {item?.project?.name ?? 'No Project Name'}
+                </Text>
                 <View style={styles(isDark).row}>
                   <Text style={[styles(isDark).label, {flexShrink: 1}]}>
                     {item?.itemNumber}
@@ -188,56 +86,44 @@ const AddToMyPlan = ({navigation, route}: any) => {
                 <View style={{marginTop: 10}}>
                   <TextInput
                     label="Estimated Effort"
-                    value={estimatedEfforts[item.id] || ''}
+                    value={estimatedEffort}
                     mode="outlined"
-                    keyboardType="numeric"
-                    onChangeText={text => {
-                      const num = parseFloat(text);
-                      setEstimatedEfforts(prev => ({
-                        ...prev,
-                        [item.id]: !isNaN(num) && num >= 0.25 ? text : '',
-                      }));
-                    }}
-                    outlineColor={Colors.medium_gray}
                     theme={{
                       colors: {
                         primary: Colors.primary,
                         background: isDark ? Colors.gray : Colors.white,
                       },
                     }}
-                    contentStyle={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Regular',
-                      fontSize: 14,
-                    }}
+                    keyboardType="numeric"
                     style={styles(isDark).input}
+                    onChangeText={text => {
+                      const num = parseFloat(text);
+                      setEstimatedEffort(
+                        !isNaN(num) && num >= 0.25 ? text : '',
+                      );
+                    }}
                   />
-                  {estimatedEfforts[item.id] !== '' &&
-                    parseFloat(estimatedEfforts[item.id]) < 0.25 && (
+                  {estimatedEffort !== '' &&
+                    parseFloat(estimatedEffort) < 0.25 && (
                       <Text style={{color: 'red', marginTop: 4}}>
                         Must be 0.25 or greater
                       </Text>
                     )}
                 </View>
 
-                <View style={{marginTop: 10, marginBottom: 10}}>
+                <View style={{marginTop: 10}}>
                   <List.Accordion
-                    title={
-                      selectedWorkStatuses[item.id] ||
-                      item?.eodCommittedWorkStatus?.label ||
-                      'Committed EOD Status'
-                    }
+                    title={selectedWorkStatus || 'Commited EOD Status'}
+                    expanded={expanded}
+                    onPress={() => setExpanded(!expanded)}
                     style={{
                       backgroundColor: isDark ? Colors.gray : Colors.background,
                       borderWidth: 0.5,
-                      borderColor: Colors.medium_gray,
+                      borderColor: isDark
+                        ? Colors.medium_gray
+                        : Colors.medium_gray,
                       borderRadius: 1,
                       height: 57,
-                    }}
-                    titleStyle={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Regular',
-                      fontSize: 14,
                     }}
                     right={props => (
                       <List.Icon
@@ -246,39 +132,37 @@ const AddToMyPlan = ({navigation, route}: any) => {
                         color={isDark ? Colors.white : Colors.black}
                       />
                     )}
-                    expanded={!!expandedStates[item.id]}
-                    onPress={() =>
-                      setExpandedStates(prev => ({
-                        ...prev,
-                        [item.id]: !prev[item.id],
-                      }))
-                    }>
+                    titleStyle={{
+                      color: isDark ? Colors.white : Colors.black,
+                      fontFamily: 'Lato-Regular',
+                      fontSize: 14,
+                    }}>
                     {WORK_STATUS_OPTIONS.map(option => (
                       <List.Item
                         key={option.value}
                         title={option.label}
                         onPress={() => {
-                          setSelectedWorkStatuses(prev => ({
-                            ...prev,
-                            [item.id]: option.label,
-                          }));
-                          setExpandedStates(prev => ({
-                            ...prev,
-                            [item.id]: false,
-                          }));
+                          setSelectedWorkStatus(option.label);
+                          setExpanded(false);
                         }}
                         right={() =>
-                          selectedWorkStatuses[item.id] === option.label ? (
+                          selectedWorkStatus === option.label ? (
                             <Icon
                               source="check"
                               size={20}
-                              color={Colors.primary}
+                              color={isDark ? Colors.primary : Colors.primary}
                             />
                           ) : null
                         }
                         style={{
-                          backgroundColor: isDark ? Colors.gray : Colors.white,
-                          height: 51,
+                          backgroundColor:
+                            selectedWorkStatus === option.label
+                              ? isDark
+                                ? Colors.gray
+                                : Colors.background
+                              : 'transparent',
+                          borderRadius: 1,
+                          marginVertical: 2,
                         }}
                         titleStyle={{
                           color: isDark ? Colors.white : Colors.black,
@@ -294,22 +178,6 @@ const AddToMyPlan = ({navigation, route}: any) => {
           ))
         )}
       </ScrollView>
-
-      <Button
-        mode="contained"
-        onPress={() => handleCommit()}
-        loading={isCommitting}
-        disabled={isCommitting}
-        style={{
-          marginHorizontal: 16,
-          marginBottom: 20,
-          paddingVertical: 2,
-          backgroundColor: Colors.primary,
-          borderRadius: 3,
-        }}
-        labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
-        Commit
-      </Button>
     </View>
   );
 };
@@ -349,13 +217,8 @@ const styles = (isDark: boolean) =>
       flexWrap: 'wrap',
     },
     input: {
-      marginTop: 5,
-    },
-    topRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginLeft: -10,
-    },
+      marginTop: 5
+  },
   });
 
 export default AddToMyPlan;
