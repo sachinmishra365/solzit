@@ -27,6 +27,7 @@ export const workloglevelApi = createApi({
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
     // baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //pro
   }),
+  tagTypes: ['DayTaskReports'],
 
   endpoints: builder => ({
     GetToDoListBasedOnFilter: builder.mutation({
@@ -168,7 +169,7 @@ export const workloglevelApi = createApi({
     }),
 
     GetDayTaskReportDetails: builder.query({
-      query: ({accessToken, Date}) => {
+      query: ({accessToken,Date}) => {
         return {
           url: `/DayReport/GetDayTaskReportDetails?Date=${Date}`,
           method: 'GET',
@@ -177,6 +178,7 @@ export const workloglevelApi = createApi({
           },
         };
       },
+      providesTags: ['DayTaskReports'],
     }),
 
     GetToDoDetailsByToDoId: builder.query({
@@ -202,6 +204,55 @@ export const workloglevelApi = createApi({
         };
       },
     }),
+
+    DeleteMyDailyTaskReport: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/DayReport/DeleteMyDailyTaskReport`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+    }),
+
+    CreateMyDailyTaskReport: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/DayReport/CreateMyDailyTaskReport`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+      invalidatesTags: ['DayTaskReports'],
+    }),
+
+    UpdateMyDailyTaskReport: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/DayReport/UpdateMyDailyTaskReport`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+    }),
+    GetAppSettingsValue: builder.query({
+      query: ({accessToken,AppSettingName}) => {
+        return {
+          url: `/Master/GetAppSettingsValue?AppSettingName=${AppSettingName}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+
   }),
 });
 
@@ -221,5 +272,9 @@ export const {
   useGetDayTaskReportDetailsQuery,
   useGetToDoDetailsByToDoIdQuery,
   useGetemployeeProjectAllocationQuery,
-  useGetWorkLogByIdQuery
+  useGetWorkLogByIdQuery,
+  useDeleteMyDailyTaskReportMutation,
+  useCreateMyDailyTaskReportMutation,
+  useUpdateMyDailyTaskReportMutation,
+  useGetAppSettingsValueQuery,
 } = workloglevelApi;

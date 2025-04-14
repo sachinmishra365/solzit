@@ -37,6 +37,7 @@ import TaskDetails from '../Screens/My Work/My Plans/TaskDetails';
 import ProjectAllocation from '../Screens/My Work/My Projects/ProjectAllocation';
 import LateArrivalTime from '../Screens/LeavesAndBreakes/LateArrivalTime';
 import WorkFromHome from '../Screens/WorkFromHome/WorkFromHome';
+import ShowPlan from '../Screens/My Work/Plan My Day/Show Plan/ShowPlan';
 
 const Stack = createNativeStackNavigator();
 
@@ -98,6 +99,7 @@ useEffect(() => {
       <Stack.Screen name="AddToDo" component={AddToDo} />
       <Stack.Screen name="AddWorklog" component={AddWorklog} />
       <Stack.Screen name="WorklogDetails" component={WorklogDetails} />
+      <Stack.Screen name="ShowPlan" component={ShowPlan} />
     </Stack.Navigator>
   );
 };
