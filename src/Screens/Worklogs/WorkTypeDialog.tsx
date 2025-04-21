@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { Dialog, Divider, Portal } from 'react-native-paper';
+import { Dialog, Divider, IconButton, MD3TypescaleKey, Portal } from 'react-native-paper';
 import { Colors } from '../../constants/Colors';
 import { useSelector } from 'react-redux';
 import { isDarkTheme } from '../../AppStore/Reducers/appState';
@@ -37,9 +37,48 @@ const WorkTypeDialog = ({
     const hideDialog = () => setVisibleWorkType(false);
     return (
         <Portal>
-            <Dialog visible={visibleWorkType} style={styles(isDark).container} onDismiss={()=>hideDialog()} dismissable={false}>
+            <Dialog visible={visibleWorkType} style={styles(isDark).container} onDismiss={() => hideDialog()} dismissable={false}>
+
                 <Dialog.Content>
-                    <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Bold',fontSize:15 }]}>{parent}</Text>
+                    <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Bold', fontSize: 15 }]}>{parent}</Text>
+                    <View style={styles(isDark).contant}>
+                        <View>
+                            <Text style={styles(isDark).txt}>{'Planned Start'}{' : '}</Text>
+                            <Text style={styles(isDark).txt}>{'Planned End'}{' : '}</Text>
+                            <Text style={styles(isDark).txt}>{'Actual Start'}{' : '}</Text>
+                            <Text style={styles(isDark).txt}>{'Actual End'}{' : '}</Text>
+                            <Text style={styles(isDark).txt}>{'Priority'}{' : '}</Text>
+                            <Text style={styles(isDark).txt}>{'Effort'}{' : '}</Text>
+                            <Text style={styles(isDark).txt}>{'Effort Spent'}{' : '}</Text>
+                            <Text style={styles(isDark).txt}>{'Sprint'}{' : '}</Text>
+                        </View>
+                        <View >
+                            <Text style={styles(isDark).txt}>{plannedStart}</Text>
+                            <Text style={styles(isDark).txt}>{plannedEnd}</Text>
+                            <Text style={styles(isDark).txt}>{actualStart}</Text>
+                            <Text style={styles(isDark).txt}>{actualEnd}</Text>
+                            <Text style={styles(isDark).txt}>{priority}</Text>
+                            <Text style={styles(isDark).txt}>{effort}</Text>
+                            <Text style={styles(isDark).txt}>{effortSpent}</Text>
+                            <Text style={[styles(isDark).txt, { width: '75%' }]}>{sprint}</Text>
+                        </View>
+                    </View>
+                    <Divider style={styles(isDark).divider} />
+                    <TouchableOpacity onPress={hideDialog}>
+                        <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Semibold' }]}>Cancel</Text>
+                    </TouchableOpacity>
+                    {/* <IconButton
+                        style={{ position: 'absolute', top: -30, right: -15 }}
+                        icon="close-octagon"
+                        iconColor={Colors.error}
+                        size={30}
+                        onPress={hideDialog}
+                        accessibilityLabel="Close"
+                    /> */}
+                </Dialog.Content>
+
+                {/* <Dialog.Content>
+                    <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Bold', fontSize: 15 }]}>{parent}</Text>
                     <View style={styles(isDark).contant}>
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={styles(isDark).txt}>{'Planned Start'}</Text>
@@ -90,9 +129,17 @@ const WorkTypeDialog = ({
                     </View>
                     <Divider style={styles(isDark).divider} />
                     <TouchableOpacity onPress={hideDialog}>
-                        <Text style={[styles(isDark).txt,{textAlign:'center',fontFamily:'Lato-Semibold'}]}>Cancel</Text>
+                        <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Semibold' }]}>Cancel</Text>
                     </TouchableOpacity>
-                </Dialog.Content>
+                    <IconButton
+                        style={{ position: 'absolute', top: -30, right: -15 }}
+                        icon="close-octagon"
+                        iconColor={Colors.error}
+                        size={30}
+                        onPress={hideDialog}
+                        accessibilityLabel="Close"
+                    />
+                </Dialog.Content> */}
             </Dialog>
         </Portal>
     )
@@ -108,11 +155,12 @@ const styles = (isDark: any) => StyleSheet.create({
     txt: {
         fontSize: 14,
         fontFamily: 'Lato-Regular',
-        color: isDark ? Colors.white : Colors.black
+        color: isDark ? Colors.white : Colors.black,
+        lineHeight: 25,
     },
     contant: {
         justifyContent: 'space-between',
-        flexWrap: 'wrap',
+        // flexWrap: 'wrap',
         // margin: 1,
         flexDirection: 'row',
         marginTop: 10

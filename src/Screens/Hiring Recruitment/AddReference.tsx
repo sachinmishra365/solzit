@@ -113,20 +113,7 @@ const AddReference = ({ navigation, route }: any) => {
       Alert.alert('Error', error?.data?.messageDetail?.message || error.message || 'Unknown error', [
         { text: 'OK', onPress: () => { } },
       ]);
-      // Toast.show({
-      //   type: 'error',
-      //   text1: 'Error',
-      //   text2: error?.data?.messageDetail?.message || error.message || 'Unknown error',
-      //   topOffset: 80,
-      //   text2Style: {
-      //     flexWrap: 'wrap',
-      //     fontSize: 20,
-      //     fontFamily: 'Lato-Regular',
-      //     width: '100%',
-      //     height:300,
-      //   },
-      //   visibilityTime: 5000,
-      // });
+
     }
   };
 
@@ -179,7 +166,6 @@ const AddReference = ({ navigation, route }: any) => {
           <Placeholder />
         ) : (
           <>
-            <View style={styles(isDark).divider} />
             <View style={{ marginHorizontal: 16 }}>
               <Text style={[styles(isDark).label, { marginBottom: -5 }]}>
                 Hiring Position:

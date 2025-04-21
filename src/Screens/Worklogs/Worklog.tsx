@@ -72,11 +72,7 @@ const Worklog = ({ navigation }: any) => {
 
     const handleWorklogs = async (filterID: number, itemTypeID: number, label: string) => {
         setRefreshing(true);
-        const body = {
-            filterId: filterID,
-            itemTypeId: itemTypeID,
-            accessToken: accessToken,
-        };
+        const body = { filterId: filterID, itemTypeId: itemTypeID, accessToken: accessToken, };
         try {
             const response = await GetToDoList(body).unwrap();
             SetTodoList(response?.data);
@@ -110,12 +106,16 @@ const Worklog = ({ navigation }: any) => {
             iconColor={item?.itemType?.label === 'To-Do' ? "green" : item?.itemType?.label === 'User Story' ? Colors.secondary : item?.itemType?.label === 'Bug' ? Colors.error : null}
             rightIconName="eye"
             rightIconColor={Colors.primary}
-            rightIconPress={() => {navigation.navigate('WorklogDetails',{item}),dispatch(SetWorklogDetails(item))}}
-            rightIconColor2={Colors.primary}
-            showRightIcon2={true}
-            rightIconName2="plus-circle"
-            rightIconPress2={() => {item?.workStatus?.label === 'Work In Progress' && navigation.navigate('AddWorklog'),dispatch(SetWorklogDetails(item)) }}
-            cardPress={() => {setVisibleWorkType(!visibleWorkType), setSelectedItem(item) }}
+            rightIconPress={() => { navigation.navigate('WorklogDetails', { item }), dispatch(SetWorklogDetails(item)) }}
+            rightIconColor2={Colors.green}
+            showRightIcon2={item?.workStatus?.label === 'Work In Progress' ? true : false}
+            rightIconName2="plus-circle-outline"
+            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' && navigation.navigate('AddWorklog'), dispatch(SetWorklogDetails(item)) }}
+            rightIconColor3={Colors.green}
+            showRightIcon3={true}
+            rightIconName3="pencil-circle-outline"
+            rightIconPress3={() => { navigation.navigate('AddToDo'), dispatch(SetWorklogDetails(item)) }}
+            cardPress={() => { setVisibleWorkType(!visibleWorkType), setSelectedItem(item) }}
         />
     );
 
@@ -127,13 +127,6 @@ const Worklog = ({ navigation }: any) => {
                 onPress={() => navigation.goBack()}
                 showFilterIcon={true}
                 filterOnPress={() => setVisible(!visible)}
-            />
-            <View
-                style={{
-                    borderWidth: 1, height: 1,
-                    backgroundColor: isDark ? Colors.white : 'transparent',
-                    borderColor: isDark ? Colors.black : 'transparent',
-                }}
             />
             <CustomTextInput
                 label="Search"
@@ -203,11 +196,6 @@ const styles = (isDark: any) => StyleSheet.create({
         color: isDark ? Colors.white : Colors.black,
         marginVertical: 10,
         marginHorizontal: 16
-    },
-    divider: {
-        backgroundColor: Colors.medium_gray,
-        height: 1,
-        marginVertical: 10
     },
     fab: {
         position: 'absolute',

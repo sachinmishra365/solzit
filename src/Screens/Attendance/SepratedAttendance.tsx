@@ -1,24 +1,11 @@
-import {
-  ActivityIndicator,
-  BackHandler,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, BackHandler, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
 import { Colors } from '../../constants/Colors';
 import { useSelector } from 'react-redux';
 import { isDarkTheme } from '../../AppStore/Reducers/appState';
-import {
-  useAskEmployeeAttendanceQueryMutation,
-  useAttendanceMonthListMutation,
-  useEmployeeAttendanceQueryQuery,
-} from '../../Services/services';
+import { useAskEmployeeAttendanceQueryMutation, useAttendanceMonthListMutation, useEmployeeAttendanceQueryQuery, } from '../../Services/services';
 import { Card, IconButton } from 'react-native-paper';
 import { SCREEN_WIDTH } from '../../constants/Screen';
 import moment from 'moment';
@@ -29,6 +16,7 @@ import { BottomSheet, IBottomSheetRef } from '../BottomSheet/BottomSheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import Toast from 'react-native-toast-message';
+import EmptyData from '../../Components/EmptyData';
 
 const SepratedAttendance = ({ route }: any) => {
   const MonthData = route.params;
@@ -86,20 +74,12 @@ const SepratedAttendance = ({ route }: any) => {
   };
 
   const validationSchema = Yup.object().shape({
-    startTime: Yup.string()
-      .required('Start time is required.')
-      .test('Start time can not be 00:00', value => value !== '00:00'),
-    endTime: Yup.string()
-      .required('End time is required.')
-      .test('End time can not be 00:00', value => value !== '00:00'),
+    startTime: Yup.string().required('Start time is required.').test('Start time can not be 00:00', value => value !== '00:00'),
+    endTime: Yup.string().required('End time is required.').test('End time can not be 00:00', value => value !== '00:00'),
     reason: Yup.string().required('Reason is required.'),
   });
 
-  const onChangeStartTime = (
-    event: any,
-    selectedTime: Date | undefined,
-    setFieldValue: any,
-  ) => {
+  const onChangeStartTime = (event: any, selectedTime: Date | undefined, setFieldValue: any,) => {
     setShowStartTime(false);
     if (selectedTime) {
       const formattedTime = moment(selectedTime).format('HH:mm');
@@ -112,11 +92,7 @@ const SepratedAttendance = ({ route }: any) => {
     setShowStartTime(true);
   };
 
-  const onChangeEndTime = (
-    event: any,
-    selectedTime: Date | undefined,
-    setFieldValue: any,
-  ) => {
+  const onChangeEndTime = (event: any, selectedTime: Date | undefined, setFieldValue: any,) => {
     setShowEndTime(false);
     if (selectedTime) {
       const formattedTime = moment(selectedTime).format('HH:mm');
@@ -258,13 +234,7 @@ const SepratedAttendance = ({ route }: any) => {
   const renderItem = ({ item }: any) => {
     return (
       <Card
-        style={{
-          backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 7,
-          borderColor: Colors.background,
-          borderWidth: 1,
-          marginHorizontal: 16,
-        }}>
+        style={styles(isDark).card}>
         <Card.Content>
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <Text
@@ -600,20 +570,10 @@ const SepratedAttendance = ({ route }: any) => {
             }
           }}
         />
-        <View style={styles(isDark).divider} />
         {isLoading ? (
           <ShimmerPlaceHolder />
         ) : attendancedata.length === 0 ? (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                alignSelf: 'center',
-                fontFamily: 'Lato-Bold',
-              }}>
-              No Records
-            </Text>
-          </View>
+          <EmptyData />
         ) : (
           <FlatList
             data={attendancedata}
@@ -1093,11 +1053,12 @@ const styles = (isDark: boolean) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
+    card: {
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginVertical: 7,
+      borderColor: Colors.background,
+      borderWidth: 0.5,
+      marginHorizontal: 16,
     },
     modalContainer: {
       backgroundColor: 'white',

@@ -73,24 +73,14 @@ const SoluzioneDirectory = ({ navigation }: any) => {
 
   const renderItem = ({ item }: any) => {
     return (
-      <Card
-        style={{
-          backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 7,
-          borderColor: Colors.background,
-          borderWidth: 0.5,
-          marginHorizontal: 16,
-          overflow: 'hidden',
-        }}>
+      <Card style={styles(isDark).card}>
         <Card.Content>
           <View style={[styles(isDark).row]}>
             <View style={styles(isDark).imageContainer}>
-              <Image
-                source={
-                  item.employeeImg
-                    ? { uri: `data:image/png;base64,${item.employeeImg}` }
-                    : require('../../Assets/Images/EmpBoy.png')
-                }
+              <Image source={item.employeeImg
+                ? { uri: `data:image/png;base64,${item.employeeImg}` }
+                : require('../../Assets/Images/EmpBoy.png')
+              }
                 style={styles(isDark).image}
               />
               <View style={[styles(isDark).row, { marginTop: 5 }]}>
@@ -189,12 +179,10 @@ const SoluzioneDirectory = ({ navigation }: any) => {
         onSearchChange={handleSearch}
       />
 
-      <View style={styles(isDark).divider} />
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
-        data &&
-        data !== null && (
+        data && data !== null && (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={filteredData}
@@ -221,11 +209,13 @@ const styles = (isDark: boolean) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
+    card: {
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginVertical: 7,
+      borderColor: Colors.background,
+      borderWidth: 0.5,
+      marginHorizontal: 16,
+      overflow: 'hidden',
     },
     row: {
       flexDirection: 'row',

@@ -29,7 +29,6 @@ const AddWorklog = ({ navigation, route }: any) => {
     const [showdate, setShowDate] = useState(false);
 
     const { data: worklogDetails } = useGetWorkLogByIdQuery({ workLogId: SubmittedworklogData?.id, accessToken: accessToken }, { skip: !accessToken || !SubmittedworklogData?.id });
-    console.log(worklogDetails?.data, 'worklogDetails');
 
     const [saveworklog, result] = useSaveWorkLogMutation();
 
@@ -50,6 +49,7 @@ const AddWorklog = ({ navigation, route }: any) => {
         const data = statusRef.current === 'submitted' ? {
             projectId: worklogData?.project?.id,
             todoID: worklogData?.id,
+            id:  SubmittedworklogData?.id,
             date: moment(values?.date).format('YYYY-MM-DD'),
             hours: Number(values?.hour),
             worklogStatus: 674180001,
@@ -295,11 +295,6 @@ const styles = (isDark: any) => StyleSheet.create({
     },
     input: {
         marginTop: 7
-    },
-    errortxt: {
-        color: Colors.error,
-        marginLeft: 16,
-        fontFamily: 'Lato-Regular'
     },
     formErrorBox: {
         backgroundColor: Colors.error,

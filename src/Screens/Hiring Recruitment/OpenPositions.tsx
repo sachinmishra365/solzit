@@ -64,15 +64,7 @@ const OpenPositions = ({ navigation }: any) => {
   };
 
   const renderItem = ({ item }: any) => (
-    <Card
-      style={{
-        backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 10,
-        borderColor: Colors.background,
-        borderWidth: 0.5,
-        marginHorizontal: 16,
-      }}
-      onPress={() => navigation.navigate('PositionDetail', { position: item })}>
+    <Card style={styles(isDark).card} onPress={() => navigation.navigate('PositionDetail', { position: item })}>
       <Card.Content>
         <View style={[styles(isDark).titleContainer, { marginBottom: 8, }]}>
           <Text style={styles(isDark).title}>{item.hiringPosition}</Text>
@@ -110,14 +102,6 @@ const OpenPositions = ({ navigation }: any) => {
         title="Open Positions"
         onPress={() => navigation.goBack()}
       />
-      <View
-        style={{
-          borderWidth: 1,
-          height: 1,
-          backgroundColor: isDark ? Colors.white : 'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',
-        }}
-      />
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
@@ -148,12 +132,12 @@ const styles = (isDark: boolean, urgency?: string) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
-      marginBottom: 10,
+    card:{
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginVertical: 10,
+      borderColor: Colors.background,
+      borderWidth: 0.5,
+      marginHorizontal: 16,
     },
     title: {
       fontSize: 18,
@@ -172,18 +156,11 @@ const styles = (isDark: boolean, urgency?: string) =>
       color: isDark ? Colors.white : Colors.black,
       alignSelf: 'center',
     },
-
     urgencyText: {
       fontSize: 16,
       fontFamily: 'Lato-Bold',
-      color:
-        urgency === 'Urgent'
-          ? Colors.accent
-          : urgency === 'High'
-            ? '#916918'
-            : 'green',
+      color: urgency === 'Urgent' ? Colors.accent : urgency === 'High' ? '#916918' : 'green',
     },
-
     titleContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',

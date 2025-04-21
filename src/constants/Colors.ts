@@ -12,6 +12,7 @@ const Colors = {
   error: '#BD0101',
   dispatched: '#83B100',
   background: '#FFFFFF',
+  green:'#4CAF50'
 };
 const FontSize = {
   mini: 10,

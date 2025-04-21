@@ -25,13 +25,17 @@ const WorklogCard = ({
     rightIconColor2,
     rightIconName2,
     showRightIcon2 = false,
+    rightIconPress3,
+    rightIconColor3,
+    rightIconName3,
+    showRightIcon3 = false,
 }: any) => {
     const isDark = useSelector(isDarkTheme);
     return (
         <Card style={styles(isDark).cardContainer} onPress={cardPress}>
             <Card.Content style={styles(isDark).cardContant}>
                 <View style={{
-                    flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap',
+                    flexDirection: 'row', alignItems: 'center',
                 }}>
                   {
                     showleftIcon && (
@@ -44,7 +48,7 @@ const WorklogCard = ({
                     />
                     )
                   }
-                    <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', }]}>{projectName}</Text>
+                    <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', flexWrap: 'wrap',width:'90%' }]}>{projectName}</Text>
                 </View>
 
             </Card.Content>
@@ -62,13 +66,24 @@ const WorklogCard = ({
                 <Text
                     style={[
                         styles(isDark).txt,
-                        { color: Object.values(Statuses).find(item => item.label === status)?.color || '#000' }
+                        { color: Object.values(Statuses).find(item => item.label === status)?.color || '#000' ,fontFamily:'Lato-Semibold'}
                     ]}
                 >
                     {status}
                 </Text>
             </Card.Content>
             <Card.Content style={[styles(isDark).cardContant, { justifyContent: 'flex-end',marginTop: 10 }]}>
+                {
+                    showRightIcon3 && (
+                        <IconButton
+                            icon={rightIconName3}
+                            iconColor={rightIconColor3}
+                            size={25}
+                            style={{ marginRight: -10,marginBottom: -15  }}
+                            onPress={rightIconPress3}
+                        />
+                    )
+                }
                 {
                     showRightIcon2 && (
                         <IconButton

@@ -30,12 +30,12 @@ const WorklogDetails = ({ navigation, route }: any) => {
         }
     }, [WorkLogsByEmpIdOnTodo]);
 
-    const renderItem = ({ item }: any) => (
+    const renderItem = ({ item }: any) => (        
         <WorklogCard
             projectName={item?.project}
             serialNo={`hours: ${item?.hours}`}
             title={item?.description}
-            startDate={item?.date ? moment(item?.date, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
+            startDate={item?.date ? moment(item?.date,'DD-MM-YYYY').format("DD/MM/YYYY") : null}
             status={item?.worklogStatusName}
             iconName={'notebook'}
             iconColor={Colors.primary}

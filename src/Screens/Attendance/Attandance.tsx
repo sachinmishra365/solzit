@@ -1,4 +1,4 @@
-import {StyleSheet,Text,View,FlatList,TouchableOpacity,RefreshControl,} from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, RefreshControl, } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import { isDarkTheme } from '../../AppStore/Reducers/appState';
@@ -8,6 +8,7 @@ import { useAttendanceListQuery } from '../../Services/services';
 import { Card, IconButton } from 'react-native-paper';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import Toast from 'react-native-toast-message';
+import EmptyData from '../../Components/EmptyData';
 
 const Attendance = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -17,9 +18,7 @@ const Attendance = ({ navigation }: any) => {
   const [attendanceMonthData, SetAttendanceMonthData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, error, isLoading, refetch } = useAttendanceListQuery({
-    accessToken: EmployeeId?.authToken?.accessToken,
-  });
+  const { data, isLoading, refetch } = useAttendanceListQuery({ accessToken: EmployeeId?.authToken?.accessToken });
 
   const handleAttendanceList = async () => {
     if (!connected) {
@@ -64,16 +63,7 @@ const Attendance = ({ navigation }: any) => {
 
   const renderAttendance = ({ item }: any) => {
     return (
-      <Card
-        style={{
-          backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 7,
-          borderColor: Colors.background,
-          borderWidth: 1,
-          marginHorizontal: 16,
-          elevation: 15,
-          shadowColor: isDark ? Colors.white : Colors.black,
-        }}>
+      <Card style={styles(isDark).card}>
         <Card.Content>
           <View
             style={{
@@ -81,51 +71,18 @@ const Attendance = ({ navigation }: any) => {
               flexDirection: 'row',
               flexWrap: 'wrap',
             }}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 16,
-                fontFamily: 'Lato-Bold',
-              }}>
-              Month: {item.month.label ? item.month.label : 'N/A'}
-            </Text>
-
-            <View style={{}}>
-              <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Lato-Bold',
-                }}>
-                Total Pay Day: {item.totalPayDays ? item.totalPayDays : 0}
-              </Text>
-            </View>
+            <Text style={styles(isDark).txt}>{'Month : '}{item.month.label ? item.month.label : 'N/A'}</Text>
+            <Text style={styles(isDark).txt}>{'Total Pay Day : '}{item.totalPayDays ? item.totalPayDays : 0}</Text>
           </View>
 
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
-              alignItems: 'center',
               flexWrap: 'wrap',
             }}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 14,
-                fontFamily: 'Lato-Semibold',
-                marginBottom: 6,
-              }}>
-              Year: {item.year.label ? item.year.label : 'N/A'}
-            </Text>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 14,
-                fontFamily: 'Lato-Semibold',
-              }}>
-              Earned Leave: {item.earnedLeave ? item.earnedLeave : 0}
-            </Text>
+            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{'Year : '}{item.year.label ? item.year.label : 'N/A'}</Text>
+            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{'Earned Leave : '}{item.earnedLeave ? item.earnedLeave : 0}</Text>
           </View>
 
           <View
@@ -145,7 +102,6 @@ const Attendance = ({ navigation }: any) => {
                 flexDirection: 'row',
                 minHeight: 38
               }}
-              // disabled={result.isLoading}
               onPress={() => {
                 navigation.navigate('Summary', item);
               }}>
@@ -214,29 +170,22 @@ const Attendance = ({ navigation }: any) => {
         onPress={() => navigation.goBack()}
       />
 
-      <View style={styles(isDark).divider} />
-
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
-        data &&
-        data !== null && (
+        attendanceMonthData && attendanceMonthData.length > 0 ? (
           <FlatList
             data={attendanceMonthData}
             renderItem={renderAttendance}
-            keyExtractor={(item: any, index: any) =>
-              item?.id.toString() + index
-            }
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => onRefresh()}
-              />
-            }
+            keyExtractor={(item: any, index: any) => item?.id.toString() + index}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => onRefresh()} />}
             ListFooterComponent={<View style={{ height: 100 }} />}
           />
         )
-      )}
+          :
+          (<EmptyData />)
+      )
+      }
     </View>
   );
 };
@@ -247,20 +196,14 @@ const styles = (isDark: boolean) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
-    },
-    itemContainer: {
-      padding: 16,
-      borderBottomWidth: 1,
-      borderBottomColor: isDark ? Colors.gray : Colors.medium_gray,
-    },
-    text: {
-      color: 'black',
-      lineHeight: 24,
+    card: {
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginVertical: 7,
+      borderColor: Colors.background,
+      borderWidth: 0.5,
+      marginHorizontal: 16,
+      elevation: 15,
+      shadowColor: isDark ? Colors.white : Colors.black,
     },
     button: {
       backgroundColor: 'lightblue',
@@ -271,6 +214,12 @@ const styles = (isDark: boolean) =>
       alignSelf: 'center',
       alignItems: 'center',
     },
+    txt: {
+      color: isDark ? Colors.white : Colors.black,
+      fontSize: 15,
+      fontFamily: 'Lato-Semibold',
+      marginBottom: 5
+    }
   });
 
 export default Attendance;

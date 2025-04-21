@@ -82,10 +82,7 @@ const AddToMyPlan = ({navigation, route}: any) => {
         text2: 'Please select at least one valid task',
       });
       return;
-    }
-  
-    console.log('Final Payload to API:', payload);
-  
+    }  
     setIsCommitting(true);
   
     try {
@@ -93,9 +90,7 @@ const AddToMyPlan = ({navigation, route}: any) => {
         accessToken: EmployeeId?.authToken?.accessToken,
         data: payload, 
       }).unwrap();
-  
-      console.log('API Response:', res);
-  
+    
       if (res?.isSuccessful && res?.messageDetail?.message_code === 201) {
         Toast.show({
           type: 'success',
@@ -125,7 +120,6 @@ const AddToMyPlan = ({navigation, route}: any) => {
         isDark={isDark}
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
 
       <ScrollView style={{}}>
         {selectedItems.length === 0 ? (
@@ -319,10 +313,6 @@ const styles = (isDark: boolean) =>
     mainContainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
-    },
-    divider: {
-      height: 1,
-      backgroundColor: isDark ? Colors.medium_gray : 'transparent',
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,

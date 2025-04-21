@@ -9,6 +9,7 @@ import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import { Card, FAB, Icon } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import moment from 'moment';
+import EmptyData from '../../Components/EmptyData';
 
 
 const Feedback = ({ navigation }: any) => {
@@ -17,9 +18,7 @@ const Feedback = ({ navigation }: any) => {
   const [FeedbackData, setFeedbackData] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isLoading, refetch } = useGetMyFeedbacksListByEmpIdQuery({
-    accessToken: EmployeeId?.authToken?.accessToken,
-  });
+  const { data, isLoading, refetch } = useGetMyFeedbacksListByEmpIdQuery({ accessToken: EmployeeId?.authToken?.accessToken, });
 
   useEffect(() => {
     if (data && data?.messageDetail?.message_code === 200 && data?.data) {
@@ -39,55 +38,26 @@ const Feedback = ({ navigation }: any) => {
   };
 
   const renderItem = ({ item }: any) => (
-    <Card
-      style={{
-        backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 7,
-        borderColor: Colors.background,
-        borderWidth: 0.5,
-        marginHorizontal: 16,
-      }}
-    >
+    <Card style={styles(isDark).card}>
       <Card.Content>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}>
-          <Text style={[styles(isDark).txt, {
-            fontFamily: 'Lato-Bold',
-          }]}>
-            {'Status : '}{item.status.label}
-          </Text>
-          <Text style={[styles(isDark).txt, { fontSize: 16,fontFamily: 'Lato-Bold' }]}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+          <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', }]}>{'Status : '}{item.status.label}</Text>
+          <Text style={[styles(isDark).txt, { fontSize: 16, fontFamily: 'Lato-Bold' }]}>
             {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
           </Text>
         </View>
         <View>
 
-      <View style={{flexDirection: 'row',}}>
-      <Text style={[styles(isDark).txt,{fontFamily: 'Lato-Bold'}]}>
-          {'Title : '}
-          </Text>
-          <Text style={[styles(isDark).txt,{flexWrap:'wrap',flex:1}]}>
-            {item.feedBackTitle}
-          </Text>
-      </View>
+          <View style={{ flexDirection: 'row', }}>
+            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold' }]}>{'Title : '}</Text>
+            <Text style={[styles(isDark).txt, { flexWrap: 'wrap', flex: 1 }]}>{item.feedBackTitle}</Text>
+          </View>
 
           <TouchableOpacity style={styles(isDark).viewFeedback} onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}>
             <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 6,
-                borderRadius: 3,
-                backgroundColor: Colors.primary,
-              }}
-            >
+              style={styles(isDark).button}>
               <Icon source="eye" size={24} color={Colors.white} />
-              <Text style={[styles(isDark).addButtonText, { color: Colors.white, marginLeft: 4 }]}>
-                View Feedback
-              </Text>
+              <Text style={[styles(isDark).addButtonText, { color: Colors.white, marginLeft: 4 }]}>View Feedback</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -98,9 +68,11 @@ const Feedback = ({ navigation }: any) => {
 
   return (
     <View style={styles(isDark).maincontainer}>
-      <CustomHeader showBackIcon={true} title="Feedback"  onPress={() => navigation.goBack()}
-       />
-      <View style={styles(isDark).divider} />
+      <CustomHeader
+        showBackIcon={true}
+        title="Feedback"
+        onPress={() => navigation.goBack()}
+      />
 
       {isLoading ? (
         <ShimmerPlaceHolder />
@@ -112,25 +84,11 @@ const Feedback = ({ navigation }: any) => {
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-            ListFooterComponent={<View style={{height: 100}} />}
+            ListFooterComponent={<View style={{ height: 100 }} />}
           />
 
           : (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  alignSelf: 'center',
-                  fontFamily: 'Lato-Bold',
-                }}>
-                No Records
-              </Text>
-            </View>
+            <EmptyData />
           )}
 
       <FAB
@@ -151,11 +109,12 @@ const styles = (isDark: boolean) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
+    card: {
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginVertical: 7,
+      borderColor: Colors.background,
+      borderWidth: 0.5,
+      marginHorizontal: 16,
     },
     addButtonText: {
       fontSize: 14,
@@ -179,6 +138,13 @@ const styles = (isDark: boolean) =>
       backgroundColor: isDark ? Colors.gray : Colors.primary,
       elevation: 10,
     },
+    button: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 6,
+      borderRadius: 3,
+      backgroundColor: Colors.primary,
+    }
   });
 
 export default Feedback;

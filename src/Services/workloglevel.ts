@@ -27,8 +27,8 @@ export const workloglevelApi = createApi({
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
     // baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //pro
   }),
+  tagTypes: ['WorkStatus','DayTaskReports','DeleteDayTaskReports'],
 
-  tagTypes: ['DayTaskReports'],
   endpoints: builder => ({
     GetToDoListBasedOnFilter: builder.mutation({
       query: ({data, filterId, itemTypeId, accessToken}) => ({
@@ -83,7 +83,7 @@ export const workloglevelApi = createApi({
     }),
     GetEmployeeWorkStatusList: builder.query({
       query: ({data, accessToken}) => ({
-        url: `/Master/GetOptionSet?DropDownName=Status`,
+        url: `/Master/GetOptionSet?DropDownName=SolzStatus`,
         method: 'GET',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -131,6 +131,7 @@ export const workloglevelApi = createApi({
           'Content-Type': 'application/json',
         },
       }),
+      providesTags: ['WorkStatus'],
     }),
 
     CreateNewTodo: builder.mutation({
@@ -143,6 +144,19 @@ export const workloglevelApi = createApi({
         },
         body: data,
       }),
+      invalidatesTags: ['WorkStatus'],
+    }),
+    EditTodo: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/EditToDo`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+      invalidatesTags: ['WorkStatus'],
     }),
     SaveWorkLog: builder.mutation({
       query: ({data, accessToken}) => ({
@@ -178,6 +192,7 @@ export const workloglevelApi = createApi({
           },
         };
       },
+      providesTags: ['DayTaskReports',],
     }),
 
     GetToDoDetailsByToDoId: builder.query({
@@ -190,6 +205,7 @@ export const workloglevelApi = createApi({
           },
         };
       },
+      providesTags: ['WorkStatus',],
     }),
 
     GetemployeeProjectAllocation: builder.query({
@@ -213,6 +229,7 @@ export const workloglevelApi = createApi({
         },
         body: data,
       }),
+      invalidatesTags: ['DayTaskReports'],
     }),
 
     CreateMyDailyTaskReport: builder.mutation({
@@ -238,6 +255,7 @@ export const workloglevelApi = createApi({
         },
         body: data,
       }),
+      invalidatesTags: ['DayTaskReports'],
     }),
     GetAppSettingsValue: builder.query({
       query: ({accessToken,AppSettingName}) => {
@@ -275,4 +293,5 @@ export const {
   useCreateMyDailyTaskReportMutation,
   useUpdateMyDailyTaskReportMutation,
   useGetAppSettingsValueQuery,
+  useEditTodoMutation,
 } = workloglevelApi;

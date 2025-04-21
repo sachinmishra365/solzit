@@ -207,19 +207,19 @@ const AddFeedback = ({ navigation, route }: any) => {
       ) : (
         <>
           <View style={styles(isDark).divider} />
-          <Text style={[styles(isDark).label, {marginHorizontal: 16}]}>
+          <Text style={[styles(isDark).label, { marginHorizontal: 16 }]}>
             Soluzione values your feedback. Please feel free to share your
             thoughts.
           </Text>
 
-          <ScrollView contentContainerStyle={{marginHorizontal: 16}}>
+          <ScrollView contentContainerStyle={{ marginHorizontal: 16 }}>
             <Formik
               initialValues={{
-                regardingTo: {label: 'Select', value: null},
+                regardingTo: { label: 'Select', value: null },
                 feedBackTitle: '',
                 feedBackDescription: '',
                 isAttachmentRequired: false,
-                upload: {filename: '', filetype: '', bytes: ''},
+                upload: { filename: '', filetype: '', bytes: '' },
               }}
               validationSchema={FeedbackSchema}
               onSubmit={handleSubmit}
@@ -235,7 +235,7 @@ const AddFeedback = ({ navigation, route }: any) => {
                 touched,
               }) => (
                 <>
-                <View style={{marginVertical: 10}} />
+                  <View style={{ marginVertical: 10 }} />
                   <Text style={styles(isDark).label}>Regarding</Text>
                   <List.Accordion
                     title={values.regardingTo.label || 'Select a category'}
@@ -250,9 +250,9 @@ const AddFeedback = ({ navigation, route }: any) => {
                       borderColor: isDark
                         ? Colors.background
                         : Colors.primary,
-                      borderWidth:1,
+                      borderWidth: 1,
                       borderRadius: 1,
-                      height:57
+                      height: 57
                     }}
                     right={props => (
                       <List.Icon
@@ -291,19 +291,19 @@ const AddFeedback = ({ navigation, route }: any) => {
                     </Text>
                   )}
 
-                  <View style={{marginVertical: 12}} />
+                  <View style={{ marginVertical: 12 }} />
                   <CustomTextInput
                     label="Title"
                     value={values.feedBackTitle}
                     secureTextEntry={false}
                     leftIconName="clipboard-text-outline"
-                    onChangeText={(text: string ) => {
+                    onChangeText={(text: string) => {
                       handleChange('feedBackTitle')(text);
                       setFieldValue('feedBackTitle', text);
                       setFieldTouched('feedBackTitle', true, false);
                     }}
                     onBlur={handleBlur('feedBackTitle')}
-                    editable={true}   
+                    editable={true}
                   />
                   {touched.feedBackTitle && errors.feedBackTitle && (
                     <Text style={styles(isDark).error}>
@@ -311,20 +311,20 @@ const AddFeedback = ({ navigation, route }: any) => {
                     </Text>
                   )}
 
-                  <View style={{marginVertical: 12}} />
+                  <View style={{ marginVertical: 12 }} />
                   <CustomTextInput
                     label="Description"
                     value={values.feedBackDescription}
                     secureTextEntry={false}
                     leftIconName="message-reply-text-outline"
-                    onChangeText={(text: string ) => {
+                    onChangeText={(text: string) => {
                       handleChange('feedBackDescription')(text);
                       setFieldValue('feedBackDescription', text);
                       setFieldTouched('feedBackDescription', true, false);
                     }}
                     onBlur={handleBlur('feedBackDescription')}
                     editable={true}
-                    contentStyle={{height: 100}}
+                    contentStyle={{ height: 100 }}
                     numberOfLines={5}
                     multiline={true}
                   />
@@ -386,7 +386,7 @@ const AddFeedback = ({ navigation, route }: any) => {
                     <Text
                       style={[
                         styles(isDark).uploadButtonText,
-                        {color: Colors.white, textAlign: 'center'},
+                        { color: Colors.white, textAlign: 'center' },
                       ]}>
                       Submit
                     </Text>

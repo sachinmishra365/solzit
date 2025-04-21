@@ -239,14 +239,6 @@ const LeaveRequest = ({navigation}: any) => {
           navigation.goBack();
         }}
       />
-      <View
-        style={{
-          borderWidth: 1,
-          height: 1,
-          backgroundColor: isDark ? Colors.white : 'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',
-        }}
-      />
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : data?.data === null ? (

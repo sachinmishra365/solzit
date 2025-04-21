@@ -1,31 +1,16 @@
-import {
-  Alert,
-  Image,
-  Linking,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, { useEffect, useMemo, useState } from 'react';
+import { Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
-import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, IconButton } from 'react-native-paper';
 import { auth, isDarkTheme } from '../../AppStore/Reducers/appState';
-// import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import { Colors } from '../../constants/Colors';
 import { useEmployeeUpdateProfileMutation } from '../../Services/appLevel';
 import Toast from 'react-native-toast-message';
 import { PERMISSION_TYPE, PermissionHandler } from '../../permissions';
 import Placeholder from '../Placeholder/Placeholder';
 
-import ImageCropPicker, {
-  ImageOrVideo,
-  Image as CropImage,
-  Video as CropVideo,
-} from 'react-native-image-crop-picker';
+import ImageCropPicker, { ImageOrVideo, Image as CropImage, } from 'react-native-image-crop-picker';
 
 const Profile = ({ navigation }: any) => {
 
@@ -38,14 +23,17 @@ const Profile = ({ navigation }: any) => {
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
   const base64Image = `data:image/jpeg;base64,${Profiledata?.employeeImg}`;
-  // const base64Image = useMemo(
-  //   () => `data:image/jpeg;base64,${Profiledata?.employeeImg}`,
-  //   [Profiledata?.employeeImg]
-  // );
 
   const [imageAsset, setImageAsset] = useState<any>(null);
-
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [updateProfile, { isLoading }] = useEmployeeUpdateProfileMutation();
+
+  useEffect(() => {
+    if (imageAsset != null) {
+      handleUpdateImage();
+    }
+  }, [imageAsset]);
 
   const handlePick = async (
     action: () => Promise<ImageOrVideo | ImageOrVideo[]>,
@@ -63,13 +51,8 @@ const Profile = ({ navigation }: any) => {
   };
 
   const openModal = async () => {
-    const cameraPermission = await PermissionHandler.checkPermission(
-      PERMISSION_TYPE.camera,
-    );
-
-    const photosPermission = await PermissionHandler.checkPermission(
-      PERMISSION_TYPE.photos,
-    );
+    const cameraPermission = await PermissionHandler.checkPermission(PERMISSION_TYPE.camera,);
+    const photosPermission = await PermissionHandler.checkPermission(PERMISSION_TYPE.photos,);
 
     if (!cameraPermission) {
       Linking.openSettings();
@@ -81,10 +64,7 @@ const Profile = ({ navigation }: any) => {
     }
   };
 
-  const pickSingleWithCamera = (
-    cropping = false,
-    mediaType: 'photo' | 'video' = 'photo',
-  ) => {
+  const pickSingleWithCamera = (cropping = false, mediaType: 'photo' | 'video' = 'photo',) => {
     handlePick(() =>
       ImageCropPicker.openCamera({
         cropping,
@@ -97,10 +77,7 @@ const Profile = ({ navigation }: any) => {
     );
   };
 
-  const pickSingleWithGallary = (
-    cropping = false,
-    mediaType: 'photo' | 'video' = 'photo',
-  ) => {
+  const pickSingleWithGallary = (cropping = false, mediaType: 'photo' | 'video' = 'photo',) => {
     handlePick(() =>
       ImageCropPicker.openPicker({
         cropping,
@@ -113,7 +90,6 @@ const Profile = ({ navigation }: any) => {
     );
   };
 
-  const [updateProfile, { isLoading }] = useEmployeeUpdateProfileMutation();
 
   const handleUpdateImage = async () => {
     if (!connected) {
@@ -158,30 +134,13 @@ const Profile = ({ navigation }: any) => {
     }
   };
 
-  useEffect(() => {
-    if (imageAsset != null) {
-      handleUpdateImage();
-    }
-  }, [imageAsset]);
-
-
 
   return (
     <View style={styles(isDark).maincontainer}>
       <CustomHeader
         showBackIcon={true}
         title="Profile"
-        onPress={() => {
-          navigation.goBack();
-        }}
-      />
-      <View
-        style={{
-          borderWidth: 1,
-          height: 1,
-          backgroundColor: isDark ? Colors.white : 'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',
-        }}
+        onPress={() => { navigation.goBack() }}
       />
       {isLoading ? (
         <Placeholder />
@@ -374,6 +333,7 @@ const Profile = ({ navigation }: any) => {
           />
         </TouchableOpacity>
       </View>
+
       <Modal
         visible={modalVisible}
         transparent={false}
@@ -403,12 +363,7 @@ const Profile = ({ navigation }: any) => {
               )}
             </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-evenly',
-                width: '100%',
-              }}>
+            <View style={{flexDirection: 'row',justifyContent: 'space-evenly',width: '100%',}}>
               <TouchableOpacity
                 style={{
                   backgroundColor: '#916918',
@@ -485,6 +440,7 @@ const Profile = ({ navigation }: any) => {
           </View>
         </View>
       </Modal>
+      
     </View>
   );
 };

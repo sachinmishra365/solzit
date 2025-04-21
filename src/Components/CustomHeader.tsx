@@ -1,4 +1,4 @@
-import {Dimensions,StyleSheet,Text,TextInput,View} from 'react-native';
+import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 import React from 'react';
 import { IconButton } from 'react-native-paper';
 import { Colors } from '../constants/Colors';
@@ -19,75 +19,60 @@ const CustomHeader = ({
   showRightIcon = false,
   rightIconPress,
   rightIconName,
-  showFilterIcon=false,
+  showFilterIcon = false,
   filterOnPress,
   onMenuSelect,
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
   return (
-    <View style={styles(isDark).container}>
-      {showBackIcon ? (
-        <IconButton
-          icon="chevron-left"
-          iconColor={isDark ? Colors.white : Colors.black}
-          size={25}
-          onPress={onPress}
-          accessibilityLabel="Back"
-        />
-      ) : (
-        <IconButton
-          icon="menu"
-          iconColor={isDark ? Colors.white : Colors.black}
-          size={25}
-          onPress={onPress}
-          accessibilityLabel="Menu"
-        />
-      )}
-      <Text style={styles(isDark).title}>{title}</Text>
-      {/* {showSearchIcon && (
-        <IconButton
-          icon="card-search-outline"
-          iconColor={'#fff'}
-          size={25}
-          onPress={searchOnPress}
-          style={styles(isDark).searchIcon}
-          accessibilityLabel="Search"
-        />
-      )} */}
-      {showFilterIcon && (
-        <IconButton
-          icon="filter"
-          iconColor={isDark ? Colors.white : Colors.primary}
-          size={25}
-          onPress={filterOnPress}
-          style={styles(isDark).searchIcon}
-          accessibilityLabel="filter"
-        />
-      )}
-      {showSearch && (
-        <TextInput
-          style={styles(isDark).searchInput}
-          placeholder=" Search "
-          placeholderTextColor={isDark ? Colors.medium_gray : Colors.dark_gray}
-          value={searchValue}
-          onChangeText={onSearchChange}
-          onPress={filterOnPress}
+    <>
+      <View style={styles(isDark).container}>
+        {showBackIcon ? (
+          <IconButton icon="chevron-left" size={25} accessibilityLabel="Back"
+            iconColor={isDark ? Colors.white : Colors.black}
+            onPress={onPress}
+          />
+        ) : (
+          <IconButton icon="menu" size={25} accessibilityLabel="Menu"
+            iconColor={isDark ? Colors.white : Colors.black}
+            onPress={onPress}
+          />
+        )}
 
-        />
-      )}
-      {
-        showRightIcon && (
-          <IconButton
-          icon={rightIconName}
-          iconColor={isDark ? Colors.white : Colors.primary}
-          size={25}
-          onPress={rightIconPress}
-          style={styles(isDark).searchIcon}
-        />
-        )
-      }
-    </View>
+        <Text style={styles(isDark).title}>{title}</Text>
+
+        {showFilterIcon && (
+          <IconButton icon="filter" size={25} accessibilityLabel="filter"
+            iconColor={isDark ? Colors.white : Colors.primary}
+            style={styles(isDark).searchIcon} onPress={filterOnPress}
+          />
+        )}
+        {showSearch && (
+          <TextInput
+            style={styles(isDark).searchInput}
+            placeholder="Search"
+            placeholderTextColor={isDark ? Colors.medium_gray : Colors.dark_gray}
+            value={searchValue}
+            onChangeText={onSearchChange}
+            onPress={filterOnPress}
+          />
+        )}
+        {showRightIcon && (
+            <IconButton icon={rightIconName} size={25}
+              iconColor={isDark ? Colors.white : Colors.primary}
+              style={styles(isDark).searchIcon} onPress={rightIconPress}
+            />
+          )}
+      </View>
+      <View
+        style={{
+          borderWidth: 1, height: 1,
+          backgroundColor: isDark ? Colors.white : 'transparent',
+          borderColor: isDark ? Colors.black : 'transparent',
+        }}
+      />
+    </>
   );
 };
 

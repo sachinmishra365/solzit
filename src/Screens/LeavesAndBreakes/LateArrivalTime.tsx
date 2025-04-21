@@ -62,7 +62,6 @@ const LateArrivalTime = ({navigation}: any) => {
         console.log('Unexpected response code or missing data');
       }
     } catch (error: any) {
-      console.log('Error fetching data:', error);
       Toast.show({
         type: 'error',
         text1: 'Failed to fetch data',
@@ -160,7 +159,6 @@ const LateArrivalTime = ({navigation}: any) => {
         isDark={isDark}
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : lateData?.length === 0 ? (
@@ -200,10 +198,6 @@ const styles = (isDark: boolean) =>
     mainContainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
-    },
-    divider: {
-      height: 1,
-      backgroundColor: isDark ? Colors.medium_gray : 'transparent',
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,

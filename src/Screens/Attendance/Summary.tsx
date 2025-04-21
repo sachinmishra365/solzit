@@ -1,27 +1,61 @@
-import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useEmployeeLeaveRecordsQuery} from '../../Services/services';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useEmployeeLeaveRecordsQuery } from '../../Services/services';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
-import {useSelector} from 'react-redux';
-import {useNavigation} from '@react-navigation/native';
+import { Colors } from '../../constants/Colors';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card, Icon} from 'react-native-paper';
+import { Card, Icon, IconButton } from 'react-native-paper';
 
-const Summary = ({route}: any) => {
+const Summary = ({ route }: any) => {
   const MonthData = route.params;
-
   const isDark = useSelector(isDarkTheme);
   const navigation = useNavigation();
+
   const [records, SetRecords] = useState<any>({});
+
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
-  const {data, isLoading, error} = useEmployeeLeaveRecordsQuery({
-    monthID: MonthData?.leaveApplicationId,
-    accessToken: accessToken,
-  });
+  const { data, isLoading, error } = useEmployeeLeaveRecordsQuery({ monthID: MonthData?.leaveApplicationId, accessToken: accessToken, });
+
+  useEffect(() => {
+    handlesummary();
+  }, [data]);
+
+  const UpperData = [
+    {
+      label: `${records?.month?.label || 'Month'}, ${records?.year?.label || ''}\nDuration`,
+      icon: 'calendar-month',
+    },
+    {
+      label: `${records?.totalPayDays || 0}\nPay Days\n`,
+      icon: 'calendar-check',
+    },
+    {
+      label: `${records?.earnleaveavailed || 0}\nLeave Availed\n`,
+      icon: 'airplane',
+    },
+    {
+      label: `${records?.totallopleave || 0}\nTotal LOP\n`,
+      icon: 'minus-circle-outline',
+    },
+  ]
+
+  const Summary = [
+    { label: 'Deficient Hours', value: records?.deficientHours },
+    { label: 'Total Low Hours (<8)', value: records?.totalLowHrsLess8 },
+    { label: 'Total Low Hours (3-5)', value: records?.totalLowHrs3_5 },
+    { label: 'Total Low Hours (<3)', value: records?.totalLowHrsLess3 },
+    { label: 'No of Lates', value: records?.noOfLate },
+    { label: 'Absent without Leave', value: records?.totalAbsentDays },
+    { label: 'LOP Low Hours (<8)', value: records?.lopLowHrsLess8 },
+    { label: 'LOP Low Hours (3-5)', value: records?.lopLowHrs3_5 },
+    { label: 'LOP Low Hours (<3)', value: records?.lopLowHrsLess3 },
+    { label: 'LOP Lates', value: records?.lopLates },
+  ]
 
   const handlesummary = async () => {
     try {
@@ -33,12 +67,8 @@ const Summary = ({route}: any) => {
       ) {
         SetRecords(response?.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
-
-  useEffect(() => {
-    handlesummary();
-  }, [data]);
 
   return (
     <View style={styles(isDark).maincontainer}>
@@ -47,438 +77,55 @@ const Summary = ({route}: any) => {
         title="Leave Balance Detail"
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
 
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              marginHorizontal: 16,
-              marginTop: 10,
-            }}>
-            {[
-              {
-                label: `${records?.month?.label || 'Month'}, ${
-                  records?.year?.label || ''
-                }\nDuration`,
-                icon: 'calendar-month',
-              },
 
-              {
-                label: `${records?.totalPayDays || 0}\nPay Days\n`,
-                icon: 'calendar-check',
-              },
-              {
-                label: `${records?.earnleaveavailed || 0}\nLeave Availed\n`,
-                icon: 'airplane',
-              },
-              {
-                label: `${records?.totallopleave || 0}\nTotal LOP\n`,
-                icon: 'minus-circle-outline',
-              },
-            ].map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  backgroundColor: isDark ? Colors.black : Colors.white,
-                  flex: 1,
-                  marginHorizontal: 4,
-                  borderRadius: 10,
-                  padding: 10,
-                  alignItems: 'center',
-                }}>
-                <Icon
-                  source={item.icon}
-                  size={24}
-                  color={isDark ? Colors.white : Colors.primary}
-                />
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.primary,
-                    fontSize: 12,
-                    textAlign: 'center',
-                    marginTop: 5,
-                    fontFamily: 'Lato-Semibold',
-                  }}>
-                  {item.label}
-                </Text>
+          <View style={[styles(isDark).card, {
+            elevation: 5, justifyContent: 'space-around', flexDirection: 'row'
+          }]}>
+            {UpperData.map((item, index) => (
+              <View key={index}>
+                <IconButton icon={item.icon} size={25} iconColor={isDark ? Colors.white : Colors.primary} />
+                <Text style={[styles(isDark).txt, { fontSize: 12, textAlign: 'center' }]}>{item.label}</Text>
               </View>
             ))}
           </View>
 
-          {/* <View
-            style={{
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-              marginHorizontal: 16,
-            }}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 16,
-                fontFamily: 'Lato-Bold',
-              }}>
-              Leave Summary
-            </Text>
-          </View> */}
-          <Card
-            style={{
-              backgroundColor: isDark ? Colors.black : Colors.background,
-              marginVertical: 7,
-              borderColor: Colors.background,
-              borderWidth: 0.5,
-              marginHorizontal: 16,
-              overflow: 'hidden',
-            }}>
+          <Card style={styles(isDark).card}>
             <Card.Content>
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 16,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  Leave Summary
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.primary,
-                    fontSize: 16,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.month?.label ? records?.month?.label : 0}
-                </Text>
+              <View style={styles(isDark).row}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold', fontSize: 16, }]}>Leave Summary</Text>
+                <Text style={styles(isDark).txt}>{records?.month?.label || 0}</Text>
               </View>
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Semibold',
-                  }}>
-                  Earn Leave
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Starting Balance{' : '}
-                  <Text style={{fontFamily: 'Lato-Regular'}}>
-                    {records?.earnedLeave || 0}
-                  </Text>
-                </Text>
+              <View style={styles(isDark).row}>
+                <Text style={styles(isDark).txt}>{'Earn Leave'}</Text>
+                <Text style={styles(isDark).txt}>{'Starting Balance: '}{records?.earnedLeave || 0}</Text>
               </View>
 
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Leave Availed{' : '}
-                  <Text style={{fontFamily: 'Lato-Regular'}}>
-                    {records?.earnleaveavailed || 0}
-                  </Text>
-                </Text>
-
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Closing Balance{' : '}
-                  <Text style={{fontFamily: 'Lato-Regular'}}>
-                    {records?.earnleaveremaining || 0}
-                  </Text>
-                </Text>
+              <View style={styles(isDark).row}>
+                <Text style={styles(isDark).txt}>{'Leave Availed : '}{records?.earnleaveavailed || 0}</Text>
+                <Text style={styles(isDark).txt}>{'Closing Balance : '}{records?.earnleaveremaining || 0}</Text>
               </View>
             </Card.Content>
           </Card>
 
-          <Card
-            style={{
-              backgroundColor: isDark ? Colors.black : Colors.background,
-              marginVertical: 7,
-              borderColor: Colors.background,
-              borderWidth: 0.5,
-              marginHorizontal: 16,
-              overflow: 'hidden',
-            }}>
+          <Card style={styles(isDark).card}>
             <Card.Content>
               <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Lato-Bold',
-                
-                }}>
-                LOP Summary
+                style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold', fontSize: 16, textAlign: 'center', }]}>{'LOP Summary'}
               </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Deficient Hours
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.deficientHours || 0}
-                </Text>
-              </View>
 
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Total Low Hours ({'<8'})
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.totalLowHrsLess8 || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Total Low Hours (3-5)
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.totalLowHrs3_5 || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Total Low Hours ({'<3'})
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.totalLowHrsLess3 || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  No of Lates
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.noOfLate || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  Absent without Leave
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.totalAbsentDays || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  LOP Low Hours ({'<8'})
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.lopLowHrsLess8 || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  LOP Low Hours (3-5)
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.lopLowHrs3_5 || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  LOP Low Hours ({'<3'})
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.lopLowHrsLess3 || 0}
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  LOP Lates
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  {records?.lopLates || 0}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginVertical: 4,
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                    fontSize: 16,
-                  }}>
-                  Total LOPs
-                </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontFamily: 'Lato-Bold',
-                    fontSize: 16,
-                  }}>
-                  {records?.totalLossOfPay || 0}
-                </Text>
-              </View>
+              {Summary.map((item, index) => (
+                <View
+                  key={index}
+                  style={styles(isDark).row}>
+                  <Text style={styles(isDark).txt}>{item.label}</Text>
+                  <Text style={styles(isDark).txt}>{item.value || 0}</Text>
+                </View>
+              ))}
             </Card.Content>
           </Card>
         </ScrollView>
@@ -494,11 +141,27 @@ const styles = (isDark: boolean) =>
     maincontainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
+      // paddingBottom: 16,
     },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
+    card: {
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginHorizontal: 16,
+      borderRadius: 5,
+      padding: 8,
+      marginVertical: 5,
+      borderColor : Colors.background,
+      borderWidth: 0.5,
+    },
+    txt: {
+      color: isDark ? Colors.white : Colors.black,
+      fontSize: 14,
+      fontFamily: 'Lato-Regular',
+      marginVertical: 2,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginVertical: 2,
     },
   });

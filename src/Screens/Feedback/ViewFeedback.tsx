@@ -1,24 +1,11 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  RefreshControl,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, RefreshControl, ScrollView, ActivityIndicator, Alert, } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import { Colors } from '../../constants/Colors';
-import {
-  useGetAttachmentFromSharePointQuery,
-  useGetMyFeedbacksByFeedBackIdQuery,
-} from '../../Services/services';
+import { useGetAttachmentFromSharePointQuery, useGetMyFeedbacksByFeedBackIdQuery, } from '../../Services/services';
 import { IconButton } from 'react-native-paper';
 import moment from 'moment';
-import Share from 'react-native-share';
 import CustomHeader from '../../Components/CustomHeader';
 import RNFS from 'react-native-fs';
 
@@ -29,10 +16,7 @@ const ViewFeedback = ({ route, navigation }: any) => {
   const [refreshing, setRefreshing] = useState(false);
   const [feedbackByID, SetFeedbackByID] = useState<any>([]);
 
-  const params = {
-    FeedBackId: feedbackData?.feedBackId,
-    accessToken: EmployeeId?.authToken?.accessToken,
-  };
+  const params = { FeedBackId: feedbackData?.feedBackId, accessToken: EmployeeId?.authToken?.accessToken, };
   const { data, refetch, error } = useGetMyFeedbacksByFeedBackIdQuery(params);
 
   useEffect(() => {
@@ -90,7 +74,6 @@ const ViewFeedback = ({ route, navigation }: any) => {
         title="View Feedback"
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color={Colors.primary} />
@@ -226,12 +209,6 @@ const styles = (isDark: boolean) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.background,
     },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
-    },
     row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -267,14 +244,6 @@ const styles = (isDark: boolean) =>
       alignItems: 'center',
       paddingVertical: 5,
 
-    },
-    downloadContainer: {
-      alignItems: 'center',
-    },
-    downloadText: {
-      fontSize: 12,
-      fontFamily: 'Lato-Regular',
-      color: isDark ? Colors.white : Colors.black,
     },
   });
 

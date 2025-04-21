@@ -1,10 +1,10 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import CustomHeader from '../../../Components/CustomHeader'
 import { Colors } from '../../../constants/Colors'
-import { useSelector } from 'react-redux'
-import { isDarkTheme } from '../../../AppStore/Reducers/appState'
-import { useCreateNewTodoMutation, useGetAllUserStoriesByProjectIdQuery, useGetEmployeeByProjectIdQuery, useGetEmployeePriorityListQuery, useGetEmployeeProjectsListQuery, useGetEmployeeWorkStatusListQuery } from '../../../Services/workloglevel'
+import { useDispatch, useSelector } from 'react-redux'
+import { isDarkTheme, SetWorklogDetails } from '../../../AppStore/Reducers/appState'
+import { useCreateNewTodoMutation, useEditTodoMutation, useGetAllUserStoriesByProjectIdQuery, useGetEmployeeByProjectIdQuery, useGetEmployeePriorityListQuery, useGetEmployeeProjectsListQuery, useGetEmployeeWorkStatusListQuery, useGetToDoDetailsByToDoIdQuery } from '../../../Services/workloglevel'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CustomTextInput from '../../../Components/CustomTextInput'
@@ -13,13 +13,35 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment'
 import Placeholder from '../../Placeholder/Placeholder'
+import { Not_Started, In_Progress, Completed } from '../../../constants/WorkStatuses'
 
+
+const validationSchema = Yup.object().shape({
+    projectName: Yup.string().required('Project selection is required'),
+    userStory: Yup.string().required('User Story is required'),
+    title: Yup.string().required('Title is required').min(20, 'Title must be at least 20 characters'),
+    itemDescription: Yup.string().required('Item Description is required').min(20, 'Item Description must be at least 20 characters'),
+    estimatedEffort: Yup.number().typeError('Hour must be a number')
+        .required('Estimated Effort is required')
+        .max(16, 'Estimated Effort cannot be more than 16')
+        .test('is-quarter-increment', 'Estimated Effort must be in 0.25 increments', (value) => {
+            return value % 0.25 === 0;
+        }),
+    priority: Yup.string().required('Priority is required'),
+    // workStatus: Yup.string().required('Work Status is required'),
+    assignee: Yup.string().required('Assignee is required'),
+    // comment: Yup.string().required('Comment is required'),
+    plannedStartDate: Yup.date().required('Planned Start Date is required'),
+    plannedEndDate: Yup.date().required('Planned End Date is required'),
+});
 
 const AddToDo = ({ navigation }: any) => {
     const isDark = useSelector(isDarkTheme);
+    const disptch = useDispatch()
     const ref = useRef();
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
+    const worklogData = useSelector((state: any) => state?.appState?.worklogDetails);
 
     const [projectMenuVisible, setProjectMenuVisible] = useState(false);
     const [userStoryMenuVisible, setUserStoryMenuVisible] = useState(false);
@@ -28,19 +50,37 @@ const AddToDo = ({ navigation }: any) => {
     const [workStatusMenuVisible, setWorkStatusMenuVisible] = useState(false);
     const [showplannedStartDate, setShowPlannedStartDate] = useState(false);
     const [showplannedEndDate, setShowPlannedEndDate] = useState(false);
-    const [readonly, SetReadonly] = useState(false);
 
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [selectedUserStoryId, setSelectedUserStoryId] = useState<string | null>(null);
     const [selectedAsigneeId, setSelectedAsigneeId] = useState<string | null>(null);
     const [selectedPriorityId, setSelectedPriorityId] = useState<string | null>(null);
+    const [selectedWorkStatusId, setSelectedWorkStatusId] = useState<string | null>(null);
 
     const { data: projectsData, isLoading: isProjectsLoading } = useGetEmployeeProjectsListQuery({ accessToken: accessToken })
-    const { data: UserStoriesByProjectId, isLoading: isUserStoriesLoading } = useGetAllUserStoriesByProjectIdQuery(selectedProjectId ? { projectId: selectedProjectId, accessToken: accessToken } : skipToken)
+    const { data: UserStoriesByProjectId, isLoading: isUserStoriesLoading } = useGetAllUserStoriesByProjectIdQuery(selectedProjectId ? { projectId: selectedProjectId, accessToken: accessToken } : { projectId: worklogData?.project?.id, accessToken: accessToken }, { skip: !selectedProjectId && !worklogData?.project?.id })
     const { data: UserPriority, isLoading: isUserPriority } = useGetEmployeePriorityListQuery({ accessToken: accessToken })
     const { data: WorkStatus, isLoading: isWorkStatus } = useGetEmployeeWorkStatusListQuery({ accessToken: accessToken })
-    const { data: EmployeeByProjectId, isLoading: isEmployeeByProjectId } = useGetEmployeeByProjectIdQuery(selectedProjectId ? { projectId: selectedProjectId, accessToken: accessToken } : skipToken)
+    const { data: EmployeeByProjectId, isLoading: isEmployeeByProjectId } = useGetEmployeeByProjectIdQuery(selectedProjectId ? { projectId: selectedProjectId, accessToken: accessToken } : { projectId: worklogData?.project?.id, accessToken: accessToken }, { skip: !selectedProjectId && !worklogData?.project?.id })
+    // const { data: TodoDetailById, isLoading: isTodoDetailById,refetch } = useGetToDoDetailsByToDoIdQuery(newToDoId && accessToken ? { ItemId: newToDoId, accessToken: accessToken } : skipToken)
+    const { data: TodoDetailById, isLoading: isTodoDetailById, refetch } = useGetToDoDetailsByToDoIdQuery(worklogData?.id && accessToken ? { ItemId: worklogData?.id, accessToken: accessToken } : skipToken)
+
+
     const [CreateNewTodo, result] = useCreateNewTodoMutation();
+    const [updateTODO,] = useEditTodoMutation();
+
+    useEffect(() => {
+        const backAction = () => {
+            disptch(SetWorklogDetails([]))
+            navigation.goBack();
+            return true;
+        };
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction,
+        );
+        return () => backHandler.remove();
+    }, []);
 
     const handleCreateToDo = async (values: any) => {
         const data = {
@@ -62,32 +102,35 @@ const AddToDo = ({ navigation }: any) => {
         try {
             const response = await CreateNewTodo({ data, accessToken })
             if (response?.data?.messageDetail?.message_code === 201) {
-                SetReadonly(true)
+                Alert.alert('Success', 'ToDo Created successfully!')
+                navigation.goBack()
+                refetch()
             }
-            // console.log(JSON.stringify(response));
         } catch (err) {
             console.log(err);
         }
     }
 
-    const validationSchema = Yup.object().shape({
-        projectName: Yup.string().required('Project selection is required'),
-        userStory: Yup.string().required('User Story is required'),
-        title: Yup.string().required('Title is required').min(20, 'Title must be at least 20 characters'),
-        itemDescription: Yup.string().required('Item Description is required').min(20, 'Item Description must be at least 20 characters'),
-        estimatedEffort: Yup.number().typeError('Hour must be a number')
-            .required('Estimated Effort is required')
-            .max(16, 'Estimated Effort cannot be more than 16')
-            .test('is-quarter-increment', 'Estimated Effort must be in 0.25 increments', (value) => {
-                return value % 0.25 === 0;
-            }),
-        priority: Yup.string().required('Priority is required'),
-        // workStatus: Yup.string().required('Work Status is required'),
-        assignee: Yup.string().required('Assignee is required'),
-        // comment: Yup.string().required('Comment is required'),
-        plannedStartDate: Yup.date().required('Planned Start Date is required'),
-        plannedEndDate: Yup.date().required('Planned End Date is required'),
-    });
+    const handleEditToDo = async (values: any) => {
+        const data = {
+            "toDoId": worklogData?.id,
+            "comment": values.comment,
+            "duplicateTaskId": null,
+            "workStatus": {
+                "value": selectedWorkStatusId,
+                "label": values.workStatus
+            }
+        }
+        try {
+            const response = await updateTODO({ data, accessToken })
+            if (response?.data?.isSuccessful) {
+                navigation.goBack()
+                refetch()
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     const showDatepickerplannedStartDate = () => { setShowPlannedStartDate(true); };
     const showDatepickerplannedEndDate = () => { setShowPlannedEndDate(true); };
@@ -96,18 +139,11 @@ const AddToDo = ({ navigation }: any) => {
         <View style={styles(isDark).container}>
             <CustomHeader
                 showBackIcon={true}
-                title="WorkLogs"
-                onPress={() => navigation.goBack()}
-            />
-            <View
-                style={{
-                    borderWidth: 1, height: 1,
-                    backgroundColor: isDark ? Colors.white : 'transparent',
-                    borderColor: isDark ? Colors.black : 'transparent',
-                }}
+                title="Add To Do"
+                onPress={() => { navigation.goBack(), disptch(SetWorklogDetails([])) }}
             />
             {
-                result.isLoading ? (
+                (result.isLoading || isTodoDetailById) ? (
                     <Placeholder />
                 ) :
                     (
@@ -116,49 +152,75 @@ const AddToDo = ({ navigation }: any) => {
                                 //@ts-ignore
                                 innerRef={ref}
                                 initialValues={{
-                                    projectName: '',
-                                    userStory: '',
-                                    title: '',
-                                    itemDescription: '',
-                                    priority: '',
-                                    assignee: '',
-                                    estimatedEffort: '',
-                                    // workStatus: '',
-                                    // comment: '',
+                                    projectName: TodoDetailById?.data?.projectName || '',
+                                    userStory: TodoDetailById?.data?.userStory?.name || '',
+                                    title: TodoDetailById?.data?.title || '',
+                                    itemDescription: TodoDetailById?.data?.description || '',
+                                    estimatedEffort: TodoDetailById?.data?.implementationeffort.toString() || '',
+                                    priority: TodoDetailById?.data?.userPriority?.label || '',
+                                    assignee: TodoDetailById?.data?.assignee?.name || '',
+                                    workStatus: TodoDetailById?.data?.workStatus?.label || '',
+                                    comment: TodoDetailById?.data?.comment || '',
                                     plannedStartDate: moment().format('YYYY-MM-DD'),
                                     plannedEndDate: moment().format('YYYY-MM-DD'),
                                 }}
                                 validationSchema={validationSchema}
-                                onSubmit={(values) => handleCreateToDo(values)}
+                                onSubmit={(values) => {
+                                    if (worklogData?.id) {
+                                        if (
+                                            values.workStatus === 'On Hold' ||
+                                            values.workStatus === 'Duplicate' ||
+                                            values.workStatus === 'Needs Clarification'
+                                        ) {
+                                            if (!values.comment?.trim()) {
+                                                // alert('Comment is required for the selected status.');
+                                                return;
+                                            }
+                                        }
+                                        handleEditToDo(values);
+                                    }
+                                    else {
+                                        handleCreateToDo(values)
+                                    }
+                                }}
                             >
                                 {({ handleSubmit, handleChange, handleBlur, setFieldValue, values, errors, touched, submitCount }) => {
                                     return (
                                         <>
                                             {submitCount > 0 && Object.keys(errors).length > 0 && (
-                                                //@ts-ignore
                                                 <View style={styles(isDark).formErrorBox}>
-                                                    <Text style={styles(isDark).formErrorText}>{errors[Object.keys(errors)[0]]}</Text>
+                                                    <Text style={styles(isDark).formErrorText}>
+                                                        {//@ts-ignore
+                                                            errors[Object.keys(errors)[0]]
+                                                        }
+                                                    </Text>
                                                 </View>
                                             )}
+                                            {(values.workStatus === 'On Hold' || values.workStatus === 'Duplicate' || values.workStatus === 'Needs Clarification') &&
+                                                (<View style={styles(isDark).formErrorBox}>
+                                                    <Text style={styles(isDark).formErrorText}>{'comment is required.'}</Text>
+                                                </View>)}
                                             <Menu
                                                 visible={projectMenuVisible}
                                                 onDismiss={() => setProjectMenuVisible(false)}
                                                 anchor={
-                                                    <CustomTextInput
-                                                        label="Project Name"
-                                                        value={values.projectName}
-                                                        onChangeText={(text: any) => setFieldValue('projectName', text)}
-                                                        lefticon={false}
-                                                        style={[styles(isDark).input]}
-                                                        rightIconName={'chevron-down'}
-                                                        onPress={() => setProjectMenuVisible(true)}
-                                                        editable={false}
-                                                        readOnly={readonly}
-                                                    />
+                                                    <Pressable onPress={() => setProjectMenuVisible(true)} disabled={worklogData?.id ? true : false}  >
+                                                        <CustomTextInput
+                                                            label="Project Name"
+                                                            value={values.projectName}
+                                                            onChangeText={(text: any) => setFieldValue('projectName', text)}
+                                                            lefticon={false}
+                                                            style={[styles(isDark).input]}
+                                                            rightIconName={'chevron-down'}
+                                                            onPress={() => { worklogData?.id ? null : setProjectMenuVisible(true) }}
+                                                            editable={false}
+                                                            readOnly={true}
+                                                            keyboardType={'none'}
+                                                        />
+                                                    </Pressable>
                                                 }
-                                                style={{ marginHorizontal: 16, }}
                                                 contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white }}
-                                                statusBarHeight={60}
+                                                statusBarHeight={70}
                                             >
                                                 {projectsData?.data?.map((item: any) => (
                                                     <Menu.Item
@@ -171,6 +233,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             setFieldValue('assignee', '')
                                                         }}
                                                         title={item.projectName}
+                                                        titleStyle={styles(isDark).txt}
                                                     />
                                                 ))}
                                             </Menu>
@@ -179,21 +242,22 @@ const AddToDo = ({ navigation }: any) => {
                                                 visible={userStoryMenuVisible}
                                                 onDismiss={() => setUserStoryMenuVisible(false)}
                                                 anchor={
-                                                    <CustomTextInput
-                                                        label="User Story"
-                                                        value={values.userStory}
-                                                        onChangeText={(text: any) => setFieldValue('userStory', text)}
-                                                        lefticon={false}
-                                                        style={[styles(isDark).input]}
-                                                        rightIconName={'chevron-down'}
-                                                        onPress={() => setUserStoryMenuVisible(true)}
-                                                        editable={false}
-                                                        readOnly={true}
-                                                    />
+                                                    <Pressable onPress={() => setUserStoryMenuVisible(true)} disabled={worklogData?.id ? true : false} >
+                                                        <CustomTextInput
+                                                            label="User Story"
+                                                            value={values.userStory}
+                                                            onChangeText={(text: any) => setFieldValue('userStory', text)}
+                                                            lefticon={false}
+                                                            style={[styles(isDark).input]}
+                                                            rightIconName={'chevron-down'}
+                                                            onPress={() => worklogData?.id ? null : setUserStoryMenuVisible(true)}
+                                                            editable={false}
+                                                            readOnly={true}
+                                                        />
+                                                    </Pressable>
                                                 }
-                                                style={{ marginHorizontal: 16 }}
                                                 contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white }}
-                                                statusBarHeight={60}
+                                                statusBarHeight={70}
                                             >
                                                 {UserStoriesByProjectId?.data?.length > 0 ? (
                                                     UserStoriesByProjectId.data.map((item: any) => (
@@ -205,50 +269,58 @@ const AddToDo = ({ navigation }: any) => {
                                                                 setSelectedUserStoryId(item?.id)
                                                             }}
                                                             title={item.title}
+                                                            titleStyle={styles(isDark).txt}
                                                         />
                                                     ))
                                                 ) : (
-                                                    <Text style={{ padding: 10, textAlign: 'center', color: 'gray' }}>No Data Available</Text>
+                                                    <Text style={[styles(isDark).txt, { padding: 10 }]}>No Data Available</Text>
                                                 )}
                                             </Menu>
 
-                                            {/* <Menu
-                                    visible={workStatusMenuVisible}
-                                    onDismiss={() => setWorkStatusMenuVisible(false)}
-                                    anchor={
-                                        <CustomTextInput
-                                            label="Work Status"
-                                            value={values.workStatus}
-                                            onChangeText={(text: any) => setFieldValue('workStatus', text)}
-                                            lefticon={false}
-                                            style={[styles(isDark).input]}
-                                            rightIconName={'chevron-down'}
-                                            onPress={() => setWorkStatusMenuVisible(true)}
-                                            editable={false}
-                                            readOnly={true}
-                                        />
-                                    }
-                                    style={{ marginHorizontal: 16 }}
-                                    contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white, maxHeight: 300, }}
-                                    statusBarHeight={60}
-                                >
-                                    <ScrollView>
-                                        {
-                                            WorkStatus?.data.map((item: any) => (
-                                                <Menu.Item
-                                                    key={item.value}
-                                                    onPress={() => {
-                                                        setFieldValue('workStatus', item?.label);
-                                                        setWorkStatusMenuVisible(false);
-                                                        // setSelectedUserStoryId(item?.id)
-                                                    }}
-                                                    title={item?.label}
-                                                />
-                                            ))
-                                        }
-                                    </ScrollView>
-                                </Menu>
-                                 */}
+                                            {worklogData?.id &&
+                                                (<Menu
+                                                    visible={workStatusMenuVisible}
+                                                    onDismiss={() => setWorkStatusMenuVisible(false)}
+                                                    anchor={
+                                                        <Pressable onPress={() => setWorkStatusMenuVisible(true)}  >
+                                                            <CustomTextInput
+                                                                label="Work Status"
+                                                                value={values.workStatus}
+                                                                onChangeText={(text: any) => setFieldValue('workStatus', text)}
+                                                                lefticon={false}
+                                                                style={[styles(isDark).input]}
+                                                                rightIconName={'chevron-down'}
+                                                                onPress={() => setWorkStatusMenuVisible(true)}
+                                                                editable={false}
+                                                                readOnly={true}
+                                                            />
+                                                        </Pressable>
+                                                    }
+                                                    contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white, maxHeight: 300, }}
+                                                    statusBarHeight={70}
+                                                >
+                                                    <ScrollView>
+                                                        {
+                                                            (worklogData?.workStatus?.label === 'Not Started' ? Not_Started :
+                                                                worklogData?.workStatus?.label === 'Analyzing' ? In_Progress :
+                                                                    worklogData?.workStatus?.label === 'Work In Progress' ? Completed :
+                                                                        []).map((item: any) => (
+                                                                            <Menu.Item
+                                                                                key={item.value}
+                                                                                onPress={() => {
+                                                                                    setFieldValue('workStatus', item?.label);
+                                                                                    setWorkStatusMenuVisible(false);
+                                                                                    setSelectedWorkStatusId(item?.value)
+                                                                                }}
+                                                                                title={item?.label}
+                                                                                titleStyle={styles(isDark).txt}
+                                                                            />
+                                                                        ))
+                                                        }
+                                                    </ScrollView>
+                                                </Menu>)
+                                            }
+
                                             <CustomTextInput
                                                 label="Title"
                                                 value={values.title}
@@ -261,6 +333,8 @@ const AddToDo = ({ navigation }: any) => {
                                                 contentStyle={{ height: 80, paddingBottom: 10 }}
                                                 numberOfLines={3}
                                                 multiline={true}
+                                                readOnly={worklogData?.id ? true : false}
+
                                             />
 
                                             <CustomTextInput
@@ -275,6 +349,7 @@ const AddToDo = ({ navigation }: any) => {
                                                 contentStyle={{ height: 80, paddingBottom: 10 }}
                                                 numberOfLines={3}
                                                 multiline={true}
+                                                readOnly={worklogData?.id ? true : false}
                                             />
 
                                             <CustomTextInput
@@ -287,27 +362,29 @@ const AddToDo = ({ navigation }: any) => {
                                                 editable={true}
                                                 style={[styles(isDark).input]}
                                                 keyboardType="numeric"
+                                                readOnly={(TodoDetailById?.data?.workStatus?.label === 'Work In Progress' || TodoDetailById?.data?.workStatus?.label === 'Work Complete') ? true : false}
                                             />
 
                                             <Menu
                                                 visible={priorityMenuVisible}
                                                 onDismiss={() => setPriorityMenuVisible(false)}
                                                 anchor={
-                                                    <CustomTextInput
-                                                        label="Priority"
-                                                        value={values.priority}
-                                                        onChangeText={(text: any) => setFieldValue('priority', text)}
-                                                        lefticon={false}
-                                                        style={[styles(isDark).input]}
-                                                        rightIconName={'chevron-down'}
-                                                        onPress={() => setPriorityMenuVisible(true)}
-                                                        editable={false}
-                                                        readOnly={true}
-                                                    />
+                                                    <Pressable onPress={() => setPriorityMenuVisible(true)} disabled={worklogData?.id ? true : false}  >
+                                                        <CustomTextInput
+                                                            label="Priority"
+                                                            value={values.priority}
+                                                            onChangeText={(text: any) => setFieldValue('priority', text)}
+                                                            lefticon={false}
+                                                            style={[styles(isDark).input]}
+                                                            rightIconName={'chevron-down'}
+                                                            onPress={() => worklogData?.id ? null : setPriorityMenuVisible(true)}
+                                                            editable={false}
+                                                            readOnly={true}
+                                                        />
+                                                    </Pressable>
                                                 }
-                                                style={{ marginHorizontal: 16 }}
                                                 contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white }}
-                                                statusBarHeight={60}
+                                                statusBarHeight={70}
                                             >
                                                 {UserPriority?.data?.map((item: any) => (
                                                     <Menu.Item
@@ -318,6 +395,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             setSelectedPriorityId(item?.value)
                                                         }}
                                                         title={item.label}
+                                                        titleStyle={styles(isDark).txt}
                                                     />
                                                 ))}
                                             </Menu>
@@ -326,57 +404,67 @@ const AddToDo = ({ navigation }: any) => {
                                                 visible={assigneeMenuVisible}
                                                 onDismiss={() => setAssigneeMenuVisible(false)}
                                                 anchor={
-                                                    <CustomTextInput
-                                                        label="Assignee"
-                                                        value={values.assignee}
-                                                        onChangeText={(text: any) => setFieldValue('assignee', text)}
-                                                        lefticon={false}
-                                                        style={[styles(isDark).input]}
-                                                        rightIconName={'chevron-down'}
-                                                        onPress={() => setAssigneeMenuVisible(true)}
-                                                        editable={false}
-                                                        readOnly={true}
-                                                    />
+                                                    <Pressable onPress={() => setAssigneeMenuVisible(true)} disabled={worklogData?.id ? true : false} >
+                                                        <CustomTextInput
+                                                            label="Assignee"
+                                                            value={values.assignee}
+                                                            onChangeText={(text: any) => setFieldValue('assignee', text)}
+                                                            lefticon={false}
+                                                            style={[styles(isDark).input]}
+                                                            rightIconName={'chevron-down'}
+                                                            onPress={() => worklogData?.id ? null : setAssigneeMenuVisible(true)}
+                                                            editable={false}
+                                                            readOnly={true}
+                                                        />
+                                                    </Pressable>
                                                 }
-                                                style={{ marginHorizontal: 16 }}
                                                 contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white }}
-                                                statusBarHeight={60}
+                                                statusBarHeight={70}
                                             >
-                                                {EmployeeByProjectId?.data?.map((item: any) => (
-                                                    <Menu.Item
-                                                        key={item.id}
-                                                        onPress={() => {
-                                                            setFieldValue('assignee', item?.employee?.name);
-                                                            setAssigneeMenuVisible(false)
-                                                            setSelectedAsigneeId(item?.employee?.id)
-                                                        }}
-                                                        title={item?.employee?.name}
-                                                    />
-                                                ))}
+                                                {
+                                                    EmployeeByProjectId?.data?.length > 0 ? (EmployeeByProjectId?.data?.map((item: any) => (
+                                                        <Menu.Item
+                                                            key={item.id}
+                                                            onPress={() => {
+                                                                setFieldValue('assignee', item?.employee?.name);
+                                                                setAssigneeMenuVisible(false)
+                                                                setSelectedAsigneeId(item?.employee?.id)
+                                                            }}
+                                                            title={item?.employee?.name}
+                                                            titleStyle={styles(isDark).txt}
+                                                        />
+                                                    )))
+                                                        : (
+                                                            <Text style={[styles(isDark).txt, { padding: 10 }]}>No Assignee Available</Text>
+                                                        )}
                                             </Menu>
 
-                                            {/* <CustomTextInput
-                                    label="Comment"
-                                    value={values.comment}
-                                    secureTextEntry={false}
-                                    lefticon={false}
-                                    onChangeText={handleChange('comment')}
-                                    onBlur={handleBlur('comment')}
-                                    editable={true}
-                                    style={[styles(isDark).input]}
-                                    contentStyle={{ height: 80, paddingBottom: 10 }}
-                                    numberOfLines={3}
-                                    multiline={true}
-                                /> */}
+                                            {worklogData?.id &&
+                                                (
+                                                    <CustomTextInput
+                                                        label="Comment"
+                                                        value={values.comment}
+                                                        secureTextEntry={false}
+                                                        lefticon={false}
+                                                        onChangeText={handleChange('comment')}
+                                                        onBlur={handleBlur('comment')}
+                                                        editable={true}
+                                                        style={[styles(isDark).input]}
+                                                        contentStyle={{ height: 80, paddingBottom: 10 }}
+                                                        numberOfLines={3}
+                                                        multiline={true}
+                                                    />
+                                                )
+                                            }
 
                                             <CustomTextInput
                                                 label="Planned Start Date"
-                                                value={values.plannedStartDate}
+                                                value={values.plannedStartDate || TodoDetailById?.data?.plannedStartDate}
                                                 secureTextEntry={false}
                                                 lefticon={false}
                                                 onChangeText={handleChange('plannedStartDate')}
                                                 rightIconName={'calendar'}
-                                                onPress={() => showDatepickerplannedStartDate()}
+                                                onPress={() => (TodoDetailById?.data?.workStatus?.label === 'Work In Progress' || TodoDetailById?.data?.workStatus?.label === 'Work Complete') ? null : showDatepickerplannedStartDate()}
                                                 onBlur={handleBlur('plannedStartDate')}
                                                 editable={true}
                                                 readOnly={true}
@@ -386,12 +474,12 @@ const AddToDo = ({ navigation }: any) => {
 
                                             <CustomTextInput
                                                 label="Planned End Date"
-                                                value={values.plannedEndDate}
+                                                value={values.plannedEndDate || TodoDetailById?.data?.plannedEndDate}
                                                 secureTextEntry={false}
                                                 onChangeText={handleChange('plannedEndDate')}
                                                 lefticon={false}
                                                 rightIconName={'calendar'}
-                                                onPress={() => showDatepickerplannedEndDate()}
+                                                onPress={() => (TodoDetailById?.data?.workStatus?.label === 'Work In Progress' || TodoDetailById?.data?.workStatus?.label === 'Work Complete') ? null : showDatepickerplannedEndDate()}
                                                 onBlur={handleBlur('plannedEndDate')}
                                                 editable={true}
                                                 readOnly={true}
@@ -428,9 +516,12 @@ const AddToDo = ({ navigation }: any) => {
                                                     }}
                                                 />
                                             )}
-                                            <Button mode="contained" onPress={handleSubmit} style={{ marginTop: 20, marginHorizontal: 16 }} buttonColor={Colors.primary}>
+                                            <Button mode="contained"
+                                                //@ts-ignore
+                                                onPress={handleSubmit} style={{ marginTop: 20, marginHorizontal: 16 }} buttonColor={Colors.primary}>
                                                 Submit
                                             </Button>
+
                                         </>
                                     );
                                 }}
@@ -455,7 +546,7 @@ const styles = (isDark: any) => StyleSheet.create({
         fontFamily: 'Lato-Regular'
     },
     input: {
-        marginTop: 5
+        marginTop: 10
     },
     formErrorBox: {
         backgroundColor: Colors.error,
@@ -467,4 +558,9 @@ const styles = (isDark: any) => StyleSheet.create({
         fontFamily: 'Lato-Bold',
         textAlign: 'center',
     },
+    txt: {
+        fontSize: 15,
+        fontFamily: 'Lato-Regular',
+        color: isDark ? Colors.white : Colors.black
+    }
 });
