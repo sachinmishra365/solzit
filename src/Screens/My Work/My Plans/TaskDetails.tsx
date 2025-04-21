@@ -192,12 +192,12 @@ const styles = (isDark: boolean) =>
     },
     labelText: {
       fontSize: 14,
-      fontFamily: 'Lato-SemiBold',
+      fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
     },
     valueText: {
       fontSize: 14,
-      fontFamily: 'Lato-Bold',
+      fontFamily: 'Lato-Semibold',
       color: isDark ? Colors.white : Colors.black,
     },
   });

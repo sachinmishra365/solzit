@@ -1,44 +1,48 @@
 import { View, Text, StyleSheet, FlatList, RefreshControl, Modal, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Checkbox, IconButton, Card, FAB } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import { isDarkTheme } from '../../../AppStore/Reducers/appState';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
 import { Colors } from '../../../constants/Colors';
 import moment from 'moment';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
-import { useGetGeneralTaskListInMyProjectQuery, useGetToDoListBasedOnFilterMutation } from '../../../Services/workloglevel';
+import { useGetAppSettingsValueQuery, useGetGeneralTaskListInMyProjectQuery, useGetToDoListBasedOnFilterMutation } from '../../../Services/workloglevel';
 import WorklogCard from '../../../Components/WorklogCard';
 
 
-const PlanMyDay = ({ navigation }: any) => {
+const PlanMyDay = ({ navigation,route}: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
+  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [refreshing, setRefreshing] = useState(false);
   const [myToDosData, setMyToDosData] = useState([]);
   const [generalTasksData, setGeneralTasksData] = useState([]);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const [selectedTaskType, setSelectedTaskType] = useState('myActiveItems');
+  const [selectedTaskType, setSelectedTaskType] = useState('defaultWorkingItems');
   const [filterVisible, setFilterVisible] = useState(false);
   const [isFilterSelected, setIsFilterSelected] = useState(false);
+  const [isFabDisabled, setIsFabDisabled] = useState(false);
+
 
   const [getToDoListBasedOnFilter, { isLoading: isToDoLoading }] = useGetToDoListBasedOnFilterMutation();
   const { data: generalTaskData, isLoading: isGeneralTaskLoading } = useGetGeneralTaskListInMyProjectQuery({
     accessToken: accessToken?.authToken?.accessToken,
   });
-
+  const { data: appSettingData } =  useGetAppSettingsValueQuery({accessToken: EmployeeId?.authToken?.accessToken,AppSettingName: 'MAX_ADD_DAY_REPORT_TIME',});
   const isLoading = isToDoLoading || isGeneralTaskLoading;
 
   const fetchData = async () => {
-    if (selectedTaskType === 'myActiveItems') {
+    if (selectedTaskType === 'myActiveItems' || selectedTaskType === 'defaultWorkingItems') {
       await handleMyToDos();
     } else {
       handleGeneralTasks();
     }
   };
+  
 
   const handleMyToDos = async () => {
     if (!connected) {
@@ -53,8 +57,13 @@ const PlanMyDay = ({ navigation }: any) => {
     }
 
     try {
-      const filterId = selectedTaskType === 'myActiveItems' ? 1 : 3;
-      const itemTypeId = selectedTaskType === 'myActiveItems' ? 0 : 1;
+      let filterId = 1;
+      let itemTypeId = 0;
+
+    if (selectedTaskType === 'defaultWorkingItems') {
+      filterId = 3;
+      itemTypeId = 0;
+    }
 
       const result = await getToDoListBasedOnFilter({
         data: {},
@@ -88,9 +97,29 @@ const PlanMyDay = ({ navigation }: any) => {
     fetchData().finally(() => setRefreshing(false));
   };
 
+  useEffect(() => {
+    if (appSettingData?.data) {
+      const settingTime = moment(appSettingData.data, 'HH:mm:ss');
+      const currentTime = moment();
+  
+      if (currentTime.isAfter(settingTime)) {
+        setIsFabDisabled(true);
+      } else {
+        setIsFabDisabled(false);
+      }
+    }
+  }, [appSettingData]);
+  
   const toggleCheckbox = (id: any) => {
     setCheckedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+  
+  useEffect(() => {
+    if (route.params?.clearSelected) {
+      setCheckedItems({});
+    }
+  }, [route.params?.clearSelected]);
+  
 
   const handleMenuOptionSelect = (option: any) => {
     setSelectedTaskType(option);
@@ -150,7 +179,7 @@ const PlanMyDay = ({ navigation }: any) => {
       iconPress={() => {toggleCheckbox(item.id)}}
       showRightIcon2={false}
       showRightIcon={false}
-      cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
+      // cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
     />
   );
 
@@ -195,7 +224,8 @@ const PlanMyDay = ({ navigation }: any) => {
 
       {isLoading ? (
         <ShimmerPlaceHolder />
-      ) : (selectedTaskType === 'myActiveItems'
+      ) : (selectedTaskType === 'myActiveItems' ||
+        selectedTaskType === 'defaultWorkingItems'
           ? myToDosData
           : generalTasksData
         )?.length === 0 ? (
@@ -217,7 +247,8 @@ const PlanMyDay = ({ navigation }: any) => {
       ) : (
         <FlatList
           data={
-            selectedTaskType === 'myActiveItems'
+            selectedTaskType === 'myActiveItems' ||
+            selectedTaskType === 'defaultWorkingItems'
               ? myToDosData
               : generalTasksData
           }
@@ -235,11 +266,21 @@ const PlanMyDay = ({ navigation }: any) => {
         style={styles(isDark).fab}
         color={Colors.white}
         onPress={() => {
+          if (isFabDisabled) {
+            Toast.show({
+              type: 'error',
+              text1: 'Time Limit Exceeded',
+              text2: 'You cannot add to plan after 17:30.',
+              topOffset: 80,
+            });
+            return;
+          }
+
           const selectedItems = (
-            selectedTaskType === 'myActiveItems'
+            selectedTaskType === 'myActiveItems' || selectedTaskType === 'defaultWorkingItems'
               ? myToDosData
               : generalTasksData
-          ).filter((item: any) => checkedItems[item.id]);
+          ).filter((item: any) => checkedItems[item.id]);          
 
           if (selectedItems.length === 0) {
             Toast.show({

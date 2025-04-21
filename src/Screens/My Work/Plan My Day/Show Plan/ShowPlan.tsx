@@ -15,7 +15,7 @@ import {
   List,
   TextInput,
 } from 'react-native-paper';
-import dayjs from 'dayjs';
+import moment from 'moment';
 
 const ShowPlan = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -35,8 +35,9 @@ const ShowPlan = ({navigation}: any) => {
   const [refreshing, setRefreshing] = useState(false);
   const [isCommitting, setIsCommitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const todayDate = dayjs().format('YYYY-MM-DD');
-  
+  const todayDate = moment().format('YYYY-MM-DDT05:30:00');
+  const [isCutOffTimePassed, setIsCutOffTimePassed] = useState(false);
+ 
   const {data, isLoading, error, refetch} = useGetDayTaskReportDetailsQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
     Date: todayDate,
@@ -44,32 +45,15 @@ const ShowPlan = ({navigation}: any) => {
   const [createTaskReport] = useUpdateMyDailyTaskReportMutation();
   const [deleteTaskReport] = useDeleteMyDailyTaskReportMutation();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const [estimatedEfforts, setEstimatedEfforts] = useState<
-    Record<string, string>
-  >({});
-  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<
-    Record<string, string>
-  >({});
-  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>(
-    {},
-  );
+  const [estimatedEfforts, setEstimatedEfforts] = useState<Record<string, string>>({});
+  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<Record<string, string>>({});
+  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>({},);
   const { data: appSettingData } =  useGetAppSettingsValueQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
     AppSettingName: 'MAX_ADD_DAY_REPORT_TIME',
   });
   
-  
-  const WORK_STATUS_OPTIONS = [
-    {
-      value: 674180000,
-      label: 'Will continue',
-    },
-    {
-      value: 674180001,
-      label: 'Will be completed',
-    },
-  ];
-
+  const WORK_STATUS_OPTIONS = [{value: 674180000,label: 'Will continue',},{value: 674180001,label: 'Will be completed',},];
 
   const toggleCheckbox = (id: any) => {
     setCheckedItems(prev => ({
@@ -77,6 +61,21 @@ const ShowPlan = ({navigation}: any) => {
       [id]: !prev[id],
     }));
   };
+  
+  useEffect(() => {
+    if (appSettingData?.data) {
+      const settingTime = appSettingData?.data; 
+      const today = moment();
+      const cutoffToday = moment(settingTime, 'HH:mm');
+  
+     
+      if (today.isAfter(cutoffToday)) {
+        setIsCutOffTimePassed(true);
+      } else {
+        setIsCutOffTimePassed(false);
+      }
+    }
+  }, [appSettingData]);
   
   const handleShowPlan = async () => {
     if (!connected) {
@@ -108,30 +107,11 @@ const ShowPlan = ({navigation}: any) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      await refetch();
-      handleShowPlan();
-    };
+   handleShowPlan();
+    }
+  , [data]);
   
-    fetchData();
-  }, []);
-  
-  // useEffect(() => {
-  //   if (appSettingData?.data) {
-  //     const maxTime = appSettingData.data; 
-  //     const currentTime = dayjs().format('HH:mm:ss');
-  
-  //     if (currentTime > maxTime) {
-  //       Toast.show({
-  //         type: 'info',
-  //         text1: 'Cut-off Reached',
-  //         text2: `You can't view today's report after ${maxTime}.`,
-  //       });
-  //     } else {
-  //       handleShowPlan(); 
-  //     }
-  //   }
-  // }, [appSettingData]);
+ 
   
 
   const onRefresh = React.useCallback(() => {
@@ -198,7 +178,7 @@ const ShowPlan = ({navigation}: any) => {
           data: selectedPayloads,
         }).unwrap();
   
-        if (res?.isSuccessful && res?.messageDetail?.message_code === 5016) {
+        if (res?.isSuccessful ) {
           Toast.show({
             type: 'success',
             text1: 'Success',
@@ -206,7 +186,7 @@ const ShowPlan = ({navigation}: any) => {
           });
           await refetch();
           handleShowPlan();
-          navigation.goBack();
+          // navigation.goBack();
         } 
       } catch (error: any) {
         console.error('Commit error:', error);
@@ -230,7 +210,7 @@ const ShowPlan = ({navigation}: any) => {
           data: payload,
         }).unwrap();
   
-        const isSuccess = res?.isSuccessful || res?.messageDetail?.message_code === 5039;
+        const isSuccess = res?.isSuccessful ;
         
         if (!isSuccess) {
           throw new Error(res?.messageDetail?.message || 'Failed to delete items');
@@ -275,13 +255,20 @@ const ShowPlan = ({navigation}: any) => {
         }}>
         <Card.Content>
           <View style={styles(isDark).topRow}>
-            <Checkbox
-              status={checkedItems[item.id] ? 'checked' : 'unchecked'}
-              onPress={() => toggleCheckbox(item.id)}
-              color={isDark ? Colors.secondary : Colors.primary}
-              uncheckedColor={isDark ? Colors.secondary : Colors.primary}
-            />
-            <Text style={[styles(isDark).label, {fontSize: 16, flexShrink: 1}]}>
+            {!isCutOffTimePassed && (
+              <Checkbox
+                status={checkedItems[item.id] ? 'checked' : 'unchecked'}
+                onPress={() => toggleCheckbox(item.id)}
+                color={isDark ? Colors.secondary : Colors.primary}
+                uncheckedColor={isDark ? Colors.secondary : Colors.primary}
+              />
+            )}
+            <Text
+              style={[
+                styles(isDark).label,
+                {fontSize: 16, flexShrink: 1},
+                isCutOffTimePassed && {paddingLeft: 10}, 
+              ]}>
               {item?.toDoProject?.name ?? 'No Project Name'}
             </Text>
           </View>
@@ -416,6 +403,7 @@ const ShowPlan = ({navigation}: any) => {
       />
       <View style={styles(isDark).divider} />
 
+      {!isCutOffTimePassed && (
       <Button
         mode="contained"
         onPress={() => handleTaskAction('delete')}
@@ -426,6 +414,7 @@ const ShowPlan = ({navigation}: any) => {
         labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
         Delete from plan
       </Button>
+      )}
 
       {isLoading ? (
         <ShimmerPlaceHolder />
@@ -457,7 +446,7 @@ const ShowPlan = ({navigation}: any) => {
           ListFooterComponent={<View style={{height: 100}} />}
         />
       )}
-
+      {!isCutOffTimePassed && (
       <Button
         mode="contained"
         onPress={() => handleTaskAction('commit')}
@@ -473,6 +462,7 @@ const ShowPlan = ({navigation}: any) => {
         labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
         Commit
       </Button>
+      )}
     </View>
   );
 };

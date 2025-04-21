@@ -9,7 +9,6 @@ import CustomHeader from '../../../Components/CustomHeader';
 import {
   Button,
   Card,
-  Checkbox,
   Icon,
   List,
   TextInput,
@@ -19,21 +18,12 @@ const AddToMyPlan = ({navigation, route}: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const {selectedItems = []} = route.params || {};
-  const [selectedWorkStatus, setSelectedWorkStatus] = useState(
-    selectedItems?.workStatus?.label ?? '',
-  );
   const [isCommitting, setIsCommitting] = useState(false);
   const [createTaskReport] = useCreateMyDailyTaskReportMutation();
-  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const [estimatedEfforts, setEstimatedEfforts] = useState<
-    Record<string, string>
-  >({});
-  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<
-    Record<string, string>
-  >({});
-  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>(
-    {},
-  );
+  const [estimatedEfforts, setEstimatedEfforts] = useState<Record<string, string>>({});
+  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<Record<string, string>>({});
+  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>({},);
+
   const WORK_STATUS_OPTIONS = [
     {
       value: 674180000,
@@ -45,18 +35,9 @@ const AddToMyPlan = ({navigation, route}: any) => {
     },
   ];
 
-  const toggleCheckbox = (id: any) => {
-    setCheckedItems(prev => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   const handleCommit = async () => {
 
-    const checked = selectedItems?.filter((item:any) => checkedItems[item.id]) || [];
-
-    const payload = checked.map((item:any )=> {
+    const payload =  selectedItems.map((item:any )=> {
       const effort = parseFloat(estimatedEfforts[item.id]);
       const selectedStatus = selectedWorkStatuses[item.id];
       const statusObj = WORK_STATUS_OPTIONS.find(opt => opt.label === selectedStatus);
@@ -97,7 +78,7 @@ const AddToMyPlan = ({navigation, route}: any) => {
           text1: 'Success',
           text2: res?.messageDetail?.message || 'Tasks committed successfully',
         });
-        navigation.goBack();
+        navigation.navigate('PlanMyDay', { clearSelected: true });
       } 
     } catch (error: any) {
       console.error('Commit error:', error);
@@ -145,12 +126,6 @@ const AddToMyPlan = ({navigation, route}: any) => {
             <Card key={item.id} style={styles(isDark).card}>
               <Card.Content>
                 <View style={styles(isDark).topRow}>
-                  <Checkbox
-                    status={checkedItems[item.id] ? 'checked' : 'unchecked'}
-                    onPress={() => toggleCheckbox(item.id)}
-                    color={isDark ? Colors.secondary : Colors.primary}
-                    uncheckedColor={isDark ? Colors.secondary : Colors.primary}
-                  />
                   <Text
                     style={[
                       styles(isDark).label,
@@ -160,11 +135,11 @@ const AddToMyPlan = ({navigation, route}: any) => {
                   </Text>
                 </View>
                 <View style={styles(isDark).row}>
-                  <Text style={[styles(isDark).label, {flexShrink: 1}]}>
+                  <Text style={[styles(isDark).label,]}>
                     {item?.itemNumber}
                     {' : '}
-                    {item?.title}
-                  </Text>
+                    <Text style={[styles(isDark).value, {flexShrink: 1}]}>{item?.title}
+                  </Text></Text>
                 </View>
 
                 <View style={[styles(isDark).row, {}]}>
@@ -344,7 +319,6 @@ const styles = (isDark: boolean) =>
     topRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginLeft: -10,
     },
   });
 

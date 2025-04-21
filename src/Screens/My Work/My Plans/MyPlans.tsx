@@ -86,7 +86,7 @@ const MyPlans = ({navigation}: any) => {
     <View style={styles(isDark).mainContainer}>
       <CustomHeader
         showBackIcon={true}
-        title="MyPlans"
+        title="My Plans"
         isDark={isDark}
         onPress={() => navigation.goBack()}
       />
