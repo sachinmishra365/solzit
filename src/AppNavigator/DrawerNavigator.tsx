@@ -21,9 +21,14 @@ const DrawerNavigator = ({ navigation }: any) => {
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeButtonOffset = useRef(new Animated.Value(0)).current;
-  const [expanded, setExpanded] = React.useState(true);
+  // const [expanded, setExpanded] = React.useState(true);
 
   const [Loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
+
+  const handlePress = (id: any) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
 
   useEffect(() => {
     const loadTheme = async () => {
@@ -67,13 +72,11 @@ const DrawerNavigator = ({ navigation }: any) => {
     <SafeAreaView style={styles(isDark).container}>
       <View style={styles(isDark).drawerContainer}>
 
-        <Image source={require('../Assets/Images/Logo/solzitLogo.png')} style={styles(isDark).logo} />
-        {/* <View style={{ width: '55%' }}> */}
-        <Text style={styles(isDark).UserName}>{userData?.userProfile?.fullName ? userData?.userProfile?.fullName : 'Guest'}</Text>
-        {/* </View> */}
+        <View style={{ width: '55%', marginLeft: 16 }}>
+          <Image source={require('../Assets/Images/Logo/solzitLogo.png')} style={styles(isDark).logo} />
+          <Text style={styles(isDark).UserName}>{userData?.userProfile?.fullName ? userData?.userProfile?.fullName : 'Guest'}</Text>
+        </View>
 
-
-        {/* <Profilecard/> */}
 
         <ScrollView style={styles(isDark).drawerBtnContainer} showsVerticalScrollIndicator={false}>
 
@@ -98,7 +101,10 @@ const DrawerNavigator = ({ navigation }: any) => {
             title="My Work"
             titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold' }}
             left={props => <List.Icon {...props} icon="folder" color={isDark ? Colors.white : Colors.primary} />}
-            right={props => (<List.Icon{...props} icon="chevron-down" color={isDark ? Colors.white : Colors.black} />)}>
+            right={props => (<List.Icon{...props} icon={expandedId === 'work' ? "chevron-down" : "chevron-left"} color={isDark ? Colors.white : Colors.black} />)}
+            expanded={expandedId === 'work'}
+            onPress={() => handlePress('work')}
+            rippleColor={'rgba(0,0,0,0.1)'}>
 
             <List.Item
               title="My To-Dos" left={props => <List.Icon {...props} icon="plus-box-multiple" color={isDark ? Colors.white : Colors.primary} />}
@@ -138,7 +144,10 @@ const DrawerNavigator = ({ navigation }: any) => {
             titleNumberOfLines={2}
             titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold' }}
             left={props => <List.Icon {...props} icon="airplane" color={isDark ? Colors.white : Colors.primary} />}
-            right={props => (<List.Icon{...props} icon="chevron-down" color={isDark ? Colors.white : Colors.black} />)}>
+            right={props => (<List.Icon{...props} icon={expandedId === 'leave' ? "chevron-down" : "chevron-left"} color={isDark ? Colors.white : Colors.black} />)}
+            expanded={expandedId === 'leave'}
+            onPress={() => handlePress('leave')}
+            rippleColor={'rgba(0,0,0,0.1)'}>
 
             <List.Item
               title="Apply Leave" left={props => <List.Icon {...props} icon="calendar" color={isDark ? Colors.white : Colors.primary} />}
@@ -188,7 +197,10 @@ const DrawerNavigator = ({ navigation }: any) => {
             titleNumberOfLines={2}
             titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold' }}
             left={props => <List.Icon {...props} icon="account-group" color={isDark ? Colors.white : Colors.primary} />}
-            right={props => (<List.Icon{...props} icon="chevron-down" color={isDark ? Colors.white : Colors.black} />)}>
+            right={props => (<List.Icon{...props} icon={expandedId === 'hiring' ? "chevron-down" : "chevron-left"} color={isDark ? Colors.white : Colors.black} />)}
+            expanded={expandedId === 'hiring'}
+            onPress={() => handlePress('hiring')}
+            rippleColor={'rgba(0,0,0,0.1)'}>
 
             <List.Item
               title="Open Positions" left={props => <List.Icon {...props} icon="account-group" color={isDark ? Colors.white : Colors.primary} />}
@@ -254,7 +266,6 @@ const styles = (isDark: any) =>
     logo: {
       width: 90,
       height: 90,
-      borderRadius: 10,
       marginTop: 8,
     },
     UserName: {

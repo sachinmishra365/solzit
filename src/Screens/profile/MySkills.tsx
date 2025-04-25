@@ -9,6 +9,7 @@ import { Card, } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import { Bar as ProgressBar } from 'react-native-progress';
+import EmptyData from '../../Components/EmptyData';
 
 const MySkills = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -16,12 +17,12 @@ const MySkills = ({ navigation }: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [skillData, setSkillData] = useState([]);
+
   const [refreshing, setRefreshing] = useState(false);
 
   const { data, isLoading, error, refetch } = useEmployeeSkillsQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
   });
-
 
   const handleSkills = async () => {
     if (!connected) {
@@ -41,9 +42,11 @@ const MySkills = ({ navigation }: any) => {
     }
     try {
       if (data?.data?.skills && data?.messageDetail?.message_code === 200) {
-        setSkillData(data.data.skills);
+        setSkillData(data?.data?.skills);
       }
-    } catch (error) { }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -58,21 +61,21 @@ const MySkills = ({ navigation }: any) => {
     }, 1000);
   }, [refetch]);
 
-  const renderItem = ({ item }: any) => {
+  const renderItem = ({ item }: any) => {    
     const skillText =
-      item.levelofskill === 'Beginner'
+      item.levelofskill?.label === 'Beginner'
         ? 0.33
-        : item.levelofskill === 'Intermediate'
+        : item.levelofskill?.label === 'Intermediate'
           ? 0.66
-          : item.levelofskill === 'Expert'
+          : item.levelofskill?.label === 'Expert'
             ? 1
             : 0;
     const skillTextColor =
-      item.levelofskill === 'Beginner'
+      item.levelofskill?.label === 'Beginner'
         ? Colors.secondary
-        : item.levelofskill === 'Intermediate'
+        : item.levelofskill?.label === 'Intermediate'
           ? '#916918'
-          : item.levelofskill === 'Expert'
+          : item.levelofskill?.label === 'Expert'
             ? 'green'
             : Colors.gray;
 
@@ -87,7 +90,7 @@ const MySkills = ({ navigation }: any) => {
         }}>
         <Card.Content>
           <View>
-            <Text style={styles(isDark).skillName}>{item.skillName}</Text>
+            <Text style={styles(isDark).skillName}>{item.skillName?.name}</Text>
             <View style={styles(isDark).levelContainer}>
               <Text style={styles(isDark).skillDetail}>Level-{''}</Text>
               <Text
@@ -96,7 +99,7 @@ const MySkills = ({ navigation }: any) => {
                   { color: skillTextColor, fontFamily: 'Lato-Bold' },
                 ]}>
                 {' '}
-                {item.levelofskill}
+                {item?.levelofskill?.label}
               </Text>
             </View>
             <ProgressBar
@@ -115,17 +118,17 @@ const MySkills = ({ navigation }: any) => {
               <Text style={styles(isDark).skillDetail}>Certification :</Text>
               <Text style={styles(isDark).skillDetail}>
                 {' '}
-                {item.hasCertification?.label || 'No'}
+                {item?.hasCertification?.label || 'No'}
               </Text>
             </View>
 
-            {item.hasCertification?.label === 'Yes' && (
+            {item?.hasCertification?.label === 'Yes' && (
               <View style={styles(isDark).rowContainer}>
-                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16,color:isDark?Colors.white:Colors.black }}>
-                  {item.typeOfCertification?.label} :{' '}
+                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16, color: isDark ? Colors.white : Colors.black }}>
+                  {item?.typeOfCertification?.label} {' : '}
                 </Text>
-                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16,color:isDark?Colors.white:Colors.black }}>
-                  {item.certificationName}
+                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16, color: isDark ? Colors.white : Colors.black }}>
+                  {item?.certificationName}
                 </Text>
               </View>
             )}
@@ -147,21 +150,7 @@ const MySkills = ({ navigation }: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : data?.data === null ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              alignSelf: 'center',
-              fontFamily: 'Lato-Bold',
-            }}>
-            No Records
-          </Text>
-        </View>
+        <EmptyData/>
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -174,7 +163,7 @@ const MySkills = ({ navigation }: any) => {
               onRefresh={() => onRefresh()}
             />
           }
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       )}
 

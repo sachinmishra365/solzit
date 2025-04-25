@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 export const appStateSlice = createSlice({
   name: 'appState',
@@ -10,8 +10,10 @@ export const appStateSlice = createSlice({
     processed: null,
     authCredential: {},
     connected: false,
-    metadata:[],
-    worklogDetails:[],
+    metadata: [],
+    worklogDetails: [],
+    BugDetails: [],
+    todo: '',
   },
   reducers: {
     auth: (state, action) => {
@@ -41,6 +43,12 @@ export const appStateSlice = createSlice({
     SetWorklogDetails: (state, action) => {
       state.worklogDetails = action.payload;
     },
+    SetBugDetails: (state, action) => {
+      state.BugDetails = action.payload;
+    },
+    setToDo: (state, action) => {
+      state.todo = action.payload;
+    },
   },
 });
 export const isDarkTheme = (state: any) =>
@@ -55,7 +63,8 @@ export const {
   credential,
   internet,
   SetMetaData,
-  SetWorklogDetails
+  SetWorklogDetails,
+  SetBugDetails, setToDo
 } = appStateSlice.actions;
 
 export default appStateSlice.reducer;

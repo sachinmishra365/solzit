@@ -94,7 +94,9 @@ const Worklog = ({ navigation }: any) => {
         SetMyProjectItem([]);
     };
 
-    const renderItem = ({ item }: any) => (
+    
+
+    const renderItem = ({ item }: any) => (        
         <WorklogCard
             projectName={item?.project?.name}
             serialNo={item?.itemNumber}
@@ -106,11 +108,11 @@ const Worklog = ({ navigation }: any) => {
             iconColor={item?.itemType?.label === 'To-Do' ? "green" : item?.itemType?.label === 'User Story' ? Colors.secondary : item?.itemType?.label === 'Bug' ? Colors.error : null}
             rightIconName="eye"
             rightIconColor={Colors.primary}
-            rightIconPress={() => { navigation.navigate('WorklogDetails', { item }), dispatch(SetWorklogDetails(item)) }}
+            rightIconPress={() => {item?.itemType?.label === 'User Story' ? navigation.navigate('BugDetails', { item }) : navigation.navigate('WorklogDetails', { item }), dispatch(SetWorklogDetails(item)) }}
             rightIconColor2={Colors.green}
-            showRightIcon2={item?.workStatus?.label === 'Work In Progress' ? true : false}
+            showRightIcon2={(item?.workStatus?.label === 'Work In Progress' || item?.workStatus?.label === 'Review Failed') ? true : false}
             rightIconName2="plus-circle-outline"
-            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' && navigation.navigate('AddWorklog'), dispatch(SetWorklogDetails(item)) }}
+            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') :  item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug') : null, dispatch(SetWorklogDetails(item)) }}
             rightIconColor3={Colors.green}
             showRightIcon3={true}
             rightIconName3="pencil-circle-outline"

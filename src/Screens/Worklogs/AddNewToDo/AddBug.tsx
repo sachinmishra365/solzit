@@ -13,7 +13,8 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment'
 import Placeholder from '../../Placeholder/Placeholder'
-import { Not_Started, In_Progress, Completed, Bug_In_Progress, BugCompleted, ReviewFailed } from '../../../constants/WorkStatuses'
+import { Not_Started, In_Progress, Completed, Bug_In_Progress, BugCompleted } from '../../../constants/WorkStatuses'
+import Toast from 'react-native-toast-message'
 
 
 const validationSchema = Yup.object().shape({
@@ -35,13 +36,14 @@ const validationSchema = Yup.object().shape({
     plannedEndDate: Yup.date().required('Planned End Date is required'),
 });
 
-const AddToDo = ({ navigation }: any) => {
+const AddBug = ({ navigation }: any) => {
     const isDark = useSelector(isDarkTheme);
     const disptch = useDispatch()
     const ref = useRef();
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
     const worklogData = useSelector((state: any) => state?.appState?.worklogDetails);
+    const BugDetails = useSelector((state: any) => state?.appState?.BugDetails);
 
     const [projectMenuVisible, setProjectMenuVisible] = useState(false);
     const [userStoryMenuVisible, setUserStoryMenuVisible] = useState(false);
@@ -65,11 +67,8 @@ const AddToDo = ({ navigation }: any) => {
     // const { data: TodoDetailById, isLoading: isTodoDetailById,refetch } = useGetToDoDetailsByToDoIdQuery(newToDoId && accessToken ? { ItemId: newToDoId, accessToken: accessToken } : skipToken)
     const { data: TodoDetailById, isLoading: isTodoDetailById, refetch } = useGetToDoDetailsByToDoIdQuery(worklogData?.id && accessToken ? { ItemId: worklogData?.id, accessToken: accessToken } : skipToken)
 
-    console.log(TodoDetailById?.data);
 
-    const [CreateNewTodo, result] = useCreateNewTodoMutation();
-    const [CreateNewBug, response] = useCreateNewBugMutation();
-    const [updateTODO,] = useEditTodoMutation();
+    const [CreateNewBug, result] = useCreateNewBugMutation();
     const [updateBug] = useEditBugMutation();
 
     useEffect(() => {
@@ -85,42 +84,13 @@ const AddToDo = ({ navigation }: any) => {
         return () => backHandler.remove();
     }, []);
 
-    const handleCreateToDo = async (values: any) => {
-        const data = {
-            "createdBy": selectedAsigneeId,
-            "title": values?.title,
-            "projectId": selectedProjectId,
-            "userStoryId": selectedUserStoryId,
-            "implementationEffort": Number(values?.estimatedEffort),
-            "assigneeId": selectedAsigneeId,
-            "itemDescription": values?.itemDescription,
-            "comment": '',
-            "plannedStartDate": values?.plannedStartDate,
-            "plannedEndDate": values?.plannedEndDate,
-            "userPriority": {
-                "value": selectedPriorityId,
-                "label": values?.priority
-            }
-        }
-        try {
-            const response = await CreateNewTodo({ data, accessToken })
-            console.log(response);
 
-            if (response?.data?.messageDetail?.message_code === 201) {
-                Alert.alert('Success', 'ToDo Created successfully!')
-                await navigation.goBack()
-                await refetch()
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    }
     const handleCreateBug = async (values: any) => {
         const data = {
             "createdBy": selectedAsigneeId,
             "title": values?.title,
-            "projectId": selectedProjectId,
-            "userStoryId": selectedUserStoryId,
+            "projectId": TodoDetailById?.data?.projectId,
+            "userStoryId": TodoDetailById?.data?.id ? TodoDetailById?.data?.id : selectedUserStoryId,
             "implementationEffort": Number(values?.estimatedEffort),
             "assigneeId": selectedAsigneeId,
             "itemDescription": values?.itemDescription,
@@ -135,37 +105,43 @@ const AddToDo = ({ navigation }: any) => {
 
         try {
             const response = await CreateNewBug({ data, accessToken })
-
             if (response?.data?.messageDetail?.message_code === 201) {
-                Alert.alert('Success', 'Bug Created successfully!')
-                await navigation.goBack()
-                await refetch()
+                // Alert.alert('Success', 'Bug Created successfully!')
+                 Toast.show({
+                        type: 'success',
+                        text1: 'Bug',
+                        text2:'Bug Created successfully!',
+                        text2Style: {
+                          flexWrap: 'wrap',
+                          fontSize: 20,
+                          fontFamily: 'Lato-Regular',
+                        },
+                        topOffset: 80,
+                        visibilityTime: 4000,
+                      });
+                      await navigation.goBack()
+                      await refetch()
+                    }else{
+                Toast.show({
+                       type: 'error',
+                       text1: 'Bug',
+                       //@ts-ignore
+                       text2:response?.error?.data?.messageDetail?.message,
+                       text2Style: {
+                         flexWrap: 'wrap',
+                         fontSize: 20,
+                         fontFamily: 'Lato-Regular',
+                       },
+                       topOffset: 80,
+                       visibilityTime: 4000,
+                     });
+                
             }
         } catch (err) {
             console.log(err);
         }
     }
 
-    const handleEditToDo = async (values: any) => {
-        const data = {
-            "toDoId": worklogData?.id,
-            "comment": values.comment,
-            "duplicateTaskId": null,
-            "workStatus": {
-                "value": selectedWorkStatusId,
-                "label": values.workStatus
-            }
-        }
-        try {
-            const response = await updateTODO({ data, accessToken })
-            if (response?.data?.isSuccessful) {
-                navigation.goBack()
-                refetch()
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    }
     const handleEditBug = async (values: any) => {
         const data = {
             "bugId": worklogData?.id,
@@ -199,7 +175,7 @@ const AddToDo = ({ navigation }: any) => {
         <View style={styles(isDark).container}>
             <CustomHeader
                 showBackIcon={true}
-                title="Add To Do"
+                title="Add bug"
                 onPress={() => { navigation.goBack(), disptch(SetWorklogDetails([])) }}
             />
             {
@@ -214,44 +190,39 @@ const AddToDo = ({ navigation }: any) => {
                                 initialValues={{
                                     projectName: TodoDetailById?.data?.projectName || '',
                                     userStory: TodoDetailById?.data?.userStory?.name || '',
-                                    title: TodoDetailById?.data?.title || '',
-                                    itemDescription: TodoDetailById?.data?.description || '',
-                                    estimatedEffort: TodoDetailById?.data?.implementationeffort.toString() || '',
-                                    priority: TodoDetailById?.data?.userPriority?.label || '',
-                                    assignee: TodoDetailById?.data?.assignee?.name || '',
-                                    workStatus: TodoDetailById?.data?.workStatus?.label || '',
-                                    comment: TodoDetailById?.data?.comments || '',
-                                    plannedStartDate:  moment().format('YYYY-MM-DD'),
+                                    title: '',
+                                    itemDescription: '',
+                                    estimatedEffort: '',
+                                    priority: '',
+                                    assignee: '',
+                                    workStatus: '',
+                                    comment: '',
+                                    plannedStartDate: moment().format('YYYY-MM-DD'),
                                     plannedEndDate: moment().format('YYYY-MM-DD'),
                                 }}
                                 validationSchema={validationSchema}
                                 onSubmit={(values) => {
-                                    if (worklogData?.id) {
-                                        if (
-                                            values.workStatus === 'On Hold' ||
-                                            values.workStatus === 'Duplicate' ||
-                                            values.workStatus === 'Needs Clarification'
-                                        ) {
-                                            if (!values.comment?.trim()) {
-                                                // alert('Comment is required for the selected status.');
-                                                return;
-                                            }
-                                        }
-                                        if (worklogData?.itemType?.label === 'Bug') {
-                                            handleEditBug(values);
-                                        } else if (worklogData?.itemType?.label === 'Task') {
-                                            handleEditToDo(values);
-                                        }
-                                        handleEditToDo(values);
-                                    }
-                                    else {
-                                        if (worklogData?.itemType?.label === 'User Story') {
-                                            handleCreateBug(values)
-                                        } else if (worklogData?.itemType?.label === 'Task') {
-                                            handleCreateToDo(values)
-                                        }
-                                        handleCreateToDo(values)
-                                    }
+                                    // if (worklogData?.id) {
+                                    //     if (
+                                    //         values.workStatus === 'On Hold' ||
+                                    //         values.workStatus === 'Duplicate' ||
+                                    //         values.workStatus === 'Needs Clarification'
+                                    //     ) {
+                                    //         if (!values.comment?.trim()) {
+                                    //             // alert('Comment is required for the selected status.');
+                                    //             return;
+                                    //         }
+                                    //     }
+                                    //     if (worklogData?.itemType?.label === 'Bug') {
+                                    //         handleEditBug(values);
+                                    //     }
+                                    // }
+                                    // else {
+                                    //     if (worklogData?.itemType?.label === 'User Story') {
+                                    //         handleCreateBug(values)
+                                    //     }
+                                    // }
+                                    handleCreateBug(values)
                                 }}
                             >
                                 {({ handleSubmit, handleChange, handleBlur, setFieldValue, values, errors, touched, submitCount }) => {
@@ -274,7 +245,7 @@ const AddToDo = ({ navigation }: any) => {
                                                 visible={projectMenuVisible}
                                                 onDismiss={() => setProjectMenuVisible(false)}
                                                 anchor={
-                                                    <Pressable onPress={() => setProjectMenuVisible(true)} disabled={worklogData?.id ? true : false}  >
+                                                    <Pressable onPress={() => setProjectMenuVisible(true)}  >
                                                         <CustomTextInput
                                                             label="Project Name"
                                                             value={values.projectName}
@@ -282,10 +253,10 @@ const AddToDo = ({ navigation }: any) => {
                                                             lefticon={false}
                                                             style={[styles(isDark).input]}
                                                             rightIconName={'chevron-down'}
-                                                            onPress={() => { worklogData?.id ? null : setProjectMenuVisible(true) }}
+                                                            onPress={() => { setProjectMenuVisible(true) }}
                                                             editable={false}
-                                                            readOnly={true}
                                                             keyboardType={'none'}
+                                                            readOnly={true}
                                                         />
                                                     </Pressable>
                                                 }
@@ -312,7 +283,7 @@ const AddToDo = ({ navigation }: any) => {
                                                 visible={userStoryMenuVisible}
                                                 onDismiss={() => setUserStoryMenuVisible(false)}
                                                 anchor={
-                                                    <Pressable onPress={() => setUserStoryMenuVisible(true)} disabled={worklogData?.id ? true : false} >
+                                                    <Pressable onPress={() => setUserStoryMenuVisible(true)}   >
                                                         <CustomTextInput
                                                             label="User Story"
                                                             value={values.userStory}
@@ -320,7 +291,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             lefticon={false}
                                                             style={[styles(isDark).input]}
                                                             rightIconName={'chevron-down'}
-                                                            onPress={() => worklogData?.id ? null : setUserStoryMenuVisible(true)}
+                                                            onPress={() => setUserStoryMenuVisible(true)}
                                                             editable={false}
                                                             readOnly={true}
                                                         />
@@ -348,7 +319,7 @@ const AddToDo = ({ navigation }: any) => {
                                             </Menu>
                                             <CustomTextInput
                                                 label="Item Type"
-                                                value={worklogData?.itemType?.label ? worklogData?.itemType?.label : 'To-Do'}
+                                                value={worklogData?.itemType?.label}
                                                 // onChangeText={(text: any) => setFieldValue('userStory', text)}
                                                 lefticon={false}
                                                 style={[styles(isDark).input]}
@@ -383,19 +354,18 @@ const AddToDo = ({ navigation }: any) => {
                                                             (worklogData?.workStatus?.label === 'Not Started' ? Not_Started :
                                                                 worklogData?.workStatus?.label === 'Analyzing' ? worklogData?.itemType?.label === 'Bug' ? Bug_In_Progress : In_Progress :
                                                                     worklogData?.workStatus?.label === 'Work In Progress' ? worklogData?.itemType?.label === 'Bug' ? BugCompleted : Completed :
-                                                                        worklogData?.workStatus?.label === 'Review Failed' ? ReviewFailed :
-                                                                            []).map((item: any) => (
-                                                                                <Menu.Item
-                                                                                    key={item.value}
-                                                                                    onPress={() => {
-                                                                                        setFieldValue('workStatus', item?.label);
-                                                                                        setWorkStatusMenuVisible(false);
-                                                                                        setSelectedWorkStatusId(item?.value)
-                                                                                    }}
-                                                                                    title={item?.label}
-                                                                                    titleStyle={styles(isDark).txt}
-                                                                                />
-                                                                            ))
+                                                                        []).map((item: any) => (
+                                                                            <Menu.Item
+                                                                                key={item.value}
+                                                                                onPress={() => {
+                                                                                    setFieldValue('workStatus', item?.label);
+                                                                                    setWorkStatusMenuVisible(false);
+                                                                                    setSelectedWorkStatusId(item?.value)
+                                                                                }}
+                                                                                title={item?.label}
+                                                                                titleStyle={styles(isDark).txt}
+                                                                            />
+                                                                        ))
                                                         }
                                                     </ScrollView>
                                                 </Menu>)
@@ -413,7 +383,6 @@ const AddToDo = ({ navigation }: any) => {
                                                 contentStyle={{ height: 80, paddingBottom: 10 }}
                                                 numberOfLines={3}
                                                 multiline={true}
-                                                readOnly={worklogData?.id ? true : false}
 
                                             />
 
@@ -429,7 +398,6 @@ const AddToDo = ({ navigation }: any) => {
                                                 contentStyle={{ height: 80, paddingBottom: 10 }}
                                                 numberOfLines={3}
                                                 multiline={true}
-                                                readOnly={worklogData?.id ? true : false}
                                             />
 
                                             <CustomTextInput
@@ -449,7 +417,7 @@ const AddToDo = ({ navigation }: any) => {
                                                 visible={priorityMenuVisible}
                                                 onDismiss={() => setPriorityMenuVisible(false)}
                                                 anchor={
-                                                    <Pressable onPress={() => setPriorityMenuVisible(true)} disabled={worklogData?.id ? true : false}  >
+                                                    <Pressable onPress={() => setPriorityMenuVisible(true)}    >
                                                         <CustomTextInput
                                                             label="Priority"
                                                             value={values.priority}
@@ -457,7 +425,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             lefticon={false}
                                                             style={[styles(isDark).input]}
                                                             rightIconName={'chevron-down'}
-                                                            onPress={() => worklogData?.id ? null : setPriorityMenuVisible(true)}
+                                                            onPress={() => setPriorityMenuVisible(true)}
                                                             editable={false}
                                                             readOnly={true}
                                                         />
@@ -484,7 +452,7 @@ const AddToDo = ({ navigation }: any) => {
                                                 visible={assigneeMenuVisible}
                                                 onDismiss={() => setAssigneeMenuVisible(false)}
                                                 anchor={
-                                                    <Pressable onPress={() => setAssigneeMenuVisible(true)} disabled={worklogData?.id ? true : false} >
+                                                    <Pressable onPress={() => setAssigneeMenuVisible(true)}   >
                                                         <CustomTextInput
                                                             label="Assignee"
                                                             value={values.assignee}
@@ -492,7 +460,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             lefticon={false}
                                                             style={[styles(isDark).input]}
                                                             rightIconName={'chevron-down'}
-                                                            onPress={() => worklogData?.id ? null : setAssigneeMenuVisible(true)}
+                                                            onPress={() => setAssigneeMenuVisible(true)}
                                                             editable={false}
                                                             readOnly={true}
                                                         />
@@ -613,7 +581,7 @@ const AddToDo = ({ navigation }: any) => {
     )
 }
 
-export default AddToDo
+export default AddBug
 
 const styles = (isDark: any) => StyleSheet.create({
     container: {

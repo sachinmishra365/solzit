@@ -1,8 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Dialog, Divider, Portal } from 'react-native-paper';
-import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { useDispatch, useSelector } from 'react-redux';
+import { isDarkTheme, setToDo } from '../../AppStore/Reducers/appState';
 import { Colors } from '../../constants/Colors';
 
 const FILTER_OPTIONS = [
@@ -24,6 +24,7 @@ const FilterWorklogs = ({ visible, setVisible, onSelect, onPressGeneral, onPress
     onPressProjectItem: () => void;
     onSelect: (filterID: number, itemTypeID: number, label: string) => void;
 }) => {
+    const dispatch = useDispatch();
     const isDark = useSelector(isDarkTheme);
     const hideDialog = () => setVisible(false);
 
@@ -33,7 +34,11 @@ const FilterWorklogs = ({ visible, setVisible, onSelect, onPressGeneral, onPress
                 <Dialog.Content>
                     {FILTER_OPTIONS.map((item, index) => (
                         <React.Fragment key={item.id}>
-                            <TouchableOpacity onPress={() => { onSelect(item.filterID, item.itemTypeID, item?.label); hideDialog(); }}>
+                            <TouchableOpacity onPress={() => {
+                                onSelect(item.filterID, item.itemTypeID, item?.label);
+                                dispatch(setToDo(item?.label))
+                                hideDialog();
+                            }}>
                                 <Text style={styles(isDark).txt}>{item.label}</Text>
                             </TouchableOpacity>
                             {index !== FILTER_OPTIONS.length - 1 && <Divider style={styles(isDark).divider} />}
@@ -41,13 +46,18 @@ const FilterWorklogs = ({ visible, setVisible, onSelect, onPressGeneral, onPress
                     ))}
                     <Divider style={styles(isDark).divider} />
                     <TouchableOpacity onPress={() => {
+                        dispatch(setToDo('General Tasks'))
                         onPressGeneral()
                         hideDialog();
                     }}>
                         <Text style={styles(isDark).txt}>{'General Tasks'}</Text>
                     </TouchableOpacity>
                     <Divider style={styles(isDark).divider} />
-                    <TouchableOpacity onPress={() => {onPressProjectItem(), hideDialog(); }}>
+                    <TouchableOpacity onPress={() => {
+                        onPressProjectItem(),
+                        dispatch(setToDo('Active Items in My Project'))
+                        hideDialog();
+                    }}>
                         <Text style={styles(isDark).txt}>{'Active Items in My Project'}</Text>
                     </TouchableOpacity>
                     <Divider style={styles(isDark).divider} />

@@ -27,7 +27,7 @@ export const workloglevelApi = createApi({
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
     // baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //pro
   }),
-  tagTypes: ['WorkStatus','DayTaskReports','DeleteDayTaskReports'],
+  tagTypes: ['WorkStatus', 'DayTaskReports', 'DeleteDayTaskReports'],
 
   endpoints: builder => ({
     GetToDoListBasedOnFilter: builder.mutation({
@@ -91,6 +91,16 @@ export const workloglevelApi = createApi({
         },
       }),
     }),
+    GetEmployeeWorkLogCategoryList: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/Master/GetOptionSet?DropDownName=WorkLogCategory`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
     GetAllUserStoriesByProjectId: builder.query({
       query: ({data, projectId, accessToken}) => ({
         url: `/ToDos/GetAllUserStoriesByProjectId?projectId=${projectId}&itemType=task`,
@@ -146,6 +156,18 @@ export const workloglevelApi = createApi({
       }),
       invalidatesTags: ['WorkStatus'],
     }),
+    CreateNewBug: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/CreateNewBug`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+      invalidatesTags: ['WorkStatus'],
+    }),
     EditTodo: builder.mutation({
       query: ({data, accessToken}) => ({
         url: `/ToDos/EditToDo`,
@@ -157,6 +179,17 @@ export const workloglevelApi = createApi({
         body: data,
       }),
       invalidatesTags: ['WorkStatus'],
+    }),
+    EditBug: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/ToDos/EditBug`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
     }),
     SaveWorkLog: builder.mutation({
       query: ({data, accessToken}) => ({
@@ -192,7 +225,7 @@ export const workloglevelApi = createApi({
           },
         };
       },
-      providesTags: ['DayTaskReports',],
+      providesTags: ['DayTaskReports'],
     }),
     
 
@@ -206,7 +239,20 @@ export const workloglevelApi = createApi({
           },
         };
       },
-      providesTags: ['WorkStatus',],
+      providesTags: ['WorkStatus'],
+    }),
+
+    GetBugDetailsByUserStoryId: builder.query({
+      query: ({accessToken, ItemId}) => {
+        return {
+          url: `/ToDos/GetAllBugsByUserStoryId?UserStoryId=${ItemId}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+      providesTags: ['WorkStatus'],
     }),
 
     GetemployeeProjectAllocation: builder.query({
@@ -258,8 +304,9 @@ export const workloglevelApi = createApi({
       }),
       invalidatesTags: ['DayTaskReports'],
     }),
+
     GetAppSettingsValue: builder.query({
-      query: ({accessToken,AppSettingName}) => {
+      query: ({accessToken, AppSettingName}) => {
         return {
           url: `/Master/GetAppSettingsValue?AppSettingName=${AppSettingName}`,
           method: 'GET',
@@ -269,7 +316,6 @@ export const workloglevelApi = createApi({
         };
       },
     }),
-
   }),
 });
 
@@ -280,6 +326,7 @@ export const {
   useGetEmployeePriorityListQuery,
   useGetEmployeeByProjectIdQuery,
   useCreateNewTodoMutation,
+  useCreateNewBugMutation,
   useGetEmployeeWorkStatusListQuery,
   useGetGeneralTaskListInMyProjectQuery,
   useGetActiveItemsInMyProjectQuery,
@@ -288,6 +335,7 @@ export const {
   useGetMonthlyReportPlansListQuery,
   useGetDayTaskReportDetailsQuery,
   useGetToDoDetailsByToDoIdQuery,
+  useGetBugDetailsByUserStoryIdQuery,
   useGetemployeeProjectAllocationQuery,
   useGetWorkLogByIdQuery,
   useDeleteMyDailyTaskReportMutation,
@@ -295,4 +343,6 @@ export const {
   useUpdateMyDailyTaskReportMutation,
   useGetAppSettingsValueQuery,
   useEditTodoMutation,
+  useEditBugMutation,
+  useGetEmployeeWorkLogCategoryListQuery
 } = workloglevelApi;

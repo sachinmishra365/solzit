@@ -6,13 +6,7 @@ import {Colors} from '../../../constants/Colors';
 import {useCreateMyDailyTaskReportMutation} from '../../../Services/workloglevel';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
-import {
-  Button,
-  Card,
-  Icon,
-  List,
-  TextInput,
-} from 'react-native-paper';
+import { Button, Card, Icon, List, TextInput,} from 'react-native-paper';
 
 const AddToMyPlan = ({navigation, route}: any) => {
   const isDark = useSelector(isDarkTheme);

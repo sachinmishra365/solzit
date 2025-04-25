@@ -1,16 +1,16 @@
-import { Alert, StyleSheet, Text, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useRef, useState } from 'react'
 import CustomHeader from '../../Components/CustomHeader'
 import { Colors } from '../../constants/Colors'
 import { useSelector } from 'react-redux'
 import { isDarkTheme } from '../../AppStore/Reducers/appState'
-import { Button, Snackbar } from 'react-native-paper'
+import { Button, Menu, Snackbar } from 'react-native-paper'
 import CustomTextInput from '../../Components/CustomTextInput'
 import { Formik } from 'formik'
 import moment from 'moment'
 import * as Yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useGetWorkLogByIdQuery, useSaveWorkLogMutation } from '../../Services/workloglevel'
+import { useGetEmployeeWorkLogCategoryListQuery, useGetWorkLogByIdQuery, useSaveWorkLogMutation } from '../../Services/workloglevel'
 import Placeholder from '../Placeholder/Placeholder'
 
 
@@ -22,13 +22,18 @@ const AddWorklog = ({ navigation, route }: any) => {
 
     const isDark = useSelector(isDarkTheme);
     const worklogData = useSelector((state: any) => state?.appState?.worklogDetails);
-
+    const BugDetails = useSelector((state: any) => state?.appState?.BugDetails);
     const EmployeeId = useSelector((state: any) => state?.appState?.authToken?.userProfile);
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
+    const todo = useSelector((state: any) => state?.appState?.todo);
     const accessToken = Assesstoken?.authToken?.accessToken;
+
     const [showdate, setShowDate] = useState(false);
+    const [worklogCategoryMenuVisible, setWorklogCategoryMenuVisible] = useState(false);
+    const [selectedWorklogCategoryId, setSelectedWorklogCategoryId] = useState<any>(null);
 
     const { data: worklogDetails } = useGetWorkLogByIdQuery({ workLogId: SubmittedworklogData?.id, accessToken: accessToken }, { skip: !accessToken || !SubmittedworklogData?.id });
+    const { data: worklogCategory } = useGetEmployeeWorkLogCategoryListQuery({ accessToken: accessToken }, { skip: !accessToken });
 
     const [saveworklog, result] = useSaveWorkLogMutation();
 
@@ -40,7 +45,7 @@ const AddWorklog = ({ navigation, route }: any) => {
             .test('is-quarter-increment', 'Hour must be in 0.25 increments', (value) => {
                 return value % 0.25 === 0;
             }),
-            description: Yup.string().required('Description is required').min(20, 'Description must be at least 20 characters'),
+        description: Yup.string().required('Description is required').min(20, 'Description must be at least 20 characters'),
     });
 
     const showDatepickerDate = () => { setShowDate(true); };
@@ -48,8 +53,8 @@ const AddWorklog = ({ navigation, route }: any) => {
     const handleSaveWorklog = async (values: any) => {
         const data = statusRef.current === 'submitted' ? {
             projectId: worklogData?.project?.id,
-            todoID: worklogData?.id,
-            id:  SubmittedworklogData?.id,
+            todoID: worklogData?.itemType?.label === 'User Story' ? BugDetails?.id : worklogData?.id,
+            id: SubmittedworklogData?.id,
             date: moment(values?.date).format('YYYY-MM-DD'),
             hours: Number(values?.hour),
             worklogStatus: 674180001,
@@ -58,10 +63,10 @@ const AddWorklog = ({ navigation, route }: any) => {
                 id: EmployeeId?.userId,
                 name: EmployeeId?.fullName
             },
-            // "workLogCategory": 0
+            workLogCategory: todo === 'General Tasks' ? (selectedWorklogCategoryId || SubmittedworklogData?.workLogCategory?.value) : 0
         } : {
             projectId: worklogData?.project?.id,
-            todoID: worklogData?.id,
+            todoID: worklogData?.itemType?.label === 'User Story' ? BugDetails?.id : worklogData?.id,
             id: statusRef.current === 'submitted' ? '' : SubmittedworklogData?.id,
             date: moment(values?.date).format('YYYY-MM-DD'),
             hours: Number(values?.hour),
@@ -71,7 +76,7 @@ const AddWorklog = ({ navigation, route }: any) => {
                 id: EmployeeId?.userId,
                 name: EmployeeId?.fullName
             },
-            // "workLogCategory": 0
+            workLogCategory: todo === 'General Tasks' ? (selectedWorklogCategoryId || SubmittedworklogData?.workLogCategory?.value) : 0
         }
 
         try {
@@ -118,10 +123,17 @@ const AddWorklog = ({ navigation, route }: any) => {
                                     : new Date(),
                                 hour: SubmittedworklogData?.hours?.toString() || '',
                                 description: SubmittedworklogData?.description || '',
-                                workStatus: ''
+                                workStatus: '',
+                                worklogCategory: SubmittedworklogData?.workLogCategory?.label || ''
                             }}
                             validationSchema={validationSchema}
-                            onSubmit={(values: any) => handleSaveWorklog(values)}
+                            onSubmit={(values: any) => {
+                                if (todo === 'General Tasks' && values.worklogCategory === '') {
+                                    return;
+                                }
+                                handleSaveWorklog(values)
+                            }
+                            }
                         >
                             {({ handleSubmit, handleChange, handleBlur, setFieldValue, values, errors, touched, submitCount }) => {
 
@@ -129,9 +141,13 @@ const AddWorklog = ({ navigation, route }: any) => {
                                     <>
                                         {submitCount > 0 && Object.keys(errors).length > 0 && (
                                             <View style={styles(isDark).formErrorBox}>
-                                                <Text style={styles(isDark).formErrorText}>{errors[Object.keys(errors)[0]]}</Text>
+                                                <Text style={styles(isDark).formErrorText}>{String(errors[Object.keys(errors)[0]])}</Text>
                                             </View>
                                         )}
+                                        {(todo === 'General Tasks' && values.worklogCategory === '') &&
+                                            (<View style={styles(isDark).formErrorBox}>
+                                                <Text style={styles(isDark).formErrorText}>{'Worklog Category is required.'}</Text>
+                                            </View>)}
                                         <CustomTextInput
                                             label="ProjectName"
                                             value={worklogData?.project?.name}
@@ -156,9 +172,48 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             numberOfLines={3}
                                             readOnly={true}
                                         />
+
+                                        {todo === 'General Tasks' &&
+                                            <Menu
+                                                visible={worklogCategoryMenuVisible}
+                                                onDismiss={() => setWorklogCategoryMenuVisible(false)}
+                                                anchor={
+                                                    <Pressable onPress={() => setWorklogCategoryMenuVisible(true)}   >
+                                                        <CustomTextInput
+                                                            label="Worklog Category"
+                                                            value={values.worklogCategory}
+                                                            onChangeText={(text: any) => setFieldValue('worklogCategory', text)}
+                                                            lefticon={false}
+                                                            style={[styles(isDark).input]}
+                                                            rightIconName={'chevron-down'}
+                                                            onPress={() => { setWorklogCategoryMenuVisible(true) }}
+                                                            editable={false}
+                                                            readOnly={true}
+                                                            keyboardType={'none'}
+                                                        />
+                                                    </Pressable>
+                                                }
+                                                contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white }}
+                                                statusBarHeight={70}
+                                            >
+                                                {worklogCategory?.data?.map((item: any) => (
+                                                    <Menu.Item
+                                                        key={item.value}
+                                                        onPress={() => {
+                                                            setFieldValue('worklogCategory', item.label);
+                                                            setSelectedWorklogCategoryId(item?.value)
+                                                            setWorklogCategoryMenuVisible(false);
+                                                        }}
+                                                        title={item.label}
+                                                        titleStyle={styles(isDark).txt}
+                                                    />
+                                                ))}
+                                            </Menu>
+                                        }
+
                                         <CustomTextInput
                                             label="Hour"
-                                            value={values.hour || SubmittedworklogData?.hours.toString()}
+                                            value={values.hour}
                                             secureTextEntry={false}
                                             lefticon={false}
                                             onChangeText={handleChange('hour')}
@@ -166,11 +221,10 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             editable={true}
                                             style={[styles(isDark).input]}
                                             keyboardType="numeric"
-                                        // maxLength={2}
                                         />
                                         <CustomTextInput
                                             label="Description"
-                                            value={values.description || SubmittedworklogData?.description}
+                                            value={values.description}
                                             secureTextEntry={false}
                                             lefticon={false}
                                             onChangeText={handleChange('description')}
@@ -306,4 +360,9 @@ const styles = (isDark: any) => StyleSheet.create({
         fontFamily: 'Lato-Bold',
         textAlign: 'center',
     },
+    txt: {
+        fontSize: 15,
+        fontFamily: 'Lato-Regular',
+        color: isDark ? Colors.white : Colors.black
+    }
 });
