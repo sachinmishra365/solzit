@@ -20,10 +20,10 @@ const WorkTypeDialog = ({
 }: {
     visibleWorkType: boolean;
     setVisibleWorkType: (value: boolean) => void;
-    plannedStart: string
-    plannedEnd: string
-    actualStart: string
-    actualEnd: string
+    plannedStart: any
+    plannedEnd: any
+    actualStart: any
+    actualEnd: any
     effort: string
     effortSpent: string
     priority: string

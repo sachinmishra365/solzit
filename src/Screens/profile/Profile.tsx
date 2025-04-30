@@ -363,7 +363,7 @@ const Profile = ({ navigation }: any) => {
               )}
             </View>
 
-            <View style={{flexDirection: 'row',justifyContent: 'space-evenly',width: '100%',}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', }}>
               <TouchableOpacity
                 style={{
                   backgroundColor: '#916918',
@@ -440,7 +440,7 @@ const Profile = ({ navigation }: any) => {
           </View>
         </View>
       </Modal>
-      
+
     </View>
   );
 };

@@ -25,7 +25,6 @@ import ViewFeedback from '../Screens/Feedback/ViewFeedback';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetSoluzioneUpcomingBirthdaysQuery, useSoluzioneHolidaysQuery } from '../Services/services';
 import { SetMetaData } from '../AppStore/Reducers/appState';
-import FilterWorklogs from '../Screens/Worklogs/FilterWorklogs';
 import AddToDo from '../Screens/Worklogs/AddNewToDo/AddToDo';
 import AddWorklog from '../Screens/Worklogs/AddWorklog';
 import WorklogDetails from '../Screens/Worklogs/WorklogDetails';

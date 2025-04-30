@@ -37,18 +37,18 @@ const WorklogCard = ({
                 <View style={{
                     flexDirection: 'row', alignItems: 'center',
                 }}>
-                  {
-                    showleftIcon && (
-                        <IconButton
-                        icon={iconName}
-                        iconColor={iconColor}
-                        size={25}
-                        style={{ marginLeft: -10 }}
-                        onPress={iconPress}
-                    />
-                    )
-                  }
-                    <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', flexWrap: 'wrap',width:'90%' }]}>{projectName}</Text>
+                    {
+                        showleftIcon && (
+                            <IconButton
+                                icon={iconName}
+                                iconColor={iconColor}
+                                size={25}
+                                style={{ marginLeft: -10 }}
+                                onPress={iconPress}
+                            />
+                        )
+                    }
+                    <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', flexWrap: 'wrap', width: '90%' }]}>{projectName}</Text>
                 </View>
 
             </Card.Content>
@@ -66,20 +66,20 @@ const WorklogCard = ({
                 <Text
                     style={[
                         styles(isDark).txt,
-                        { color: Object.values(Statuses).find(item => item.label === status)?.color || '#000' ,fontFamily:'Lato-Semibold'}
+                        { color: Object.values(Statuses).find(item => item.label === status)?.color || '#000', fontFamily: 'Lato-Semibold' }
                     ]}
                 >
                     {status}
                 </Text>
             </Card.Content>
-            <Card.Content style={[styles(isDark).cardContant, { justifyContent: 'flex-end',marginTop: 10 }]}>
+            <Card.Content style={[styles(isDark).cardContant, { justifyContent: 'flex-end', marginTop: 10 }]}>
                 {
                     showRightIcon3 && (
                         <IconButton
                             icon={rightIconName3}
                             iconColor={rightIconColor3}
                             size={25}
-                            style={{ marginRight: -10,marginBottom: -15  }}
+                            style={{ marginRight: -10, marginBottom: -15 }}
                             onPress={rightIconPress3}
                         />
                     )
@@ -90,7 +90,7 @@ const WorklogCard = ({
                             icon={rightIconName2}
                             iconColor={rightIconColor2}
                             size={25}
-                            style={{ marginRight: -10,marginBottom: -15  }}
+                            style={{ marginRight: -10, marginBottom: -15 }}
                             onPress={rightIconPress2}
                         />
                     )
@@ -101,7 +101,7 @@ const WorklogCard = ({
                             icon={rightIconName}
                             iconColor={rightIconColor}
                             size={25}
-                            style={{ marginRight: -10,marginBottom: -15  }}
+                            style={{ marginRight: -10, marginBottom: -15 }}
 
                             onPress={rightIconPress}
                         />

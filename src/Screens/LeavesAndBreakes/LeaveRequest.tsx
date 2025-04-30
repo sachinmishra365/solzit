@@ -1,38 +1,24 @@
-import {
-  Alert,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Card} from 'react-native-paper';
-import {SCREEN_WIDTH} from '../../constants/Screen';
-import {Colors} from '../../constants/Colors';
-import {
-  useEmployeeAppliedLeavesQuery,
-  useEmployeeCancelLeavesMutation,
-} from '../../Services/services';
-import {useSelector} from 'react-redux';
+import { Alert, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Card } from 'react-native-paper';
+import { Colors } from '../../constants/Colors';
+import { useEmployeeAppliedLeavesQuery, useEmployeeCancelLeavesMutation, } from '../../Services/services';
+import { useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
 import Toast from 'react-native-toast-message';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
-const LeaveRequest = ({navigation}: any) => {
+const LeaveRequest = ({ navigation }: any) => {
   const [items, setItems] = useState<any>([]);
   const isDark = useSelector(isDarkTheme);
-  const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
+
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
   const connected = useSelector((state: any) => state?.appState?.connected);
 
-  const {data, isLoading, isSuccess, refetch} = useEmployeeAppliedLeavesQuery({
-    accessToken: accessToken,
-  });
+  const { data, isLoading, isSuccess, refetch } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken, });
 
   useEffect(() => {
     if (data && isSuccess && data.data !== null) {
@@ -53,17 +39,11 @@ const LeaveRequest = ({navigation}: any) => {
     }, 1000);
   }, [refetch]);
 
-  const renderItem = ({item}: any) => (
+  const renderItem = ({ item }: any) => (
     <Card
-      style={{
-        backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 7,
-        borderColor: Colors.background,
-        borderWidth: 0.5,
-        marginHorizontal: 5,
-      }}>
+      style={styles(isDark).cardContainer}>
       <Card.Content>
-        <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
+        <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
           <Text
             style={{
               color: isDark ? Colors.white : Colors.black,
@@ -82,12 +62,12 @@ const LeaveRequest = ({navigation}: any) => {
                   item?.status?.label === 'Applied'
                     ? Colors.primary
                     : item?.status?.label === 'Cancelled'
-                    ? '#8b4315'
-                    : item?.status?.label === 'Declined'
-                    ? Colors.error
-                    : item?.status?.label === 'Approved'
-                    ? 'green'
-                    : Colors.gray,
+                      ? '#8b4315'
+                      : item?.status?.label === 'Declined'
+                        ? Colors.error
+                        : item?.status?.label === 'Approved'
+                          ? 'green'
+                          : Colors.gray,
                 fontSize: 16,
                 fontFamily: 'Lato-Semibold',
               }}>
@@ -112,8 +92,8 @@ const LeaveRequest = ({navigation}: any) => {
             {item?.leaveStartDate === item?.leaveEndDate
               ? moment(item?.leaveStartDate).format('ddd, DD MMM')
               : `${moment(item?.leaveStartDate).format(
-                  'ddd, DD MMM',
-                )} - ${moment(item?.leaveEndDate).format('ddd, DD MMM')}`}
+                'ddd, DD MMM',
+              )} - ${moment(item?.leaveEndDate).format('ddd, DD MMM')}`}
           </Text>
           <Text
             style={{
@@ -124,7 +104,7 @@ const LeaveRequest = ({navigation}: any) => {
             Absent Day: {item.totalAbsentDays}
           </Text>
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text
             style={{
               color:
@@ -133,25 +113,15 @@ const LeaveRequest = ({navigation}: any) => {
                     ? Colors.white
                     : Colors.black
                   : isDark
-                  ? Colors.white
-                  : Colors.black,
+                    ? Colors.white
+                    : Colors.black,
               fontSize: 14,
               fontFamily: 'Lato-Semibold',
             }}>
             {item?.leaveType?.label}
           </Text>
           <TouchableOpacity
-            style={{
-              // width: '50%',
-              height: 'auto',
-              backgroundColor: Colors.primary,
-              justifyContent: 'center',
-              alignSelf: 'center',
-              borderRadius: 3,
-              minHeight: 25,
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}
+            style={styles(isDark).btnContainer}
             disabled={result.isLoading}
             onPress={() => {
               Alert.alert(
@@ -160,27 +130,21 @@ const LeaveRequest = ({navigation}: any) => {
                 [
                   {
                     text: 'No',
-                    onPress: () => {},
+                    onPress: () => { },
                     style: 'cancel',
                   },
                   {
                     text: 'Yes',
                     onPress: () => {
-                      handlecancel({item}), onRefresh();
+                      handlecancel({ item }), onRefresh();
                     },
                   },
                 ],
-                {cancelable: true},
+                { cancelable: true },
               );
             }}>
             <Text
-              style={{
-                textAlign: 'center',
-                fontFamily: 'Lato-Bold',
-                color: Colors.white,
-                flexWrap: 'wrap',
-                margin: 12,
-              }}>
+              style={styles(isDark).btntxt}>
               Cancel Leave
             </Text>
           </TouchableOpacity>
@@ -191,7 +155,7 @@ const LeaveRequest = ({navigation}: any) => {
 
   const [CanceleLeave, result] = useEmployeeCancelLeavesMutation();
 
-  const handlecancel = async ({item}: any) => {
+  const handlecancel = async ({ item }: any) => {
     if (!connected) {
       Toast.show({
         type: 'error',
@@ -213,7 +177,7 @@ const LeaveRequest = ({navigation}: any) => {
       leaveCancellationMessage: '',
     };
     try {
-      const response = await CanceleLeave({data, accessToken});
+      const response = await CanceleLeave({ data, accessToken });
       if (response?.data?.isSuccessful === true) {
         Toast.show({
           type: 'success',
@@ -223,7 +187,7 @@ const LeaveRequest = ({navigation}: any) => {
           visibilityTime: 5000,
         });
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (
@@ -259,7 +223,7 @@ const LeaveRequest = ({navigation}: any) => {
         </View>
       ) : (
         <FlatList
-          style={{marginHorizontal: 16}}
+          style={{ marginHorizontal: 16 }}
           data={items}
           refreshControl={
             <RefreshControl
@@ -269,7 +233,7 @@ const LeaveRequest = ({navigation}: any) => {
           }
           renderItem={item => renderItem(item)}
           keyExtractor={(item, index) => index.toString()}
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -279,4 +243,34 @@ const LeaveRequest = ({navigation}: any) => {
 
 export default LeaveRequest;
 
-const styles = (isDark: any) => StyleSheet.create({});
+
+const styles = (isDark: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: isDark ? Colors.black : Colors.white,
+  },
+  cardContainer: {
+    backgroundColor: isDark ? Colors.black : Colors.background,
+    marginVertical: 7,
+    borderColor: Colors.background,
+    borderWidth: 0.5,
+    marginHorizontal: 5,
+  },
+  btnContainer: {
+    height: 'auto',
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderRadius: 3,
+    minHeight: 25,
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  btntxt: {
+    textAlign: 'center',
+    fontFamily: 'Lato-Bold',
+    color: Colors.white,
+    flexWrap: 'wrap',
+    margin: 12,
+  }
+});

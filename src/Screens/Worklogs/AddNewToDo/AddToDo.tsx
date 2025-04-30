@@ -14,6 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment'
 import Placeholder from '../../Placeholder/Placeholder'
 import { Not_Started, In_Progress, Completed, Bug_In_Progress, BugCompleted, ReviewFailed } from '../../../constants/WorkStatuses'
+import ToastMessage from '../../../Components/ToastMessage'
 
 
 const validationSchema = Yup.object().shape({
@@ -65,8 +66,6 @@ const AddToDo = ({ navigation }: any) => {
     // const { data: TodoDetailById, isLoading: isTodoDetailById,refetch } = useGetToDoDetailsByToDoIdQuery(newToDoId && accessToken ? { ItemId: newToDoId, accessToken: accessToken } : skipToken)
     const { data: TodoDetailById, isLoading: isTodoDetailById, refetch } = useGetToDoDetailsByToDoIdQuery(worklogData?.id && accessToken ? { ItemId: worklogData?.id, accessToken: accessToken } : skipToken)
 
-    console.log(TodoDetailById?.data);
-
     const [CreateNewTodo, result] = useCreateNewTodoMutation();
     const [CreateNewBug, response] = useCreateNewBugMutation();
     const [updateTODO,] = useEditTodoMutation();
@@ -104,10 +103,9 @@ const AddToDo = ({ navigation }: any) => {
         }
         try {
             const response = await CreateNewTodo({ data, accessToken })
-            console.log(response);
-
             if (response?.data?.messageDetail?.message_code === 201) {
-                Alert.alert('Success', 'ToDo Created successfully!')
+                // Alert.alert('Success', 'ToDo Created successfully!')
+                ToastMessage({ type: "Success", title: "To-Do", subtitle: "ToDo Created successfully!" });
                 await navigation.goBack()
                 await refetch()
             }
@@ -137,7 +135,8 @@ const AddToDo = ({ navigation }: any) => {
             const response = await CreateNewBug({ data, accessToken })
 
             if (response?.data?.messageDetail?.message_code === 201) {
-                Alert.alert('Success', 'Bug Created successfully!')
+                // Alert.alert('Success', 'Bug Created successfully!')
+                ToastMessage({ type: "Success", title: "Bug", subtitle: "Bug Created successfully!" });
                 await navigation.goBack()
                 await refetch()
             }
@@ -221,7 +220,7 @@ const AddToDo = ({ navigation }: any) => {
                                     assignee: TodoDetailById?.data?.assignee?.name || '',
                                     workStatus: TodoDetailById?.data?.workStatus?.label || '',
                                     comment: TodoDetailById?.data?.comments || '',
-                                    plannedStartDate:  moment().format('YYYY-MM-DD'),
+                                    plannedStartDate: moment().format('YYYY-MM-DD'),
                                     plannedEndDate: moment().format('YYYY-MM-DD'),
                                 }}
                                 validationSchema={validationSchema}
@@ -233,7 +232,6 @@ const AddToDo = ({ navigation }: any) => {
                                             values.workStatus === 'Needs Clarification'
                                         ) {
                                             if (!values.comment?.trim()) {
-                                                // alert('Comment is required for the selected status.');
                                                 return;
                                             }
                                         }

@@ -12,6 +12,7 @@ import { isDarkTheme, SetWorklogDetails } from '../../AppStore/Reducers/appState
 import WorkTypeDialog from './WorkTypeDialog'
 import { FAB } from 'react-native-paper'
 import CustomTextInput from '../../Components/CustomTextInput'
+import ToastMessage from '../../Components/ToastMessage'
 
 const Worklog = ({ navigation }: any) => {
     const isDark = useSelector(isDarkTheme);
@@ -42,7 +43,7 @@ const Worklog = ({ navigation }: any) => {
         return data?.filter((item: any) =>
             item?.project?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item?.serialNo?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item?.itemNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item?.workStatus?.label?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item?.itemType?.label?.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -77,7 +78,8 @@ const Worklog = ({ navigation }: any) => {
             const response = await GetToDoList(body).unwrap();
             SetTodoList(response?.data);
         } catch (err) {
-            console.error("Error fetching worklogs:", err);
+            // console.error("Error fetching worklogs:", err);
+            ToastMessage({ type: "error", title: "Error", subtitle: "Something went wrong" });
         } finally {
             setRefreshing(false);
         }
@@ -94,9 +96,9 @@ const Worklog = ({ navigation }: any) => {
         SetMyProjectItem([]);
     };
 
-    
 
-    const renderItem = ({ item }: any) => (        
+
+    const renderItem = ({ item }: any) => (
         <WorklogCard
             projectName={item?.project?.name}
             serialNo={item?.itemNumber}
@@ -108,11 +110,11 @@ const Worklog = ({ navigation }: any) => {
             iconColor={item?.itemType?.label === 'To-Do' ? "green" : item?.itemType?.label === 'User Story' ? Colors.secondary : item?.itemType?.label === 'Bug' ? Colors.error : null}
             rightIconName="eye"
             rightIconColor={Colors.primary}
-            rightIconPress={() => {item?.itemType?.label === 'User Story' ? navigation.navigate('BugDetails', { item }) : navigation.navigate('WorklogDetails', { item }), dispatch(SetWorklogDetails(item)) }}
+            rightIconPress={() => { item?.itemType?.label === 'User Story' ? navigation.navigate('BugDetails', { item }) : navigation.navigate('WorklogDetails', { item }), dispatch(SetWorklogDetails(item)) }}
             rightIconColor2={Colors.green}
             showRightIcon2={(item?.workStatus?.label === 'Work In Progress' || item?.workStatus?.label === 'Review Failed') ? true : false}
             rightIconName2="plus-circle-outline"
-            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') :  item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug') : null, dispatch(SetWorklogDetails(item)) }}
+            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') : item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug') : null, dispatch(SetWorklogDetails(item)) }}
             rightIconColor3={Colors.green}
             showRightIcon3={true}
             rightIconName3="pencil-circle-outline"
@@ -146,14 +148,10 @@ const Worklog = ({ navigation }: any) => {
             <WorkTypeDialog
                 visibleWorkType={visibleWorkType}
                 setVisibleWorkType={setVisibleWorkType}
-                //@ts-ignore
                 plannedStart={selectedItem?.toDoSubViewsDtos?.plannedStartDate ? moment(selectedItem?.toDoSubViewsDtos?.plannedStartDate, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
-                //@ts-ignore
                 plannedEnd={selectedItem?.toDoSubViewsDtos?.plannedEndDate ? moment(selectedItem?.toDoSubViewsDtos?.plannedEndDate, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
-                //@ts-ignore
                 actualStart={selectedItem?.toDoSubViewsDtos?.actualStartDate ? moment(selectedItem?.toDoSubViewsDtos?.actualStartDate, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
-                //@ts-ignore
-                actualEnd={selectedItem?.toDoSubViewsDtos?.actualEndDate ? moment(item?.plannedStartDate, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
+                actualEnd={selectedItem?.toDoSubViewsDtos?.actualEndDate ? moment(selectedItem?.toDoSubViewsDtos?.actualEndDate, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
                 effort={selectedItem?.toDoSubViewsDtos?.implementationEffort}
                 effortSpent={selectedItem?.toDoSubViewsDtos?.effortSpent}
                 priority={selectedItem?.toDoSubViewsDtos?.userPriority?.label}
@@ -168,9 +166,7 @@ const Worklog = ({ navigation }: any) => {
                     // data={[...(todoList ?? []), ...(generalTask ?? []), ...(myProjectItem ?? [])]}
                     renderItem={renderItem}
                     keyExtractor={(item: any, index: any) => item?.id?.toString() + index}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />
-                    }
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />}
                     ListFooterComponent={<View style={{ height: 100 }} />}
                 />
             )}

@@ -1,11 +1,10 @@
-import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import WorklogCard from '../../../Components/WorklogCard';
 import { Colors } from '../../../constants/Colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { isDarkTheme, SetBugDetails, SetWorklogDetails } from '../../../AppStore/Reducers/appState';
+import { isDarkTheme, SetBugDetails } from '../../../AppStore/Reducers/appState';
 import CustomHeader from '../../../Components/CustomHeader';
-import CustomTextInput from '../../../Components/CustomTextInput';
 import { useGetBugDetailsByUserStoryIdQuery } from '../../../Services/workloglevel';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
 import moment from 'moment';
@@ -22,7 +21,7 @@ const BugDetails = ({ navigation }: any) => {
     const [bugssDetailData, setBugsDetailData] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
-    const { data: BugsData, isSuccess, isLoading } = useGetBugDetailsByUserStoryIdQuery({ ItemId: BugDetails?.id, accessToken: accessToken }, { skip: !BugDetails?.id || !accessToken });
+    const { data: BugsData, isSuccess, isLoading ,refetch} = useGetBugDetailsByUserStoryIdQuery({ ItemId: BugDetails?.id, accessToken: accessToken }, { skip: !BugDetails?.id || !accessToken });
 
 
     useEffect(() => {
@@ -58,7 +57,6 @@ const BugDetails = ({ navigation }: any) => {
                     dispatch(SetBugDetails(item));
                 }
             }}
-            // rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog'),dispatch(SetBugDetails(item))  : null }}
             rightIconColor3={Colors.green}
             showRightIcon3={true}
             rightIconName3="pencil-circle-outline"
@@ -69,7 +67,9 @@ const BugDetails = ({ navigation }: any) => {
     const onRefresh = async () => {
         setRefreshing(true);
         try {
-            // await refetch();
+            await refetch();
+            // console.log('Refetching data...');
+            
         } catch (err) {
             console.error('Refetch error:', err);
         } finally {

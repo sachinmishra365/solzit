@@ -12,6 +12,7 @@ import * as Yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useGetEmployeeWorkLogCategoryListQuery, useGetWorkLogByIdQuery, useSaveWorkLogMutation } from '../../Services/workloglevel'
 import Placeholder from '../Placeholder/Placeholder'
+import ToastMessage from '../../Components/ToastMessage'
 
 
 const AddWorklog = ({ navigation, route }: any) => {
@@ -82,7 +83,8 @@ const AddWorklog = ({ navigation, route }: any) => {
         try {
             const response = await saveworklog({ data, accessToken }).unwrap();
             if (response?.messageDetail?.message_code === 201) {
-                Alert.alert('Success', 'Work log saved successfully!')
+                // Alert.alert('Success', 'Work log saved successfully!')
+                ToastMessage({ type: "success", title: "Work log", subtitle: "Work log saved successfully!" });
             }
         } catch (err) {
             console.log(err);

@@ -1,10 +1,10 @@
-import { Alert, BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import CustomHeader from '../../../Components/CustomHeader'
 import { Colors } from '../../../constants/Colors'
 import { useDispatch, useSelector } from 'react-redux'
 import { isDarkTheme, SetWorklogDetails } from '../../../AppStore/Reducers/appState'
-import { useCreateNewBugMutation, useCreateNewTodoMutation, useEditBugMutation, useEditTodoMutation, useGetAllUserStoriesByProjectIdQuery, useGetEmployeeByProjectIdQuery, useGetEmployeePriorityListQuery, useGetEmployeeProjectsListQuery, useGetEmployeeWorkStatusListQuery, useGetToDoDetailsByToDoIdQuery } from '../../../Services/workloglevel'
+import { useCreateNewBugMutation, useEditBugMutation, useGetAllUserStoriesByProjectIdQuery, useGetEmployeeByProjectIdQuery, useGetEmployeePriorityListQuery, useGetEmployeeProjectsListQuery, useGetEmployeeWorkStatusListQuery, useGetToDoDetailsByToDoIdQuery } from '../../../Services/workloglevel'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CustomTextInput from '../../../Components/CustomTextInput'
@@ -14,7 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment'
 import Placeholder from '../../Placeholder/Placeholder'
 import { Not_Started, In_Progress, Completed, Bug_In_Progress, BugCompleted } from '../../../constants/WorkStatuses'
-import Toast from 'react-native-toast-message'
+import ToastMessage from '../../../Components/ToastMessage'
 
 
 const validationSchema = Yup.object().shape({
@@ -29,9 +29,7 @@ const validationSchema = Yup.object().shape({
             return value % 0.25 === 0;
         }),
     priority: Yup.string().required('Priority is required'),
-    // workStatus: Yup.string().required('Work Status is required'),
     assignee: Yup.string().required('Assignee is required'),
-    // comment: Yup.string().required('Comment is required'),
     plannedStartDate: Yup.date().required('Planned Start Date is required'),
     plannedEndDate: Yup.date().required('Planned End Date is required'),
 });
@@ -65,8 +63,9 @@ const AddBug = ({ navigation }: any) => {
     const { data: WorkStatus, isLoading: isWorkStatus } = useGetEmployeeWorkStatusListQuery({ accessToken: accessToken })
     const { data: EmployeeByProjectId, isLoading: isEmployeeByProjectId } = useGetEmployeeByProjectIdQuery(selectedProjectId ? { projectId: selectedProjectId, accessToken: accessToken } : { projectId: worklogData?.project?.id, accessToken: accessToken }, { skip: !selectedProjectId && !worklogData?.project?.id })
     // const { data: TodoDetailById, isLoading: isTodoDetailById,refetch } = useGetToDoDetailsByToDoIdQuery(newToDoId && accessToken ? { ItemId: newToDoId, accessToken: accessToken } : skipToken)
-    const { data: TodoDetailById, isLoading: isTodoDetailById, refetch } = useGetToDoDetailsByToDoIdQuery(worklogData?.id && accessToken ? { ItemId: worklogData?.id, accessToken: accessToken } : skipToken)
+    const { data: TodoDetailById, isLoading: isTodoDetailById, refetch } = useGetToDoDetailsByToDoIdQuery(BugDetails?.id && accessToken ? { ItemId: BugDetails?.id, accessToken: accessToken } : skipToken)
 
+    console.log(TodoDetailById?.data, 'TodoDetailById?.data');
 
     const [CreateNewBug, result] = useCreateNewBugMutation();
     const [updateBug] = useEditBugMutation();
@@ -107,35 +106,13 @@ const AddBug = ({ navigation }: any) => {
             const response = await CreateNewBug({ data, accessToken })
             if (response?.data?.messageDetail?.message_code === 201) {
                 // Alert.alert('Success', 'Bug Created successfully!')
-                 Toast.show({
-                        type: 'success',
-                        text1: 'Bug',
-                        text2:'Bug Created successfully!',
-                        text2Style: {
-                          flexWrap: 'wrap',
-                          fontSize: 20,
-                          fontFamily: 'Lato-Regular',
-                        },
-                        topOffset: 80,
-                        visibilityTime: 4000,
-                      });
-                      await navigation.goBack()
-                      await refetch()
-                    }else{
-                Toast.show({
-                       type: 'error',
-                       text1: 'Bug',
-                       //@ts-ignore
-                       text2:response?.error?.data?.messageDetail?.message,
-                       text2Style: {
-                         flexWrap: 'wrap',
-                         fontSize: 20,
-                         fontFamily: 'Lato-Regular',
-                       },
-                       topOffset: 80,
-                       visibilityTime: 4000,
-                     });
-                
+                ToastMessage({ type: "success", title: "Bug", subtitle: "Bug Created successfully!" });
+                await navigation.goBack()
+                await refetch()
+            } else {
+                // response?.error?.data?.messageDetail?.message
+                ToastMessage({ type: "error", title: "Bug", subtitle: "Something went wrong" });
+
             }
         } catch (err) {
             console.log(err);
@@ -202,26 +179,6 @@ const AddBug = ({ navigation }: any) => {
                                 }}
                                 validationSchema={validationSchema}
                                 onSubmit={(values) => {
-                                    // if (worklogData?.id) {
-                                    //     if (
-                                    //         values.workStatus === 'On Hold' ||
-                                    //         values.workStatus === 'Duplicate' ||
-                                    //         values.workStatus === 'Needs Clarification'
-                                    //     ) {
-                                    //         if (!values.comment?.trim()) {
-                                    //             // alert('Comment is required for the selected status.');
-                                    //             return;
-                                    //         }
-                                    //     }
-                                    //     if (worklogData?.itemType?.label === 'Bug') {
-                                    //         handleEditBug(values);
-                                    //     }
-                                    // }
-                                    // else {
-                                    //     if (worklogData?.itemType?.label === 'User Story') {
-                                    //         handleCreateBug(values)
-                                    //     }
-                                    // }
                                     handleCreateBug(values)
                                 }}
                             >
@@ -319,7 +276,7 @@ const AddBug = ({ navigation }: any) => {
                                             </Menu>
                                             <CustomTextInput
                                                 label="Item Type"
-                                                value={worklogData?.itemType?.label}
+                                                value={TodoDetailById?.data?.itemtype?.label === 'Bug' ? TodoDetailById?.data?.itemtype?.label : worklogData?.itemType?.label}
                                                 // onChangeText={(text: any) => setFieldValue('userStory', text)}
                                                 lefticon={false}
                                                 style={[styles(isDark).input]}

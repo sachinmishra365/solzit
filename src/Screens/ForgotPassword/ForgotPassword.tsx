@@ -1,15 +1,15 @@
-import {Alert, Image, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {Formik} from 'formik';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
-import {useForgotPasswordQuery} from '../../Services/appLevel';
-import {Colors} from '../../constants/Colors';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { useForgotPasswordQuery } from '../../Services/appLevel';
+import { Colors } from '../../constants/Colors';
 import CustomTextInput from '../../Components/CustomTextInput';
-import {SCREEN_WIDTH} from '../../constants/Screen';
+import { SCREEN_WIDTH } from '../../constants/Screen';
 
-const ForgotPassword = ({navigation}: any) => {
+const ForgotPassword = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
 
   const [email, setEmail] = useState('');
@@ -56,59 +56,34 @@ const ForgotPassword = ({navigation}: any) => {
     }
   };
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        backgroundColor: isDark ? Colors.black : Colors.white,
-        alignItems: 'center',
-        paddingHorizontal: 16,
-      }}>
+    <View style={styles(isDark).container}>
       <Formik
         initialValues={{
           email: '',
         }}
         validationSchema={validationSchema}
         onSubmit={handleForgetPassword}>
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-          errors,
-          touched,
-        }) => (
+        {({ handleChange, handleBlur, handleSubmit, values, errors, touched, }) => (
           <View>
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginVertical: 16,
-              }}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 16, }}>
               {isDark ? (
                 <Image
                   source={require('../../Assets/Images/Logo/SOLZIT_LOGO.png')}
-                  style={{width: '100%', height: 70}}
+                  style={{ width: '100%', height: 70 }}
                 />
               ) : (
                 <Image
                   source={require('../../Assets/Images/Solzlogo.png')}
-                  style={{width: '85%', height: 70}}
+                  style={{ width: '85%', height: 70 }}
                 />
               )}
             </View>
 
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                alignSelf: 'center',
-                fontFamily: 'Lato-Bold',
-              }}>
-              Enter your email address below and we'll send you a link to reset
-              your password.
+            <Text style={{ color: isDark ? Colors.white : Colors.black, textAlign: 'center', fontFamily: 'Lato-Bold', }}>
+              Enter your email address below and we'll send you a link to resetyour password.
             </Text>
 
-            <View style={{marginVertical: 16}} />
+            <View style={{ marginVertical: 16 }} />
 
             <CustomTextInput
               label="Email"
@@ -119,52 +94,13 @@ const ForgotPassword = ({navigation}: any) => {
               editable={true}
             />
 
-            <View style={{marginVertical: 32}} />
-            <TouchableOpacity
-              style={{
-                width: SCREEN_WIDTH - 32,
-                height: 45,
-                backgroundColor: Colors.primary,
-                justifyContent: 'center',
-                alignSelf: 'center',
-                borderRadius: 3,
-              }}
-              onPress={() => {
-                handleForgetPassword();
-              }}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontFamily: 'Lato-Bold',
-                  color: Colors.white,
-                }}>
-                Continue
-              </Text>
+            <View style={{ marginVertical: 32 }} />
+            <TouchableOpacity style={styles(isDark).btnContainer} onPress={() => { handleForgetPassword(); }}>
+              <Text style={styles(isDark).btntxt}>{'Continue'}</Text>
             </TouchableOpacity>
-
-            <View style={{marginVertical: 16}} />
-            <TouchableOpacity
-              style={{
-                width: SCREEN_WIDTH - 32,
-                height: 45,
-                backgroundColor: Colors.primary,
-                justifyContent: 'center',
-                alignSelf: 'center',
-                borderRadius: 3,
-              }}
-              onPress={() => {
-                navigation.navigate('Login');
-              }}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: 16,
-                  fontFamily: 'Lato-Bold',
-                  color: Colors.white,
-                }}>
-                Back to login
-              </Text>
+            <View style={{ marginVertical: 16 }} />
+            <TouchableOpacity style={styles(isDark).btnContainer} onPress={() => { navigation.navigate('Login'); }}>
+              <Text style={styles(isDark).btntxt}>{'Back to login'}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -173,3 +109,27 @@ const ForgotPassword = ({navigation}: any) => {
   );
 };
 export default ForgotPassword;
+
+const styles = (isDark: any) => StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: isDark ? Colors.black : Colors.white,
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  btnContainer: {
+    width: SCREEN_WIDTH - 32,
+    height: 45,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignSelf: 'center',
+    borderRadius: 3,
+  },
+  btntxt: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontFamily: 'Lato-Bold',
+    color: Colors.white,
+  }
+});
