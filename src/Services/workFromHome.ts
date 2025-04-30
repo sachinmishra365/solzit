@@ -29,46 +29,93 @@ export const workFromHomeApi = createApi({
   }),
 
   endpoints: builder => ({
-    GetAppliedWFHRecordList: builder.query({
-        query: ({data, accessToken}) => ({
-          url: `/LeaveRecords/GetAppliedWFHRecordList`,
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        }),
+    GetAllWFHRecordList: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/LeaveRecords/GetAllWFHRecordList`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }),
+    }),
 
-      GetOngoingWFHDateList: builder.query({
-        query: ({data, accessToken}) => ({
-          url: `/LeaveRecords/GetOngoingWFHDateList`,
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        }),
+    GetOngoingWFHDateList: builder.query({
+      query: ({accessToken}) => ({
+        url: `/LeaveRecords/GetOngoingWFHDateList`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }),
+    }),
 
-
-      GetAllWFHRecordList: builder.query({
-        query: ({data, accessToken}) => ({
-          url: `/LeaveRecords/GetAllWFHRecordList`,
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-        }),
+    CreateCheckInRequest: builder.mutation({
+      query: ({body, accessToken}) => ({
+        url: `/LeaveRecords/CreateCheckInRequest`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: body,
       }),
+    }),
 
+    UpdateOutTimeRequest: builder.mutation({
+      query: ({body, accessToken}) => ({
+        url: `/LeaveRecords/UpdateOutTimeRequest`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      }),
+    }),
 
+    CreateBreakInRequest: builder.mutation({
+      query: ({body, accessToken}) => ({
+        url: `/LeaveRecords/CreateBreakInRequest`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      }),
+    }),
+
+    UpdateBreakOutTimeRequest: builder.mutation({
+      query: ({body, accessToken}) => ({
+        url: `/LeaveRecords/UpdateBreakOutTimeRequest`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      }),
+    }),
+
+    GetAttendanceInOutDetailsByInOutId: builder.query({
+      query: ({data, accessToken}) => ({
+        url: `/LeaveRecords/GetAttendanceInOutDetailsByInOutId`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
   }),
 });
 
 export const {
-    useGetAppliedWFHRecordListQuery,
-    useGetOngoingWFHDateListQuery,
-    useGetAllWFHRecordListQuery,
-    } = workFromHomeApi;
+  useGetAllWFHRecordListQuery,
+  useGetOngoingWFHDateListQuery,
+  useCreateCheckInRequestMutation,
+  useUpdateOutTimeRequestMutation,
+  useCreateBreakInRequestMutation,
+  useUpdateBreakOutTimeRequestMutation,
+  useGetAttendanceInOutDetailsByInOutIdQuery,
+} = workFromHomeApi;

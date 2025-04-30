@@ -28,6 +28,8 @@ import ImageShimmerPlaceHolder from '../Placeholder/ImageShimmerPlaceHolder';
 import {useEffect, useState} from 'react';
 import React from 'react';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import WFHCard from './WFHCard';
+import {useGetOngoingWFHDateListQuery} from '../../Services/workFromHome';
 
 const {height, width} = Dimensions.get('window');
 
@@ -56,6 +58,11 @@ const Dashboard = ({navigation}: any) => {
     isLoading,
   } = useEmployeeAppliedLeavesQuery({accessToken: accessToken});
 
+  const {
+    data: onGoingWFHDateList,
+    refetch: onActionComplete,
+  } = useGetOngoingWFHDateListQuery({ accessToken });
+  
   const ProcessedLeaves = useProcessedLeavesQuery({accessToken: accessToken});
 
   useEffect(() => {
@@ -391,6 +398,10 @@ const Dashboard = ({navigation}: any) => {
         enableSwipeMonths={true}
         disableAllTouchEventsForDisabledDays={true}
       />
+      <WFHCard
+        wfhData={onGoingWFHDateList?.data[0]}
+        onActionComplete={onActionComplete}
+      />
 
       {isLoading ? (
         <ImageShimmerPlaceHolder />
@@ -473,7 +484,6 @@ const Dashboard = ({navigation}: any) => {
           )} */}
         </>
       )}
-
       <Fabbutton />
 
       <Modal

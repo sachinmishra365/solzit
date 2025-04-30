@@ -38,8 +38,12 @@ import ProjectAllocation from '../Screens/My Work/My Projects/ProjectAllocation'
 import LateArrivalTime from '../Screens/LeavesAndBreakes/LateArrivalTime';
 import WorkFromHome from '../Screens/WorkFromHome/WorkFromHome';
 import ShowPlan from '../Screens/My Work/Plan My Day/Show Plan/ShowPlan';
+
 import AddBug from '../Screens/Worklogs/AddNewToDo/AddBug';
 import BugDetails from '../Screens/Worklogs/Bugs/BugDetails';
+
+import WFHCard from '../Screens/Dashboard/WFHCard';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -104,6 +108,7 @@ useEffect(() => {
       <Stack.Screen name="AddWorklog" component={AddWorklog} />
       <Stack.Screen name="WorklogDetails" component={WorklogDetails} />
       <Stack.Screen name="ShowPlan" component={ShowPlan} />
+      <Stack.Screen name="WFHCard" component={WFHCard} />
     </Stack.Navigator>
   );
 };

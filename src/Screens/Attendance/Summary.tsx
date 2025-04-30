@@ -55,6 +55,8 @@ const Summary = ({ route }: any) => {
     { label: 'LOP Low Hours (3-5)', value: records?.lopLowHrs3_5 },
     { label: 'LOP Low Hours (<3)', value: records?.lopLowHrsLess3 },
     { label: 'LOP Lates', value: records?.lopLates },
+    { label: 'Total LOPs', value: records?.totalLossOfPay },
+
   ]
 
   const handlesummary = async () => {
@@ -141,7 +143,6 @@ const styles = (isDark: boolean) =>
     maincontainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
-      // paddingBottom: 16,
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,

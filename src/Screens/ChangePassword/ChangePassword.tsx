@@ -135,7 +135,7 @@ const ChangePassword = ({ navigation }: any) => {
               </View>
             )}
             <CustomTextInput
-              label="email"
+              label="UserName"
               value={values.email}
               autoFocus={false}
               secureTextEntry={false}

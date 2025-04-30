@@ -70,20 +70,39 @@ const DrawerNavigator = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles(isDark).container}>
-      <View style={styles(isDark).drawerContainer}>
 
-        <View style={{ width: '55%', marginLeft: 16 }}>
-          <Image source={require('../Assets/Images/Logo/solzitLogo.png')} style={styles(isDark).logo} />
-          <Text style={styles(isDark).UserName}>{userData?.userProfile?.fullName ? userData?.userProfile?.fullName : 'Guest'}</Text>
-        </View>
+      <View style={styles(isDark).drawerContainer}>
+        <Image
+          source={require('../Assets/Images/Logo/solzitLogo.png')}
+          style={styles(isDark).logo}
+        />
+
+        <TouchableOpacity
+          style={styles(isDark).userRow}
+          onPress={() => {
+            navigation.navigate('Profile');
+          }}>
+          <Text style={styles(isDark).UserName}>
+            {userData?.userProfile?.fullName
+              ? userData.userProfile.fullName
+              : 'Guest'}
+          </Text>
+          <View style={styles(isDark).editIcon}>
+            <Icon
+              source="account-edit"
+              size={22}
+              color={isDark ? Colors.white : Colors.primary}
+            />
+          </View>
+        </TouchableOpacity>
 
 
         <ScrollView style={styles(isDark).drawerBtnContainer} showsVerticalScrollIndicator={false}>
 
-          <Pressable android_ripple={{ color: 'rgba(0,0,0,0.1)' }} onPressIn={() => { navigation.navigate('Profile') }} onPress={() => { toggleMenu() }} style={styles(isDark).drawerBtn}>
+          {/* <Pressable android_ripple={{ color: 'rgba(0,0,0,0.1)' }} onPressIn={() => { navigation.navigate('Profile') }} onPress={() => { toggleMenu() }} style={styles(isDark).drawerBtn}>
             <Icon source="account" color={isDark ? Colors.white : Colors.primary} size={23} />
             <Text style={styles(isDark).drawerBtnTxt}>Profile</Text>
-          </Pressable>
+          </Pressable> */}
 
           <Pressable android_ripple={{ color: 'rgba(0,0,0,0.1)' }} onPressIn={() => { navigation.navigate('SoluzioneDirectory') }} onPress={() => { toggleMenu() }} style={styles(isDark).drawerBtn}>
             <Icon source="book-open-page-variant" color={isDark ? Colors.white : Colors.primary} size={23} />
@@ -316,6 +335,16 @@ const styles = (isDark: any) =>
       fontSize: 18,
       color: isDark ? Colors.white : Colors.black,
       fontFamily: 'Lato-Semibold',
+    },
+     userRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 10,
+    },
+    editIcon: {
+      marginLeft: 8,
+      backgroundColor: 'transparent',
+      marginTop: 14,
     },
   });
 
