@@ -103,9 +103,10 @@ const AddToDo = ({ navigation }: any) => {
         }
         try {
             const response = await CreateNewTodo({ data, accessToken })
+            
             if (response?.data?.messageDetail?.message_code === 201) {
                 // Alert.alert('Success', 'ToDo Created successfully!')
-                ToastMessage({ type: "Success", title: "To-Do", subtitle: "ToDo Created successfully!" });
+                ToastMessage({ type: "success", title: "To-Do", subtitle: "ToDo Created successfully!" });
                 await navigation.goBack()
                 await refetch()
             }
@@ -136,7 +137,7 @@ const AddToDo = ({ navigation }: any) => {
 
             if (response?.data?.messageDetail?.message_code === 201) {
                 // Alert.alert('Success', 'Bug Created successfully!')
-                ToastMessage({ type: "Success", title: "Bug", subtitle: "Bug Created successfully!" });
+                ToastMessage({ type: "success", title: "Bug", subtitle: "Bug Created successfully!" });
                 await navigation.goBack()
                 await refetch()
             }

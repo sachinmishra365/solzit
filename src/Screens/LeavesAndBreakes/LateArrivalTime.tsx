@@ -215,12 +215,12 @@ const styles = (isDark: boolean) =>
       flexWrap: 'wrap',
     },
     label: {
-      fontFamily: 'Lato-Bold',
+      fontFamily: 'Lato-Semibold',
       color: isDark ? Colors.white : Colors.black,
     },
     value: {
       fontSize: 14,
-      fontFamily: 'Lato-regular',
+      fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
     },
   });

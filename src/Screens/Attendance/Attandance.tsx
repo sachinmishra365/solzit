@@ -66,21 +66,13 @@ const Attendance = ({ navigation }: any) => {
       <Card style={styles(isDark).card}>
         <Card.Content>
           <View
-            style={{
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-            }}>
+            style={styles(isDark).row}>
             <Text style={styles(isDark).txt}>{'Month : '}{item.month.label ? item.month.label : 'N/A'}</Text>
             <Text style={styles(isDark).txt}>{'Total Pay Day : '}{item.totalPayDays ? item.totalPayDays : 0}</Text>
           </View>
 
           <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-            }}>
+            style={styles(isDark).row}>
             <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{'Year : '}{item.year.label ? item.year.label : 'N/A'}</Text>
             <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{'Earned Leave : '}{item.earnedLeave ? item.earnedLeave : 0}</Text>
           </View>
@@ -92,16 +84,7 @@ const Attendance = ({ navigation }: any) => {
               marginTop: 10,
             }}>
             <TouchableOpacity
-              style={{
-                height: 'auto',
-                backgroundColor: '#916918',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                borderRadius: 3,
-                alignItems: 'center',
-                flexDirection: 'row',
-                minHeight: 38
-              }}
+              style={[{ backgroundColor: '#916918', }, styles(isDark).button]}
               onPress={() => {
                 navigation.navigate('Summary', item);
               }}>
@@ -112,29 +95,15 @@ const Attendance = ({ navigation }: any) => {
                 size={25}
               />
               <Text
-                style={{
-                  textAlign: 'center',
-                  fontFamily: 'Lato-Bold',
-                  color: Colors.white,
-                  flexWrap: 'wrap',
-                  marginRight: 12,
-                  fontSize: 16,
-                }}>
+                style={styles(isDark).btntxt}>
                 Summary
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{
+              style={[{
                 backgroundColor: Colors.primary,
-                justifyContent: 'center',
-                alignSelf: 'center',
-                borderRadius: 3,
-                alignItems: 'center',
-                flexDirection: 'row',
-                height: 'auto',
-                minHeight: 38
-              }}
+              }, styles(isDark).button]}
               onPress={() => {
                 navigation.navigate('SepratedAttendance', item);
               }}>
@@ -145,18 +114,13 @@ const Attendance = ({ navigation }: any) => {
                 size={25}
               />
               <Text
-                style={{
-                  textAlign: 'center',
-                  fontFamily: 'Lato-Bold',
-                  color: Colors.white,
-                  flexWrap: 'wrap',
-                  marginRight: 12,
-                  fontSize: 16,
-                }}>
+                style={styles(isDark).btntxt}>
                 Attendance
               </Text>
             </TouchableOpacity>
           </View>
+
+
         </Card.Content>
       </Card>
     );
@@ -206,19 +170,32 @@ const styles = (isDark: boolean) =>
       shadowColor: isDark ? Colors.white : Colors.black,
     },
     button: {
-      backgroundColor: 'lightblue',
-      borderRadius: 12,
-      paddingVertical: 12,
-      paddingHorizontal: 24,
-      fontWeight: '500',
+      justifyContent: 'center',
       alignSelf: 'center',
+      borderRadius: 3,
       alignItems: 'center',
+      flexDirection: 'row',
+      height: 'auto',
+      minHeight: 38
     },
     txt: {
       color: isDark ? Colors.white : Colors.black,
       fontSize: 15,
       fontFamily: 'Lato-Semibold',
       marginBottom: 5
+    },
+    btntxt: {
+      textAlign: 'center',
+      fontFamily: 'Lato-Bold',
+      color: Colors.white,
+      flexWrap: 'wrap',
+      marginRight: 12,
+      fontSize: 14,
+    },
+    row: {
+      justifyContent: 'space-between',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
     }
   });
 

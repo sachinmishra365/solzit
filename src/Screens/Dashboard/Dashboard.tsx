@@ -1,39 +1,22 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  Image,
-  Modal,
-  TouchableOpacity,
-  RefreshControl,
-} from 'react-native';
-import {Calendar} from 'react-native-calendars';
+import { StyleSheet, Text, View, FlatList, Image, Modal, TouchableOpacity, RefreshControl, PanResponder, } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import Fabbutton from './FabButton/Fabbutton';
-import {Colors} from '../../constants/Colors';
-import {
-  useEmployeeAppliedLeavesQuery,
-  useProcessedLeavesQuery,
-} from '../../Services/services';
-import {useDispatch, useSelector} from 'react-redux';
-import {
-  applied,
-  auth,
-  isDarkTheme,
-  processedLeaves,
-} from '../../AppStore/Reducers/appState';
-import {Dimensions} from 'react-native';
+import { Colors } from '../../constants/Colors'; import { useEmployeeAppliedLeavesQuery, useProcessedLeavesQuery, } from '../../Services/services';
+import { useDispatch, useSelector } from 'react-redux';
+import { applied, auth, isDarkTheme, processedLeaves, } from '../../AppStore/Reducers/appState';
+import { Dimensions } from 'react-native';
 import ImageShimmerPlaceHolder from '../Placeholder/ImageShimmerPlaceHolder';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
-import ConfettiCannon from 'react-native-confetti-cannon';
+import { useGetOngoingWFHDateListQuery } from '../../Services/workFromHome';
 import WFHCard from './WFHCard';
-import {useGetOngoingWFHDateListQuery} from '../../Services/workFromHome';
+import { SegmentedButtons } from 'react-native-paper';
+import EmptyData from '../../Components/EmptyData';
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
-const Dashboard = ({navigation}: any) => {
+const Dashboard = ({ navigation }: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
   const [currentDate, setCurrentDate] = useState('');
@@ -45,25 +28,24 @@ const Dashboard = ({navigation}: any) => {
   const [todaybirthday, setTodaybirthday] = useState(moment().format('DD-MM'));
   const [refreshing, setRefreshing] = React.useState(false);
   // const [confettiActive, setConfettiActive] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState('All');
+
+  const statuses = ['All', 'Work From Home',];
 
   const processed = useSelector((state: any) => state?.appState?.processed);
   const metadata = useSelector((state: any) => state?.appState?.metadata);
 
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
+  const ProcessedLeaves = useProcessedLeavesQuery({ accessToken: accessToken });
 
-  const {
-    data: AppliedLeave,
-    refetch: refetchapplies,
-    isLoading,
-  } = useEmployeeAppliedLeavesQuery({accessToken: accessToken});
+  const { data: AppliedLeave, refetch: refetchapplies, isLoading, } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken });
+  const { data: OngoingWFHDateList, refetch: onActionComplete, } = useGetOngoingWFHDateListQuery({ accessToken: accessToken })
 
-  const {
-    data: onGoingWFHDateList,
-    refetch: onActionComplete,
-  } = useGetOngoingWFHDateListQuery({ accessToken });
-  
-  const ProcessedLeaves = useProcessedLeavesQuery({accessToken: accessToken});
+  const todayWFHData = OngoingWFHDateList?.data?.find((item: any) =>
+    moment(item.wfhDate).isSame(moment(), 'day')
+  );
+console.log(todayWFHData);
 
   useEffect(() => {
     const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
@@ -128,7 +110,7 @@ const Dashboard = ({navigation}: any) => {
     });
 
     processed?.forEach((leave: any) => {
-      const {leaveStartDate, leaveEndDate} = leave;
+      const { leaveStartDate, leaveEndDate } = leave;
       const isApproved = leave?.status?.label === 'Approved';
       if (isApproved) {
         for (
@@ -184,7 +166,7 @@ const Dashboard = ({navigation}: any) => {
     }
   };
 
-  const renderBirthdays = ({item}: any) => {
+  const renderBirthdays = ({ item }: any) => {
     const base64 = `data:image/jpeg;base64`;
     const image = item?.employeeImg;
     const birthdayImage = image
@@ -192,7 +174,7 @@ const Dashboard = ({navigation}: any) => {
       : require('../../Assets/Images/EmpBoy.png');
     const isBirthday =
       moment(item?.birthdayDate).format('DD-MM') ===
-        moment()?.format('DD-MM') &&
+      moment()?.format('DD-MM') &&
       moment(item?.birthdayDate)?.format('DD-MM') === todaybirthday;
 
     return (
@@ -210,9 +192,9 @@ const Dashboard = ({navigation}: any) => {
               {image ? (
                 <TouchableOpacity
                   onPress={() => handleImagePress(birthdayImage)}
-                  style={{minHeight: 38, minWidth: 38}}>
+                  style={{ minHeight: 38, minWidth: 38 }}>
                   <Image
-                    source={{uri: birthdayImage}}
+                    source={{ uri: birthdayImage }}
                     style={styles(isDark).Holidaylogo}
                     accessibilityLabel="Image"
                   />
@@ -220,7 +202,7 @@ const Dashboard = ({navigation}: any) => {
               ) : (
                 <TouchableOpacity
                   onPress={() => handleImagePress(birthdayImage)}
-                  style={{minHeight: 38, minWidth: 38}}>
+                  style={{ minHeight: 38, minWidth: 38 }}>
                   <Image
                     source={birthdayImage}
                     style={styles(isDark).Holidaylogo}
@@ -256,7 +238,7 @@ const Dashboard = ({navigation}: any) => {
     );
   };
 
-  const renderHolidays = ({item}: any) => {
+  const renderHolidays = ({ item }: any) => {
     const base64 = `data:image/jpeg;base64`;
     const image = item?.holidayImage;
     const HolidayImage = `${base64},${image}`;
@@ -274,9 +256,9 @@ const Dashboard = ({navigation}: any) => {
             {image ? (
               <TouchableOpacity
                 onPress={() => handleImagePress(HolidayImage)}
-                style={{minHeight: 38, minWidth: 38}}>
+                style={{ minHeight: 38, minWidth: 38 }}>
                 <Image
-                  source={{uri: HolidayImage}}
+                  source={{ uri: HolidayImage }}
                   style={styles(isDark).Holidaylogo}
                   accessibilityLabel="Image"
                 />
@@ -286,7 +268,7 @@ const Dashboard = ({navigation}: any) => {
                 onPress={() =>
                   handleImagePress(getImageSource(item?.holidayName))
                 }
-                style={{minHeight: 38, minWidth: 38}}>
+                style={{ minHeight: 38, minWidth: 38 }}>
                 <Image
                   source={getImageSource(item?.holidayName)}
                   style={styles(isDark).Holidaylogo}
@@ -368,12 +350,35 @@ const Dashboard = ({navigation}: any) => {
     }, 1000);
   }, [refetchapplies]);
 
+  const filterByStatus = (status: string) => {
+    setSelectedStatus(status);
+  };
+
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      return Math.abs(gestureState.dx) > 20;
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      if (gestureState.dx > 0) {
+        const currentIndex = statuses.indexOf(selectedStatus);
+        if (currentIndex > 0) {
+          filterByStatus(statuses[currentIndex - 1]);
+        }
+      } else if (gestureState.dx < 0) {
+        const currentIndex = statuses.indexOf(selectedStatus);
+        if (currentIndex < statuses.length - 1) {
+          filterByStatus(statuses[currentIndex + 1]);
+        }
+      }
+    },
+  });
+
   return (
     <View
       style={{
         flex: 1,
         backgroundColor: isDark ? Colors.black : Colors.white,
-      }}>
+      }}  {...panResponder.panHandlers}>
       <Calendar
         markingType={'period'}
         markedDates={markedDates}
@@ -398,10 +403,37 @@ const Dashboard = ({navigation}: any) => {
         enableSwipeMonths={true}
         disableAllTouchEventsForDisabledDays={true}
       />
-      <WFHCard
-        wfhData={onGoingWFHDateList?.data[0]}
-        onActionComplete={onActionComplete}
+
+      <SegmentedButtons
+        value={selectedStatus}
+        onValueChange={filterByStatus}
+        buttons={statuses.map(status => ({
+          value: status,
+          label: status,
+          style: {
+            backgroundColor: selectedStatus === status ? Colors.secondary : (isDark ? Colors.gray : Colors.white),
+          },
+          labelStyle: {
+            color: selectedStatus === status
+              ? Colors.white
+              : isDark
+                ? Colors.white
+                : Colors.black,
+            fontFamily: 'Lato-Semibold',
+          },
+        }))}
+        style={{ marginVertical: 10, marginHorizontal: 16 }}
+
+        theme={{
+          colors: {
+            primary: Colors.primary,
+          },
+        }}
       />
+
+
+      {selectedStatus === 'Work From Home' && <WFHCard wfhData={todayWFHData !== undefined ? todayWFHData : []} onActionComplete={onActionComplete} />}
+
 
       {isLoading ? (
         <ImageShimmerPlaceHolder />
@@ -414,7 +446,7 @@ const Dashboard = ({navigation}: any) => {
                   item?.holidayName) ||
                 (item?.birthdayDate &&
                   moment(item?.birthdayDate).format('MMM, D') ===
-                    moment().format('MMM, D')) ||
+                  moment().format('MMM, D')) ||
                 (moment(item?.leaveStartDate).format('MM-YYYY') === onMonth &&
                   !item?.holidayName &&
                   !item?.birthdayDate)
@@ -428,52 +460,37 @@ const Dashboard = ({navigation}: any) => {
                 onRefresh={() => onRefresh()}
               />
             }
-            renderItem={({item}) => {
+            renderItem={({ item }) => {
               if (
                 item?.holidayName ||
                 (item?.birthdayDate &&
                   moment(item?.birthdayDate).format('MMM, D') ===
-                    moment().format('MMM, D')) ||
+                  moment().format('MMM, D')) ||
                 (moment(item?.leaveStartDate).format('MM-YYYY') === onMonth &&
                   !item?.holidayName &&
                   !item?.birthdayDate)
               ) {
                 const holidayComponent =
                   item?.holidayName || item?.leaveStartDate
-                    ? renderHolidays({item})
+                    ? renderHolidays({ item })
                     : null;
                 const birthdayComponent = item?.birthdayDate
-                  ? renderBirthdays({item})
+                  ? renderBirthdays({ item })
                   : null;
                 return (
-                  <>
-                    {holidayComponent}
-                    {birthdayComponent}
+                  <>{ }
+                    {selectedStatus === 'All' && holidayComponent}
+                    {selectedStatus === 'Work From Home' && birthdayComponent}
+                    {/* {birthdayComponent} */}
                   </>
                 );
               }
               return null;
             }}
             keyExtractor={(item, index) => index.toString()}
-            style={{margin: 5}}
+            style={{ margin: 5 }}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={
-              <View
-                style={{
-                  height: Dimensions.get('window').height - 400,
-                  justifyContent: 'center',
-                }}>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.dark_gray,
-                    fontFamily: 'Lato-Bold',
-                    textAlign: 'center',
-                    fontSize: 16,
-                  }}>
-                  No Records
-                </Text>
-              </View>
-            }
+            ListEmptyComponent={<EmptyData/>}
           />
           {/* {confettiActive && (
             <ConfettiCannon
@@ -484,6 +501,7 @@ const Dashboard = ({navigation}: any) => {
           )} */}
         </>
       )}
+
       <Fabbutton />
 
       <Modal
@@ -496,7 +514,7 @@ const Dashboard = ({navigation}: any) => {
             // @ts-ignore
             source={
               typeof selectedImage === 'string'
-                ? {uri: selectedImage}
+                ? { uri: selectedImage }
                 : selectedImage
             }
             style={styles(isDark).modalImage}

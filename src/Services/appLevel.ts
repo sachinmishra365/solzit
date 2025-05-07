@@ -38,7 +38,7 @@ export const appLevelApi = createApi({
     }),
 
     ChangePassword: builder.mutation({
-      query: ({data,accessToken}) => ({
+      query: ({data, accessToken}) => ({
         url: 'ChangePassword',
         method: 'POST',
         headers: {
@@ -57,7 +57,7 @@ export const appLevelApi = createApi({
     }),
 
     EmployeeUpdateProfile: builder.mutation({
-      query: ({data,accessToken}) => ({
+      query: ({data, accessToken}) => ({
         url: `/UpdateDisplayPicture`,
         method: 'POST',
         headers: {

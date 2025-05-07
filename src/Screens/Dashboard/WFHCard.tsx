@@ -1,18 +1,14 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Colors} from '../../constants/Colors';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
-import moment from 'moment';
-import {
-  useCreateBreakInRequestMutation,
-  useCreateCheckInRequestMutation,
-  useUpdateBreakOutTimeRequestMutation,
-  useUpdateOutTimeRequestMutation,
-} from '../../Services/workFromHome';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Colors } from '../../constants/Colors';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { useCreateBreakInRequestMutation, useCreateCheckInRequestMutation, useUpdateBreakOutTimeRequestMutation, useUpdateOutTimeRequestMutation, } from '../../Services/workFromHome';
+import EmptyData from '../../Components/EmptyData';
 
 
-const WFHCard = ({wfhData, onActionComplete}: any) => {
+const WFHCard = ({ wfhData, onActionComplete }: any) => {
+
   const isDark = useSelector(isDarkTheme);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
@@ -43,20 +39,15 @@ const WFHCard = ({wfhData, onActionComplete}: any) => {
     }
   }, [wfhData]);
 
-  // console.log( 'wfhData2',wfhData);
 
   const handleCheckIn = async () => {
     const currentTime = new Date().toISOString();
     try {
-      const response = await createCheckIn({
-        body: {inTime: currentTime},
-        accessToken: accessToken,
-      }).unwrap();
+      const response = await createCheckIn({ body: { inTime: currentTime }, accessToken: accessToken, }).unwrap();
 
       if (response?.isSuccessful) {
         setAttendanceId(response?.data);
         onActionComplete();
-      } else {
       }
     } catch (error: any) {
       console.error('Check-In error:', error);
@@ -65,19 +56,12 @@ const WFHCard = ({wfhData, onActionComplete}: any) => {
 
   const handleBreakIn = async () => {
     try {
-      const response = await createBreakIn({
-        body: {
-          attendanceId: attendanceId,
-          isBreakIn: true,
-        },
-        accessToken: accessToken,
-      }).unwrap();
+      const response = await createBreakIn({ body: { attendanceId: attendanceId, isBreakIn: true, }, accessToken: accessToken, }).unwrap();
 
       if (response?.isSuccessful) {
         setIsBreakIn(true);
         setAttendanceInOutID(response?.data);
         onActionComplete();
-      } else {
       }
     } catch (error: any) {
       console.error('Break-In error:', error);
@@ -86,19 +70,12 @@ const WFHCard = ({wfhData, onActionComplete}: any) => {
 
   const handleBreakOut = async () => {
     try {
-      const response = await createBreakOut({
-        body: {
-          attendanceInOutId: attendanceInOutID,
-          IsBreakOut: true,
-        },
-        accessToken: accessToken,
-      }).unwrap();
+      const response = await createBreakOut({ body: { attendanceInOutId: attendanceInOutID, IsBreakOut: true, }, accessToken: accessToken, }).unwrap();
 
       if (response?.isSuccessful) {
         setIsBreakIn(false);
         setIsBreakOut(false);
         onActionComplete();
-      } else {
       }
     } catch (error: any) {
       console.error('Break-Out error:', error);
@@ -108,17 +85,10 @@ const WFHCard = ({wfhData, onActionComplete}: any) => {
   const handleCheckOut = async () => {
     const currentTime = new Date().toISOString();
     try {
-      const response = await updateOutTime({
-        body: {
-          attendanceId: attendanceId,
-          outTime: currentTime,
-        },
-        accessToken: accessToken,
-      }).unwrap();
+      const response = await updateOutTime({ body: { attendanceId: attendanceId, outTime: currentTime, }, accessToken: accessToken, }).unwrap();
 
       if (response?.isSuccessful) {
         onActionComplete();
-      } else {
       }
     } catch (error: any) {
       console.error('Check-Out error:', error);
@@ -128,75 +98,79 @@ const WFHCard = ({wfhData, onActionComplete}: any) => {
   if (wfhData?.isCheckedOut === true) return null;
 
   return (
-    <View style={styles(isDark).cardContainer}>
-      <View>
-        <Text
-          style={{fontSize: 24, color: isDark ? Colors.white : Colors.black}}>
-          🏠
-        </Text>
-      </View>
+    <>
+      {
+        wfhData?.length > 0 ? (
+          <View style={styles(isDark).cardContainer}>
+            <View>
+              <Image
+                source={require('../../Assets/Images/WFH.jpg')}
+                style={styles(isDark).wfhlogo}
+                accessibilityLabel="Image"
+              />
+            </View>
 
-      <View style={styles(isDark).contentContainer}>
-        <Text style={styles(isDark).titleText}>Work From Home</Text>
+            <View style={styles(isDark).contentContainer}>
 
-        {wfhData?.isCheckedIn !== true && (
-          <TouchableOpacity
-          style={{
-            backgroundColor: Colors.primary,
-            paddingHorizontal:20,
-            paddingVertical: 10,
-            borderRadius: 5,
-            marginTop: 10,
-            alignSelf: 'center',
-          }}
-            onPress={handleCheckIn}>
-            <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-              Start your Day
-            </Text>
-          </TouchableOpacity>
-        )}
+              {wfhData?.isCheckedIn !== true && (
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: Colors.primary,
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    borderRadius: 5,
+                    marginTop: 10,
+                    alignSelf: 'center',
+                  }}
+                  onPress={handleCheckIn}>
+                  <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                    Start your Day
+                  </Text>
+                </TouchableOpacity>
+              )}
 
-        {wfhData?.isCheckedIn === true &&  (
-          <View style={styles(isDark).buttonsContainer}>
-            {!isBreakIn && (
-              <TouchableOpacity
-              style={[styles(isDark).buttonStyle, {backgroundColor: Colors.primary}]}
-                onPress={handleBreakIn}>
-                <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-                  Take a break
-                </Text>
-              </TouchableOpacity>
-            )}
-            {isBreakIn && !isBreakOut && (
-              <TouchableOpacity
-              style={[styles(isDark).buttonStyle, {backgroundColor: Colors.error}]}
-                onPress={handleBreakOut}>
-                <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-                  Return from Break
-                </Text>
-              </TouchableOpacity>
-            )}
+              {wfhData?.isCheckedIn === true && (
+                <View style={styles(isDark).buttonsContainer}>
+                  {!isBreakIn && (
+                    <TouchableOpacity
+                      style={[styles(isDark).buttonStyle, { backgroundColor: Colors.primary }]}
+                      onPress={handleBreakIn}>
+                      <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                        Take a break
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {isBreakIn && !isBreakOut && (
+                    <TouchableOpacity
+                      style={[styles(isDark).buttonStyle, { backgroundColor: Colors.error }]}
+                      onPress={handleBreakOut}>
+                      <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                        Return from Break
+                      </Text>
+                    </TouchableOpacity>
+                  )}
 
-            <TouchableOpacity
-              style={[styles(isDark).buttonStyle,{
-                backgroundColor:
-                  isBreakIn && !isBreakOut
-                    ? isDark
-                      ? 'rgba(189, 1, 1, 0.3)'
-                      :'rgba(189, 1, 1, 0.3)'
-                    : Colors.error,
-                    marginLeft: 10,
-              }]}
-              onPress={handleCheckOut}
-              disabled={isBreakIn && !isBreakOut}>
-              <Text style={{color: Colors.white, fontWeight: 'bold'}}>
-                End your Day
-              </Text>
-            </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles(isDark).buttonStyle, {
+                      backgroundColor: isBreakIn && !isBreakOut ? isDark ? 'rgba(189, 1, 1, 0.3)' : 'rgba(189, 1, 1, 0.3)' : Colors.error,
+                      marginLeft: 10,
+                    }]}
+                    onPress={handleCheckOut}
+                    disabled={isBreakIn && !isBreakOut}>
+                    <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                      End your Day
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
           </View>
-        )}
-      </View>
-    </View>
+        ) :
+          (
+            <EmptyData />
+          )
+      }
+    </>
   );
 };
 
@@ -233,9 +207,14 @@ const styles = (isDark: any) =>
       marginTop: 5,
     },
     buttonStyle: {
-      paddingHorizontal:15,
+      paddingHorizontal: 15,
       paddingVertical: 10,
       borderRadius: 5,
-    
+
+    },
+    wfhlogo: {
+      width: 60,
+      height: 60,
+      borderRadius: 35,
     },
   });

@@ -77,92 +77,53 @@ const SoluzioneDirectory = ({ navigation }: any) => {
         <Card.Content>
           <View style={[styles(isDark).row]}>
             <View style={styles(isDark).imageContainer}>
-              <Image source={item.employeeImg
-                ? { uri: `data:image/png;base64,${item.employeeImg}` }
-                : require('../../Assets/Images/EmpBoy.png')
-              }
+              <Image
+                source={item.employeeImg ? { uri: `data:image/png;base64,${item.employeeImg}` } : require('../../Assets/Images/EmpBoy.png')}
                 style={styles(isDark).image}
               />
               <View style={[styles(isDark).row, { marginTop: 5 }]}>
-                <Icon
-                  source="cake"
-                  size={20}
-                  color={isDark ? Colors.white : Colors.primary}
-                />
+                <Icon source="cake" size={20} color={isDark ? Colors.white : Colors.primary} />
                 <Text style={styles(isDark).birthday}>
-                  {' '}
-                  {moment(item.birthdayDate).format('MMM, D')}
+                  {' '}{moment(item.birthdayDate).format('MMM, D')}
                 </Text>
               </View>
             </View>
             <View style={{ flex: 1, marginRight: 8 }}>
               <View style={[styles(isDark).row, {}]}>
-                <Icon
-                  source="account"
-                  size={20}
-                  color={isDark ? Colors.white : Colors.primary}
-                />
-                <Text
-                  style={[
-                    styles(isDark).name,
-                    { fontFamily: 'Lato-Bold', fontSize: 18 },
-                  ]}>
+                <Icon source="account" size={20} color={isDark ? Colors.white : Colors.primary} />
+                <Text style={[styles(isDark).name, { fontFamily: 'Lato-Bold', fontSize: 18 }]}>
                   {item.fullName}
                 </Text>
               </View>
               <View style={[styles(isDark).row, { marginVertical: 5 }]}>
-                <Icon
-                  source="briefcase"
-                  size={20}
-                  color={isDark ? Colors.white : Colors.primary}
-                />
-                <Text
-                  style={[
-                    styles(isDark).name,
-                    { fontFamily: 'Lato-Semibold', fontSize: 16 },
-                  ]}>
+                <Icon source="briefcase" size={20} color={isDark ? Colors.white : Colors.primary} />
+                <Text style={[styles(isDark).name, { fontFamily: 'Lato-Semibold', fontSize: 16 },]}>
                   {item.designation}
                 </Text>
               </View>
-              <TouchableOpacity
-                onPress={() => Linking.openURL(`mailto:${item.email}`)}>
+              <TouchableOpacity onPress={() => Linking.openURL(`mailto:${item.email}`)}>
                 <View style={[styles(isDark).row, { marginVertical: 5 }]}>
-                  <Icon
-                    source="email"
-                    size={20}
-                    color={isDark ? Colors.white : Colors.primary}
-                  />
+                  <Icon source="email" size={20} color={isDark ? Colors.white : Colors.primary} />
                   <Text
-                    style={[
-                      styles(isDark).email,
-                      {
-                        marginTop: -5,
-                        fontFamily: 'Lato-Semibold',
-                        fontSize: 14,
-                        textDecorationLine: 'underline',
-                        textDecorationColor: isDark
-                          ? Colors.primary
-                          : Colors.primary,
-                      },
+                    style={[styles(isDark).email,
+                    {
+                      marginTop: -5,
+                      textDecorationLine: 'underline',
+                      textDecorationColor: isDark ? Colors.primary : Colors.primary
+                    }
                     ]}>
                     {item.email}
                   </Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => Linking.openURL(`tel:${item.mobile}`)}>
+              <TouchableOpacity onPress={() => Linking.openURL(`tel:${item.mobile}`)}>
                 <View style={[styles(isDark).row, { marginVertical: 5 }]}>
-                  <Icon
-                    source="phone"
-                    size={20}
-                    color={isDark ? Colors.white : Colors.primary}
-                  />
+                  <Icon source="phone" size={20} color={isDark ? Colors.white : Colors.primary} />
                   <Text style={styles(isDark).email}>{item.mobile}</Text>
                 </View>
               </TouchableOpacity>
             </View>
           </View>
-
         </Card.Content>
       </Card>
     );
@@ -189,10 +150,7 @@ const SoluzioneDirectory = ({ navigation }: any) => {
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => onRefresh()}
-              />
+              <RefreshControl refreshing={refreshing} onRefresh={() => onRefresh()} />
             }
             ListFooterComponent={<View style={{ height: 100 }} />}
           />

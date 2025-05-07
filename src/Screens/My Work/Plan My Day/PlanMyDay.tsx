@@ -10,9 +10,10 @@ import moment from 'moment';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
 import { useGetAppSettingsValueQuery, useGetGeneralTaskListInMyProjectQuery, useGetToDoListBasedOnFilterMutation } from '../../../Services/workloglevel';
 import WorklogCard from '../../../Components/WorklogCard';
+import EmptyData from '../../../Components/EmptyData';
 
 
-const PlanMyDay = ({ navigation,route}: any) => {
+const PlanMyDay = ({ navigation, route }: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
@@ -32,7 +33,7 @@ const PlanMyDay = ({ navigation,route}: any) => {
   const { data: generalTaskData, isLoading: isGeneralTaskLoading } = useGetGeneralTaskListInMyProjectQuery({
     accessToken: accessToken?.authToken?.accessToken,
   });
-  const { data: appSettingData } =  useGetAppSettingsValueQuery({accessToken: EmployeeId?.authToken?.accessToken,AppSettingName: 'MAX_ADD_DAY_REPORT_TIME',});
+  const { data: appSettingData } = useGetAppSettingsValueQuery({ accessToken: EmployeeId?.authToken?.accessToken, AppSettingName: 'MAX_ADD_DAY_REPORT_TIME', });
   const isLoading = isToDoLoading || isGeneralTaskLoading;
 
   const fetchData = async () => {
@@ -42,7 +43,7 @@ const PlanMyDay = ({ navigation,route}: any) => {
       handleGeneralTasks();
     }
   };
-  
+
 
   const handleMyToDos = async () => {
     if (!connected) {
@@ -60,10 +61,10 @@ const PlanMyDay = ({ navigation,route}: any) => {
       let filterId = 1;
       let itemTypeId = 0;
 
-    if (selectedTaskType === 'defaultWorkingItems') {
-      filterId = 3;
-      itemTypeId = 0;
-    }
+      if (selectedTaskType === 'defaultWorkingItems') {
+        filterId = 3;
+        itemTypeId = 0;
+      }
 
       const result = await getToDoListBasedOnFilter({
         data: {},
@@ -101,7 +102,7 @@ const PlanMyDay = ({ navigation,route}: any) => {
     if (appSettingData?.data) {
       const settingTime = moment(appSettingData.data, 'HH:mm:ss');
       const currentTime = moment();
-  
+
       if (currentTime.isAfter(settingTime)) {
         setIsFabDisabled(true);
       } else {
@@ -109,17 +110,17 @@ const PlanMyDay = ({ navigation,route}: any) => {
       }
     }
   }, [appSettingData]);
-  
+
   const toggleCheckbox = (id: any) => {
     setCheckedItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-  
+
   useEffect(() => {
     if (route.params?.clearSelected) {
       setCheckedItems({});
     }
   }, [route.params?.clearSelected]);
-  
+
 
   const handleMenuOptionSelect = (option: any) => {
     setSelectedTaskType(option);
@@ -176,10 +177,10 @@ const PlanMyDay = ({ navigation,route}: any) => {
       iconName={checkedItems[item.id] ? 'checkbox-marked' : 'checkbox-blank-outline'}
       iconColor={Colors.primary}
       rightIconColor={Colors.primary}
-      iconPress={() => {toggleCheckbox(item.id)}}
+      iconPress={() => { toggleCheckbox(item.id) }}
       showRightIcon2={false}
       showRightIcon={false}
-      // cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
+    // cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
     />
   );
 
@@ -194,7 +195,6 @@ const PlanMyDay = ({ navigation,route}: any) => {
         filterOnPress={() => setFilterVisible(true)}
       />
 
-      <View style={styles(isDark).divider} />
 
       <View
         style={{
@@ -205,12 +205,12 @@ const PlanMyDay = ({ navigation,route}: any) => {
           marginBottom: 10,
           marginTop: 8,
         }}>
-        <Text style={[styles(isDark).label, {fontSize: 16}]}>
+        <Text style={[styles(isDark).label, { fontSize: 16 }]}>
           {!isFilterSelected
             ? "Items I'm Working On"
             : selectedTaskType === 'generalTasks'
-            ? 'General Tasks'
-            : 'My Active Items'}
+              ? 'General Tasks'
+              : 'My Active Items'}
         </Text>
 
         <TouchableOpacity
@@ -226,29 +226,15 @@ const PlanMyDay = ({ navigation,route}: any) => {
         <ShimmerPlaceHolder />
       ) : (selectedTaskType === 'myActiveItems' ||
         selectedTaskType === 'defaultWorkingItems'
-          ? myToDosData
-          : generalTasksData
-        )?.length === 0 ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              alignSelf: 'center',
-              fontFamily: 'Lato-Bold',
-            }}>
-            No Records
-          </Text>
-        </View>
+        ? myToDosData
+        : generalTasksData
+      )?.length === 0 ? (
+        <EmptyData />
       ) : (
         <FlatList
           data={
             selectedTaskType === 'myActiveItems' ||
-            selectedTaskType === 'defaultWorkingItems'
+              selectedTaskType === 'defaultWorkingItems'
               ? myToDosData
               : generalTasksData
           }
@@ -258,7 +244,7 @@ const PlanMyDay = ({ navigation,route}: any) => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           showsVerticalScrollIndicator
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       )}
 
@@ -280,7 +266,7 @@ const PlanMyDay = ({ navigation,route}: any) => {
             selectedTaskType === 'myActiveItems' || selectedTaskType === 'defaultWorkingItems'
               ? myToDosData
               : generalTasksData
-          ).filter((item: any) => checkedItems[item.id]);          
+          ).filter((item: any) => checkedItems[item.id]);
 
           if (selectedItems.length === 0) {
             Toast.show({
@@ -290,7 +276,7 @@ const PlanMyDay = ({ navigation,route}: any) => {
               topOffset: 80,
             });
           } else {
-            navigation.navigate('AddToMyPlan', {selectedItems});
+            navigation.navigate('AddToMyPlan', { selectedItems });
           }
         }}
         accessibilityLabel="Add To My Plan"
@@ -313,10 +299,7 @@ const styles = (isDark: boolean) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
-    divider: {
-      height: 1,
-      backgroundColor: isDark ? Colors.medium_gray : 'transparent',
-    },
+
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginVertical: 7,

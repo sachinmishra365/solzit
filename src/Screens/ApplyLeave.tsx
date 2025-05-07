@@ -191,14 +191,6 @@ const ApplyLeave = () => {
         title="Apply Leave"
         onPress={() => { navigation.goBack() }}
       />
-      <View
-        style={{
-          borderWidth: 1,
-          height: 1,
-          backgroundColor: isDark ? Colors.white : 'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',
-        }}
-      />
       {
         isLoading ? (
           <Placeholder />

@@ -25,7 +25,7 @@ export const workloglevelApi = createApi({
   reducerPath: 'workloglevelApi',
   baseQuery: axiosBaseQuery({
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
-    // baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //pro
+    // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
   }),
   tagTypes: ['WorkStatus', 'DayTaskReports', 'DeleteDayTaskReports'],
 

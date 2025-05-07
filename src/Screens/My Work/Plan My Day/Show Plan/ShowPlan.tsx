@@ -401,7 +401,6 @@ const ShowPlan = ({navigation}: any) => {
         title="View Report"
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
 
       {!isCutOffTimePassed && (
       <Button
@@ -472,12 +471,6 @@ const styles = (isDark: boolean) =>
     maincontainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
-    },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
     },
     topRow: {
       flexDirection: 'row',

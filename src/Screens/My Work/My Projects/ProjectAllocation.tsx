@@ -8,16 +8,18 @@ import { Colors } from '../../../constants/Colors';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
+import EmptyData from '../../../Components/EmptyData';
 
 const ProjectAllocation = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
-  const { data, isLoading, error } = useGetemployeeProjectAllocationQuery({ accessToken: accessToken?.authToken?.accessToken, });
+  const { data, isLoading } = useGetemployeeProjectAllocationQuery({ accessToken: accessToken?.authToken?.accessToken, });
 
   const [myPlanData, setMyPlanData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  
 
   const handleMyPlans = async () => {
     if (!connected) {
@@ -91,37 +93,23 @@ const ProjectAllocation = ({ navigation }: any) => {
         isDark={isDark}
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
       {isLoading ? (
         <ShimmerPlaceHolder />
-      ) : data?.data === null ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              alignSelf: 'center',
-              fontFamily: 'Lato-Bold',
-            }}>
-            No Records
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={myPlanData}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          ListFooterComponent={<View style={{ height: 100 }} />}
-        />
-      )}
+      ) : data?.data.length > 0 ?
+        (
+          <FlatList
+            data={myPlanData}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderItem}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            ListFooterComponent={<View style={{ height: 100 }} />}
+          />
+        ) : (
+          <EmptyData />
+        )}
     </View>
   );
 };
@@ -137,10 +125,6 @@ const styles = (isDark: boolean) =>
       borderColor: Colors.background,
       borderWidth: 0.5,
       marginHorizontal: 16,
-    },
-    divider: {
-      height: 1,
-      backgroundColor: isDark ? Colors.medium_gray : 'transparent',
     },
     projectName: {
       fontSize: 16,
@@ -158,6 +142,7 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
+      lineHeight: 25,
     },
 
   });

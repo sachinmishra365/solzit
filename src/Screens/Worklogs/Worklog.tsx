@@ -34,6 +34,7 @@ const Worklog = ({ navigation }: any) => {
     const { data: ActiveItemsInMyProject, isLoading: isActiveItemsInMyProject } = useGetActiveItemsInMyProjectQuery({ accessToken: accessToken })
 
     const [GetToDoList, { isLoading }] = useGetToDoListBasedOnFilterMutation();
+    
 
     useEffect(() => {
         handleWorklogs(selectedId?.filterID, selectedId?.itemTypeID, selectedId?.label);
@@ -77,6 +78,7 @@ const Worklog = ({ navigation }: any) => {
         try {
             const response = await GetToDoList(body).unwrap();
             SetTodoList(response?.data);
+            
         } catch (err) {
             // console.error("Error fetching worklogs:", err);
             ToastMessage({ type: "error", title: "Error", subtitle: "Something went wrong" });

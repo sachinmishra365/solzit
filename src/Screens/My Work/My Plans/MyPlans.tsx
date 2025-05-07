@@ -71,12 +71,12 @@ const MyPlans = ({navigation}: any) => {
         
         </View>
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).taskText}>Committed Tasks{' : '}{item.commitedTask}</Text>
-          <Text style={styles(isDark).taskText}>Uncommitted Tasks{' : '}{item.unCommittedTask}</Text>
+          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Committed Tasks{' : '}</Text>{item.commitedTask}</Text>
+          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Uncommitted Tasks{' : '}</Text>{item.unCommittedTask}</Text>
         </View>
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).taskText}>Committed Hours{' : '}{item.committedHours}</Text>
-          <Text style={styles(isDark).taskText}>Actual Work Log{' : '}{item.actualWorkLogHours}</Text>
+          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Committed Hours{' : '}</Text>{item.committedHours}</Text>
+          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Actual Work Log{' : '}</Text>{item.actualWorkLogHours}</Text>
         </View>
       </Card.Content>
     </Card>
@@ -90,7 +90,6 @@ const MyPlans = ({navigation}: any) => {
         isDark={isDark}
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : data?.data === null ? (
@@ -130,10 +129,6 @@ const styles = (isDark: boolean) =>
     mainContainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
-    },
-    divider: {
-      height: 1,
-      backgroundColor: isDark ? Colors.medium_gray : 'transparent',
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,

@@ -8,6 +8,7 @@ import { useGetListOfOpenPositionQuery } from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import { Card, Icon, IconButton } from 'react-native-paper';
+import EmptyData from '../../Components/EmptyData';
 
 
 const OpenPositions = ({ navigation }: any) => {
@@ -67,26 +68,26 @@ const OpenPositions = ({ navigation }: any) => {
     <Card style={styles(isDark).card} onPress={() => navigation.navigate('PositionDetail', { position: item })}>
       <Card.Content>
         <View style={[styles(isDark).titleContainer, { marginBottom: 8, }]}>
-          <Text style={[styles(isDark).title,{flexShrink:1}]}>{item.hiringPosition}</Text>
+          <Text style={[styles(isDark).title, { flexShrink: 1 }]}>{item.hiringPosition}</Text>
           <Text style={styles(isDark, item.urgency).urgencyText}>
             {item.urgency}
           </Text>
         </View>
 
         <View style={styles(isDark).rowContainer}>
-          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Semibold' }]}>
             Experience Range{' : '}{item.experienceRange}
           </Text>
-          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Semibold' }]}>
             WFH{' : '}{item.isWorkFromHomeAvailable}
           </Text>
         </View>
 
         <View style={styles(isDark).rowContainer}>
-          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Semibold' }]}>
             Number of Positions{' : '}{item.numberOfPosition}
           </Text>
-          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
+          <Text style={[styles(isDark).value, { fontFamily: 'Lato-Semibold' }]}>
             Location{' : '}{item.location || 'N/A'}
           </Text>
         </View>
@@ -105,8 +106,7 @@ const OpenPositions = ({ navigation }: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
-        data &&
-        data !== null && (
+        (data && data?.data?.length > 0) ? (
           <FlatList
             showsVerticalScrollIndicator={false}
             data={OpenPositionData}
@@ -120,7 +120,8 @@ const OpenPositions = ({ navigation }: any) => {
             }
             ListFooterComponent={<View style={{ height: 100 }} />}
           />
-        )
+        ) :
+          <EmptyData />
       )}
     </View>
   );
@@ -132,9 +133,9 @@ const styles = (isDark: boolean, urgency?: string) =>
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
-    card:{
+    card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
-      marginVertical: 10,
+      marginVertical: 7,
       borderColor: Colors.background,
       borderWidth: 0.5,
       marginHorizontal: 16,

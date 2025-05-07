@@ -27,7 +27,7 @@ export const services = createApi({
     // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
   }),
-  tagTypes: ['Hello', 'Hello1', 'attendance','hi','feedback'],
+  tagTypes: ['Hello', 'Hello1', 'attendance', 'hi', 'feedback'],
 
   endpoints: builder => ({
     EmployeeAppliedLeaves: builder.query({
@@ -171,7 +171,7 @@ export const services = createApi({
       },
     }),
     EmployeeInventoryAllocation: builder.query({
-      query: ({accessToken }) => ({
+      query: ({accessToken}) => ({
         url: `/EmployeeRecord/GetEmployeeInventoryAllocation/`,
         method: 'GET',
         headers: {
@@ -191,7 +191,7 @@ export const services = createApi({
         };
       },
     }),
-    
+
     CreateMyFeedBacks: builder.mutation({
       query: ({data, accessToken}) => {
         return {
@@ -206,7 +206,7 @@ export const services = createApi({
       },
       invalidatesTags: ['feedback'],
     }),
-    
+
     GetMyFeedbacksListByEmpId: builder.query({
       query: ({accessToken}) => {
         return {
@@ -221,7 +221,7 @@ export const services = createApi({
     }),
 
     GetMyFeedbacksByFeedBackId: builder.query({
-      query: ({FeedBackId,accessToken}) => {
+      query: ({FeedBackId, accessToken}) => {
         return {
           url: `/Feedbacks/GetMyFeedbacksByFeedBackId?FeedBackId=${FeedBackId}`,
           method: 'GET',
@@ -231,7 +231,7 @@ export const services = createApi({
         };
       },
     }),
-    
+
     GetListOfOpenPosition: builder.query({
       query: ({accessToken}) => {
         return {
@@ -243,7 +243,7 @@ export const services = createApi({
         };
       },
     }),
-    
+
     CreateCandidateApplication: builder.mutation({
       query: ({data, accessToken}) => {
         return {
@@ -272,7 +272,7 @@ export const services = createApi({
     }),
 
     AttachFileInSharePoint: builder.mutation({
-      query: ({accessToken,data}) => {
+      query: ({accessToken, data}) => {
         return {
           url: `/Sharepoint/AttachFileInSharePoint`,
           method: 'POST',
@@ -287,7 +287,7 @@ export const services = createApi({
     }),
 
     GetAttachmentFromSharePoint: builder.query({
-      query: ({entityId,entityName,accessToken}) => {
+      query: ({entityId, entityName, accessToken}) => {
         return {
           url: `/Sharepoint/GetAttachmentFromSharePoint?entityId=${entityId}&entityName=${entityName}`,
           method: 'GET',
@@ -315,6 +315,30 @@ export const services = createApi({
         url: `/EmployeeAttendance/EmployeeAttendanceList`,
         method: 'POST',
         body: JSON.stringify(data),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
+    GetEmloyeeBreaKLogsByEmployeeId: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/LeaveRecords/GetEmloyeeBreaKLogsByEmployeeId`,
+        method: 'POST',
+        body: data,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+
+    SaveEmployeeBreakLog: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/LeaveRecords/SaveEmployeeBreakLog`,
+        method: 'POST',
+        body: data,
         headers: {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
@@ -349,4 +373,6 @@ export const {
   useGetAttachmentFromSharePointQuery,
   useGetSoluzioneUpcomingBirthdaysQuery,
   useEmployeeAttendanceListMutation,
+  useGetEmloyeeBreaKLogsByEmployeeIdMutation,
+  useSaveEmployeeBreakLogMutation,
 } = services;

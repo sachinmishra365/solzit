@@ -6,7 +6,7 @@ import CustomHeader from '../../Components/CustomHeader';
 import { Colors } from '../../constants/Colors';
 import { useGetMyFeedbacksListByEmpIdQuery } from '../../Services/services';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import { Card, FAB, Icon } from 'react-native-paper';
+import { Card, FAB, Icon, IconButton } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import moment from 'moment';
 import EmptyData from '../../Components/EmptyData';
@@ -41,25 +41,25 @@ const Feedback = ({ navigation }: any) => {
     <Card style={styles(isDark).card}>
       <Card.Content>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
-          <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', }]}>{'Status : '}{item.status.label}</Text>
-          <Text style={[styles(isDark).txt, { fontSize: 16, fontFamily: 'Lato-Bold' }]}>
+          <Text style={[styles(isDark).txt]}>{'Status : '}{item.status.label}</Text>
+          <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold' }]}>{'Reported On : '}
             {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
           </Text>
         </View>
         <View>
 
           <View style={{ flexDirection: 'row', }}>
-            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold' }]}>{'Title : '}</Text>
+            <Text style={[styles(isDark).txt,]}>{'Title : '}</Text>
             <Text style={[styles(isDark).txt, { flexWrap: 'wrap', flex: 1 }]}>{item.feedBackTitle}</Text>
           </View>
 
-          <TouchableOpacity style={styles(isDark).viewFeedback} onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}>
-            <View
-              style={styles(isDark).button}>
-              <Icon source="eye" size={24} color={Colors.white} />
-              <Text style={[styles(isDark).addButtonText, { color: Colors.white, marginLeft: 4 }]}>View Feedback</Text>
-            </View>
-          </TouchableOpacity>
+          <IconButton
+            icon={'eye'}
+            iconColor={Colors.primary}
+            size={25}
+            style={{ position: 'absolute', right: -10, top: 10, }}
+            onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}
+          />
         </View>
 
       </Card.Content>
@@ -115,21 +115,14 @@ const styles = (isDark: boolean) =>
       borderColor: Colors.background,
       borderWidth: 0.5,
       marginHorizontal: 16,
+      paddingBottom: 20
     },
-    addButtonText: {
-      fontSize: 14,
-      fontFamily: 'Lato-Bold',
-    },
+
     txt: {
-      fontFamily: 'Lato-SemiBold',
+      fontFamily: 'Lato-Semibold',
       marginBottom: 5,
       color: isDark ? Colors.white : Colors.black,
       fontSize: 14
-    },
-    viewFeedback: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'flex-end'
     },
     fab: {
       position: 'absolute',

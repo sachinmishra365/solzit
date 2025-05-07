@@ -206,7 +206,6 @@ const AddFeedback = ({ navigation, route }: any) => {
         <Placeholder />
       ) : (
         <>
-          <View style={styles(isDark).divider} />
           <Text style={[styles(isDark).label, { marginHorizontal: 16 }]}>
             Soluzione values your feedback. Please feel free to share your
             thoughts.
@@ -406,13 +405,6 @@ const styles = (isDark: boolean) =>
     maincontainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
-    },
-    divider: {
-      borderWidth: 1,
-      height: 1,
-      backgroundColor: isDark ? Colors.white : 'transparent',
-      borderColor: isDark ? Colors.black : 'transparent',
-      marginBottom: 16,
     },
     label: {
       fontSize: 16,
