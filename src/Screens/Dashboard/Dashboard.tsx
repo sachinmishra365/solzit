@@ -9,7 +9,7 @@ import { Dimensions } from 'react-native';
 import ImageShimmerPlaceHolder from '../Placeholder/ImageShimmerPlaceHolder';
 import { useEffect, useState } from 'react';
 import React from 'react';
-import { useGetOngoingWFHDateListQuery } from '../../Services/workFromHome';
+import { useGetAllWFHRecordListQuery, useGetOngoingWFHDateListQuery } from '../../Services/workFromHome';
 import WFHCard from './WFHCard';
 import { SegmentedButtons } from 'react-native-paper';
 import EmptyData from '../../Components/EmptyData';
@@ -45,7 +45,7 @@ const Dashboard = ({ navigation }: any) => {
   const todayWFHData = OngoingWFHDateList?.data?.find((item: any) =>
     moment(item.wfhDate).isSame(moment(), 'day')
   );
-console.log(todayWFHData);
+  
 
   useEffect(() => {
     const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
@@ -66,14 +66,6 @@ console.log(todayWFHData);
         moment(item.birthdayDate).format('DD-MM') === todayBirthday,
     );
 
-    // if (isBirthday) {
-    //   setConfettiActive(true);
-    //   setTimeout(() => {
-    //     setConfettiActive(false);
-    //   }, 6000);
-    // } else {
-    //   setConfettiActive(false);
-    // }
   }, []);
 
   useEffect(() => {
@@ -121,7 +113,7 @@ console.log(todayWFHData);
           const formattedDate = d?.format('YYYY-MM-DD');
 
           marked[formattedDate] = {
-            color: 'green', // Leave background color
+            color: 'green', 
             textColor: 'white',
           };
           const start = moment(leaveStartDate)?.format('YYYY-MM-DD');
@@ -345,10 +337,10 @@ console.log(todayWFHData);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      setRefreshing(false);
       refetchapplies();
+      setRefreshing(false);
     }, 1000);
-  }, [refetchapplies]);
+  }, []);
 
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);
@@ -366,7 +358,7 @@ console.log(todayWFHData);
         }
       } else if (gestureState.dx < 0) {
         const currentIndex = statuses.indexOf(selectedStatus);
-        if (currentIndex < statuses.length - 1) {
+        if (currentIndex < statuses?.length - 1) {
           filterByStatus(statuses[currentIndex + 1]);
         }
       }
@@ -432,7 +424,7 @@ console.log(todayWFHData);
       />
 
 
-      {selectedStatus === 'Work From Home' && <WFHCard wfhData={todayWFHData !== undefined ? todayWFHData : []} onActionComplete={onActionComplete} />}
+      {selectedStatus === 'Work From Home' && <WFHCard wfhData={todayWFHData !== undefined ? todayWFHData : []} onActionComplete={onActionComplete} refetchData={onActionComplete}/>}
 
 
       {isLoading ? (
@@ -478,9 +470,9 @@ console.log(todayWFHData);
                   ? renderBirthdays({ item })
                   : null;
                 return (
-                  <>{ }
+                  <>
                     {selectedStatus === 'All' && holidayComponent}
-                    {selectedStatus === 'Work From Home' && birthdayComponent}
+                    {/* {selectedStatus === 'Work From Home' && birthdayComponent} */}
                     {/* {birthdayComponent} */}
                   </>
                 );
@@ -490,15 +482,8 @@ console.log(todayWFHData);
             keyExtractor={(item, index) => index.toString()}
             style={{ margin: 5 }}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<EmptyData/>}
+            ListEmptyComponent={selectedStatus === 'Work From Home' ? null :<EmptyData/>}
           />
-          {/* {confettiActive && (
-            <ConfettiCannon
-              count={200}
-              origin={{x: -10, y: 0}}
-              explosionSpeed={800}
-            />
-          )} */}
         </>
       )}
 

@@ -45,7 +45,7 @@ const ViewFeedback = ({ route, navigation }: any) => {
       await RNFS.writeFile(downloadPath, base64Data, 'base64');
       Alert.alert('Download Success', `File saved to: ${downloadPath}`);
     } catch (error) {
-      console.log('File Download Failed:', error);
+      // console.log('File Download Failed:', error);
       Alert.alert('Download failed', 'There was an error while downloading the file.');
     }
   };

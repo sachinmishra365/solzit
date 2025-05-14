@@ -103,7 +103,7 @@ const AddToDo = ({ navigation }: any) => {
         }
         try {
             const response = await CreateNewTodo({ data, accessToken })
-            
+
             if (response?.data?.messageDetail?.message_code === 201) {
                 // Alert.alert('Success', 'ToDo Created successfully!')
                 ToastMessage({ type: "success", title: "To-Do", subtitle: "ToDo Created successfully!" });
@@ -157,7 +157,7 @@ const AddToDo = ({ navigation }: any) => {
             }
         }
         try {
-            const response = await updateTODO({ data, accessToken })
+            const response = await updateTODO({ data, accessToken })            
             if (response?.data?.isSuccessful) {
                 navigation.goBack()
                 refetch()
@@ -199,7 +199,7 @@ const AddToDo = ({ navigation }: any) => {
         <View style={styles(isDark).container}>
             <CustomHeader
                 showBackIcon={true}
-                title="Add To Do"
+                title={worklogData?.id ? "Edit To Do" : "Add To Do"}
                 onPress={() => { navigation.goBack(), disptch(SetWorklogDetails([])) }}
             />
             {

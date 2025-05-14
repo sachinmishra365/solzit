@@ -46,7 +46,12 @@ const AddWorklog = ({ navigation, route }: any) => {
             .test('is-quarter-increment', 'Hour must be in 0.25 increments', (value) => {
                 return value % 0.25 === 0;
             }),
-        description: Yup.string().required('Description is required').min(20, 'Description must be at least 20 characters'),
+        description: Yup.string().required('Description is required')
+            .test('no-leading-space', 'Description must not start with a space', value => {
+                if (!value) return true; // let required handle empty case
+                return !/^\s/.test(value);
+            })
+            .min(20, 'Description must be at least 20 characters'),
     });
 
     const showDatepickerDate = () => { setShowDate(true); };
@@ -173,6 +178,8 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             style={[styles(isDark).input]}
                                             numberOfLines={3}
                                             readOnly={true}
+                                            multiline={true}
+
                                         />
 
                                         {todo === 'General Tasks' &&
@@ -223,6 +230,7 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             editable={true}
                                             style={[styles(isDark).input]}
                                             keyboardType="numeric"
+                                            autoFocus={true}
                                         />
                                         <CustomTextInput
                                             label="Description"

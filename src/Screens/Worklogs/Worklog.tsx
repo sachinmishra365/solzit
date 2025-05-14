@@ -75,20 +75,25 @@ const Worklog = ({ navigation }: any) => {
     const handleWorklogs = async (filterID: number, itemTypeID: number, label: string) => {
         setRefreshing(true);
         const body = { filterId: filterID, itemTypeId: itemTypeID, accessToken: accessToken, };
+        SetGeneralTask([]);
+        SetMyProjectItem([]);
+        SetTodoList([]);
         try {
             const response = await GetToDoList(body).unwrap();
             SetTodoList(response?.data);
             
         } catch (err) {
-            // console.error("Error fetching worklogs:", err);
             ToastMessage({ type: "error", title: "Error", subtitle: "Something went wrong" });
         } finally {
             setRefreshing(false);
         }
     };
+    
 
     const onRefresh = () => {
         handleWorklogs(selectedId?.filterID, selectedId?.itemTypeID, selectedId?.label);
+        SetGeneralTask([]);
+        SetMyProjectItem([]);
     };
 
     const handleSelect = (filterID: number, itemTypeID: number, label: string) => {
@@ -97,7 +102,6 @@ const Worklog = ({ navigation }: any) => {
         SetGeneralTask([]);
         SetMyProjectItem([]);
     };
-
 
 
     const renderItem = ({ item }: any) => (

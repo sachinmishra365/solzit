@@ -40,7 +40,7 @@ const Feedback = ({ navigation }: any) => {
   const renderItem = ({ item }: any) => (
     <Card style={styles(isDark).card}>
       <Card.Content>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between',flexWrap:'wrap'}}>
           <Text style={[styles(isDark).txt]}>{'Status : '}{item.status.label}</Text>
           <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold' }]}>{'Reported On : '}
             {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
@@ -53,14 +53,14 @@ const Feedback = ({ navigation }: any) => {
             <Text style={[styles(isDark).txt, { flexWrap: 'wrap', flex: 1 }]}>{item.feedBackTitle}</Text>
           </View>
 
+        </View>
           <IconButton
             icon={'eye'}
             iconColor={Colors.primary}
             size={25}
-            style={{ position: 'absolute', right: -10, top: 10, }}
+            style={{ position: 'absolute', right: 5, bottom: -15, }}
             onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}
           />
-        </View>
 
       </Card.Content>
     </Card>
@@ -122,7 +122,8 @@ const styles = (isDark: boolean) =>
       fontFamily: 'Lato-Semibold',
       marginBottom: 5,
       color: isDark ? Colors.white : Colors.black,
-      fontSize: 14
+      fontSize: 14,
+      flexWrap:'wrap'
     },
     fab: {
       position: 'absolute',

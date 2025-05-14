@@ -17,6 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import Toast from 'react-native-toast-message';
 import EmptyData from '../../Components/EmptyData';
+import BreaksDialog from './BreaksDialog';
 
 const SepratedAttendance = ({ route }: any) => {
   const MonthData = route.params;
@@ -32,6 +33,8 @@ const SepratedAttendance = ({ route }: any) => {
   const [close, SetClose] = useState(false);
   // const [load, SetLoad] = useState(false);
   const [actualTime, setActualTime] = useState(0);
+  const [visibleWorkType, setVisibleWorkType] = React.useState(false);
+  const [selectedBreak, setSelectedBreak] = useState<any>();
 
   useEffect(() => {
     if (pickStartTime && pickEndTime) {
@@ -205,7 +208,6 @@ const SepratedAttendance = ({ route }: any) => {
 
     try {
       const response = await AskAttendanceQuery({ data, accessToken });
-
       if (response?.data?.messageDetail?.message_code === 201) {
         Toast.show({
           type: 'success',
@@ -232,9 +234,12 @@ const SepratedAttendance = ({ route }: any) => {
   };
 
   const renderItem = ({ item }: any) => {
+    console.log('item:',);
+
     return (
       <Card
-        style={styles(isDark).card}>
+        //@ts-ignore
+        style={styles(isDark).card} onPress={item?.leaveType?.value === 674180007 ? () => { setVisibleWorkType(!visibleWorkType), setSelectedBreak(item?.attendanceInOut) } : null}>
         <Card.Content>
           <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
             <Text
@@ -433,7 +438,7 @@ const SepratedAttendance = ({ route }: any) => {
                       alignItems: 'center',
                       borderRadius: 3,
                       flexDirection: 'row',
-                      marginTop: 4,
+                      marginTop: 6,
                     }}
                     onPress={() => {
                       setSelectedItem(item);
@@ -582,6 +587,11 @@ const SepratedAttendance = ({ route }: any) => {
             ListFooterComponent={<View style={{ height: 100 }} />}
           />
         )}
+        <BreaksDialog
+          visibleWorkType={visibleWorkType}
+          setVisibleWorkType={setVisibleWorkType}
+          BreaksData={selectedBreak}
+        />
       </View>
 
       <BottomSheet ref={bottomSheetRef}>
@@ -1015,18 +1025,24 @@ const SepratedAttendance = ({ route }: any) => {
                           borderRadius: 3,
                         }}
                         disabled={actualTime < 0 ? true : false}
-                        onPress={async () => {
-                          handleSubmit();
-                        }}>
-                        <Text
-                          style={{
-                            textAlign: 'center',
-                            fontSize: 16,
-                            fontFamily: 'Lato-Bold',
-                            color: Colors.white,
-                          }}>
-                          Submit
-                        </Text>
+                        onPress={()=>handleSubmit()}>
+                        {
+                          result?.isLoading ? (
+                            <ActivityIndicator
+                              size="small"
+                              color={Colors.white}
+                            />
+                          ) : (
+                            <Text
+                              style={{
+                                textAlign: 'center',
+                                fontFamily: 'Lato-Bold',
+                                color: Colors.white,
+                              }}>
+                              Submit
+                            </Text>
+                          )
+                        }
                       </TouchableOpacity>
 
                       {isLoading && (

@@ -1,16 +1,16 @@
-import {View, Text, StyleSheet, FlatList, RefreshControl} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
+import { Colors } from '../../constants/Colors';
 import moment from 'moment';
-import {useEmployeeInventoryAllocationQuery} from '../../Services/services';
+import { useEmployeeInventoryAllocationQuery } from '../../Services/services';
 import Toast from 'react-native-toast-message';
-import {Card} from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
-const MyAssets = ({navigation}: any) => {
+const MyAssets = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
@@ -18,8 +18,8 @@ const MyAssets = ({navigation}: any) => {
   const [assetsData, setAssetsData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const {data, error, isLoading, refetch} = useEmployeeInventoryAllocationQuery(
-    {accessToken: EmployeeId?.authToken?.accessToken},
+  const { data, error, isLoading, refetch } = useEmployeeInventoryAllocationQuery(
+    { accessToken: EmployeeId?.authToken?.accessToken },
   );
 
   const handleAssets = async () => {
@@ -42,7 +42,7 @@ const MyAssets = ({navigation}: any) => {
       if (data?.data && (data as any)?.messageDetail?.message_code === 200) {
         setAssetsData(data.data);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const MyAssets = ({navigation}: any) => {
     }, 1000);
   }, [refetch]);
 
-  const renderItem = ({item}: any) => (
+  const renderItem = ({ item }: any) => (
 
     <Card
       style={{
@@ -68,60 +68,60 @@ const MyAssets = ({navigation}: any) => {
         marginHorizontal: 16,
       }}>
       <Card.Content>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {
             item.allocationDate && (
               <View style={styles(isDark).dateCard}>
-            <Text style={styles(isDark).dateNumber}>
-              {moment(item.allocationDate).format('DD')}
-            </Text>
-            <Text style={styles(isDark).dateNumber}>
-              {moment(item.allocationDate).format('MMM')}
-            </Text>
-            <Text
-              style={[
-                styles(isDark).dateNumber,
-                {fontFamily: 'Lato-Bold', fontSize: 18},
-              ]}>
-              {moment(item.allocationDate).format('YYYY')}
-            </Text>
-          </View>
+                <Text style={styles(isDark).dateNumber}>
+                  {moment(item.allocationDate).format('DD')}
+                </Text>
+                <Text style={styles(isDark).dateNumber}>
+                  {moment(item.allocationDate).format('MMM')}
+                </Text>
+                <Text
+                  style={[
+                    styles(isDark).dateNumber,
+                    { fontFamily: 'Lato-Bold', fontSize: 18 },
+                  ]}>
+                  {moment(item.allocationDate).format('YYYY')}
+                </Text>
+              </View>
             )
           }
 
           <View style={styles(isDark).assetDetails}>
             <View style={styles(isDark).row}>
-              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
                 Name:
               </Text>
               <Text
                 style={[
                   styles(isDark).value,
-                  {fontFamily: 'Lato-Bold', color: Colors.secondary},
+                  { fontFamily: 'Lato-Bold', color: Colors.secondary },
                 ]}>
                 {item.itemName}
               </Text>
             </View>
 
             <View style={styles(isDark).row}>
-              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
                 Type:
               </Text>
               <Text style={styles(isDark).value}>{item.inventoryType}</Text>
             </View>
 
             <View style={styles(isDark).row}>
-              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
                 Class:
               </Text>
               <Text style={styles(isDark).value}>{item.inventoryClass}</Text>
             </View>
 
             <View style={styles(isDark).row}>
-              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+              <Text style={[styles(isDark).value, { fontFamily: 'Lato-Bold' }]}>
                 Number:
               </Text>
-              <Text style={[styles(isDark).value]}>{item.inventoryNumber}</Text>
+              <Text style={[styles(isDark).value, {flexShrink: 1}]}>{item.inventoryNumber}</Text>
             </View>
 
           </View>
@@ -155,7 +155,7 @@ const MyAssets = ({navigation}: any) => {
                   onRefresh={() => onRefresh()}
                 />
               }
-              ListFooterComponent={<View style={{height: 100}} />}
+              ListFooterComponent={<View style={{ height: 100 }} />}
             />
           )
         )}

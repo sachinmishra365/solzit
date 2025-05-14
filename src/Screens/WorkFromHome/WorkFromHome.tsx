@@ -63,6 +63,8 @@ const WorkFromHome = ({ navigation }: any) => {
   }, []);
 
   const renderItem = ({ item }: any) => (
+    console.log('item', item),
+
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
@@ -153,7 +155,7 @@ const WorkFromHome = ({ navigation }: any) => {
                   fontSize: 14,
                   fontFamily: 'Lato-Bold',
                 }}>
-                Approved by :{''}
+                {item?.status?.value === 674180002 ? 'Declined By : ' : item?.status?.value === 674180000 ? 'Canceled By : ' : 'Approved by : '}
               </Text>
               <Text
                 style={{
@@ -166,9 +168,10 @@ const WorkFromHome = ({ navigation }: any) => {
             </View>
           )}
         </View>
-        {item?.declinedReason && (
+
+        {item?.status?.value === 674180002 && (
           <>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,
@@ -231,9 +234,9 @@ const WorkFromHome = ({ navigation }: any) => {
         buttons={statuses.map(status => ({
           value: status,
           label: status,
-          style: {backgroundColor: selectedStatus === status ? Colors.secondary : (isDark ? Colors.gray : Colors.white),},
+          style: { backgroundColor: selectedStatus === status ? Colors.secondary : (isDark ? Colors.gray : Colors.white), },
           labelStyle: {
-            color: selectedStatus === status? Colors.white: isDark? Colors.white: Colors.black,
+            color: selectedStatus === status ? Colors.white : isDark ? Colors.white : Colors.black,
             fontFamily: 'Lato-Semibold',
             fontSize: 13,
           },
@@ -241,7 +244,7 @@ const WorkFromHome = ({ navigation }: any) => {
         style={{ marginVertical: 10, marginHorizontal: 16 }}
 
         theme={{
-          colors: {primary: Colors.primary},
+          colors: { primary: Colors.primary },
         }}
       />
       <View
@@ -261,9 +264,9 @@ const WorkFromHome = ({ navigation }: any) => {
             style={{ marginHorizontal: 16 }}
             data={filteredItems}
             refreshControl={<RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => onRefresh()}
-              />
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
             }
             renderItem={item => renderItem(item)}
             keyExtractor={(item, index) => index.toString()}

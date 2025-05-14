@@ -43,6 +43,7 @@ const AddBreaks = ({ navigation }: any) => {
     const closeMenu = () => setMenuVisible(false);
 
     const handleSelect = (label: 'Today' | 'Tomorrow') => {
+        console.log(label);
         const selectedDate = label === 'Today' ? moment() : moment().add(1, 'day');
         const formattedDate = selectedDate.format('YYYY-MM-DD');
         setDateLabel(label);
@@ -77,7 +78,6 @@ const AddBreaks = ({ navigation }: any) => {
                 ToastMessage({ type: "success", title: "Break", subtitle: "Break Added Successfully!" });
                 navigation.goBack();
             } else {
-
                 ToastMessage({ type: "error", title: "Break", subtitle: "Break not Addedd" });
             }
 
@@ -90,7 +90,7 @@ const AddBreaks = ({ navigation }: any) => {
         <View style={styles(isDark).mainContainer}>
             <CustomHeader
                 showBackIcon={true}
-                title="My Breaks"
+                title="Add Breaks"
                 isDark={isDark}
                 onPress={() => navigation.goBack()}
             />
@@ -141,14 +141,15 @@ const AddBreaks = ({ navigation }: any) => {
                                         }
                                         contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white }}
                                         statusBarHeight={70}
+                                        style={{ marginLeft: 10, }}
                                     >
                                         <Menu.Item
-                                            onPress={() => handleSelect('Today')}
+                                            onPress={() => {handleSelect('Today'),console.log('Today')}}
                                             title="Today"
                                             titleStyle={{ color: isDark ? Colors.white : Colors.black }}
                                         />
                                         <Menu.Item
-                                            onPress={() => handleSelect('Tomorrow')}
+                                            onPress={() => {handleSelect('Tomorrow'),console.log('Tomorrow')}}
                                             title="Tomorrow"
                                             titleStyle={{ color: isDark ? Colors.white : Colors.black }}
                                         />
@@ -241,6 +242,7 @@ const AddBreaks = ({ navigation }: any) => {
                                         multiline={true}
                                         contentStyle={{ height: 80 }}
                                         style={{ marginTop: 10 }}
+                                        autoFocus={true}
                                     />
 
                                     <Button

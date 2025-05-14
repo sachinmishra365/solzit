@@ -65,8 +65,6 @@ const AddBug = ({ navigation }: any) => {
     // const { data: TodoDetailById, isLoading: isTodoDetailById,refetch } = useGetToDoDetailsByToDoIdQuery(newToDoId && accessToken ? { ItemId: newToDoId, accessToken: accessToken } : skipToken)
     const { data: TodoDetailById, isLoading: isTodoDetailById, refetch } = useGetToDoDetailsByToDoIdQuery(BugDetails?.id && accessToken ? { ItemId: BugDetails?.id, accessToken: accessToken } : skipToken)
 
-    console.log(TodoDetailById?.data, 'TodoDetailById?.data');
-
     const [CreateNewBug, result] = useCreateNewBugMutation();
     const [updateBug] = useEditBugMutation();
 

@@ -15,11 +15,12 @@ const ProjectAllocation = ({ navigation }: any) => {
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
-  const { data, isLoading } = useGetemployeeProjectAllocationQuery({ accessToken: accessToken?.authToken?.accessToken, });
+  const { data, isLoading ,refetch } = useGetemployeeProjectAllocationQuery({ accessToken: accessToken?.authToken?.accessToken, });
 
   const [myPlanData, setMyPlanData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  
+
+console.log(myPlanData);
 
   const handleMyPlans = async () => {
     if (!connected) {
@@ -50,38 +51,44 @@ const ProjectAllocation = ({ navigation }: any) => {
 
   const onRefresh = () => {
     setRefreshing(true);
+    refetch();
     handleMyPlans().finally(() => setRefreshing(false));
   };
 
   const renderItem = ({ item }: any) => {
+
     return (
-      <Card style={styles(isDark).cardcontainer}>
-        <Card.Content>
+      <>
+        {item?.status?.value == 1 && (
+          <Card style={styles(isDark).cardcontainer}>
+            <Card.Content>
 
-          <Text style={styles(isDark).projectName}>{item.project?.name}</Text>
+              <Text style={styles(isDark).projectName}>{item.project?.name}</Text>
 
-          <View style={styles(isDark).row}>
-            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Allocation'}</Text>
-            <Text style={styles(isDark).txt}>{item.allocationPercentage}</Text>
-          </View>
+              <View style={styles(isDark).row}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Allocation'}</Text>
+                <Text style={styles(isDark).txt}>{item.allocationPercentage}</Text>
+              </View>
 
-          <View style={styles(isDark).row}>
-            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Status'}</Text>
-            <Text style={[styles(isDark).txt, { color: 'green', fontFamily: 'Lato-Bold' }]}>{item.status?.label}</Text>
-          </View>
+              <View style={styles(isDark).row}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Status'}</Text>
+                <Text style={[styles(isDark).txt, { color: 'green', fontFamily: 'Lato-Bold' }]}>{item.status?.label}</Text>
+              </View>
 
-          <View style={styles(isDark).row}>
-            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Role'}</Text>
-            <Text style={styles(isDark).txt}>{item.role?.label}</Text>
-          </View>
+              <View style={styles(isDark).row}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Role'}</Text>
+                <Text style={styles(isDark).txt}>{item.role?.label}</Text>
+              </View>
 
-          <View style={styles(isDark).row}>
-            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Project Manager'}</Text>
-            <Text style={styles(isDark).txt}>{item.projectManagerName || 'N/A'}</Text>
-          </View>
+              <View style={styles(isDark).row}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Project Manager'}</Text>
+                <Text style={styles(isDark).txt}>{item.projectManagerName || 'N/A'}</Text>
+              </View>
 
-        </Card.Content>
-      </Card>
+            </Card.Content>
+          </Card>
+        )}
+      </>
     );
   };
 

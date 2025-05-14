@@ -182,7 +182,8 @@ const styles = (isDark: boolean) =>
       color: isDark ? Colors.white : Colors.black,
       fontSize: 15,
       fontFamily: 'Lato-Semibold',
-      marginBottom: 5
+      marginBottom: 5,
+      lineHeight:25
     },
     btntxt: {
       textAlign: 'center',
