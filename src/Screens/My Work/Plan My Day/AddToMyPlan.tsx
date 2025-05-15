@@ -6,7 +6,7 @@ import {Colors} from '../../../constants/Colors';
 import {useCreateMyDailyTaskReportMutation} from '../../../Services/workloglevel';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
-import { Button, Card, Icon, List, TextInput,} from 'react-native-paper';
+import {Button, Card, Icon, List, TextInput} from 'react-native-paper';
 
 const AddToMyPlan = ({navigation, route}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -14,9 +14,16 @@ const AddToMyPlan = ({navigation, route}: any) => {
   const {selectedItems = []} = route.params || {};
   const [isCommitting, setIsCommitting] = useState(false);
   const [createTaskReport] = useCreateMyDailyTaskReportMutation();
-  const [estimatedEfforts, setEstimatedEfforts] = useState<Record<string, string>>({});
-  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<Record<string, string>>({});
-  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>({},);
+  const [estimatedEfforts, setEstimatedEfforts] = useState<
+    Record<string, string>
+  >({});
+  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<
+    Record<string, string>
+  >({});
+  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [isCommitAttempted, setIsCommitAttempted] = useState(false);
 
   const WORK_STATUS_OPTIONS = [
     {
@@ -30,50 +37,57 @@ const AddToMyPlan = ({navigation, route}: any) => {
   ];
 
   const handleCommit = async () => {
+    setIsCommitAttempted(true);
 
-    const payload =  selectedItems.map((item:any )=> {
-      const effort = parseFloat(estimatedEfforts[item.id]);
-      const selectedStatus = selectedWorkStatuses[item.id];
-      const statusObj = WORK_STATUS_OPTIONS.find(opt => opt.label === selectedStatus);
-  
-      if (!effort || effort < 0.25 || !statusObj) return null;
-  
-      return {
-      reportDate: new Date().toISOString().split('T')[0], 
-      toDoId: item.id,
-      taskEstimatedEffort: effort,
-      plannedEffortforDay: effort,
-      eodCommittedWorkStatus: {
-        value: statusObj.value,
-        label: statusObj.label,
-      },
-    };
-    }).filter(Boolean); 
-  
-    if (payload.length === 0) {
-      Toast.show({
-        type: 'error',
-        text1: 'Validation Error',
-        text2: 'Please select at least one valid task',
-      });
+    const allFieldsValid = selectedItems.every(
+      (task: any) => selectedWorkStatuses[task.id] && estimatedEfforts[task.id],
+    );
+
+    if (!allFieldsValid) {
       return;
-    }  
+    }
+
+    const payload = selectedItems
+      .map((item: any) => {
+        const effort = parseFloat(estimatedEfforts[item.id]);
+        const selectedStatus = selectedWorkStatuses[item.id];
+        const statusObj = WORK_STATUS_OPTIONS.find(
+          opt => opt.label === selectedStatus,
+        );
+
+        if (!effort || effort < 0.25 || !statusObj) return null;
+
+        return {
+          reportDate: new Date().toISOString().split('T')[0],
+          toDoId: item.id,
+          taskEstimatedEffort: effort,
+          plannedEffortforDay: effort,
+          eodCommittedWorkStatus: {
+            value: statusObj.value,
+            label: statusObj.label,
+          },
+        };
+      })
+      .filter(Boolean);
+
     setIsCommitting(true);
-  
+
     try {
       const res = await createTaskReport({
         accessToken: EmployeeId?.authToken?.accessToken,
-        data: payload, 
+        data: payload,
       }).unwrap();
-    
+      console.log('Payload:', payload);
+      console.log('API response:', res); 
+
       if (res?.isSuccessful && res?.messageDetail?.message_code === 201) {
         Toast.show({
           type: 'success',
           text1: 'Success',
           text2: res?.messageDetail?.message || 'Tasks committed successfully',
-        });
-        navigation.navigate('PlanMyDay', { clearSelected: true });
-      } 
+        }); 
+        navigation.navigate('PlanMyDay', {clearSelected: true});
+      }
     } catch (error: any) {
       console.error('Commit error:', error);
       Toast.show({
@@ -85,7 +99,6 @@ const AddToMyPlan = ({navigation, route}: any) => {
       setIsCommitting(false);
     }
   };
-  
 
   return (
     <View style={styles(isDark).mainContainer}>
@@ -96,27 +109,8 @@ const AddToMyPlan = ({navigation, route}: any) => {
         onPress={() => navigation.goBack()}
       />
 
-      <ScrollView style={{}}>
-        {selectedItems.length === 0 ? (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginHorizontal: 16,
-              marginVertical: 10,
-            }}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                alignSelf: 'center',
-                fontFamily: 'Lato-Bold',
-              }}>
-              No items selected Please select atleast one item to add to my plan
-            </Text>
-          </View>
-        ) : (
-          selectedItems.map((item: any, index: number) => (
+      <ScrollView style={{}}> 
+         { selectedItems.map((item: any, index: number) => (
             <Card key={item.id} style={styles(isDark).card}>
               <Card.Content>
                 <View style={styles(isDark).topRow}>
@@ -129,11 +123,13 @@ const AddToMyPlan = ({navigation, route}: any) => {
                   </Text>
                 </View>
                 <View style={styles(isDark).row}>
-                  <Text style={[styles(isDark).label,]}>
+                  <Text style={[styles(isDark).label]}>
                     {item?.itemNumber}
                     {' : '}
-                    <Text style={[styles(isDark).value, {flexShrink: 1}]}>{item?.title}
-                  </Text></Text>
+                    <Text style={[styles(isDark).value, {flexShrink: 1}]}>
+                      {item?.title}
+                    </Text>
+                  </Text>
                 </View>
 
                 <View style={[styles(isDark).row, {}]}>
@@ -181,6 +177,11 @@ const AddToMyPlan = ({navigation, route}: any) => {
                         Must be 0.25 or greater
                       </Text>
                     )}
+                  {isCommitAttempted && !estimatedEfforts[item.id] && (
+                    <Text style={{color: 'red', marginTop: 4}}>
+                      Please enter estimated effort
+                    </Text>
+                  )}
                 </View>
 
                 <View style={{marginTop: 10, marginBottom: 10}}>
@@ -251,11 +252,17 @@ const AddToMyPlan = ({navigation, route}: any) => {
                       />
                     ))}
                   </List.Accordion>
+                   {isCommitAttempted && !selectedWorkStatuses[item.id] && (
+                  <Text style={{ color: 'red', marginTop: 4 }}>
+                    Please select a work status
+                  </Text>
+                )}
                 </View>
+                
               </Card.Content>
             </Card>
-          ))
-        )}
+          ))}
+     
       </ScrollView>
 
       <Button

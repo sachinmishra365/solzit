@@ -79,7 +79,7 @@ const TaskDetails = ({navigation, route}: any) => {
         }}>
         <Card.Content>
           <Text style={styles(isDark).titleText}>
-            {item.toDoTicketNumber}:{item.toDoProject?.name}
+            {item.toDoTicketNumber}{' : '}{item.toDoProject?.name}
           </Text>
           <Text style={[styles(isDark).valueText, {marginBottom:5}]}>
             Title{' : '}

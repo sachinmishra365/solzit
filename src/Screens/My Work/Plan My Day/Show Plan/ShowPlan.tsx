@@ -1,8 +1,20 @@
-import {View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../../../AppStore/Reducers/appState';
-import {useDeleteMyDailyTaskReportMutation, useGetAppSettingsValueQuery, useGetDayTaskReportDetailsQuery,useUpdateMyDailyTaskReportMutation} from '../../../../Services/workloglevel';
+import {
+  useDeleteMyDailyTaskReportMutation,
+  useGetAppSettingsValueQuery,
+  useGetDayTaskReportDetailsQuery,
+  useUpdateMyDailyTaskReportMutation,
+} from '../../../../Services/workloglevel';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../../Components/CustomHeader';
 import ShimmerPlaceHolder from '../../../Placeholder/ShimmerPlaceHolder';
@@ -23,12 +35,12 @@ const ShowPlan = ({navigation}: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   interface TaskItem {
-      id: string;
-      eodCommittedWorkStatus?: {label: string};
-      name?: string;
-      comment?: string;
-      plannedEffortForDay?: number;
-      toDoSubViewsDtos?: { implementationEffort?: number }[]; 
+    id: string;
+    eodCommittedWorkStatus?: {label: string};
+    name?: string;
+    comment?: string;
+    plannedEffortForDay?: number;
+    toDoSubViewsDtos?: {implementationEffort?: number}[];
   }
 
   const [showPlanData, setShowPlanData] = useState<TaskItem[]>([]);
@@ -37,7 +49,7 @@ const ShowPlan = ({navigation}: any) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const todayDate = moment().format('YYYY-MM-DDT05:30:00');
   const [isCutOffTimePassed, setIsCutOffTimePassed] = useState(false);
- 
+
   const {data, isLoading, error, refetch} = useGetDayTaskReportDetailsQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
     Date: todayDate,
@@ -45,15 +57,24 @@ const ShowPlan = ({navigation}: any) => {
   const [createTaskReport] = useUpdateMyDailyTaskReportMutation();
   const [deleteTaskReport] = useDeleteMyDailyTaskReportMutation();
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const [estimatedEfforts, setEstimatedEfforts] = useState<Record<string, string>>({});
-  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<Record<string, string>>({});
-  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>({},);
-  const { data: appSettingData } =  useGetAppSettingsValueQuery({
+  const [estimatedEfforts, setEstimatedEfforts] = useState<
+    Record<string, string>
+  >({});
+  const [selectedWorkStatuses, setSelectedWorkStatuses] = useState<
+    Record<string, string>
+  >({});
+  const [expandedStates, setExpandedStates] = useState<Record<string, boolean>>(
+    {},
+  );
+  const {data: appSettingData} = useGetAppSettingsValueQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
     AppSettingName: 'MAX_ADD_DAY_REPORT_TIME',
   });
-  
-  const WORK_STATUS_OPTIONS = [{value: 674180000,label: 'Will continue',},{value: 674180001,label: 'Will be completed',},];
+
+  const WORK_STATUS_OPTIONS = [
+    {value: 674180000, label: 'Will continue'},
+    {value: 674180001, label: 'Will be completed'},
+  ];
 
   const toggleCheckbox = (id: any) => {
     setCheckedItems(prev => ({
@@ -61,14 +82,13 @@ const ShowPlan = ({navigation}: any) => {
       [id]: !prev[id],
     }));
   };
-  
+
   useEffect(() => {
     if (appSettingData?.data) {
-      const settingTime = appSettingData?.data; 
+      const settingTime = appSettingData?.data;
       const today = moment();
       const cutoffToday = moment(settingTime, 'HH:mm');
-  
-     
+
       if (today.isAfter(cutoffToday)) {
         setIsCutOffTimePassed(true);
       } else {
@@ -76,7 +96,7 @@ const ShowPlan = ({navigation}: any) => {
       }
     }
   }, [appSettingData]);
-  
+
   const handleShowPlan = async () => {
     if (!connected) {
       Toast.show({
@@ -101,18 +121,13 @@ const ShowPlan = ({navigation}: any) => {
           effortMap[item.id] = item.plannedEffortForDay?.toString() || '';
         });
         setEstimatedEfforts(effortMap);
-
       }
     } catch (error) {}
   };
 
   useEffect(() => {
-   handleShowPlan();
-    }
-  , [data]);
-  
- 
-  
+    handleShowPlan();
+  }, [data]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -123,8 +138,10 @@ const ShowPlan = ({navigation}: any) => {
   }, [refetch]);
 
   const handleTaskAction = async (actionType: 'commit' | 'delete') => {
-    const selectedIds = Object.keys(checkedItems).filter(id => checkedItems[id]);
-  
+    const selectedIds = Object.keys(checkedItems).filter(
+      id => checkedItems[id],
+    );
+
     if (selectedIds.length === 0) {
       return Toast.show({
         type: 'error',
@@ -132,7 +149,7 @@ const ShowPlan = ({navigation}: any) => {
         text2: 'Please select at least one item.',
       });
     }
-  
+
     if (!connected) {
       return Toast.show({
         type: 'error',
@@ -140,7 +157,7 @@ const ShowPlan = ({navigation}: any) => {
         text2: 'Please check your internet connection.',
       });
     }
-  
+
     if (actionType === 'commit') {
       const selectedPayloads = showPlanData
         .filter((item: any) => checkedItems[item.id])
@@ -150,14 +167,15 @@ const ShowPlan = ({navigation}: any) => {
             item?.toDoSubViewsDtos?.implementationEffort ||
             0;
           const selectedStatus =
-            selectedWorkStatuses[item.id] || item?.eodCommittedWorkStatus?.label;
-  
+            selectedWorkStatuses[item.id] ||
+            item?.eodCommittedWorkStatus?.label;
+
           const statusObj = WORK_STATUS_OPTIONS.find(
-            opt => opt.label === selectedStatus
+            opt => opt.label === selectedStatus,
           );
-  
+
           if (!effort || effort < 0.25 || !statusObj) return null;
-  
+
           return {
             id: item.id,
             toDoTitle: item?.toDoTitle,
@@ -170,60 +188,80 @@ const ShowPlan = ({navigation}: any) => {
           };
         })
         .filter(Boolean);
-  
-        setIsCommitting(true);
+
+      setIsCommitting(true);
       try {
         const res = await createTaskReport({
           accessToken: EmployeeId?.authToken?.accessToken,
           data: selectedPayloads,
         }).unwrap();
-  
-        if (res?.isSuccessful ) {
+
+        if (res?.isSuccessful) {
           Toast.show({
             type: 'success',
             text1: 'Success',
-            text2: res?.messageDetail?.message || 'Tasks committed successfully',
+            text2:
+              res?.messageDetail?.message || 'Tasks committed successfully',
           });
           await refetch();
           handleShowPlan();
           // navigation.goBack();
-        } 
+        }
       } catch (error: any) {
         console.error('Commit error:', error);
         Toast.show({
           type: 'error',
           text1: 'Commit Failed',
-          text2: error?.message || 'Something went wrong while committing tasks',
+          text2:
+            error?.message || 'Something went wrong while committing tasks',
         });
       } finally {
         setIsCommitting(false);
       }
     }
-  
+
     if (actionType === 'delete') {
       setIsDeleting(true);
       try {
-        const payload = selectedIds.map(id => ({ dayReportId: id }));
-  
+        const payload = selectedIds.map(id => ({dayReportId: id}));
+
         const res = await deleteTaskReport({
           accessToken: EmployeeId?.authToken?.accessToken,
           data: payload,
         }).unwrap();
-  
-        const isSuccess = res?.isSuccessful ;
-        
+
+        const isSuccess = res?.isSuccessful;
+
         if (!isSuccess) {
-          throw new Error(res?.messageDetail?.message || 'Failed to delete items');
+          throw new Error(
+            res?.messageDetail?.message || 'Failed to delete items',
+          );
         }
-       
-        setShowPlanData(prev => prev.filter(item => !selectedIds.includes(item.id)));
+        const updated = await refetch();
+        if (updated?.data) {
+          setShowPlanData(updated.data.data);
+        }
+
+        setShowPlanData(prev =>
+          prev.filter(item => !selectedIds.includes(item.id)),
+        );
+        const updatedList = showPlanData.filter(
+          item => !selectedIds.includes(item.id),
+        );
+        setShowPlanData(updatedList);
+
+        if (updatedList.length === 0) {
+          setCheckedItems({});
+          setEstimatedEfforts({});
+          setSelectedWorkStatuses({});
+        }
+
         setCheckedItems(prev => {
           const updated = {...prev};
           selectedIds.forEach(id => delete updated[id]);
           return updated;
         });
-        await refetch();
-        handleShowPlan();
+
         Toast.show({
           type: 'success',
           text1: 'Deleted',
@@ -236,13 +274,12 @@ const ShowPlan = ({navigation}: any) => {
           text1: 'Delete Failed',
           text2: error?.message || 'Something went wrong while deleting.',
         });
-      }  finally {
+      } finally {
         setIsDeleting(false);
       }
     }
   };
-  
-  
+
   const renderItem = ({item}: any) => {
     return (
       <Card
@@ -267,7 +304,7 @@ const ShowPlan = ({navigation}: any) => {
               style={[
                 styles(isDark).label,
                 {fontSize: 16, flexShrink: 1},
-                isCutOffTimePassed && {paddingLeft: 10}, 
+                isCutOffTimePassed && {paddingLeft: 10},
               ]}>
               {item?.toDoProject?.name ?? 'No Project Name'}
             </Text>
@@ -403,16 +440,16 @@ const ShowPlan = ({navigation}: any) => {
       />
 
       {!isCutOffTimePassed && (
-      <Button
-        mode="contained"
-        onPress={() => handleTaskAction('delete')}
-        loading={isDeleting}
-        disabled={isDeleting}
-        style={styles(isDark).showPlanButton}
-        icon="delete"
-        labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
-        Delete from plan
-      </Button>
+        <Button
+          mode="contained"
+          onPress={() => handleTaskAction('delete')}
+          loading={isDeleting}
+          disabled={isDeleting}
+          style={styles(isDark).showPlanButton}
+          icon="delete"
+          labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
+          Delete from plan
+        </Button>
       )}
 
       {isLoading ? (
@@ -446,21 +483,21 @@ const ShowPlan = ({navigation}: any) => {
         />
       )}
       {!isCutOffTimePassed && (
-      <Button
-        mode="contained"
-        onPress={() => handleTaskAction('commit')}
-        loading={isCommitting}
-        disabled={isCommitting}
-        style={{
-          marginHorizontal: 16,
-          marginBottom: 20,
-          paddingVertical: 2,
-          backgroundColor: Colors.primary,
-          borderRadius: 3,
-        }}
-        labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
-        Commit
-      </Button>
+        <Button
+          mode="contained"
+          onPress={() => handleTaskAction('commit')}
+          loading={isCommitting}
+          disabled={isCommitting}
+          style={{
+            marginHorizontal: 16,
+            marginBottom: 20,
+            paddingVertical: 2,
+            backgroundColor: Colors.primary,
+            borderRadius: 3,
+          }}
+          labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
+          Commit
+        </Button>
       )}
     </View>
   );
@@ -499,10 +536,10 @@ const styles = (isDark: boolean) =>
       marginTop: 5,
     },
     showPlanButton: {
-      marginTop:5,
+      marginTop: 5,
       backgroundColor: Colors.primary,
-      paddingHorizontal:5,
-      borderRadius:30,
+      paddingHorizontal: 5,
+      borderRadius: 30,
       alignSelf: 'flex-end',
       marginHorizontal: 16,
     },
