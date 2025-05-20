@@ -77,9 +77,7 @@ const AddToMyPlan = ({navigation, route}: any) => {
         accessToken: EmployeeId?.authToken?.accessToken,
         data: payload,
       }).unwrap();
-      console.log('Payload:', payload);
-      console.log('API response:', res); 
-
+      
       if (res?.isSuccessful && res?.messageDetail?.message_code === 201) {
         Toast.show({
           type: 'success',
@@ -146,7 +144,7 @@ const AddToMyPlan = ({navigation, route}: any) => {
 
                 <View style={{marginTop: 10}}>
                   <TextInput
-                    label="Estimated Effort"
+                    label="Effort to be spent today"
                     value={estimatedEfforts[item.id] || ''}
                     mode="outlined"
                     keyboardType="numeric"

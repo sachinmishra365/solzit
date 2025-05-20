@@ -122,6 +122,7 @@ const ShowPlan = ({navigation}: any) => {
         });
         setEstimatedEfforts(effortMap);
       }
+     
     } catch (error) {}
   };
 
@@ -254,6 +255,7 @@ const ShowPlan = ({navigation}: any) => {
           setCheckedItems({});
           setEstimatedEfforts({});
           setSelectedWorkStatuses({});
+          navigation.navigate('PlanMyDay');
         }
 
         setCheckedItems(prev => {
