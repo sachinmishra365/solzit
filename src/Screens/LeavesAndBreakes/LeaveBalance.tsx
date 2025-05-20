@@ -18,7 +18,7 @@ import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
 const LeaveBalance = ({ navigation }: any) => {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<any>([]);
   const isDark = useSelector(isDarkTheme);
 
   const [filteredItems, setFilteredItems] = useState(null);

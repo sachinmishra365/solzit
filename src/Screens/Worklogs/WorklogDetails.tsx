@@ -71,7 +71,7 @@ const WorklogDetails = ({ navigation, route }: any) => {
             rightIconName={(item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected') && 'delete'}
             rightIconColor={Colors.error}
             rightIconPress={() => { }}
-            rightIconPress2={() => item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' ? navigation.navigate('AddWorklog', { item }) : handleEdit(item)}
+            rightIconPress2={() => item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' || item?.worklogStatusName === 'Approved' ? navigation.navigate('AddWorklog', { item }) : handleEdit(item)}
             rightIconColor2={Colors.primary}
             rightIconName2={item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' ? 'circle-edit-outline' : item?.worklogStatusName === 'Approved' ? 'eye' : 'cloud-upload-outline'}
             showRightIcon2={true}

@@ -24,6 +24,7 @@ const validationSchema = Yup.object().shape({
     itemDescription: Yup.string().required('Item Description is required').min(20, 'Item Description must be at least 20 characters'),
     estimatedEffort: Yup.number().typeError('Hour must be a number')
         .required('Estimated Effort is required')
+        .moreThan(0, 'Hour must be greater than 0')
         .max(16, 'Estimated Effort cannot be more than 16')
         .test('is-quarter-increment', 'Estimated Effort must be in 0.25 increments', (value) => {
             return value % 0.25 === 0;
@@ -157,8 +158,9 @@ const AddToDo = ({ navigation }: any) => {
             }
         }
         try {
-            const response = await updateTODO({ data, accessToken })            
+            const response = await updateTODO({ data, accessToken })
             if (response?.data?.isSuccessful) {
+                ToastMessage({ type: "success", title: "To-Do", subtitle: "ToDo Saved successfully!" });
                 navigation.goBack()
                 refetch()
             }
@@ -184,6 +186,7 @@ const AddToDo = ({ navigation }: any) => {
         try {
             const response = await updateBug({ data, accessToken })
             if (response?.data?.isSuccessful) {
+                ToastMessage({ type: "success", title: "To-Do", subtitle: "ToDo Saved successfully!" });
                 navigation.goBack()
                 refetch()
             }
@@ -213,7 +216,7 @@ const AddToDo = ({ navigation }: any) => {
                                 innerRef={ref}
                                 initialValues={{
                                     projectName: TodoDetailById?.data?.projectName || '',
-                                    userStory: TodoDetailById?.data?.userStory?.name || '',
+                                    userStory: TodoDetailById?.data?.userStoryTitle || '',
                                     title: TodoDetailById?.data?.title || '',
                                     itemDescription: TodoDetailById?.data?.description || '',
                                     estimatedEffort: TodoDetailById?.data?.implementationeffort.toString() || '',
@@ -265,10 +268,17 @@ const AddToDo = ({ navigation }: any) => {
                                                     </Text>
                                                 </View>
                                             )}
-                                            {(values.workStatus === 'On Hold' || values.workStatus === 'Duplicate' || values.workStatus === 'Needs Clarification') &&
-                                                (<View style={styles(isDark).formErrorBox}>
-                                                    <Text style={styles(isDark).formErrorText}>{'comment is required.'}</Text>
-                                                </View>)}
+                                            {(
+                                                (values.workStatus === 'On Hold' ||
+                                                    values.workStatus === 'Duplicate' ||
+                                                    values.workStatus === 'Needs Clarification') &&
+                                                (!values.comment || values.comment.trim().length === 0)
+                                            ) && (
+                                                    <View style={styles(isDark).formErrorBox}>
+                                                        <Text style={styles(isDark).formErrorText}>{'Comment is required.'}</Text>
+                                                    </View>
+                                                )}
+
                                             <Menu
                                                 visible={projectMenuVisible}
                                                 onDismiss={() => setProjectMenuVisible(false)}
@@ -285,6 +295,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             editable={false}
                                                             readOnly={true}
                                                             keyboardType={'none'}
+                                                            multiline={true}
                                                         />
                                                     </Pressable>
                                                 }
@@ -322,6 +333,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             onPress={() => worklogData?.id ? null : setUserStoryMenuVisible(true)}
                                                             editable={false}
                                                             readOnly={true}
+                                                            multiline={true}
                                                         />
                                                     </Pressable>
                                                 }
@@ -409,8 +421,6 @@ const AddToDo = ({ navigation }: any) => {
                                                 onBlur={handleBlur('title')}
                                                 editable={true}
                                                 style={[styles(isDark).input]}
-                                                contentStyle={{ height: 80, paddingBottom: 10 }}
-                                                numberOfLines={3}
                                                 multiline={true}
                                                 readOnly={worklogData?.id ? true : false}
 
@@ -424,9 +434,7 @@ const AddToDo = ({ navigation }: any) => {
                                                 onChangeText={handleChange('itemDescription')}
                                                 onBlur={handleBlur('itemDescription')}
                                                 editable={true}
-                                                style={[styles(isDark).input]}
-                                                contentStyle={{ height: 80, paddingBottom: 10 }}
-                                                numberOfLines={3}
+                                                style={[styles(isDark).input,]}
                                                 multiline={true}
                                                 readOnly={worklogData?.id ? true : false}
                                             />
@@ -529,8 +537,6 @@ const AddToDo = ({ navigation }: any) => {
                                                         onBlur={handleBlur('comment')}
                                                         editable={true}
                                                         style={[styles(isDark).input]}
-                                                        contentStyle={{ height: 80, paddingBottom: 10 }}
-                                                        numberOfLines={3}
                                                         multiline={true}
                                                     />
                                                 )
@@ -563,7 +569,6 @@ const AddToDo = ({ navigation }: any) => {
                                                 editable={true}
                                                 readOnly={true}
                                                 style={[styles(isDark).input]}
-                                                numberOfLines={3}
                                                 multiline={true}
                                             />
 

@@ -173,7 +173,7 @@ const DrawerNavigator = ({ navigation }: any) => {
 
 
             <List.Item
-              title="Leave Balance"
+              title="Processed Leaves"
               left={props => <List.Icon {...props} icon="chart-bar" color={isDark ? Colors.white : Colors.primary} />}
               titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold' }}
               style={{ marginLeft: 20, marginTop: -10 }}

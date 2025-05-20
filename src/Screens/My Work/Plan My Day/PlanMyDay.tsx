@@ -7,13 +7,13 @@ import {
   Modal,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {FAB, IconButton} from 'react-native-paper';
-import {isDarkTheme} from '../../../AppStore/Reducers/appState';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { FAB, IconButton } from 'react-native-paper';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
-import {Colors} from '../../../constants/Colors';
+import { Colors } from '../../../constants/Colors';
 import moment from 'moment';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
 import {
@@ -26,7 +26,7 @@ import WorklogCard from '../../../Components/WorklogCard';
 import EmptyData from '../../../Components/EmptyData';
 import ToastMessage from '../../../Components/ToastMessage';
 
-const PlanMyDay = ({navigation, route}: any) => {
+const PlanMyDay = ({ navigation, route }: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
@@ -44,9 +44,9 @@ const PlanMyDay = ({navigation, route}: any) => {
   const [isFabDisabled, setIsFabDisabled] = useState(false);
   const todayDate = moment().format('YYYY-MM-DDT05:30:00');
 
-  const [getToDoListBasedOnFilter, {isLoading: isToDoLoading}] =
+  const [getToDoListBasedOnFilter, { isLoading: isToDoLoading }] =
     useGetToDoListBasedOnFilterMutation();
-  const {data: generalTaskData, isLoading: isGeneralTaskLoading} =
+  const { data: generalTaskData, isLoading: isGeneralTaskLoading } =
     useGetGeneralTaskListInMyProjectQuery({
       accessToken: accessToken?.authToken?.accessToken,
     });
@@ -59,7 +59,7 @@ const PlanMyDay = ({navigation, route}: any) => {
     accessToken: EmployeeId?.authToken?.accessToken,
     Date: todayDate,
   });
-  const {data: appSettingData} = useGetAppSettingsValueQuery({
+  const { data: appSettingData } = useGetAppSettingsValueQuery({
     accessToken: EmployeeId?.authToken?.accessToken,
     AppSettingName: 'MAX_ADD_DAY_REPORT_TIME',
   });
@@ -142,7 +142,7 @@ const PlanMyDay = ({navigation, route}: any) => {
   }, [appSettingData]);
 
   const toggleCheckbox = (id: any) => {
-    setCheckedItems(prev => ({...prev, [id]: !prev[id]}));
+    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   useEffect(() => {
@@ -158,7 +158,7 @@ const PlanMyDay = ({navigation, route}: any) => {
     fetchData();
   };
 
-  const FilterModal = ({visible, onClose, onSelect, selectedOption}: any) => {
+  const FilterModal = ({ visible, onClose, onSelect, selectedOption }: any) => {
     return (
       <Modal
         transparent
@@ -169,14 +169,14 @@ const PlanMyDay = ({navigation, route}: any) => {
           <View style={styles(isDark).modalContainer}>
             <TouchableOpacity
               onPress={onClose}
-              style={{alignSelf: 'flex-end', right: -20, top: -20}}>
+              style={{ alignSelf: 'flex-end', right: -20, top: -20 }}>
               <IconButton
                 icon="close-octagon"
                 size={30}
                 iconColor={Colors.error}
               />
             </TouchableOpacity>
-            <Text style={styles(isDark).modalTitle}>Select To-Do's</Text>
+            <Text style={[styles(isDark).modalTitle, { marginBottom: 20 }]}>Select To-Do's</Text>
             <TouchableOpacity
               style={[
                 styles(isDark).option,
@@ -187,6 +187,15 @@ const PlanMyDay = ({navigation, route}: any) => {
               onPress={() => onSelect('myActiveItems')}>
               <Text style={styles(isDark).optionText}>My Active Items</Text>
             </TouchableOpacity>
+            <View
+              style={{
+                borderWidth: 0.5,
+                //  height: 1,
+                backgroundColor: isDark ? Colors.gray : Colors.medium_gray,
+                borderColor: isDark ? Colors.black : Colors.medium_gray,
+                width: '100%',
+              }}
+            />
             <TouchableOpacity
               style={[
                 styles(isDark).option,
@@ -203,7 +212,7 @@ const PlanMyDay = ({navigation, route}: any) => {
     );
   };
 
-  const renderItem = ({item}: any) => (
+  const renderItem = ({ item }: any) => (
     <WorklogCard
       projectName={item?.project?.name}
       serialNo={item?.itemNumber}
@@ -211,15 +220,15 @@ const PlanMyDay = ({navigation, route}: any) => {
       startDate={
         item?.plannedStartDate
           ? moment(item?.plannedStartDate, 'MM/DD/YYYY HH:mm:ss').format(
-              'DD/MM/YYYY',
-            )
+            'DD/MM/YYYY',
+          )
           : null
       }
       endDate={
         item?.plannedEndDate
           ? moment(item?.plannedEndDate, 'MM/DD/YYYY HH:mm:ss').format(
-              'DD/MM/YYYY',
-            )
+            'DD/MM/YYYY',
+          )
           : null
       }
       status={item?.workStatus?.label}
@@ -233,7 +242,7 @@ const PlanMyDay = ({navigation, route}: any) => {
       }}
       showRightIcon2={false}
       showRightIcon={false}
-      // cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
+    // cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
     />
   );
 
@@ -257,12 +266,12 @@ const PlanMyDay = ({navigation, route}: any) => {
           marginBottom: 10,
           marginTop: 8,
         }}>
-        <Text style={[styles(isDark).label, {fontSize: 16}]}>
+        <Text style={[styles(isDark).label, { fontSize: 16 }]}>
           {!isFilterSelected
             ? "Items I'm Working On"
             : selectedTaskType === 'generalTasks'
-            ? 'General Tasks'
-            : 'My Active Items'}
+              ? 'General Tasks'
+              : 'My Active Items'}
         </Text>
 
         {!ShowPlanLoading &&
@@ -280,15 +289,15 @@ const PlanMyDay = ({navigation, route}: any) => {
         <ShimmerPlaceHolder />
       ) : (selectedTaskType === 'myActiveItems' ||
         selectedTaskType === 'defaultWorkingItems'
-          ? myToDosData
-          : generalTasksData
-        )?.length === 0 ? (
+        ? myToDosData
+        : generalTasksData
+      )?.length === 0 ? (
         <EmptyData />
       ) : (
         <FlatList
           data={
             selectedTaskType === 'myActiveItems' ||
-            selectedTaskType === 'defaultWorkingItems'
+              selectedTaskType === 'defaultWorkingItems'
               ? myToDosData
               : generalTasksData
           }
@@ -298,7 +307,7 @@ const PlanMyDay = ({navigation, route}: any) => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           showsVerticalScrollIndicator
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       )}
 
@@ -308,19 +317,19 @@ const PlanMyDay = ({navigation, route}: any) => {
         icon="plus"
         onPress={() => {
           if (isFabDisabled) {
-              ToastMessage({ type: "error", title: "Time Limit Exceeded", subtitle: "You cannot add to plan after 5:30 pm." });
+            ToastMessage({ type: "error", title: "Time Limit Exceeded", subtitle: "You cannot add to plan after 5:30 pm." });
             return;
           }
 
           const selectedItems = (
             selectedTaskType === 'myActiveItems' ||
-            selectedTaskType === 'defaultWorkingItems'
+              selectedTaskType === 'defaultWorkingItems'
               ? myToDosData
               : generalTasksData
           ).filter((item: any) => checkedItems[item.id]);
 
           if (selectedItems.length === 0) {
-              ToastMessage({ type: "error", title: "No Task Selected", subtitle: "Please select at least one task to add." });
+            ToastMessage({ type: "error", title: "No Task Selected", subtitle: "Please select at least one task to add." });
             return;
           }
 
@@ -329,10 +338,10 @@ const PlanMyDay = ({navigation, route}: any) => {
           );
 
           if (hasMissingDates) {
-              ToastMessage({ type: "error", title: "Missing Dates", subtitle: "Planned dates are missing in selected task." });
+            ToastMessage({ type: "error", title: "Missing Dates", subtitle: "Planned dates are missing in selected task." });
             return;
           }
-          navigation.navigate('AddToMyPlan', {selectedItems});
+          navigation.navigate('AddToMyPlan', { selectedItems });
         }}
       />
 
@@ -423,8 +432,8 @@ const styles = (isDark: boolean) =>
     option: {
       width: '100%',
       alignItems: 'center',
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.medium_gray,
+      // borderBottomWidth: 1,
+      // borderBottomColor: Colors.medium_gray,
       padding: 10,
     },
     optionText: {

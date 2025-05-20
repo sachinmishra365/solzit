@@ -27,7 +27,7 @@ export const workloglevelApi = createApi({
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
     // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
   }),
-  tagTypes: ['WorkStatus', 'DayTaskReports', 'DeleteDayTaskReports'],
+  tagTypes: ['WorkStatus', 'DayTaskReports', 'DeleteDayTaskReports','Addworklog'],
 
   endpoints: builder => ({
     GetToDoListBasedOnFilter: builder.mutation({
@@ -130,6 +130,8 @@ export const workloglevelApi = createApi({
           'Content-Type': 'application/json',
         },
       }),
+      providesTags: ['Addworklog'],
+
     }),
 
     GetWorkLogById: builder.query({
@@ -201,6 +203,8 @@ export const workloglevelApi = createApi({
         },
         body: data,
       }),
+      invalidatesTags: ['Addworklog'],
+
     }),
 
     GetMonthlyReportPlansList: builder.query({

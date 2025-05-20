@@ -1,12 +1,5 @@
 import React, {forwardRef, useImperativeHandle} from 'react';
-import {
-  View,
-  Animated,
-  StatusBar,
-  StyleSheet,
-  Dimensions,
-  PanResponder,
-} from 'react-native';
+import {View,Animated,StyleSheet,Dimensions,PanResponder,} from 'react-native';
 import {Colors} from '../../constants/Colors';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';

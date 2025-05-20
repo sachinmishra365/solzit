@@ -40,8 +40,9 @@ const Dashboard = ({ navigation }: any) => {
   const ProcessedLeaves = useProcessedLeavesQuery({ accessToken: accessToken });
 
   const { data: AppliedLeave, refetch: refetchapplies, isLoading, } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken });
-  const { data: OngoingWFHDateList, refetch: onActionComplete, } = useGetOngoingWFHDateListQuery({ accessToken: accessToken })
+  const { data: OngoingWFHDateList,isLoading:wfhisLoading, refetch: onActionComplete, } = useGetOngoingWFHDateListQuery({ accessToken })
 
+  
   const todayWFHData = OngoingWFHDateList?.data?.find((item: any) =>
     moment(item.wfhDate).isSame(moment(), 'day')
   );
@@ -57,6 +58,7 @@ const Dashboard = ({ navigation }: any) => {
       dispatch(auth(undefined));
     } else {
       console.log('Token is still valid.');
+      onActionComplete()
     }
 
     const todayBirthday = moment().format('DD-MM');
@@ -344,6 +346,7 @@ const Dashboard = ({ navigation }: any) => {
 
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);
+    onActionComplete()
   };
 
   const panResponder = PanResponder.create({
@@ -424,7 +427,7 @@ const Dashboard = ({ navigation }: any) => {
       />
 
 
-      {selectedStatus === 'Work From Home' && <WFHCard wfhData={todayWFHData !== undefined ? todayWFHData : []} onActionComplete={onActionComplete} refetchData={onActionComplete}/>}
+      {selectedStatus === 'Work From Home' && <WFHCard wfhData={ todayWFHData } onActionComplete={onActionComplete} refetchData={onActionComplete} wfhisLoading={wfhisLoading}/>}
 
 
       {isLoading ? (

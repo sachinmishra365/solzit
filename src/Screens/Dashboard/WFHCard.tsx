@@ -8,9 +8,10 @@ import EmptyData from '../../Components/EmptyData';
 import CustomDialogBox from '../../Components/CustomDialogBox';
 import moment from 'moment';
 import { ScrollView, RefreshControl } from 'react-native';
+import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 
 
-const WFHCard = ({ wfhData, onActionComplete, refetchData }: any) => {
+const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) => {
 
   const isDark = useSelector(isDarkTheme);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
@@ -33,26 +34,6 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData }: any) => {
   const [onConfirmAction, setOnConfirmAction] = useState<() => void>(
     () => () => { },
   );
-
-  const { data, isLoading, isSuccess, refetch } = useGetAllWFHRecordListQuery({
-    accessToken: accessToken,
-  });
-
-
-  const today = moment().format('YYYY-MM-DD');
-
-  const approvedWfhToday = data?.data?.filter((item: any) => {
-    const startDate = moment(item.wfhStartDate).format('YYYY-MM-DD');
-    const endDate = moment(item.wfhEndDate).format('YYYY-MM-DD');
-
-
-    const isToday = startDate === today || endDate === today;
-
-    const isApproved = item.status?.value === 674180001;
-
-    return isToday && isApproved;
-  });
-  console.log(approvedWfhToday);
 
   useEffect(() => {
     if (!wfhData) return;
@@ -143,11 +124,12 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData }: any) => {
   };
 
   if (wfhData?.isCheckedOut === true) return null;
+// console.log( wfhData);
 
   return (
     <>
-      {
-        approvedWfhToday !== 0 ? (
+      {!wfhisLoading ? (
+       wfhData?.wfhDate ? (
           <ScrollView
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -155,16 +137,7 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData }: any) => {
             contentContainerStyle={{ flexGrow: 1 }}
           >
             <View style={styles(isDark).cardContainer}>
-              {/* <View>
-                <Image
-                  source={require('../../Assets/Images/WFH.jpg')}
-                  style={styles(isDark).wfhlogo}
-                  accessibilityLabel="Image"
-                />
-              </View> */}
-
               <View style={styles(isDark).contentContainer}>
-
                 {wfhData?.isCheckedIn !== true && (
                   <>
                     <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Bold' ,lineHeight: 20}}>
@@ -274,6 +247,8 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData }: any) => {
           (
             <EmptyData />
           )
+        ):
+        <ShimmerPlaceHolder/>
       }
     </>
   );

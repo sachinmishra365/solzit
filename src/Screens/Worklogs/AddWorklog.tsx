@@ -42,6 +42,7 @@ const AddWorklog = ({ navigation, route }: any) => {
         hour: Yup.number()
             .typeError('Hour must be a number')
             .required('Hour is required')
+            .moreThan(0, 'Hour must be greater than 0')
             .max(16, 'Hour cannot be more than 16')
             .test('is-quarter-increment', 'Hour must be in 0.25 increments', (value) => {
                 return value % 0.25 === 0;
@@ -90,6 +91,7 @@ const AddWorklog = ({ navigation, route }: any) => {
             if (response?.messageDetail?.message_code === 201) {
                 // Alert.alert('Success', 'Work log saved successfully!')
                 ToastMessage({ type: "success", title: "Work log", subtitle: "Work log saved successfully!" });
+                navigation.goBack();
             }
         } catch (err) {
             console.log(err);
@@ -156,7 +158,7 @@ const AddWorklog = ({ navigation, route }: any) => {
                                                 <Text style={styles(isDark).formErrorText}>{'Worklog Category is required.'}</Text>
                                             </View>)}
                                         <CustomTextInput
-                                            label="ProjectName"
+                                            label="Project Name"
                                             value={worklogData?.project?.name}
                                             secureTextEntry={false}
                                             lefticon={false}
@@ -231,6 +233,7 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             style={[styles(isDark).input]}
                                             keyboardType="numeric"
                                             autoFocus={true}
+                                            readOnly={worklogDetails?.data?.worklogStatusName === 'Approved' ? true : false}
                                         />
                                         <CustomTextInput
                                             label="Description"
@@ -241,22 +244,22 @@ const AddWorklog = ({ navigation, route }: any) => {
                                             onBlur={handleBlur('description')}
                                             editable={true}
                                             style={[styles(isDark).input]}
-                                            contentStyle={{ height: 80, paddingBottom: 10 }}
+                                            // contentStyle={{ height: 80, paddingBottom: 10 }}
                                             multiline={true}
+                                            readOnly={worklogDetails?.data?.worklogStatusName === 'Approved' ? true : false}
                                         />
                                         <CustomTextInput
-                                            label="date"
+                                            label="Date"
                                             value={moment(values.date).format('YYYY-MM-DD')}
                                             secureTextEntry={false}
                                             onChangeText={handleChange('date')}
                                             lefticon={false}
                                             rightIconName={'calendar'}
-                                            onPress={() => showDatepickerDate()}
+                                            onPress={() => worklogDetails?.data?.worklogStatusName === 'Approved' ? null : showDatepickerDate()}
                                             onBlur={handleBlur('date')}
                                             editable={true}
                                             readOnly={true}
                                             style={[styles(isDark).input]}
-                                            numberOfLines={3}
                                         />
                                         {showdate && (
                                             <DateTimePicker
@@ -277,30 +280,38 @@ const AddWorklog = ({ navigation, route }: any) => {
                                         {
                                             (SubmittedworklogData?.worklogStatusName === 'Approved' || SubmittedworklogData?.worklogStatusName === 'Rejected') && (
                                                 <>
-                                                    <CustomTextInput
-                                                        label="Approved By"
-                                                        value={worklogDetails?.data?.approvedRejectedBy}
-                                                        secureTextEntry={false}
-                                                        lefticon={false}
-                                                        onChangeText={handleChange('task')}
-                                                        onBlur={handleBlur('task')}
-                                                        editable={true}
-                                                        style={[styles(isDark).input]}
-                                                        numberOfLines={3}
-                                                        readOnly={true}
-                                                    />
-                                                    <CustomTextInput
-                                                        label="status"
-                                                        value={worklogDetails?.data?.worklogStatusName}
-                                                        secureTextEntry={false}
-                                                        lefticon={false}
-                                                        onChangeText={handleChange('task')}
-                                                        onBlur={handleBlur('task')}
-                                                        editable={true}
-                                                        style={[styles(isDark).input]}
-                                                        numberOfLines={3}
-                                                        readOnly={true}
-                                                    />
+                                                    {
+                                                        worklogDetails?.data?.approvedRejectedBy && (
+                                                            <CustomTextInput
+                                                                label="Approved By"
+                                                                value={worklogDetails?.data?.approvedRejectedBy}
+                                                                secureTextEntry={false}
+                                                                lefticon={false}
+                                                                onChangeText={handleChange('task')}
+                                                                onBlur={handleBlur('task')}
+                                                                editable={true}
+                                                                style={[styles(isDark).input]}
+                                                                numberOfLines={3}
+                                                                readOnly={true}
+                                                            />
+                                                        )
+                                                    }
+                                                    {
+                                                        worklogDetails?.data?.worklogStatusName && (
+                                                            <CustomTextInput
+                                                                label="status"
+                                                                value={worklogDetails?.data?.worklogStatusName}
+                                                                secureTextEntry={false}
+                                                                lefticon={false}
+                                                                onChangeText={handleChange('task')}
+                                                                onBlur={handleBlur('task')}
+                                                                editable={true}
+                                                                style={[styles(isDark).input]}
+                                                                numberOfLines={3}
+                                                                readOnly={true}
+                                                            />
+                                                        )
+                                                    }
                                                     {SubmittedworklogData?.worklogStatusName === 'Rejected' && (<CustomTextInput
                                                         label="Reason for Rejection"
                                                         value={worklogDetails?.data?.reasonForRejection}
@@ -309,13 +320,13 @@ const AddWorklog = ({ navigation, route }: any) => {
                                                         onChangeText={handleChange('task')}
                                                         onBlur={handleBlur('task')}
                                                         editable={true}
-                                                        contentStyle={{ height: 80, paddingBottom: 10 }}
                                                         style={[styles(isDark).input]}
-                                                        numberOfLines={3}
                                                         readOnly={true}
                                                         multiline={true}
                                                     />)}
-                                                    <CustomTextInput
+                                                  {
+                                                    worklogDetails?.data?.approvedRejectedOn && (
+                                                        <CustomTextInput
                                                         label="Approved On"
                                                         value={worklogDetails?.data?.approvedRejectedOn}
                                                         secureTextEntry={false}
@@ -327,16 +338,18 @@ const AddWorklog = ({ navigation, route }: any) => {
                                                         numberOfLines={3}
                                                         readOnly={true}
                                                     />
+                                                    )
+                                                  }
                                                 </>
                                             )
                                         }
 
                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 16, marginTop: 30 }}>
-                                            <Button mode="contained" onPress={() => { statusRef.current = 'draft', handleSubmit() }} buttonColor={Colors.primary} style={{ width: '48%' }}>
+                                            <Button mode="contained" onPress={() => { statusRef.current = 'draft', handleSubmit() }} buttonColor={Colors.primary} style={{ width: '48%' }} disabled={worklogDetails?.data?.worklogStatusName === 'Approved' ? true : false}>
                                                 Save As Draft
                                             </Button>
 
-                                            <Button mode="contained" onPress={() => { statusRef.current = 'submitted', handleSubmit() }} buttonColor={Colors.primary} style={{ width: '48%' }}>
+                                            <Button mode="contained" onPress={() => { statusRef.current = 'submitted', handleSubmit() }} buttonColor={Colors.primary} style={{ width: '48%' }} disabled={worklogDetails?.data?.worklogStatusName === 'Approved' ? true : false}>
                                                 Submit
                                             </Button>
                                         </View>

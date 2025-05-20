@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useRef, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import { useSelector } from 'react-redux';
@@ -120,7 +120,7 @@ const AddBreaks = ({ navigation }: any) => {
                                         </View>
                                     )}
 
-                                    <Menu
+                                    {/* <Menu
                                         visible={menuVisible}
                                         onDismiss={closeMenu}
                                         anchor={
@@ -153,8 +153,40 @@ const AddBreaks = ({ navigation }: any) => {
                                             title="Tomorrow"
                                             titleStyle={{ color: isDark ? Colors.white : Colors.black }}
                                         />
-                                    </Menu>
+                                    </Menu> */}
+                                    <View style={{ marginTop: 10 }}>
+                                        <Pressable onPress={openMenu}>
+                                            <CustomTextInput
+                                                label="Log Today or Tomorrow"
+                                                value={dateLabel}
+                                                onChangeText={() => { }}
+                                                lefticon={false}
+                                                rightIconName="chevron-down"
+                                                editable={false}
+                                                readOnly={true}
+                                                keyboardType="none"
+                                            />
+                                        </Pressable>
 
+                                        <Modal
+                                            transparent
+                                            animationType="fade"
+                                            visible={menuVisible}
+                                            onRequestClose={closeMenu}
+
+                                        >
+                                            <Pressable style={styles(isDark).overlay} onPress={closeMenu}>
+                                                <View style={[styles(isDark).menu, { backgroundColor: isDark ? Colors.gray : Colors.white }]}>
+                                                    <TouchableOpacity onPress={() => handleSelect('Today')} style={styles(isDark).item}>
+                                                        <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Regular' }}>Today</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity onPress={() => handleSelect('Tomorrow')} style={styles(isDark).item}>
+                                                        <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Regular' }}>Tomorrow</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </Pressable>
+                                        </Modal>
+                                    </View>
                                     <CustomTextInput
                                         label="Out Time"
                                         value={values.outTime ? moment(values.outTime, 'YYYY-MM-DDTHH:mm:ss').format('HH:mm') : values.outTime}
@@ -280,5 +312,23 @@ const styles = (isDark: boolean) =>
             color: Colors.white,
             fontFamily: 'Lato-Bold',
             textAlign: 'center',
+        },
+        overlay: {
+            flex: 1,
+            position: 'absolute',
+            top: 130,
+            left: 16,
+            right: 0,
+            bottom: 0
+        },
+        menu: {
+            width: 200,
+            elevation: 4,
+            // borderRadius: 8,
+            paddingVertical: 10,
+        },
+        item: {
+            paddingVertical: 10,
+            paddingHorizontal: 16,
         },
     });
