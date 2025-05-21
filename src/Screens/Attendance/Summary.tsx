@@ -1,15 +1,15 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useEmployeeLeaveRecordsQuery } from '../../Services/services';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {useEmployeeLeaveRecordsQuery} from '../../Services/services';
 import CustomHeader from '../../Components/CustomHeader';
-import { Colors } from '../../constants/Colors';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
-import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import {Colors} from '../../constants/Colors';
+import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import {useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import { Card, Icon, IconButton } from 'react-native-paper';
+import {Card, Icon, IconButton} from 'react-native-paper';
 
-const Summary = ({ route }: any) => {
+const Summary = ({route}: any) => {
   const MonthData = route.params;
   const isDark = useSelector(isDarkTheme);
   const navigation = useNavigation();
@@ -19,7 +19,10 @@ const Summary = ({ route }: any) => {
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
-  const { data, isLoading, error } = useEmployeeLeaveRecordsQuery({ monthID: MonthData?.leaveApplicationId, accessToken: accessToken, });
+  const {data, isLoading, error} = useEmployeeLeaveRecordsQuery({
+    monthID: MonthData?.leaveApplicationId,
+    accessToken: accessToken,
+  });
 
   useEffect(() => {
     handlesummary();
@@ -27,7 +30,9 @@ const Summary = ({ route }: any) => {
 
   const UpperData = [
     {
-      label: `${records?.month?.label || 'Month'}, ${records?.year?.label || ''}\nDuration`,
+      label: `${records?.month?.label || 'Month'}, ${
+        records?.year?.label || ''
+      }\nDuration`,
       icon: 'calendar-month',
     },
     {
@@ -42,22 +47,21 @@ const Summary = ({ route }: any) => {
       label: `${records?.totallopleave || 0}\nTotal LOP\n`,
       icon: 'minus-circle-outline',
     },
-  ]
+  ];
 
   const Summary = [
-    { label: 'Deficient Hours', value: records?.deficientHours },
-    { label: 'Total Low Hours (<8)', value: records?.totalLowHrsLess8 },
-    { label: 'Total Low Hours (3-5)', value: records?.totalLowHrs3_5 },
-    { label: 'Total Low Hours (<3)', value: records?.totalLowHrsLess3 },
-    { label: 'No of Lates', value: records?.noOfLate },
-    { label: 'Absent without Leave', value: records?.totalAbsentDays },
-    { label: 'LOP Low Hours (<8)', value: records?.lopLowHrsLess8 },
-    { label: 'LOP Low Hours (3-5)', value: records?.lopLowHrs3_5 },
-    { label: 'LOP Low Hours (<3)', value: records?.lopLowHrsLess3 },
-    { label: 'LOP Lates', value: records?.lopLates },
-    { label: 'Total LOPs', value: records?.totalLossOfPay },
-
-  ]
+    {label: 'Deficient Hours', value: records?.deficientHours},
+    {label: 'Total Low Hours (<8)', value: records?.totalLowHrsLess8},
+    {label: 'Total Low Hours (3-5)', value: records?.totalLowHrs3_5},
+    {label: 'Total Low Hours (<3)', value: records?.totalLowHrsLess3},
+    {label: 'No of Lates', value: records?.noOfLate},
+    {label: 'Absent without Leave', value: records?.totalAbsentDays},
+    {label: 'LOP Low Hours (<8)', value: records?.lopLowHrsLess8},
+    {label: 'LOP Low Hours (3-5)', value: records?.lopLowHrs3_5},
+    {label: 'LOP Low Hours (<3)', value: records?.lopLowHrsLess3},
+    {label: 'LOP Lates', value: records?.lopLates},
+    {label: 'Total LOPs', value: records?.totalLossOfPay},
+  ];
 
   const handlesummary = async () => {
     try {
@@ -69,7 +73,7 @@ const Summary = ({ route }: any) => {
       ) {
         SetRecords(response?.data);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
@@ -84,14 +88,29 @@ const Summary = ({ route }: any) => {
         <ShimmerPlaceHolder />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
-
-          <View style={[styles(isDark).card, {
-            elevation: 5, justifyContent: 'space-around', flexDirection: 'row'
-          }]}>
+          <View
+            style={[
+              styles(isDark).card,
+              {
+                elevation: 5,
+                justifyContent: 'space-around',
+                flexDirection: 'row',
+              },
+            ]}>
             {UpperData.map((item, index) => (
               <View key={index}>
-                <IconButton icon={item.icon} size={25} iconColor={isDark ? Colors.white : Colors.primary} />
-                <Text style={[styles(isDark).txt, { fontSize: 12, textAlign: 'center' }]}>{item.label}</Text>
+                <IconButton
+                  icon={item.icon}
+                  size={25}
+                  iconColor={isDark ? Colors.white : Colors.primary}
+                />
+                <Text
+                  style={[
+                    styles(isDark).txt,
+                    {fontSize: 12, textAlign: 'center'},
+                  ]}>
+                  {item.label}
+                </Text>
               </View>
             ))}
           </View>
@@ -99,17 +118,37 @@ const Summary = ({ route }: any) => {
           <Card style={styles(isDark).card}>
             <Card.Content>
               <View style={styles(isDark).row}>
-                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold', fontSize: 16, }]}>Leave Summary</Text>
-                <Text style={styles(isDark).txt}>{records?.month?.label || 0}</Text>
+                <Text
+                  style={[
+                    styles(isDark).txt,
+                    {fontFamily: 'Lato-Semibold', fontSize: 16},
+                  ]}>
+                  Leave Summary
+                </Text>
+                <Text style={styles(isDark).txt}>
+                  {records?.month?.label || 0}
+                </Text>
               </View>
               <View style={styles(isDark).row}>
-                <Text style={styles(isDark).txt}>{'Earn Leave'}</Text>
-                <Text style={styles(isDark).txt}>{'Starting Balance: '}{records?.earnedLeave || 0}</Text>
+                <Text style={styles(isDark).txt}>
+                  {'Leave Type : '}
+                  {'Earn Leave'}
+                </Text>
+                <Text style={styles(isDark).txt}>
+                  {'Starting Balance : '}
+                  {records?.earnedLeave || 0}
+                </Text>
               </View>
 
               <View style={styles(isDark).row}>
-                <Text style={styles(isDark).txt}>{'Leave Availed : '}{records?.earnleaveavailed || 0}</Text>
-                <Text style={styles(isDark).txt}>{'Closing Balance : '}{records?.earnleaveremaining || 0}</Text>
+                <Text style={styles(isDark).txt}>
+                  {'Leave Availed : '}
+                  {records?.earnleaveavailed || 0}
+                </Text>
+                <Text style={styles(isDark).txt}>
+                  {'Closing Balance : '}
+                  {records?.earnleaveremaining || 0}
+                </Text>
               </View>
             </Card.Content>
           </Card>
@@ -117,15 +156,33 @@ const Summary = ({ route }: any) => {
           <Card style={styles(isDark).card}>
             <Card.Content>
               <Text
-                style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold', fontSize: 16, textAlign: 'center', }]}>{'LOP Summary'}
+                style={[
+                  styles(isDark).txt,
+                  {
+                    fontFamily: 'Lato-Semibold',
+                    fontSize: 16,
+                    textAlign: 'center',
+                  },
+                ]}>
+                {'LOP Summary'}
               </Text>
 
               {Summary.map((item, index) => (
-                <View
-                  key={index}
-                  style={styles(isDark).row}>
-                  <Text style={styles(isDark).txt}>{item.label}</Text>
-                  <Text style={styles(isDark).txt}>{item.value || 0}</Text>
+                <View key={index} style={styles(isDark).row}>
+                  <Text
+                    style={[
+                      styles(isDark).txt,
+                      item.label === 'Total LOPs' && {fontFamily: 'Lato-Bold'},
+                    ]}>
+                    {item.label}
+                  </Text>
+                  <Text
+                    style={[
+                      styles(isDark).txt,
+                      item.label === 'Total LOPs' && {fontFamily: 'Lato-Bold'},
+                    ]}>
+                    {item.value || 0}
+                  </Text>
                 </View>
               ))}
             </Card.Content>
@@ -150,7 +207,7 @@ const styles = (isDark: boolean) =>
       borderRadius: 5,
       padding: 8,
       marginVertical: 5,
-      borderColor : Colors.background,
+      borderColor: Colors.background,
       borderWidth: 0.5,
     },
     txt: {

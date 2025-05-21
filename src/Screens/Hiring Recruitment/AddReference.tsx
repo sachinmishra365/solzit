@@ -102,8 +102,7 @@ const AddReference = ({ navigation, route }: any) => {
           type: 'success',
           text1: 'Candidate Added Successfully',
         });
-
-        navigation.goBack();
+        navigation.navigate('MyReferences');
       } else {
         throw new Error(
           response?.messageDetail?.message || 'Failed to add candidate'
