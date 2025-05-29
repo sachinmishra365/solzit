@@ -19,7 +19,7 @@ const Worklog = ({ navigation }: any) => {
     const dispatch = useDispatch();
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
-
+    
     const [todoList, SetTodoList] = useState<any>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [visible, setVisible] = React.useState(false);
@@ -34,7 +34,7 @@ const Worklog = ({ navigation }: any) => {
     const { data: ActiveItemsInMyProject, isLoading: isActiveItemsInMyProject } = useGetActiveItemsInMyProjectQuery({ accessToken: accessToken })
 
     const [GetToDoList, { isLoading }] = useGetToDoListBasedOnFilterMutation();
-    
+
 
     useEffect(() => {
         handleWorklogs(selectedId?.filterID, selectedId?.itemTypeID, selectedId?.label);
@@ -81,14 +81,14 @@ const Worklog = ({ navigation }: any) => {
         try {
             const response = await GetToDoList(body).unwrap();
             SetTodoList(response?.data);
-            
+
         } catch (err) {
             ToastMessage({ type: "error", title: "Error", subtitle: "Something went wrong" });
         } finally {
             setRefreshing(false);
         }
     };
-    
+
 
     const onRefresh = () => {
         handleWorklogs(selectedId?.filterID, selectedId?.itemTypeID, selectedId?.label);
@@ -119,12 +119,13 @@ const Worklog = ({ navigation }: any) => {
             rightIconPress={() => { item?.itemType?.label === 'User Story' ? navigation.navigate('BugDetails', { item }) : navigation.navigate('WorklogDetails', { item }), dispatch(SetWorklogDetails(item)) }}
             rightIconColor2={Colors.green}
             showRightIcon2={(item?.workStatus?.label === 'Work In Progress' || item?.workStatus?.label === 'Review Failed') ? true : false}
-            rightIconName2="plus-circle-outline"
-            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') : item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug') : null, dispatch(SetWorklogDetails(item)) }}
-            rightIconColor3={Colors.green}
-            showRightIcon3={true}
-            rightIconName3="pencil-circle-outline"
-            rightIconPress3={() => { navigation.navigate('AddToDo'), dispatch(SetWorklogDetails(item)) }}
+            rightIconName2={item?.itemType?.label !== 'User Story' && "plus-circle-outline"}
+            // item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug')
+            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog')  : null, dispatch(SetWorklogDetails(item)) }}
+            // rightIconColor3={Colors.green}
+            // showRightIcon3={true}
+            // rightIconName3="pencil-circle-outline"
+            // rightIconPress3={() => { navigation.navigate('AddToDo'), dispatch(SetWorklogDetails(item)) }}
             cardPress={() => { setVisibleWorkType(!visibleWorkType), setSelectedItem(item) }}
         />
     );
@@ -176,13 +177,13 @@ const Worklog = ({ navigation }: any) => {
                     ListFooterComponent={<View style={{ height: 100 }} />}
                 />
             )}
-            <FAB
+            {/* <FAB
                 style={styles(isDark).fab}
                 color={Colors.white}
                 onPress={() => navigation.navigate('AddToDo')}
                 accessibilityLabel="Add To-Do"
                 icon="plus"
-            />
+            /> */}
         </View>
     );
 };

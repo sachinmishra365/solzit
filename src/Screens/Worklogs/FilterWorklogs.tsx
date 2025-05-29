@@ -87,6 +87,7 @@ const styles = (isDark: any) => StyleSheet.create({
     divider: {
         backgroundColor: Colors.medium_gray,
         height: 1,
-        marginVertical: 10
+        marginVertical: 10,
+        marginHorizontal:-15
     },
 });

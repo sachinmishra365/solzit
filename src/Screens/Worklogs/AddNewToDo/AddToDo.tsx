@@ -4,7 +4,7 @@ import CustomHeader from '../../../Components/CustomHeader'
 import { Colors } from '../../../constants/Colors'
 import { useDispatch, useSelector } from 'react-redux'
 import { isDarkTheme, SetWorklogDetails } from '../../../AppStore/Reducers/appState'
-import { useCreateNewBugMutation, useCreateNewTodoMutation, useEditBugMutation, useEditTodoMutation, useGetAllUserStoriesByProjectIdQuery, useGetEmployeeByProjectIdQuery, useGetEmployeePriorityListQuery, useGetEmployeeProjectsListQuery, useGetEmployeeWorkStatusListQuery, useGetToDoDetailsByToDoIdQuery } from '../../../Services/workloglevel'
+import { useCreateNewBugMutation, useCreateNewTodoMutation, useEditBugMutation, useEditTodoMutation, useGetAllUserStoriesByProjectIdQuery, useGetEmployeeByProjectIdQuery, useGetEmployeePriorityListQuery, useGetEmployeeProjectsListQuery, useGetEmployeeWorkStatusListQuery, useGetLinkedTaskByIdQuery, useGetToDoDetailsByToDoIdQuery } from '../../../Services/workloglevel'
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import CustomTextInput from '../../../Components/CustomTextInput'
@@ -13,7 +13,7 @@ import { skipToken } from '@reduxjs/toolkit/query/react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment'
 import Placeholder from '../../Placeholder/Placeholder'
-import { Not_Started, In_Progress, Completed, Bug_In_Progress, BugCompleted, ReviewFailed } from '../../../constants/WorkStatuses'
+import { Not_Started, In_Progress, Completed, Bug_In_Progress, BugCompleted, ReviewFailed, OnHold, Need_clarification, Clarification_Given, User_Story_In_progress } from '../../../constants/WorkStatuses'
 import ToastMessage from '../../../Components/ToastMessage'
 
 
@@ -30,8 +30,13 @@ const validationSchema = Yup.object().shape({
             return value % 0.25 === 0;
         }),
     priority: Yup.string().required('Priority is required'),
-    // workStatus: Yup.string().required('Work Status is required'),
+    workStatus: Yup.string().required('Work Status is required'),
     assignee: Yup.string().required('Assignee is required'),
+    linkedTask: Yup.string().when('workStatus', {
+        is: (value: string) => value === 'Duplicate',
+        then: (schema) => schema.required('Linked Task is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
     // comment: Yup.string().required('Comment is required'),
     plannedStartDate: Yup.date().required('Planned Start Date is required'),
     plannedEndDate: Yup.date().required('Planned End Date is required'),
@@ -52,12 +57,14 @@ const AddToDo = ({ navigation }: any) => {
     const [workStatusMenuVisible, setWorkStatusMenuVisible] = useState(false);
     const [showplannedStartDate, setShowPlannedStartDate] = useState(false);
     const [showplannedEndDate, setShowPlannedEndDate] = useState(false);
+    const [showLinkTaskMenuVisible, setshowLinkTaskMenuVisible] = useState(false);
 
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [selectedUserStoryId, setSelectedUserStoryId] = useState<string | null>(null);
     const [selectedAsigneeId, setSelectedAsigneeId] = useState<string | null>(null);
     const [selectedPriorityId, setSelectedPriorityId] = useState<string | null>(null);
     const [selectedWorkStatusId, setSelectedWorkStatusId] = useState<string | null>(null);
+    const [selecteLinkTaskId, setSelectedLinkTaskId] = useState<string | null>(null);
 
     const { data: projectsData, isLoading: isProjectsLoading } = useGetEmployeeProjectsListQuery({ accessToken: accessToken })
     const { data: UserStoriesByProjectId, isLoading: isUserStoriesLoading } = useGetAllUserStoriesByProjectIdQuery(selectedProjectId ? { projectId: selectedProjectId, accessToken: accessToken } : { projectId: worklogData?.project?.id, accessToken: accessToken }, { skip: !selectedProjectId && !worklogData?.project?.id })
@@ -66,6 +73,9 @@ const AddToDo = ({ navigation }: any) => {
     const { data: EmployeeByProjectId, isLoading: isEmployeeByProjectId } = useGetEmployeeByProjectIdQuery(selectedProjectId ? { projectId: selectedProjectId, accessToken: accessToken } : { projectId: worklogData?.project?.id, accessToken: accessToken }, { skip: !selectedProjectId && !worklogData?.project?.id })
     // const { data: TodoDetailById, isLoading: isTodoDetailById,refetch } = useGetToDoDetailsByToDoIdQuery(newToDoId && accessToken ? { ItemId: newToDoId, accessToken: accessToken } : skipToken)
     const { data: TodoDetailById, isLoading: isTodoDetailById, refetch } = useGetToDoDetailsByToDoIdQuery(worklogData?.id && accessToken ? { ItemId: worklogData?.id, accessToken: accessToken } : skipToken)
+
+    const { data: LinkedTaskById } = useGetLinkedTaskByIdQuery(worklogData?.id && accessToken ? { ProjectId: TodoDetailById?.data?.projectId, accessToken: accessToken } : skipToken)
+    console.log("worklogData", worklogData);
 
     const [CreateNewTodo, result] = useCreateNewTodoMutation();
     const [CreateNewBug, response] = useCreateNewBugMutation();
@@ -151,7 +161,7 @@ const AddToDo = ({ navigation }: any) => {
         const data = {
             "toDoId": worklogData?.id,
             "comment": values.comment,
-            "duplicateTaskId": null,
+            "duplicateTaskId": values.workStatus === 'Duplicate' ? selecteLinkTaskId : null,
             "workStatus": {
                 "value": selectedWorkStatusId,
                 "label": values.workStatus
@@ -226,6 +236,7 @@ const AddToDo = ({ navigation }: any) => {
                                     comment: TodoDetailById?.data?.comments || '',
                                     plannedStartDate: moment().format('YYYY-MM-DD'),
                                     plannedEndDate: moment().format('YYYY-MM-DD'),
+                                    linktask: ''
                                 }}
                                 validationSchema={validationSchema}
                                 onSubmit={(values) => {
@@ -235,7 +246,7 @@ const AddToDo = ({ navigation }: any) => {
                                             values.workStatus === 'Duplicate' ||
                                             values.workStatus === 'Needs Clarification'
                                         ) {
-                                            if (!values.comment?.trim()) {
+                                            if (!values.comment?.trim() || !values.comment?.trim()) {
                                                 return;
                                             }
                                         }
@@ -296,6 +307,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             readOnly={true}
                                                             keyboardType={'none'}
                                                             multiline={true}
+                                                            disable={worklogData?.id ? true : false}
                                                         />
                                                     </Pressable>
                                                 }
@@ -334,6 +346,7 @@ const AddToDo = ({ navigation }: any) => {
                                                             editable={false}
                                                             readOnly={true}
                                                             multiline={true}
+                                                            disable={worklogData?.id ? true : false}
                                                         />
                                                     </Pressable>
                                                 }
@@ -365,6 +378,7 @@ const AddToDo = ({ navigation }: any) => {
                                                 style={[styles(isDark).input]}
                                                 editable={false}
                                                 readOnly={true}
+                                                autoFocus={true}
                                             />
 
                                             {worklogData?.id &&
@@ -383,6 +397,8 @@ const AddToDo = ({ navigation }: any) => {
                                                                 onPress={() => setWorkStatusMenuVisible(true)}
                                                                 editable={false}
                                                                 readOnly={true}
+                                                                disable={worklogData?.workStatus?.label === 'Work Complete' || worklogData?.workStatus?.label === 'Duplicate' ? true : false}
+
                                                             />
                                                         </Pressable>
                                                     }
@@ -395,18 +411,23 @@ const AddToDo = ({ navigation }: any) => {
                                                                 worklogData?.workStatus?.label === 'Analyzing' ? worklogData?.itemType?.label === 'Bug' ? Bug_In_Progress : In_Progress :
                                                                     worklogData?.workStatus?.label === 'Work In Progress' ? worklogData?.itemType?.label === 'Bug' ? BugCompleted : Completed :
                                                                         worklogData?.workStatus?.label === 'Review Failed' ? ReviewFailed :
-                                                                            []).map((item: any) => (
-                                                                                <Menu.Item
-                                                                                    key={item.value}
-                                                                                    onPress={() => {
-                                                                                        setFieldValue('workStatus', item?.label);
-                                                                                        setWorkStatusMenuVisible(false);
-                                                                                        setSelectedWorkStatusId(item?.value)
-                                                                                    }}
-                                                                                    title={item?.label}
-                                                                                    titleStyle={styles(isDark).txt}
-                                                                                />
-                                                                            ))
+                                                                            worklogData?.workStatus?.label === 'On Hold' ? worklogData?.itemType?.label === 'Bug' ? BugCompleted : OnHold :
+                                                                                worklogData?.workStatus?.label === 'Need clarification' ? worklogData?.itemType?.label === 'Bug' ? Need_clarification : Need_clarification :
+                                                                                    worklogData?.workStatus?.label === 'Clarification Given' ? worklogData?.itemType?.label === 'Bug' ? Need_clarification : Clarification_Given :
+                                                                                    worklogData?.workStatus?.label === 'Review In Progress' ? worklogData?.itemType?.label === 'User Story' ? User_Story_In_progress : Clarification_Given :
+
+                                                                                        []).map((item: any) => (
+                                                                                            <Menu.Item
+                                                                                                key={item.value}
+                                                                                                onPress={() => {
+                                                                                                    setFieldValue('workStatus', item?.label);
+                                                                                                    setWorkStatusMenuVisible(false);
+                                                                                                    setSelectedWorkStatusId(item?.value)
+                                                                                                }}
+                                                                                                title={item?.label}
+                                                                                                titleStyle={styles(isDark).txt}
+                                                                                            />
+                                                                                        ))
                                                         }
                                                     </ScrollView>
                                                 </Menu>)
@@ -423,6 +444,8 @@ const AddToDo = ({ navigation }: any) => {
                                                 style={[styles(isDark).input]}
                                                 multiline={true}
                                                 readOnly={worklogData?.id ? true : false}
+                                                disable={worklogData?.id ? true : false}
+
 
                                             />
 
@@ -437,6 +460,8 @@ const AddToDo = ({ navigation }: any) => {
                                                 style={[styles(isDark).input,]}
                                                 multiline={true}
                                                 readOnly={worklogData?.id ? true : false}
+                                                disable={worklogData?.id ? true : false}
+
                                             />
 
                                             <CustomTextInput
@@ -450,6 +475,8 @@ const AddToDo = ({ navigation }: any) => {
                                                 style={[styles(isDark).input]}
                                                 keyboardType="numeric"
                                                 readOnly={(TodoDetailById?.data?.workStatus?.label === 'Work In Progress' || TodoDetailById?.data?.workStatus?.label === 'Work Complete') ? true : false}
+                                                disable={worklogData?.id ? true : false}
+
                                             />
 
                                             <Menu
@@ -467,6 +494,8 @@ const AddToDo = ({ navigation }: any) => {
                                                             onPress={() => worklogData?.id ? null : setPriorityMenuVisible(true)}
                                                             editable={false}
                                                             readOnly={true}
+                                                            disable={worklogData?.id ? true : false}
+
                                                         />
                                                     </Pressable>
                                                 }
@@ -502,6 +531,8 @@ const AddToDo = ({ navigation }: any) => {
                                                             onPress={() => worklogData?.id ? null : setAssigneeMenuVisible(true)}
                                                             editable={false}
                                                             readOnly={true}
+                                                            disable={worklogData?.id ? true : false}
+
                                                         />
                                                     </Pressable>
                                                 }
@@ -526,6 +557,51 @@ const AddToDo = ({ navigation }: any) => {
                                                         )}
                                             </Menu>
 
+                                            {values.workStatus === 'Duplicate' &&
+                                                (<Menu
+                                                    visible={showLinkTaskMenuVisible}
+                                                    onDismiss={() => setshowLinkTaskMenuVisible(false)}
+                                                    anchor={
+                                                        <Pressable onPress={() => setshowLinkTaskMenuVisible(true)}  >
+                                                            <CustomTextInput
+                                                                label="Link Task"
+                                                                value={values.linktask}
+                                                                onChangeText={(text: any) => setFieldValue('linktask', text)}
+                                                                lefticon={false}
+                                                                style={[styles(isDark).input]}
+                                                                rightIconName={'chevron-down'}
+                                                                onPress={() => setshowLinkTaskMenuVisible(true)}
+                                                                editable={false}
+                                                                readOnly={true}
+                                                                multiline={true}
+                                                                disable={worklogData?.id ? true : false}
+
+                                                            />
+                                                        </Pressable>
+                                                    }
+                                                    contentStyle={{ backgroundColor: isDark ? Colors.gray : Colors.white, maxHeight: 300, }}
+                                                    statusBarHeight={70}
+                                                >
+                                                    <ScrollView>
+                                                        {
+                                                            LinkedTaskById?.data?.map((item: any) => (
+                                                                <Menu.Item
+                                                                    key={item.id}
+                                                                    onPress={() => {
+                                                                        setFieldValue('linktask', item?.title);
+                                                                        setshowLinkTaskMenuVisible(false);
+                                                                        setSelectedLinkTaskId(item?.id)
+                                                                    }}
+                                                                    title={item?.title}
+
+                                                                    titleStyle={styles(isDark).txt}
+                                                                />
+                                                            ))
+                                                        }
+                                                    </ScrollView>
+                                                </Menu>)
+                                            }
+
                                             {worklogData?.id &&
                                                 (
                                                     <CustomTextInput
@@ -538,10 +614,11 @@ const AddToDo = ({ navigation }: any) => {
                                                         editable={true}
                                                         style={[styles(isDark).input]}
                                                         multiline={true}
+                                                        disable={worklogData?.id ? true : false}
+
                                                     />
                                                 )
                                             }
-
                                             <CustomTextInput
                                                 label="Planned Start Date"
                                                 value={values.plannedStartDate || TodoDetailById?.data?.plannedStartDate}
@@ -602,10 +679,12 @@ const AddToDo = ({ navigation }: any) => {
                                             )}
                                             <Button mode="contained"
                                                 //@ts-ignore
-                                                onPress={handleSubmit} style={{ marginTop: 20, marginHorizontal: 16 }} buttonColor={Colors.primary}>
+                                                onPress={handleSubmit} style={{ marginTop: 20, marginHorizontal: 16 }} buttonColor={Colors.primary}
+                                                disabled={worklogData?.workStatus?.label === 'Work Complete' || worklogData?.workStatus?.label === 'Duplicate'
+                                                    || worklogData?.workStatus?.label === 'Review Passed' || (worklogData?.workStatus?.label === 'On Hold' && worklogData?.itemType?.label === 'Bug') ?
+                                                    true : false} >
                                                 Submit
                                             </Button>
-
                                         </>
                                     );
                                 }}

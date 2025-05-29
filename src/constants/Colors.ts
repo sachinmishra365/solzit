@@ -12,7 +12,9 @@ const Colors = {
   error: '#BD0101',
   dispatched: '#83B100',
   background: '#FFFFFF',
-  green:'#4CAF50'
+  green: '#4CAF50',
+  orange:' #FF9800',
+  darkgreen:'#0c660f'
 };
 const FontSize = {
   mini: 10,
@@ -29,7 +31,7 @@ const Statuses = {
   work_complete: {label: 'Work Complete', color: '#4CAF50'},
   duplicate: {label: 'Duplicate', color: '#9C27B0'},
   on_hold: {label: 'On Hold', color: '#FFC107'},
-  need_clarification: {label: 'Need Clarification', color: '#E91E63'},
+  need_clarification: {label: 'Needs Clarification', color: '#E91E63'},
   clarification_given: {label: 'Clarification Given', color: '#8BC34A'},
   new: {label: 'New', color: '#00539f'},
   ready_for_review: {label: 'Ready for Review', color: '#FFEB3B'},
@@ -38,6 +40,7 @@ const Statuses = {
   Submitted_for_approval: {label: 'Submitted for approval', color: '#FF9800'},
   Approved: {label: 'Approved', color: '#4CAF50'},
   Rejected: {label: 'Rejected', color: '#BD0101'},
+  Review_In_Progress: {label: 'Review In Progress', color: '#FF9800'},
 };
 
 export {Colors, FontSize, Statuses};

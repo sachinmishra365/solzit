@@ -320,6 +320,19 @@ export const workloglevelApi = createApi({
         };
       },
     }),
+
+    GetLinkedTaskById: builder.query({
+      query: ({accessToken, ProjectId}) => {
+        return {
+          url: `/ToDos/GetLinkedTaskById?ProjectId=${ProjectId}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        };
+      },
+    }),
+
   }),
 });
 
@@ -348,5 +361,6 @@ export const {
   useGetAppSettingsValueQuery,
   useEditTodoMutation,
   useEditBugMutation,
-  useGetEmployeeWorkLogCategoryListQuery
+  useGetEmployeeWorkLogCategoryListQuery,
+  useGetLinkedTaskByIdQuery,
 } = workloglevelApi;

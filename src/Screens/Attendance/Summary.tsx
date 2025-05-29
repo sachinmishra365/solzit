@@ -164,7 +164,7 @@ const Summary = ({route}: any) => {
                     textAlign: 'center',
                   },
                 ]}>
-                {'LOP Summary'}
+                {'Leave Summary'}
               </Text>
 
               {Summary.map((item, index) => (

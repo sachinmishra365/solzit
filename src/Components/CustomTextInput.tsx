@@ -52,24 +52,20 @@ const CustomTextInput = ({
             ? isDark
               ? Colors.white
               : Colors.primary
-            : Colors.dark_gray
+            : Colors.primary
         }
         activeOutlineColor={
-          disable !== true
-            ? isDark
+            isDark
               ? Colors.white
               : Colors.primary
-            : Colors.dark_gray
         }
         placeholderTextColor={
-          disable !== true
-            ? isDark
+             isDark
               ? Colors.white
               : Colors.black
-            : Colors.dark_gray
         }
         editable={editable}
-        disabled={disable}
+        // disabled={disable}
         readOnly={readOnly}
         onLayout={onLayout}
         keyboardType={keyboardType}

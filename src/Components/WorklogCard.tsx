@@ -4,6 +4,7 @@ import { Card, IconButton } from 'react-native-paper'
 import { Colors, Statuses } from '../constants/Colors'
 import { useSelector } from 'react-redux'
 import { isDarkTheme } from '../AppStore/Reducers/appState'
+import moment from 'moment'
 
 const WorklogCard = ({
     projectName,
@@ -31,8 +32,13 @@ const WorklogCard = ({
     showRightIcon3 = false,
 }: any) => {
     const isDark = useSelector(isDarkTheme);
+    const today = moment().startOf('day'); // to avoid time affecting comparison
+
+    const isPastDate = (date: moment.MomentInput) => {
+        return moment(date, 'DD/MM/YYYY').isBefore(today);
+    };
     return (
-        <Card style={styles(isDark).cardContainer} onPress={cardPress}>
+        <Card style={[styles(isDark).cardContainer,]} onPress={cardPress}>
             <Card.Content style={styles(isDark).cardContant}>
                 <View style={{
                     flexDirection: 'row', alignItems: 'center',
@@ -57,9 +63,9 @@ const WorklogCard = ({
             </Card.Content>
 
             <Card.Content style={[styles(isDark).cardContant, { marginVertical: 5 }]}>
-                <Text style={[styles(isDark).txt]}>{startDate}</Text>
+                <Text style={[styles(isDark).txt,isPastDate(startDate) ? { color: Colors.error } : null,]}>{startDate}</Text>
                 {/* {(startDate && endDate) && (<Text style={[styles(isDark).txt]}>{' - '}</Text>)} */}
-                <Text style={styles(isDark).txt}>{endDate}</Text>
+                <Text style={[styles(isDark).txt,isPastDate(endDate) ? { color: Colors.error } : null,]}>{endDate}</Text>
             </Card.Content>
             <Card.Content style={[styles(isDark).cardContant]}>
                 <Text style={styles(isDark).txt}>{serialNo}</Text>

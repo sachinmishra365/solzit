@@ -13,6 +13,7 @@ import { useGetAllWFHRecordListQuery, useGetOngoingWFHDateListQuery } from '../.
 import WFHCard from './WFHCard';
 import { SegmentedButtons } from 'react-native-paper';
 import EmptyData from '../../Components/EmptyData';
+import ScreenPlay from './ScreenPlay';
 
 const { height, width } = Dimensions.get('window');
 
@@ -40,13 +41,13 @@ const Dashboard = ({ navigation }: any) => {
   const ProcessedLeaves = useProcessedLeavesQuery({ accessToken: accessToken });
 
   const { data: AppliedLeave, refetch: refetchapplies, isLoading, } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken });
-  const { data: OngoingWFHDateList,isLoading:wfhisLoading, refetch: onActionComplete, } = useGetOngoingWFHDateListQuery({ accessToken })
+  const { data: OngoingWFHDateList, isLoading: wfhisLoading, refetch: onActionComplete, } = useGetOngoingWFHDateListQuery({ accessToken })
 
-  
+
   const todayWFHData = OngoingWFHDateList?.data?.find((item: any) =>
     moment(item.wfhDate).isSame(moment(), 'day')
   );
-  
+
 
   useEffect(() => {
     const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
@@ -112,10 +113,10 @@ const Dashboard = ({ navigation }: any) => {
           d.isSameOrBefore(leaveEndDate);
           d.add(1, 'days')
         ) {
-          const formattedDate = d?.format('YYYY-MM-DD');
 
+          const formattedDate = d?.format('YYYY-MM-DD');
           marked[formattedDate] = {
-            color: 'green', 
+            color: 'green',
             textColor: 'white',
           };
           const start = moment(leaveStartDate)?.format('YYYY-MM-DD');
@@ -139,7 +140,7 @@ const Dashboard = ({ navigation }: any) => {
     });
 
     marked[currentDate] = {
-      color: Colors.primary,
+      color: todayWFHData?.wfhDate ? '#FF9800' : Colors.primary,
       textColor: 'white',
       startingDay: true,
       endingDay: true,
@@ -374,6 +375,7 @@ const Dashboard = ({ navigation }: any) => {
         flex: 1,
         backgroundColor: isDark ? Colors.black : Colors.white,
       }}  {...panResponder.panHandlers}>
+      <ScreenPlay name={Assesstoken?.userProfile?.fullName ? Assesstoken.userProfile.fullName : 'Guest'} />
       <Calendar
         markingType={'period'}
         markedDates={markedDates}
@@ -427,7 +429,7 @@ const Dashboard = ({ navigation }: any) => {
       />
 
 
-      {selectedStatus === 'Work From Home' && <WFHCard wfhData={ todayWFHData } onActionComplete={onActionComplete} refetchData={onActionComplete} wfhisLoading={wfhisLoading}/>}
+      {selectedStatus === 'Work From Home' && <WFHCard wfhData={todayWFHData} onActionComplete={onActionComplete} refetchData={onActionComplete} wfhisLoading={wfhisLoading} />}
 
 
       {isLoading ? (
@@ -475,8 +477,8 @@ const Dashboard = ({ navigation }: any) => {
                 return (
                   <>
                     {selectedStatus === 'All' && holidayComponent}
-                    {/* {selectedStatus === 'Work From Home' && birthdayComponent} */}
-                    {/* {birthdayComponent} */}
+                    {selectedStatus === 'Work From Home' && birthdayComponent}
+                    {birthdayComponent}
                   </>
                 );
               }
@@ -485,7 +487,7 @@ const Dashboard = ({ navigation }: any) => {
             keyExtractor={(item, index) => index.toString()}
             style={{ margin: 5 }}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={selectedStatus === 'Work From Home' ? null :<EmptyData/>}
+            ListEmptyComponent={selectedStatus === 'Work From Home' ? null : <EmptyData />}
           />
         </>
       )}

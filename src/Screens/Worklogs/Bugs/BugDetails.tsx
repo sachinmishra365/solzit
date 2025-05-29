@@ -46,6 +46,7 @@ const BugDetails = ({ navigation }: any) => {
             iconName={'book'}
             iconColor={Colors.primary}
             rightIconName="eye"
+            showRightIcon={false}
             rightIconColor={Colors.primary}
             rightIconPress={() => { navigation.navigate('WorklogDetails', { item }) }}
             rightIconColor2={Colors.green}
@@ -58,7 +59,7 @@ const BugDetails = ({ navigation }: any) => {
                 }
             }}
             rightIconColor3={Colors.green}
-            showRightIcon3={true}
+            showRightIcon3={false}
             rightIconName3="pencil-circle-outline"
             rightIconPress3={() => { navigation.navigate('AddBug') }}
         />

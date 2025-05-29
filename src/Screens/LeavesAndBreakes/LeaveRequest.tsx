@@ -109,14 +109,14 @@ const LeaveRequest = ({ navigation }: any) => {
             style={{
               color:
                 item?.leaveType?.label === 'Earn Leave'
-                  ? isDark
-                    ? Colors.white
-                    : Colors.black
-                  : isDark
-                    ? Colors.white
-                    : Colors.black,
+                  ? '#FF9800'
+                  :
+                  item?.leaveType?.label === 'Loss of Pay'
+                    ? Colors.error : isDark
+                      ? Colors.white
+                      : Colors.black,
               fontSize: 14,
-              fontFamily: 'Lato-Semibold',
+              fontFamily: 'Lato-Bold',
             }}>
             {item?.leaveType?.label}
           </Text>

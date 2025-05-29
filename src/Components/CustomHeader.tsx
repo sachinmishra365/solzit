@@ -32,6 +32,7 @@ const CustomHeader = ({
           <IconButton icon="chevron-left" size={25} accessibilityLabel="Back"
             iconColor={isDark ? Colors.white : Colors.black}
             onPress={onPress}
+            style={{ marginTop: 8 }}
           />
         ) : (
           <IconButton icon="menu" size={25} accessibilityLabel="Menu"
@@ -59,11 +60,11 @@ const CustomHeader = ({
           />
         )}
         {showRightIcon && (
-            <IconButton icon={rightIconName} size={25}
-              iconColor={isDark ? Colors.white : Colors.primary}
-              style={styles(isDark).searchIcon} onPress={rightIconPress}
-            />
-          )}
+          <IconButton icon={rightIconName} size={25}
+            iconColor={isDark ? Colors.white : Colors.primary}
+            style={styles(isDark).searchIcon} onPress={rightIconPress}
+          />
+        )}
       </View>
       <View
         style={{

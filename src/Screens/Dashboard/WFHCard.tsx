@@ -9,6 +9,7 @@ import CustomDialogBox from '../../Components/CustomDialogBox';
 import moment from 'moment';
 import { ScrollView, RefreshControl } from 'react-native';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
+import ToastMessage from '../../Components/ToastMessage';
 
 
 const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) => {
@@ -17,11 +18,11 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) =
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
 
-  const [createCheckIn] = useCreateCheckInRequestMutation();
-  const [createBreakIn] = useCreateBreakInRequestMutation();
-  const [createBreakOut] = useUpdateBreakOutTimeRequestMutation();
-  const [updateOutTime] = useUpdateOutTimeRequestMutation();
-
+  const [createCheckIn,checkInResult] = useCreateCheckInRequestMutation();
+  const [createBreakIn,BreakInReult] = useCreateBreakInRequestMutation();
+  const [createBreakOut,BreakOutResult] = useUpdateBreakOutTimeRequestMutation();
+  const [updateOutTime,CheckOutResult] = useUpdateOutTimeRequestMutation();
+    
   const [attendanceId, setAttendanceId] = useState(null);
   const [attendanceInOutID, setAttendanceInOutID] = useState(null);
   const [isBreakIn, setIsBreakIn] = useState(false);
@@ -72,10 +73,11 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) =
     const currentTime = new Date().toISOString();
     try {
       const response = await createCheckIn({ body: { inTime: currentTime }, accessToken: accessToken, }).unwrap();
-
       if (response?.isSuccessful) {
-        setAttendanceId(response?.data);
+        setAttendanceId(response?.data);        
         onActionComplete();
+        
+        ToastMessage({ type: "success", title: "check In", subtitle: response?.messageDetail?.message });
       }
     } catch (error: any) {
       console.error('Check-In error:', error);
@@ -85,11 +87,13 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) =
   const handleBreakIn = async () => {
     try {
       const response = await createBreakIn({ body: { attendanceId: attendanceId, isBreakIn: true, }, accessToken: accessToken, }).unwrap();
-
       if (response?.isSuccessful) {
         setIsBreakIn(true);
         setAttendanceInOutID(response?.data);
         onActionComplete();
+
+        ToastMessage({ type: "success", title: "Break In", subtitle: response?.messageDetail?.message });
+
       }
     } catch (error: any) {
       console.error('Break-In error:', error);
@@ -98,12 +102,13 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) =
 
   const handleBreakOut = async () => {
     try {
-      const response = await createBreakOut({ body: { attendanceInOutId: attendanceInOutID, IsBreakOut: true, }, accessToken: accessToken, }).unwrap();
-
+      const response = await createBreakOut({ body: { attendanceInOutId: attendanceInOutID, IsBreakOut: true, }, accessToken: accessToken, }).unwrap();      
       if (response?.isSuccessful) {
         setIsBreakIn(false);
         setIsBreakOut(false);
         onActionComplete();
+        ToastMessage({ type: "success", title: "Break out", subtitle: response?.messageDetail?.message });
+
       }
     } catch (error: any) {
       console.error('Break-Out error:', error);
@@ -117,6 +122,8 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) =
 
       if (response?.isSuccessful) {
         onActionComplete();
+        ToastMessage({ type: "success", title: "Break In", subtitle: response?.messageDetail?.message });
+
       }
     } catch (error: any) {
       console.error('Check-Out error:', error);
@@ -124,11 +131,10 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData ,wfhisLoading}: any) =
   };
 
   if (wfhData?.isCheckedOut === true) return null;
-// console.log( wfhData);
 
   return (
     <>
-      {!wfhisLoading ? (
+      {!BreakInReult.isLoading || !BreakOutResult?.isLoading || !checkInResult?.isLoading || !CheckOutResult.isLoading? (
        wfhData?.wfhDate ? (
           <ScrollView
             refreshControl={

@@ -234,7 +234,7 @@ const SepratedAttendance = ({ route }: any) => {
   };
 
   const renderItem = ({ item }: any) => {
-    console.log('item:',);
+    console.log('item:', item?.leaveType?.label);
 
     return (
       <Card
@@ -280,14 +280,14 @@ const SepratedAttendance = ({ route }: any) => {
                 {item?.leaveType?.label !== 'Loss of Pay' &&
                   item?.leaveType?.label !== 'Earn Leave' ? (
                   <View style={{ flexDirection: 'row' }}>
-                    <Text
+                    {/* <Text
                       style={{
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 18,
                         fontFamily: 'Lato-Bold',
                       }}>
                       Late?{' : '}
-                    </Text>
+                    </Text> */}
                     <Text
                       style={{
                         color: item?.isLate === false ? 'green' : Colors.error,
@@ -416,9 +416,12 @@ const SepratedAttendance = ({ route }: any) => {
                       color:
                         item?.leaveType?.label === 'Loss of Pay'
                           ? Colors.error
-                          : isDark
-                            ? Colors.white
-                            : Colors.black,
+                          : item?.leaveType?.label === 'Working Day'
+                            ? Colors.green
+                            : item?.leaveType?.label === 'Soluzione Fixed Holiday'
+                              ? Colors.darkgreen
+                              : item?.leaveType?.label === 'Work From Home' || item?.leaveType?.label === 'Earn Leave'
+                                ? '#FF9800': Colors.green,
                       fontSize: 14,
                       fontFamily: 'Lato-Semibold',
                     }}>
@@ -661,7 +664,7 @@ const SepratedAttendance = ({ route }: any) => {
                       flexWrap: 'wrap',
                     }}>
                     <View style={{ flexDirection: 'row' }}>
-                      <Text
+                      {/* <Text
                         style={{
                           color: isDark ? Colors.white : Colors.black,
                           fontSize: 18,
@@ -669,7 +672,7 @@ const SepratedAttendance = ({ route }: any) => {
                           marginBottom: 6,
                         }}>
                         Late?{' : '}
-                      </Text>
+                      </Text> */}
                       <Text
                         style={{
                           color:
@@ -695,11 +698,14 @@ const SepratedAttendance = ({ route }: any) => {
                       <Text
                         style={{
                           color:
-                            selectedItem?.leaveType?.label === 'Loss of Pay'
-                              ? Colors.error
-                              : isDark
-                                ? Colors.white
-                                : Colors.black,
+                        selectedItem?.leaveType?.label === 'Loss of Pay'
+                          ? Colors.error
+                          : selectedItem?.leaveType?.label === 'Working Day'
+                            ? Colors.green
+                            : selectedItem?.leaveType?.label === 'Soluzione Fixed Holiday'
+                              ? Colors.darkgreen
+                              : selectedItem?.leaveType?.label === 'Work From Home' || selectedItem?.leaveType?.label === 'Earn Leave'
+                                ? '#FF9800': Colors.green,
                           fontSize: 14,
                           fontFamily: 'Lato-Semibold',
                         }}>
@@ -914,6 +920,7 @@ const SepratedAttendance = ({ route }: any) => {
                           mode="time"
                           is24Hour={false}
                           display="default"
+                          accentColor={Colors.primary}
                           onChange={(event, selectedTime) =>
                             onChangeStartTime(
                               event,
@@ -1025,7 +1032,7 @@ const SepratedAttendance = ({ route }: any) => {
                           borderRadius: 3,
                         }}
                         disabled={actualTime < 0 ? true : false}
-                        onPress={()=>handleSubmit()}>
+                        onPress={() => handleSubmit()}>
                         {
                           result?.isLoading ? (
                             <ActivityIndicator

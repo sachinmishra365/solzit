@@ -1,32 +1,19 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  RefreshControl,
-  Modal,
-  TouchableOpacity,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useSelector} from 'react-redux';
-import {FAB, IconButton} from 'react-native-paper';
-import {isDarkTheme} from '../../../AppStore/Reducers/appState';
+import { View, Text, StyleSheet, FlatList, RefreshControl, Modal, TouchableOpacity, } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { FAB, IconButton } from 'react-native-paper';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
-import {Colors} from '../../../constants/Colors';
+import { Colors } from '../../../constants/Colors';
 import moment from 'moment';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
-import {
-  useGetAppSettingsValueQuery,
-  useGetDayTaskReportDetailsQuery,
-  useGetGeneralTaskListInMyProjectQuery,
-  useGetToDoListBasedOnFilterMutation,
-} from '../../../Services/workloglevel';
+import { useGetAppSettingsValueQuery, useGetDayTaskReportDetailsQuery, useGetGeneralTaskListInMyProjectQuery, useGetToDoListBasedOnFilterMutation, } from '../../../Services/workloglevel';
 import WorklogCard from '../../../Components/WorklogCard';
 import EmptyData from '../../../Components/EmptyData';
 import ToastMessage from '../../../Components/ToastMessage';
 
-const PlanMyDay = ({navigation, route}: any) => {
+const PlanMyDay = ({ navigation, route }: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
@@ -36,33 +23,16 @@ const PlanMyDay = ({navigation, route}: any) => {
   const [myToDosData, setMyToDosData] = useState([]);
   const [generalTasksData, setGeneralTasksData] = useState([]);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
-  const [selectedTaskType, setSelectedTaskType] = useState(
-    'defaultWorkingItems',
-  );
+  const [selectedTaskType, setSelectedTaskType] = useState('defaultWorkingItems',);
   const [filterVisible, setFilterVisible] = useState(false);
   const [isFilterSelected, setIsFilterSelected] = useState(false);
   const [isFabDisabled, setIsFabDisabled] = useState(false);
   const todayDate = moment().format('YYYY-MM-DDT05:30:00');
 
-  const [getToDoListBasedOnFilter, {isLoading: isToDoLoading}] =
-    useGetToDoListBasedOnFilterMutation();
-  const {data: generalTaskData, isLoading: isGeneralTaskLoading} =
-    useGetGeneralTaskListInMyProjectQuery({
-      accessToken: accessToken?.authToken?.accessToken,
-    });
-  const {
-    data: showPlanData,
-    isLoading: ShowPlanLoading,
-    error,
-    refetch,
-  } = useGetDayTaskReportDetailsQuery({
-    accessToken: EmployeeId?.authToken?.accessToken,
-    Date: todayDate,
-  });
-  const {data: appSettingData} = useGetAppSettingsValueQuery({
-    accessToken: EmployeeId?.authToken?.accessToken,
-    AppSettingName: 'MAX_ADD_DAY_REPORT_TIME',
-  });
+  const [getToDoListBasedOnFilter, { isLoading: isToDoLoading }] = useGetToDoListBasedOnFilterMutation();
+  const { data: generalTaskData, isLoading: isGeneralTaskLoading } = useGetGeneralTaskListInMyProjectQuery({ accessToken: accessToken?.authToken?.accessToken, });
+  const { data: showPlanData, isLoading: ShowPlanLoading, } = useGetDayTaskReportDetailsQuery({ accessToken: EmployeeId?.authToken?.accessToken, Date: todayDate, });
+  const { data: appSettingData } = useGetAppSettingsValueQuery({ accessToken: EmployeeId?.authToken?.accessToken, AppSettingName: 'MAX_ADD_DAY_REPORT_TIME', });
   const isLoading = isToDoLoading || isGeneralTaskLoading;
 
   const fetchData = async () => {
@@ -142,7 +112,7 @@ const PlanMyDay = ({navigation, route}: any) => {
   }, [appSettingData]);
 
   const toggleCheckbox = (id: any) => {
-    setCheckedItems(prev => ({...prev, [id]: !prev[id]}));
+    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   useEffect(() => {
@@ -158,7 +128,7 @@ const PlanMyDay = ({navigation, route}: any) => {
     fetchData();
   };
 
-  const FilterModal = ({visible, onClose, onSelect, selectedOption}: any) => {
+  const FilterModal = ({ visible, onClose, onSelect, selectedOption }: any) => {
     return (
       <Modal
         transparent
@@ -169,14 +139,14 @@ const PlanMyDay = ({navigation, route}: any) => {
           <View style={styles(isDark).modalContainer}>
             <TouchableOpacity
               onPress={onClose}
-              style={{alignSelf: 'flex-end', right: -20, top: -20}}>
+              style={{ alignSelf: 'flex-end', right: -20, top: -20 }}>
               <IconButton
                 icon="close-octagon"
                 size={30}
                 iconColor={Colors.error}
               />
             </TouchableOpacity>
-            <Text style={[styles(isDark).modalTitle, {marginBottom: 20}]}>
+            <Text style={[styles(isDark).modalTitle, { marginBottom: 20 }]}>
               Select To-Do's
             </Text>
             <TouchableOpacity
@@ -214,39 +184,28 @@ const PlanMyDay = ({navigation, route}: any) => {
     );
   };
 
-  const renderItem = ({item}: any) => (
-    <WorklogCard
-      projectName={item?.project?.name}
-      serialNo={item?.itemNumber}
-      title={item?.title}
-      startDate={
-        item?.plannedStartDate
-          ? moment(item?.plannedStartDate, 'MM/DD/YYYY HH:mm:ss').format(
-              'DD/MM/YYYY',
-            )
-          : null
-      }
-      endDate={
-        item?.plannedEndDate
-          ? moment(item?.plannedEndDate, 'MM/DD/YYYY HH:mm:ss').format(
-              'DD/MM/YYYY',
-            )
-          : null
-      }
-      status={item?.workStatus?.label}
-      iconName={
-        checkedItems[item.id] ? 'checkbox-marked' : 'checkbox-blank-outline'
-      }
-      iconColor={Colors.primary}
-      rightIconColor={Colors.primary}
-      iconPress={() => {
-        toggleCheckbox(item.id);
-      }}
-      showRightIcon2={false}
-      showRightIcon={false}
-      // cardPress={() => navigation.navigate('ToDoDetails', {ToDoDetail: item})}
-    />
-  );
+
+  const renderItem = ({ item }: any) => {
+    if (item?.itemType?.value === 674180002) {
+      return (
+        <WorklogCard
+          projectName={item?.project?.name}
+          serialNo={item?.itemNumber}
+          title={item?.title}
+          startDate={item?.plannedStartDate ? moment(item?.plannedStartDate, 'MM/DD/YYYY HH:mm:ss').format('DD/MM/YYYY') : null}
+          endDate={item?.plannedEndDate ? moment(item?.plannedEndDate, 'MM/DD/YYYY HH:mm:ss').format('DD/MM/YYYY') : null}
+          status={item?.workStatus?.label}
+          iconName={checkedItems[item.id] ? 'checkbox-marked' : 'checkbox-blank-outline'}
+          iconColor={Colors.primary}
+          rightIconColor={Colors.primary}
+          iconPress={() => { toggleCheckbox(item.id); }}
+          showRightIcon2={false}
+          showRightIcon={false}
+        />
+      );
+    }
+    return null;
+  };
 
   return (
     <View style={styles(isDark).mainContainer}>
@@ -268,12 +227,12 @@ const PlanMyDay = ({navigation, route}: any) => {
           marginBottom: 10,
           marginTop: 8,
         }}>
-        <Text style={[styles(isDark).label, {fontSize: 16}]}>
+        <Text style={[styles(isDark).label, { fontSize: 16 }]}>
           {!isFilterSelected
             ? "Items I'm Working On"
             : selectedTaskType === 'generalTasks'
-            ? 'General Tasks'
-            : 'My Active Items'}
+              ? 'General Tasks'
+              : 'My Active Items'}
         </Text>
 
         {!ShowPlanLoading &&
@@ -291,25 +250,20 @@ const PlanMyDay = ({navigation, route}: any) => {
         <ShimmerPlaceHolder />
       ) : (selectedTaskType === 'myActiveItems' ||
         selectedTaskType === 'defaultWorkingItems'
-          ? myToDosData
-          : generalTasksData
-        )?.length === 0 ? (
+        ? myToDosData
+        : generalTasksData
+      )?.length === 0 ? (
         <EmptyData />
       ) : (
         <FlatList
-          data={
-            selectedTaskType === 'myActiveItems' ||
-            selectedTaskType === 'defaultWorkingItems'
-              ? myToDosData
-              : generalTasksData
-          }
+          data={selectedTaskType === 'myActiveItems' || selectedTaskType === 'defaultWorkingItems' ? myToDosData : generalTasksData}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderItem}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           showsVerticalScrollIndicator
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       )}
 
@@ -329,7 +283,7 @@ const PlanMyDay = ({navigation, route}: any) => {
 
           const selectedItems = (
             selectedTaskType === 'myActiveItems' ||
-            selectedTaskType === 'defaultWorkingItems'
+              selectedTaskType === 'defaultWorkingItems'
               ? myToDosData
               : generalTasksData
           ).filter((item: any) => checkedItems[item.id]);
@@ -349,8 +303,8 @@ const PlanMyDay = ({navigation, route}: any) => {
 
           const hasMissingDates = shouldCheckDates
             ? selectedItems.some(
-                (item: any) => !item?.plannedStartDate || !item?.plannedEndDate,
-              )
+              (item: any) => !item?.plannedStartDate || !item?.plannedEndDate,
+            )
             : false;
 
           if (hasMissingDates) {
@@ -361,7 +315,7 @@ const PlanMyDay = ({navigation, route}: any) => {
             });
             return;
           }
-          navigation.navigate('AddToMyPlan', {selectedItems});
+          navigation.navigate('AddToMyPlan', { selectedItems });
         }}
       />
 

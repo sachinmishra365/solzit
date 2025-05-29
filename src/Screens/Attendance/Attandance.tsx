@@ -96,7 +96,7 @@ const Attendance = ({ navigation }: any) => {
               />
               <Text
                 style={styles(isDark).btntxt}>
-                Summary
+                Leave Balance
               </Text>
             </TouchableOpacity>
 

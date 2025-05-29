@@ -1,15 +1,12 @@
-import { Animated, Image, SafeAreaView, StyleSheet, Text, Pressable, View, TouchableOpacity, useColorScheme, PanResponder, ScrollView, } from 'react-native';
+import { Animated, Image, SafeAreaView, StyleSheet, Text, Pressable, View, TouchableOpacity, useColorScheme, ScrollView, } from 'react-native';
 import { Icon, IconButton, List } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { Colors } from '../constants/Colors';
 import Dashboard from '../Screens/Dashboard/Dashboard';
-import { auth, isDarkTheme, theme } from '../AppStore/Reducers/appState';
+import { isDarkTheme, theme } from '../AppStore/Reducers/appState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
-import { SCREEN_WIDTH } from '../constants/Screen';
 import React from 'react';
-import Profile from '../Screens/profile/Profile';
-import Profilecard from '../Screens/profile/Profilecard';
 
 const DrawerNavigator = ({ navigation }: any) => {
   const dispatch = useDispatch();
@@ -51,7 +48,7 @@ const DrawerNavigator = ({ navigation }: any) => {
   const toggleMenu = () => {
     const newShowMenu = !showMenu;
     Animated.timing(scaleValue, {
-      toValue: newShowMenu ? 0.9 : 1,
+      toValue: newShowMenu ? 1 : 1,
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
@@ -217,7 +214,7 @@ const DrawerNavigator = ({ navigation }: any) => {
               onPress={() => { toggleMenu() }} />
 
             <List.Item
-              title="My Refrences" left={props => <List.Icon {...props} icon="account-group" color={isDark ? Colors.white : Colors.primary} />}
+              title="My References" left={props => <List.Icon {...props} icon="account-group" color={isDark ? Colors.white : Colors.primary} />}
               titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold' }}
               style={{ marginLeft: 20, marginTop: -10 }}
               onPressIn={() => { navigation.navigate('MyReferences') }}
@@ -241,14 +238,14 @@ const DrawerNavigator = ({ navigation }: any) => {
 
       <Animated.View
         //  {...panResponder.panHandlers}
-        style={[styles(isDark).screenHeaderContainer, { transform: [{ scale: scaleValue }, { translateX: offsetValue }], elevation: 1, shadowColor: isDark ? Colors.background : Colors.black }]}>
+        style={[styles(isDark).screenHeaderContainer, { transform: [{ scale: scaleValue }, { translateX: offsetValue }],  shadowColor: isDark ? Colors.background : Colors.black, opacity: showMenu === true ? 0.75 : 1, }]}>
         <Animated.View style={{ transform: [{ translateY: closeButtonOffset }] }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={styles(isDark).screenHeader}>
               {showMenu ? (
                 <IconButton icon="close" iconColor={isDark ? Colors.white : Colors.black} size={25} onPress={toggleMenu} accessibilityLabel='close' />
               ) : (
-                <IconButton icon="menu" iconColor={isDark ? Colors.white : Colors.black} size={25} onPress={toggleMenu} accessibilityLabel='menu' />
+                <IconButton icon="menu" iconColor={isDark ? Colors.white : Colors.white} size={25} onPress={toggleMenu} accessibilityLabel='menu' />
               )}
               <Text style={styles(isDark).headerTxt}>Soluzione</Text>
             </View>
@@ -260,7 +257,7 @@ const DrawerNavigator = ({ navigation }: any) => {
   );
 };
 
-const styles = (isDark: any) =>
+const styles = (isDark: any,) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -268,7 +265,7 @@ const styles = (isDark: any) =>
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
     },
-    drawerContainer: { justifyContent: 'flex-start', padding: 15 },
+    drawerContainer: { justifyContent: 'flex-start', padding: 15, },
     logo: {
       width: 90,
       height: 90,
@@ -280,7 +277,7 @@ const styles = (isDark: any) =>
       marginTop: 16,
       fontFamily: 'Lato-Bold',
     },
-    drawerBtnContainer: { flexGrow: 1, marginVertical: 50},
+    drawerBtnContainer: { flexGrow: 1, marginVertical: 50 },
     drawerBtn: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -300,26 +297,21 @@ const styles = (isDark: any) =>
     },
     screenHeaderContainer: {
       flexGrow: 1,
-      backgroundColor: isDark ? Colors.black : Colors.white,
+      backgroundColor: isDark ? Colors.black : Colors.primary,
       position: 'absolute',
       top: 0,
       bottom: 0,
       left: 0,
       right: 0,
+
     },
     screenHeader: {
       flexDirection: 'row',
       alignItems: 'center',
     },
-    headerIcons: {
-      width: 20,
-      height: 20,
-      tintColor: isDark ? Colors.white : Colors.black,
-      marginHorizontal: 16,
-    },
     headerTxt: {
       fontSize: 18,
-      color: isDark ? Colors.white : Colors.black,
+      color: isDark ? Colors.white : Colors.white,
       fontFamily: 'Lato-Semibold',
     },
     userRow: {
