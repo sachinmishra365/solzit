@@ -41,7 +41,7 @@ const Feedback = ({ navigation }: any) => {
     <Card style={styles(isDark).card}>
       <Card.Content>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between',flexWrap:'wrap'}}>
-          <Text style={[styles(isDark).txt]}>{'Status : '}{item.status.label}</Text>
+          <Text style={[styles(isDark).txt,{color:Colors.primary}]}>Status{' : '}{item.status.label}</Text>
           <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold' }]}>{'Reported On : '}
             {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
           </Text>

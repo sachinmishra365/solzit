@@ -45,14 +45,14 @@ const Breakes = ({ navigation }: any) => {
                     <Text>
                         <Text style={styles(isDark).label}>
                             Duration{' : '}
-                            <Text style={styles(isDark).value}>
+                            <Text style={[styles(isDark).value,{color: Colors.primary}]}>
                                 {item?.breakDuration ? `${item?.breakDuration}${' '}Hours` : 'N/A'}
                             </Text>
                         </Text>
                     </Text>
                     <Text style={styles(isDark).label}>
                         Break Date{' : '}
-                        <Text style={styles(isDark).value}>
+                       <Text style={[styles(isDark).value,{color: Colors.primary}]}>
                             {item?.returnTime ? moment(item?.outTime).format('DD/MM/YYYY') : 'N/A'}
                         </Text>
                     </Text>

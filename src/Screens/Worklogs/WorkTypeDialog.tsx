@@ -64,7 +64,7 @@ const WorkTypeDialog = ({
                     </View>
                     <Divider style={styles(isDark).divider} />
                     <TouchableOpacity onPress={hideDialog}>
-                        <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Semibold' }]}>Cancel</Text>
+                        <Text style={[styles(isDark).txt, { textAlign: 'center', fontFamily: 'Lato-Semibold' }]}>Close</Text>
                     </TouchableOpacity>
                 </Dialog.Content>
             </Dialog>

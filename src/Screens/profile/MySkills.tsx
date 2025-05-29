@@ -1,83 +1,150 @@
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import {View, Text, StyleSheet, FlatList, RefreshControl, PanResponder} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
+import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import { Colors } from '../../constants/Colors';
-import { useEmployeeSkillsQuery } from '../../Services/services';
-import { Card, } from 'react-native-paper';
+import {Colors} from '../../constants/Colors';
+import {Card, FAB, SegmentedButtons} from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import { Bar as ProgressBar } from 'react-native-progress';
+import {Bar as ProgressBar} from 'react-native-progress';
 import EmptyData from '../../Components/EmptyData';
+import {
+  useGetAllMySkillsListAppliedQuery,
+  useGetAllMySkillsListApprovedQuery,
+} from '../../Services/employeeSkills';
 
-const MySkills = ({ navigation }: any) => {
+const MySkills = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
+  const [selectedStatus, setSelectedStatus] = useState('My Recognized Skills');
 
+  const statuses = ['My Recognized Skills', ' Pending Actions'];
   const [skillData, setSkillData] = useState([]);
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const { data, isLoading, error, refetch } = useEmployeeSkillsQuery({
+  const {
+    data: appliedData,
+    isLoading: appliedLoading,
+    refetch: refetchApplied,
+  } = useGetAllMySkillsListAppliedQuery({
+    applied: 'applied',
     accessToken: EmployeeId?.authToken?.accessToken,
   });
 
-  const handleSkills = async () => {
-    if (!connected) {
-      Toast.show({
-        type: 'error',
-        text1: 'Network Error',
-        text2: 'Please check your internet connection',
-        text2Style: {
-          flexWrap: 'wrap',
-          fontSize: 20,
-          fontFamily: 'Lato-Regular',
-        },
-        topOffset: 80,
-        visibilityTime: 5000,
-      });
-      return;
-    }
-    try {
-      if (data?.data?.skills && data?.messageDetail?.message_code === 200) {
-        setSkillData(data?.data?.skills);
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  const {
+    data: approvedData,
+    isLoading: approvedLoading,
+    refetch: refetchApproved,
+  } = useGetAllMySkillsListApprovedQuery({
+    approved: 'approved',
+    accessToken: EmployeeId?.authToken?.accessToken,
+  });
+
+  const filterByStatus = (status: string) => {
+    setSelectedStatus(status);
   };
+  // const handleSkills = async () => {
+  //   if (!connected) {
+  //     Toast.show({
+  //       type: 'error',
+  //       text1: 'Network Error',
+  //       text2: 'Please check your internet connection',
+  //       text2Style: {
+  //         flexWrap: 'wrap',
+  //         fontSize: 20,
+  //         fontFamily: 'Lato-Regular',
+  //       },
+  //       topOffset: 80,
+  //       visibilityTime: 5000,
+  //     });
+  //     return;
+  //   }
+  //   try {
+  //     if (appliedData?.data?.skills && appliedData?.messageDetail?.message_code === 200) {
+  //       setSkillData(appliedData?.data?.skills);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   useEffect(() => {
-    handleSkills();
-  }, [data]);
+    if (!connected) return;
+
+    if (selectedStatus === 'My Recognized Skills') {
+      if (
+        Array.isArray(approvedData?.data) &&
+        approvedData?.messageDetail?.message_code === 200
+      ) {
+        setSkillData(approvedData?.data);
+      } else {
+        setSkillData([]);
+      }
+    } else if (selectedStatus === ' Pending Actions') {
+      if (
+        Array.isArray(appliedData?.data) &&
+        appliedData?.messageDetail?.message_code === 200
+      ) {
+        setSkillData(appliedData?.data);
+      } else {
+        setSkillData([]);
+      }
+    }
+  }, [selectedStatus, approvedData, appliedData, connected]);
+
+  console.log('approvedData', approvedData);
+  console.log('appliedData', appliedData);
+
+  console.log('skillData', skillData);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-      refetch();
+      refetchApplied();
+      refetchApproved();
     }, 1000);
-  }, [refetch]);
+  }, [refetchApplied, refetchApproved]);
 
-  const renderItem = ({ item }: any) => {    
+    const panResponder = PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > 20;
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dx > 0) {
+          const currentIndex = statuses.indexOf(selectedStatus);
+          if (currentIndex > 0) {
+            filterByStatus(statuses[currentIndex - 1]);
+          }
+        } else if (gestureState.dx < 0) {
+          const currentIndex = statuses.indexOf(selectedStatus);
+          if (currentIndex < statuses?.length - 1) {
+            filterByStatus(statuses[currentIndex + 1]);
+          }
+        }
+      },
+    });
+
+  const renderItem = ({item}: any) => {
     const skillText =
       item.levelofskill?.label === 'Beginner'
         ? 0.33
         : item.levelofskill?.label === 'Intermediate'
-          ? 0.66
-          : item.levelofskill?.label === 'Expert'
-            ? 1
-            : 0;
+        ? 0.66
+        : item.levelofskill?.label === 'Expert'
+        ? 1
+        : 0;
     const skillTextColor =
       item.levelofskill?.label === 'Beginner'
         ? Colors.secondary
         : item.levelofskill?.label === 'Intermediate'
-          ? '#916918'
-          : item.levelofskill?.label === 'Expert'
-            ? 'green'
-            : Colors.gray;
+        ? '#916918'
+        : item.levelofskill?.label === 'Expert'
+        ? 'green'
+        : Colors.gray;
 
     return (
       <Card
@@ -96,7 +163,7 @@ const MySkills = ({ navigation }: any) => {
               <Text
                 style={[
                   styles(isDark).skillDetail,
-                  { color: skillTextColor, fontFamily: 'Lato-Bold' },
+                  {color: skillTextColor, fontFamily: 'Lato-Bold'},
                 ]}>
                 {' '}
                 {item?.levelofskill?.label}
@@ -106,15 +173,16 @@ const MySkills = ({ navigation }: any) => {
               progress={skillText}
               color={Colors.primary}
               animated={true}
-              borderColor={
-                isDark ? Colors.gray : Colors.white
-              }
-              style={{ marginTop: 10, backgroundColor: isDark ? Colors.gray : Colors.white }}
+              borderColor={isDark ? Colors.gray : Colors.white}
+              style={{
+                marginTop: 10,
+                backgroundColor: isDark ? Colors.gray : Colors.white,
+              }}
               // style={styles(isDark).progressBar}
               width={null}
             />
 
-            <View style={[styles(isDark).rowContainer, { alignItems: 'center' }]}>
+            <View style={[styles(isDark).rowContainer, {alignItems: 'center'}]}>
               <Text style={styles(isDark).skillDetail}>Certification :</Text>
               <Text style={styles(isDark).skillDetail}>
                 {' '}
@@ -124,10 +192,20 @@ const MySkills = ({ navigation }: any) => {
 
             {item?.hasCertification?.label === 'Yes' && (
               <View style={styles(isDark).rowContainer}>
-                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16, color: isDark ? Colors.white : Colors.black }}>
+                <Text
+                  style={{
+                    fontFamily: 'Lato-Bold',
+                    fontSize: 16,
+                    color: isDark ? Colors.white : Colors.black,
+                  }}>
                   {item?.typeOfCertification?.label} {' : '}
                 </Text>
-                <Text style={{ fontFamily: 'Lato-Bold', fontSize: 16, color: isDark ? Colors.white : Colors.black }}>
+                <Text
+                  style={{
+                    fontFamily: 'Lato-Bold',
+                    fontSize: 16,
+                    color: isDark ? Colors.white : Colors.black,
+                  }}>
                   {item?.certificationName}
                 </Text>
               </View>
@@ -139,18 +217,51 @@ const MySkills = ({ navigation }: any) => {
   };
 
   return (
-    <View
-      style={styles(isDark).maincontainer}>
+    <View style={styles(isDark).maincontainer} {...panResponder.panHandlers}>
       <CustomHeader
         showBackIcon={true}
         title="My Skills"
         onPress={() => navigation.goBack()}
       />
       <View style={styles(isDark).divider} />
-      {isLoading ? (
+
+      <SegmentedButtons
+        value={selectedStatus}
+        onValueChange={filterByStatus}
+        buttons={statuses.map(status => ({
+          value: status,
+          label: status,
+          style: {
+            backgroundColor:
+              selectedStatus === status
+                ? Colors.secondary
+                : isDark
+                ? Colors.gray
+                : Colors.white,
+          },
+          labelStyle: {
+            color:
+              selectedStatus === status
+                ? Colors.white
+                : isDark
+                ? Colors.white
+                : Colors.black,
+            fontFamily: 'Lato-Semibold',
+          },
+        }))}
+        style={{marginVertical: 10, marginHorizontal: 16}}
+        theme={{
+          colors: {
+            primary: Colors.primary,
+          },
+        }}
+      />
+
+      {(selectedStatus === ' Pending Actions' && appliedLoading) ||
+      (selectedStatus === 'My Recognized Skills' && approvedLoading) ? (
         <ShimmerPlaceHolder />
-      ) : data?.data === null ? (
-        <EmptyData/>
+      ) : skillData?.length === 0 ? (
+        <EmptyData />
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -163,11 +274,16 @@ const MySkills = ({ navigation }: any) => {
               onRefresh={() => onRefresh()}
             />
           }
-          ListFooterComponent={<View style={{ height: 100 }} />}
+          ListFooterComponent={<View style={{height: 100}} />}
         />
       )}
-
-
+      <FAB
+        style={styles(isDark).fab}
+        color={Colors.white}
+        onPress={() => navigation.navigate('AddSkills')}
+        accessibilityLabel="Add Skills"
+        icon="plus"
+      />
     </View>
   );
 };
@@ -202,7 +318,14 @@ const styles = (isDark: boolean) =>
     rowContainer: {
       flexDirection: 'row',
       marginTop: 5,
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
+    },
+    fab: {
+      position: 'absolute',
+      right: 32,
+      bottom: 32,
+      backgroundColor: isDark ? Colors.gray : Colors.primary,
+      elevation: 10,
     },
   });
 

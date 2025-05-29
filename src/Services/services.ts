@@ -279,7 +279,7 @@ export const services = createApi({
           body: data,
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
+           
           },
         };
       },
@@ -293,6 +293,7 @@ export const services = createApi({
           method: 'GET',
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
           },
         };
       },

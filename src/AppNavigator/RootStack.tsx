@@ -44,6 +44,7 @@ import BugDetails from '../Screens/Worklogs/Bugs/BugDetails';
 import WFHCard from '../Screens/Dashboard/WFHCard';
 import Breakes from '../Screens/LeavesAndBreakes/Breakes';
 import AddBreaks from '../Screens/LeavesAndBreakes/AddBreaks';
+import AddSkills from '../Screens/profile/AddSkills';
 
 
 const Stack = createNativeStackNavigator();
@@ -112,6 +113,8 @@ useEffect(() => {
       <Stack.Screen name="WorklogDetails" component={WorklogDetails} />
       <Stack.Screen name="ShowPlan" component={ShowPlan} />
       <Stack.Screen name="WFHCard" component={WFHCard} />
+      <Stack.Screen name="AddSkills" component={AddSkills} />
+
     </Stack.Navigator>
   );
 };

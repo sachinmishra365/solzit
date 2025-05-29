@@ -132,7 +132,7 @@ const Summary = ({route}: any) => {
               <View style={styles(isDark).row}>
                 <Text style={styles(isDark).txt}>
                   {'Leave Type : '}
-                  {'Earn Leave'}
+               <Text style={{color:'#FF9800'}}>{'Earn Leave'}</Text>
                 </Text>
                 <Text style={styles(isDark).txt}>
                   {'Starting Balance : '}

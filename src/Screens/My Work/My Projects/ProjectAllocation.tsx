@@ -67,12 +67,7 @@ console.log(myPlanData);
 
               <View style={styles(isDark).row}>
                 <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Allocation'}</Text>
-                <Text style={styles(isDark).txt}>{item.allocationPercentage}</Text>
-              </View>
-
-              <View style={styles(isDark).row}>
-                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Status'}</Text>
-                <Text style={[styles(isDark).txt, { color: 'green', fontFamily: 'Lato-Bold' }]}>{item.status?.label}</Text>
+                 <Text style={[styles(isDark).txt, { color: 'green', fontFamily: 'Lato-Bold' }]}>{item.allocationPercentage}</Text>
               </View>
 
               <View style={styles(isDark).row}>
