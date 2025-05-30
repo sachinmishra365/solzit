@@ -201,7 +201,6 @@ const styles = (isDark: boolean) =>
     value: {
       color: isDark ? Colors.white : Colors.black,
       fontFamily: 'Lato-Regular',
-      fontSize: 16,
     },
   });
 

@@ -23,7 +23,7 @@ import * as Yup from 'yup';
 import {SCREEN_WIDTH} from '../../constants/Screen';
 import Placeholder from '../Placeholder/Placeholder';
 import CustomTextInput from '../../Components/CustomTextInput';
-import CustomDropdown from '../../Components/CustomDropDown';
+
 import {
   useAddMyNewSkillMutation,
   useGetAllMasterSkillsQuery,
@@ -32,6 +32,7 @@ import {
   useGetOptionSetLevelOfSkillQuery,
   useGetOptionSetTypeOfCertificateQuery,
 } from '../../Services/employeeSkills';
+import CustomDropdownWithModal from '../../Components/CustomDropDown';
 
 const FeedbackSchema = Yup.object().shape({
   regardingToSkills: Yup.object().shape({
@@ -167,17 +168,26 @@ const AddSkills = ({navigation, route}: any) => {
           });
         }
         navigation.goBack();
+      } else if (response?.messageDetail?.message_code === 4449) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: response.messageDetail.message || 'Failed to add skill',
+        });
       } else {
         throw new Error(
           response?.messageDetail?.message || 'Failed to add skill',
         );
       }
-    } catch (error) {
-      console.error('Submit error:', JSON.stringify(error));
+    } catch (error: any) {
+      const errorMessage =
+        error?.data?.messageDetail?.message ||
+        error?.message ||
+        'Unknown error occurred';
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: (error as any)?.message || 'Unknown error',
+        text2: errorMessage,
       });
     }
   };
@@ -276,7 +286,7 @@ const AddSkills = ({navigation, route}: any) => {
                 <>
                   <View style={{marginVertical: 5}}>
                     <Text style={styles(isDark).label}>Skills</Text>
-                    <CustomDropdown
+                    <CustomDropdownWithModal
                       selectedValue={values.regardingToSkills}
                       options={skillOptions}
                       onSelect={(selectedOption: any) =>
@@ -293,7 +303,7 @@ const AddSkills = ({navigation, route}: any) => {
 
                   <View style={{marginVertical: 10}}>
                     <Text style={styles(isDark).label}>Level of Skill</Text>
-                    <CustomDropdown
+                    <CustomDropdownWithModal
                       selectedValue={values.regardingLevelOfSkills}
                       options={levelOptions}
                       onSelect={(selectedOption: any) =>
@@ -311,13 +321,14 @@ const AddSkills = ({navigation, route}: any) => {
 
                   <View style={{marginVertical: 5}}>
                     <Text style={styles(isDark).label}>Has Certification</Text>
-                    <CustomDropdown
+                    <CustomDropdownWithModal
                       selectedValue={values.regardingCertification}
-                      options={certOptions}
+                        options={certOptions}
                       onSelect={(selectedOption: any) =>
                         setFieldValue('regardingCertification', selectedOption)
                       }
                     />
+
                     {touched.regardingCertification &&
                       errors.regardingCertification && (
                         <Text style={styles(isDark).error}>
@@ -353,7 +364,7 @@ const AddSkills = ({navigation, route}: any) => {
                         <Text style={styles(isDark).label}>
                           Type of Certification
                         </Text>
-                        <CustomDropdown
+                        <CustomDropdownWithModal
                           selectedValue={values.regardingTypeCertification}
                           options={certTypeOptions}
                           onSelect={(selectedOption: any) =>

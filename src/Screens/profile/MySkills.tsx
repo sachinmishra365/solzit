@@ -46,31 +46,7 @@ const MySkills = ({navigation}: any) => {
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);
   };
-  // const handleSkills = async () => {
-  //   if (!connected) {
-  //     Toast.show({
-  //       type: 'error',
-  //       text1: 'Network Error',
-  //       text2: 'Please check your internet connection',
-  //       text2Style: {
-  //         flexWrap: 'wrap',
-  //         fontSize: 20,
-  //         fontFamily: 'Lato-Regular',
-  //       },
-  //       topOffset: 80,
-  //       visibilityTime: 5000,
-  //     });
-  //     return;
-  //   }
-  //   try {
-  //     if (appliedData?.data?.skills && appliedData?.messageDetail?.message_code === 200) {
-  //       setSkillData(appliedData?.data?.skills);
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
+ 
   useEffect(() => {
     if (!connected) return;
 
@@ -94,11 +70,6 @@ const MySkills = ({navigation}: any) => {
       }
     }
   }, [selectedStatus, approvedData, appliedData, connected]);
-
-  console.log('approvedData', approvedData);
-  console.log('appliedData', appliedData);
-
-  console.log('skillData', skillData);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
