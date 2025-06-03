@@ -12,7 +12,6 @@ import CustomHeader from '../../Components/CustomHeader';
 import {Colors} from '../../constants/Colors';
 import {
   useAttachFileInSharePointMutation,
-  useCreateMyFeedBacksMutation,
 } from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
@@ -27,7 +26,6 @@ import CustomTextInput from '../../Components/CustomTextInput';
 import {
   useAddMyNewSkillMutation,
   useGetAllMasterSkillsQuery,
-  useGetMySkillBySkillIdQuery,
   useGetOptionSetHasCertificateQuery,
   useGetOptionSetLevelOfSkillQuery,
   useGetOptionSetTypeOfCertificateQuery,
@@ -285,8 +283,8 @@ const AddSkills = ({navigation, route}: any) => {
               }) => (
                 <>
                   <View style={{marginVertical: 5}}>
-                    <Text style={styles(isDark).label}>Skills</Text>
                     <CustomDropdownWithModal
+                      label="Skills"
                       selectedValue={values.regardingToSkills}
                       options={skillOptions}
                       onSelect={(selectedOption: any) =>
@@ -302,8 +300,8 @@ const AddSkills = ({navigation, route}: any) => {
                   </View>
 
                   <View style={{marginVertical: 10}}>
-                    <Text style={styles(isDark).label}>Level of Skill</Text>
                     <CustomDropdownWithModal
+                      label="Level of Skill"
                       selectedValue={values.regardingLevelOfSkills}
                       options={levelOptions}
                       onSelect={(selectedOption: any) =>
@@ -320,10 +318,10 @@ const AddSkills = ({navigation, route}: any) => {
                   </View>
 
                   <View style={{marginVertical: 5}}>
-                    <Text style={styles(isDark).label}>Has Certification</Text>
                     <CustomDropdownWithModal
+                      label="Has Certification"
                       selectedValue={values.regardingCertification}
-                        options={certOptions}
+                      options={certOptions}
                       onSelect={(selectedOption: any) =>
                         setFieldValue('regardingCertification', selectedOption)
                       }
@@ -351,6 +349,7 @@ const AddSkills = ({navigation, route}: any) => {
                             setFieldTouched('certificateTitle', true)
                           }
                           editable={true}
+                          autoFocus={true}
                         />
                         {touched.certificateTitle &&
                           errors.certificateTitle && (
@@ -361,10 +360,9 @@ const AddSkills = ({navigation, route}: any) => {
                       </View>
 
                       <View style={{marginVertical: 5}}>
-                        <Text style={styles(isDark).label}>
-                          Type of Certification
-                        </Text>
                         <CustomDropdownWithModal
+                          autoFocus={true}
+                          label="Type of Certification"
                           selectedValue={values.regardingTypeCertification}
                           options={certTypeOptions}
                           onSelect={(selectedOption: any) =>

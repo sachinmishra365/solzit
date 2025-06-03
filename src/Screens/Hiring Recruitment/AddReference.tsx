@@ -207,6 +207,7 @@ const AddReference = ({ navigation, route }: any) => {
                       accessibilityLabelRight="Blank"
                       style={{ marginTop: 10 }}
                       keyboardType="default"
+                      autoFocus={true}
                     />
                     {touched.firstName && errors.firstName && (
                       <Text style={styles(isDark).error}>{errors.firstName}</Text>
@@ -223,6 +224,7 @@ const AddReference = ({ navigation, route }: any) => {
                       accessibilityLabelRight="Blank"
                       style={{ marginTop: 10 }}
                       keyboardType="default"
+                      autoFocus={true}
                     />
                     {touched.lastName && errors.lastName && (
                       <Text style={styles(isDark).error}>{errors.lastName}</Text>
@@ -239,6 +241,7 @@ const AddReference = ({ navigation, route }: any) => {
                       accessibilityLabelRight="Blank"
                       style={{ marginTop: 10 }}
                       keyboardType="default"
+                      autoFocus={true}
                     />
                     {touched.email && errors.email && (
                       <Text style={styles(isDark).error}>{errors.email}</Text>
@@ -260,6 +263,7 @@ const AddReference = ({ navigation, route }: any) => {
                       accessibilityLabelRight="Blank"
                       style={{ marginTop: 10 }}
                       keyboardType="phone-pad"
+                      autoFocus={true}
                     />
                     {touched.mobileNumber && errors.mobileNumber && (
                       <Text style={styles(isDark).error}>{errors.mobileNumber}</Text>

@@ -346,6 +346,18 @@ export const services = createApi({
         },
       }),
     }),
+     GetOptionSetReported: builder.query({
+      query: ({ReportedTo, accessToken}) => {
+        return {
+        url: `/Master/GetOptionSet?DropDownName=${ReportedTo}`,
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -376,4 +388,5 @@ export const {
   useEmployeeAttendanceListMutation,
   useGetEmloyeeBreaKLogsByEmployeeIdMutation,
   useSaveEmployeeBreakLogMutation,
+  useGetOptionSetReportedQuery,
 } = services;

@@ -15,6 +15,7 @@ import {Colors} from '../../constants/Colors';
 import {
   useAttachFileInSharePointMutation,
   useCreateMyFeedBacksMutation,
+  useGetOptionSetReportedQuery,
 } from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
@@ -25,18 +26,9 @@ import * as Yup from 'yup';
 import {SCREEN_WIDTH} from '../../constants/Screen';
 import Placeholder from '../Placeholder/Placeholder';
 import CustomTextInput from '../../Components/CustomTextInput';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import CustomDropdownWithModal from '../../Components/CustomDropDown';
 
-const regardingOptions = [
-  {label: 'HR', value: 674180000},
-  {label: 'Administration', value: 674180001},
-  {label: 'Operational', value: 674180002},
-  {label: 'Parking', value: 674180003},
-  {label: 'Canteen', value: 674180004},
-  {label: 'Soluzione ESS Portal', value: 674180006},
-  {label: 'Other', value: 674180005},
-];
 
 const FeedbackSchema = Yup.object().shape({
   regardingTo: Yup.object()
@@ -76,8 +68,18 @@ const AddFeedback = ({navigation, route}: any) => {
 
   const [CreateMyFeedBacks, {isLoading}] = useCreateMyFeedBacksMutation();
   const [UploadDocument, result] = useAttachFileInSharePointMutation();
+  const {data: regardingOptionsData, isLoading: reportedLoading} =
+    useGetOptionSetReportedQuery({
+      ReportedTo:'ReportedTo',
+      accessToken: EmployeeId?.authToken?.accessToken,
+    });
 
-  const [expanded, setExpanded] = useState(false);
+  const regardingToData =
+    regardingOptionsData?.data?.map((item: any) => ({
+      label: item.label,
+      value: item.value,
+    })) || [];
+    
   const [modalVisible, setModalVisible] = useState(false);
 
   const openModal = () => setModalVisible(true);
@@ -281,7 +283,7 @@ const AddFeedback = ({navigation, route}: any) => {
                 feedBackTitle: '',
                 feedBackDescription: '',
                 isAttachmentRequired: false,
-                upload: [], // instead of single file object
+                upload: [], 
               }}
               validationSchema={FeedbackSchema}
               onSubmit={handleSubmit}
@@ -298,58 +300,19 @@ const AddFeedback = ({navigation, route}: any) => {
               }) => (
                 <>
                   <View style={{marginVertical: 10}} />
-                  <Text style={styles(isDark).label}>Regarding</Text>
-                  <List.Accordion
-                    title={values.regardingTo.label || 'Select a category'}
-                    expanded={expanded}
-                    onPress={() => setExpanded(!expanded)}
-                    titleStyle={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Bold',
-                    }}
-                    style={{
-                      backgroundColor: isDark
-                        ? Colors.black
-                        : Colors.background,
-                      borderColor: isDark ? Colors.background : Colors.primary,
-                      borderWidth: 1,
-                      borderRadius: 1,
-                      height: 57,
-                    }}
-                    right={props => (
-                      <List.Icon
-                        {...props}
-                        icon="chevron-down"
-                        color={isDark ? Colors.white : Colors.black}
-                      />
-                    )}>
-                    {regardingOptions.map(option => (
-                      <List.Item
-                        key={option.value}
-                        title={option.label}
-                        titleStyle={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontFamily: 'Lato-Regular',
-                        }}
-                        style={{
-                          backgroundColor: isDark
-                            ? Colors.gray
-                            : Colors.background,
-                          borderRadius: 1,
-                        }}
-                        onPress={() => {
-                          setFieldValue('regardingTo', option);
-                          setExpanded(false);
-                        }}
-                      />
-                    ))}
-                  </List.Accordion>
+                  {/* <Text style={styles(isDark).label}>Regarding</Text> */}
+                  <CustomDropdownWithModal
+                    label="Regarding"
+                    selectedValue={values.regardingTo}
+                    options={regardingToData}
+                    onSelect={(selectedOption: any) =>
+                      setFieldValue('regardingOptions', selectedOption)
+                    }
+                  />
 
-                  {touched.regardingTo && errors.regardingTo && (
+                  {touched.regardingTo?.value && (
                     <Text style={styles(isDark).error}>
-                      {typeof errors.regardingTo === 'string'
-                        ? errors.regardingTo
-                        : errors.regardingTo.value}
+                      {errors.regardingTo?.value}
                     </Text>
                   )}
 
@@ -366,6 +329,7 @@ const AddFeedback = ({navigation, route}: any) => {
                     }}
                     onBlur={handleBlur('feedBackTitle')}
                     editable={true}
+                    autoFocus={true}
                   />
                   {touched.feedBackTitle && errors.feedBackTitle && (
                     <Text style={styles(isDark).error}>
@@ -389,6 +353,7 @@ const AddFeedback = ({navigation, route}: any) => {
                     contentStyle={{height: 100}}
                     numberOfLines={5}
                     multiline={true}
+                    autoFocus={true}
                   />
                   {touched.feedBackDescription &&
                     errors.feedBackDescription && (

@@ -7,14 +7,13 @@ import {Colors} from '../../../constants/Colors';
 import {Card} from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
-import { useGetMonthlyReportPlansListQuery } from '../../../Services/workloglevel';
+import {useGetMonthlyReportPlansListQuery} from '../../../Services/workloglevel';
 
 const MyPlans = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
-  
   const {data, isLoading, error} = useGetMonthlyReportPlansListQuery({
     accessToken: accessToken?.authToken?.accessToken,
   });
@@ -39,7 +38,7 @@ const MyPlans = ({navigation}: any) => {
     }
     try {
       if (data?.data && (data as any)?.messageDetail?.message_code === 200) {
-        setMyPlanData(data.data);
+        setMyPlanData(data?.data);
       }
     } catch (error) {}
   };
@@ -63,20 +62,46 @@ const MyPlans = ({navigation}: any) => {
         marginHorizontal: 16,
         overflow: 'hidden',
       }}
-      onPress={() => navigation.navigate('TaskDetails', { TaskDetail: item })}>
+      onPress={() => navigation.navigate('TaskDetails', {TaskDetail: item})}>
       <Card.Content>
-      <View style={styles(isDark).rowContainer}>
-      <Text style={[styles(isDark).dateText,{}]}>Total Tasks{' : '}{item.totalTask}</Text>
-     <Text style={styles(isDark).dateText}>{item.reportDate}</Text>
-        
+        <View style={styles(isDark).rowContainer}>
+          <Text style={[styles(isDark).dateText, {}]}>
+            Total Tasks{' : '}
+            {item.totalTask}
+          </Text>
+          <Text style={styles(isDark).dateText}>{item.reportDate}</Text>
         </View>
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Committed Tasks{' : '}</Text>{item.commitedTask}</Text>
-          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Uncommitted Tasks{' : '}</Text>{item.unCommittedTask}</Text>
+          <Text style={styles(isDark).taskText}>
+            <Text
+              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
+              Committed Tasks{' : '}
+            </Text>
+            {item.commitedTask}
+          </Text>
+          <Text style={styles(isDark).taskText}>
+            <Text
+              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
+              Uncommitted Tasks{' : '}
+            </Text>
+            {item.unCommittedTask}
+          </Text>
         </View>
         <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Committed Hours{' : '}</Text>{item.committedHours}</Text>
-          <Text style={styles(isDark).taskText}><Text style={[styles(isDark).taskText,{fontFamily:'Lato-Semibold'}]}>Actual Work Log{' : '}</Text>{item.actualWorkLogHours}</Text>
+          <Text style={styles(isDark).taskText}>
+            <Text
+              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
+              Committed Hours{' : '}
+            </Text>
+            {item.committedHours}
+          </Text>
+          <Text style={styles(isDark).taskText}>
+            <Text
+              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
+              Actual Work Log{' : '}
+            </Text>
+            {item.actualWorkLogHours}
+          </Text>
         </View>
       </Card.Content>
     </Card>
@@ -92,13 +117,8 @@ const MyPlans = ({navigation}: any) => {
       />
       {isLoading ? (
         <ShimmerPlaceHolder />
-      ) : data?.data === null ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+      ) : myPlanData.length === 0 ? (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Text
             style={{
               color: isDark ? Colors.white : Colors.black,
@@ -149,6 +169,5 @@ const styles = (isDark: boolean) =>
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
     },
-
   });
 export default MyPlans;

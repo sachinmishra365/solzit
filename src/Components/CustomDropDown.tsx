@@ -13,6 +13,8 @@ import {
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../AppStore/Reducers/appState';
 import {Colors} from '../constants/Colors';
+import {TextInput} from 'react-native-paper';
+import CustomTextInput from './CustomTextInput';
 
 const CustomDropdownWithModal = ({
   label = 'Select',
@@ -23,11 +25,11 @@ const CustomDropdownWithModal = ({
   const isDark = useSelector(isDarkTheme);
   const [modalVisible, setModalVisible] = useState(false);
   const [dropdownPos, setDropdownPos] = useState<LayoutRectangle | null>(null);
-  const dropdownRef = useRef(null);
+  const inputRef = useRef(null);
 
   const handleOpenDropdown = () => {
-    if (dropdownRef.current) {
-      const handle = findNodeHandle(dropdownRef.current);
+    if (inputRef.current) {
+      const handle = findNodeHandle(inputRef.current);
       if (handle) {
         UIManager.measureInWindow(handle, (x, y, width, height) => {
           setDropdownPos({x, y, width, height});
@@ -44,20 +46,20 @@ const CustomDropdownWithModal = ({
 
   return (
     <View>
-      <TouchableOpacity
-        ref={dropdownRef}
-        style={[
-          styles(isDark).dropdownButton,
-          {
-            backgroundColor: isDark ? Colors.black : Colors.background,
-            borderColor: isDark ? Colors.background : Colors.primary,
-          },
-        ]}
-        onPress={handleOpenDropdown}>
-        <Text style={[styles(isDark).dropdownButtonText]}>
-          {selectedValue?.label || label}
-        </Text>
-      </TouchableOpacity>
+      <Pressable onPress={handleOpenDropdown} ref={inputRef}>
+        <CustomTextInput
+          label={label}
+          value={selectedValue?.label}
+          editable={false}
+          readOnly
+          rightIconName="chevron-down"
+          lefticon={false}
+          leftIconName={undefined}
+          onPress={handleOpenDropdown}
+          autoFocus={true}
+        />
+      </Pressable>
+      
 
       <Modal
         transparent
@@ -75,7 +77,7 @@ const CustomDropdownWithModal = ({
                   backgroundColor: isDark ? Colors.gray : Colors.white,
                   position: 'absolute',
                   top: dropdownPos.y + dropdownPos.height + 5,
-                  left: dropdownPos.x,      
+                  left: dropdownPos.x,
                 },
               ]}>
               {options.map((option: any) => (
@@ -102,26 +104,20 @@ const CustomDropdownWithModal = ({
 
 const styles = (isDark: boolean) =>
   StyleSheet.create({
-    dropdownButton: {
-      padding: 12,
-      borderWidth: 1,
-      borderRadius: 5,
-    },
-    dropdownButtonText: {
-      fontFamily: 'Lato-Bold',
-      color: isDark ? Colors.white : Colors.black,
-    },
     overlay: {
       flex: 1,
     },
     menu: {
-      width: 200,
       elevation: 5,
       paddingVertical: 4,
+      width: 200,
     },
     item: {
       paddingVertical: 10,
       paddingHorizontal: 16,
+    },
+    input: {
+      marginVertical: 8,
     },
   });
 
