@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import { Colors } from '../../constants/Colors';
+import { Colors, FontSize, hiringRecruitment } from '../../constants/Colors';
 import Toast from 'react-native-toast-message';
 import { useGetCandidateApplicationByEmployeeIdQuery } from '../../Services/services';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
@@ -21,6 +21,11 @@ const MyReferences = ({ navigation }: any) => {
     useGetCandidateApplicationByEmployeeIdQuery({
       accessToken: EmployeeId?.authToken?.accessToken,
     });
+
+    const getStatusColor = (statusValue:any) => {
+  const status = hiringRecruitment.find(item => item.value === statusValue);
+  return status?.color || '#000'; 
+};
 
   const handleReference = async () => {
     if (!connected) {
@@ -73,17 +78,25 @@ const MyReferences = ({ navigation }: any) => {
         marginHorizontal: 16,
       }}>
       <Card.Content>
-       {
-        item?.position?.name && (
-          <View >
-          <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Bold', fontSize: 18 }]}>
-            {item.position?.name || 'N/A'}
-          </Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',flexWrap: 'wrap'}}>
+          {
+            item?.position?.name && (
+                <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Bold', fontSize: 18 }]}>
+                  {item.position?.name || 'N/A'}
+                </Text>
+            )
+          }
+         <Text
+  style={{
+    color: getStatusColor(item.applicationStatus?.value),
+    fontFamily: 'Lato-Bold',
+  }}
+>
+  {item.applicationStatus?.label}
+</Text>
         </View>
-        )
-       }
 
-        <View style={[styles(isDark).status, { marginVertical: 3 }]}>
+        {/* <View style={[styles(isDark).status, { marginVertical: 3 }]}>
           <Text
             style={{
               fontSize: 16,
@@ -96,7 +109,7 @@ const MyReferences = ({ navigation }: any) => {
             {' '}
             {item.applicationStatus?.label}
           </Text>
-        </View>
+        </View> */}
 
         <View style={styles(isDark).infoRow}>
           <Icon
@@ -104,7 +117,7 @@ const MyReferences = ({ navigation }: any) => {
             size={20}
             color={isDark ? Colors.white : Colors.primary}
           />
-          <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Bold', marginLeft: 10, }]}>
+          <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Semibold', marginLeft: 10,fontSize: 16 }]}>
             {item.firstName} {item.lastName}
           </Text>
         </View>
@@ -183,7 +196,7 @@ const MyReferences = ({ navigation }: any) => {
               onRefresh={() => onRefresh()}
             />
           }
-          ListFooterComponent={<View style={{height: 100}} />}
+          ListFooterComponent={<View style={{ height: 100 }} />}
         />
       )}
     </View>

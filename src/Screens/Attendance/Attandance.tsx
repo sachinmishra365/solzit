@@ -144,6 +144,7 @@ const Attendance = ({ navigation }: any) => {
             keyExtractor={(item: any, index: any) => item?.id.toString() + index}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => onRefresh()} />}
             ListFooterComponent={<View style={{ height: 100 }} />}
+            showsVerticalScrollIndicator={false}
           />
         )
           :
@@ -183,7 +184,7 @@ const styles = (isDark: boolean) =>
       fontSize: 15,
       fontFamily: 'Lato-Semibold',
       marginBottom: 5,
-      lineHeight:25
+      lineHeight: 25
     },
     btntxt: {
       textAlign: 'center',

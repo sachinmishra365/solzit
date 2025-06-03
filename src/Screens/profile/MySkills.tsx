@@ -45,6 +45,8 @@ const MySkills = ({navigation}: any) => {
 
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);
+    refetchApplied();
+    refetchApproved();
   };
  
   useEffect(() => {

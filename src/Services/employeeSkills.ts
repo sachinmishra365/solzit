@@ -27,6 +27,7 @@ export const employeeSkillsApi = createApi({
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
     // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
   }),
+  tagTypes: ['Skill'],
 
   endpoints: builder => ({
     GetAllMasterSkills: builder.query({
@@ -37,6 +38,7 @@ export const employeeSkillsApi = createApi({
           Authorization: `Bearer ${accessToken}`,
         },
       }),
+      providesTags: ['Skill'],
     }),
 
     GetOptionSetTypeOfCertificate: builder.query({
@@ -47,6 +49,7 @@ export const employeeSkillsApi = createApi({
           Authorization: `Bearer ${accessToken}`,
         },
       }),
+      providesTags: ['Skill'],
     }),
 
     GetOptionSetHasCertificate: builder.query({
@@ -87,6 +90,7 @@ export const employeeSkillsApi = createApi({
           Authorization: `Bearer ${accessToken}`,
         },
       }),
+         providesTags: ['Skill'],
     }),
 
     GetAllMySkillsListApplied: builder.query({
@@ -97,6 +101,7 @@ export const employeeSkillsApi = createApi({
           Authorization: `Bearer ${accessToken}`,
         },
       }),
+          providesTags: ['Skill'],
     }),
 
     GetMySkillBySkillId: builder.query({
@@ -117,11 +122,10 @@ export const employeeSkillsApi = createApi({
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-         body: JSON.stringify(data), 
+        body: JSON.stringify(data),
       }),
+      invalidatesTags: ['Skill'],
     }),
-
-   
   }),
 });
 

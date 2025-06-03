@@ -145,194 +145,197 @@ const Profile = ({ navigation }: any) => {
       {isLoading ? (
         <Placeholder />
       ) : (
-        <Card style={styles(isDark).cardcontainer}>
-          <IconButton
-            style={{ position: 'absolute', top: -10, right: -5 }}
-            icon="account-edit"
-            iconColor={isDark ? Colors.white : Colors.primary}
-            size={30}
-            onPress={openModal}
-            accessibilityLabel="Edit Profile"
-          />
-          <TouchableOpacity
-            style={{ alignItems: 'center', marginBottom: 40 }}
-            onPress={openModal}>
-            {Profiledata?.employeeImg ? (
-              <Image
+        <>
+          <Card style={styles(isDark).cardcontainer}>
+            <IconButton
+              style={{ position: 'absolute', top: -10, right: -5 }}
+              icon="account-edit"
+              iconColor={isDark ? Colors.white : Colors.primary}
+              size={30}
+              onPress={openModal}
+              accessibilityLabel="Edit Profile"
+            />
+            <TouchableOpacity
+              style={{ alignItems: 'center', marginBottom: 40 }}
+              onPress={openModal}>
+              {Profiledata?.employeeImg ? (
+                <Image
+                  style={{
+                    height: 110,
+                    width: 110,
+                    borderRadius: 100,
+                    position: 'absolute',
+                    top: -55,
+                    left: 10,
+                  }}
+                  source={{
+                    uri: imageAsset?.data
+                      ? `data:image/jpeg;base64,${imageAsset?.data}`
+                      : base64Image,
+                  }}
+                />
+              ) : (
+                <Image
+                  style={{
+                    height: 110,
+                    width: 110,
+                    borderRadius: 100,
+                    position: 'absolute',
+                    top: -55,
+                    left: 10,
+                  }}
+                  source={require('../../Assets/Images/profile.png')}
+                />
+              )}
+            </TouchableOpacity>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 30,
+                flexWrap: 'wrap',
+              }}>
+              <Text style={styles(isDark).usename}>
+                {Profiledata?.fullName ? Profiledata?.fullName : 'N/A'}
+                {' | '}
+              </Text>
+              <Text style={styles(isDark).usename}>
+                {Profiledata?.designation ? Profiledata?.designation : 'N/A'}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                marginTop: 10,
+              }}>
+              <View
                 style={{
-                  height: 110,
-                  width: 110,
-                  borderRadius: 100,
-                  position: 'absolute',
-                  top: -55,
-                  left: 10,
-                }}
-                source={{
-                  uri: imageAsset?.data
-                    ? `data:image/jpeg;base64,${imageAsset?.data}`
-                    : base64Image,
-                }}
-              />
-            ) : (
-              <Image
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                }}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
+                  Email{' : '}
+                </Text>
+                <Text style={styles(isDark).txt}>
+                  {Profiledata?.email ? Profiledata?.email : 'N/A'}
+                </Text>
+              </View>
+
+              <View
                 style={{
-                  height: 110,
-                  width: 110,
-                  borderRadius: 100,
-                  position: 'absolute',
-                  top: -55,
-                  left: 10,
-                }}
-                source={require('../../Assets/Images/profile.png')}
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                }}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
+                  Employee ID{' : '}
+                </Text>
+                <Text style={[styles(isDark).txt, { marginVertical: 10 }]}>
+                  {Profiledata?.userName ? Profiledata?.userName : 'N/A'}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                }}>
+                <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
+                  Reporting Manager{' : '}
+                </Text>
+
+                <Text style={styles(isDark).txt}>
+                  {Profiledata?.reportingManager?.name
+                    ? Profiledata?.reportingManager?.name
+                    : 'N/A'}
+                </Text>
+              </View>
+            </View>
+          </Card>
+          <View>
+            <TouchableOpacity
+              style={styles(isDark).smallCard}
+              onPress={() => navigation.navigate('MySkills')}>
+              <IconButton
+                icon="head-lightbulb"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+                style={{ marginRight: 10 }}
               />
-            )}
-          </TouchableOpacity>
+              <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
+                My Skills
+              </Text>
+              <IconButton
+                icon="chevron-right"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+              />
+            </TouchableOpacity>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 30,
-              flexWrap: 'wrap',
-            }}>
-            <Text style={styles(isDark).usename}>
-              {Profiledata?.fullName ? Profiledata?.fullName : 'N/A'}
-              {' | '}
-            </Text>
-            <Text style={styles(isDark).usename}>
-              {Profiledata?.designation ? Profiledata?.designation : 'N/A'}
-            </Text>
+            <TouchableOpacity
+              style={styles(isDark).smallCard}
+              onPress={() => navigation.navigate('MyAssets')}>
+              <IconButton
+                icon="cart-outline"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+                style={{ marginRight: 10 }}
+              />
+              <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
+                My Assets
+              </Text>
+              <IconButton
+                icon="chevron-right"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles(isDark).smallCard}
+              onPress={() => navigation.navigate('ChangePassword')}>
+              <IconButton
+                icon="cog-outline"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+                style={{ marginRight: 10 }}
+              />
+              <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
+                Change Password
+              </Text>
+              <IconButton
+                icon="chevron-right"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles(isDark).smallCard}
+              onPress={() => {
+                dispatch(auth(undefined));
+
+              }}>
+              <IconButton
+                icon="logout"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+                style={{ marginRight: 10 }}
+              />
+              <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
+                Logout
+              </Text>
+              <IconButton
+                icon="chevron-right"
+                iconColor={isDark ? Colors.white : Colors.black}
+                size={25}
+              />
+            </TouchableOpacity>
           </View>
-
-          <View
-            style={{
-              marginTop: 10,
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-              }}>
-              <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
-                Email{' : '}
-              </Text>
-              <Text style={styles(isDark).txt}>
-                {Profiledata?.email ? Profiledata?.email : 'N/A'}
-              </Text>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-              }}>
-              <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
-                Employee ID{' : '}
-              </Text>
-              <Text style={[styles(isDark).txt, { marginVertical: 10 }]}>
-                {Profiledata?.userName ? Profiledata?.userName : 'N/A'}
-              </Text>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-              }}>
-              <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>
-                Reporting Manager{' : '}
-              </Text>
-
-              <Text style={styles(isDark).txt}>
-                {Profiledata?.reportingManager?.name
-                  ? Profiledata?.reportingManager?.name
-                  : 'N/A'}
-              </Text>
-            </View>
-          </View>
-        </Card>
+        </>
       )}
-      <View>
-        <TouchableOpacity
-          style={styles(isDark).smallCard}
-          onPress={() => navigation.navigate('MySkills')}>
-          <IconButton
-            icon="head-lightbulb"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-            style={{ marginRight: 10 }}
-          />
-          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
-            My Skills
-          </Text>
-          <IconButton
-            icon="chevron-right"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-          />
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles(isDark).smallCard}
-          onPress={() => navigation.navigate('MyAssets')}>
-          <IconButton
-            icon="cart-outline"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-            style={{ marginRight: 10 }}
-          />
-          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
-            My Assets
-          </Text>
-          <IconButton
-            icon="chevron-right"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles(isDark).smallCard}
-          onPress={() => navigation.navigate('ChangePassword')}>
-          <IconButton
-            icon="cog-outline"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-            style={{ marginRight: 10 }}
-          />
-          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
-            Change Password
-          </Text>
-          <IconButton
-            icon="chevron-right"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles(isDark).smallCard}
-          onPress={() => {
-            dispatch(auth(undefined));
-
-          }}>
-          <IconButton
-            icon="logout"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-            style={{ marginRight: 10 }}
-          />
-          <Text style={[styles(isDark).usename, { fontSize: 16, flex: 1 }]}>
-            Logout
-          </Text>
-          <IconButton
-            icon="chevron-right"
-            iconColor={isDark ? Colors.white : Colors.black}
-            size={25}
-          />
-        </TouchableOpacity>
-      </View>
 
       <Modal
         visible={modalVisible}

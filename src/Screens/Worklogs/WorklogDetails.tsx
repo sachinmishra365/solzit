@@ -1,14 +1,15 @@
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { assesstoken, isDarkTheme } from '../../AppStore/Reducers/appState';
 import { Colors } from '../../constants/Colors';
 import CustomHeader from '../../Components/CustomHeader';
-import { useGetWorkLogsByEmpIdOnTodoQuery } from '../../Services/workloglevel';
+import { useDeleteWorkLogMutation, useGetWorkLogsByEmpIdOnTodoQuery } from '../../Services/workloglevel';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import WorklogCard from '../../Components/WorklogCard';
 import moment from 'moment';
 import CustomDialogBox from '../../Components/CustomDialogBox';
+import ToastMessage from '../../Components/ToastMessage';
 
 const WorklogDetails = ({ navigation, route }: any) => {
     const isDark = useSelector(isDarkTheme);
@@ -26,7 +27,7 @@ const WorklogDetails = ({ navigation, route }: any) => {
     );
 
     const { data: WorkLogsByEmpIdOnTodo, isSuccess, isLoading, refetch } = useGetWorkLogsByEmpIdOnTodoQuery({ toDoId: worklogDetails?.id, accessToken: accessToken }, { skip: !worklogDetails?.id || !accessToken });
-
+    const [deleteWorklog, result] = useDeleteWorkLogMutation();
 
     useEffect(() => {
         if (isSuccess && WorkLogsByEmpIdOnTodo?.data) {
@@ -49,6 +50,28 @@ const WorklogDetails = ({ navigation, route }: any) => {
         setDialogVisible(true);
     };
 
+    const handleDelete = (item: any) => {
+        console.log(item);
+
+        showDialog(
+            'Confirm Delete',
+            'Are you sure you want to delete this worklog? This action cannot be undone.',
+            async () => {
+                const data = {
+                    workId: item.id,
+                }
+                try {
+                    const response = await deleteWorklog({ data, accessToken }).unwrap();
+                    if (response.isSuccessful) {
+                        ToastMessage({ type: "success", title: "Work log", subtitle: "Work log Deleted Successfully!" });
+                        refetch();
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                }
+            }
+        );
+    };
     const handleEdit = (item: any) => {
         showDialog(
             'Confirm Widrawal worklog',
@@ -57,27 +80,38 @@ const WorklogDetails = ({ navigation, route }: any) => {
         );
     };
 
-    const renderItem = ({ item }: any) => (
-        <WorklogCard
-            projectName={item?.project}
-            serialNo={`hours: ${item?.hours}`}
-            title={item?.description}
-            startDate={item?.date ? moment(item?.date, 'DD-MM-YYYY').format("DD/MM/YYYY") : null}
-            status={item?.worklogStatusName}
-            iconName={'notebook'}
-            iconColor={Colors.primary}
-            // showleftIcon={false}
-            showRightIcon={item?.worklogStatusName === 'Submitted for approval' || item?.worklogStatusName === 'Approved' ? false : true}
-            rightIconName={(item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected') && 'delete'}
-            rightIconColor={Colors.error}
-            rightIconPress={() => { }}
-            rightIconPress2={() => item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' || item?.worklogStatusName === 'Approved' ? navigation.navigate('AddWorklog', { item }) : handleEdit(item)}
-            rightIconColor2={Colors.primary}
-            rightIconName2={item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' ? 'circle-edit-outline' : item?.worklogStatusName === 'Approved' ? 'eye' : 'cloud-upload-outline'}
-            showRightIcon2={true}
-            cardPress={() => { }}
-        />
-    );
+    const renderItem = ({ item }: any) => {
+        const status = item.worklogStatusName;
+        const isDeletable = status === 'New' || status === 'Rejected';
+        const isNonEditable = status === 'Submitted for approval' || status === 'Approved';
+        return (
+            <WorklogCard
+                projectName={item?.project}
+                serialNo={`hours: ${item?.hours}`}
+                title={item?.description}
+                startDate={item?.date ? moment(item?.date, 'DD-MM-YYYY').format("DD/MM/YYYY") : null}
+                status={item?.worklogStatusName}
+                iconName={'notebook'}
+                iconColor={Colors.primary}
+                // showleftIcon={false}
+                showRightIcon={item?.worklogStatusName === 'Submitted for approval' || item?.worklogStatusName === 'Approved' ? false : true}
+                rightIconName={(item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected') && 'delete'}
+                rightIconColor={Colors.error}
+                rightIconPress={() => {
+                    if (isDeletable) {
+                        handleDelete(item);
+                        console.log('Delete worklog:', item);
+
+                    }
+                }}
+                rightIconPress2={() => item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' || item?.worklogStatusName === 'Approved' ? navigation.navigate('AddWorklog', { item }) : handleEdit(item)}
+                rightIconColor2={Colors.primary}
+                rightIconName2={item?.worklogStatusName === 'New' || item?.worklogStatusName === 'Rejected' ? 'circle-edit-outline' : item?.worklogStatusName === 'Approved' ? 'eye' : 'cloud-upload-outline'}
+                showRightIcon2={true}
+                cardPress={() => { }}
+            />
+        );
+    }
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -113,6 +147,7 @@ const WorklogDetails = ({ navigation, route }: any) => {
                         />
                     }
                     ListFooterComponent={<View style={{ height: 100 }} />}
+                    showsVerticalScrollIndicator={false}
                 />
             ) : (
                 <View style={{ flex: 1, justifyContent: 'center' }}>

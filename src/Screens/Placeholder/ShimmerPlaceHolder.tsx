@@ -1,17 +1,17 @@
 import React from 'react';
-import {StyleSheet, View, FlatList} from 'react-native';
-import {Card, Text} from 'react-native-paper';
+import { StyleSheet, View, FlatList } from 'react-native';
+import { Card, Text } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
-export const PlaceholderCard = ({Showlist = false}) => {
+export const PlaceholderCard = ({ Showlist = false }) => {
   return (
     <Card style={styles.containerInner}>
-      <View style={{paddingHorizontal: 16, paddingVertical: 16}}>
-        <ShimmerPlaceHolder style={{width: '90%'}} />
-        <ShimmerPlaceHolder style={{width: '50%', marginTop: 16}} />
+      <View style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
+        <ShimmerPlaceHolder style={{ width: '90%' }} />
+        <ShimmerPlaceHolder style={{ width: '50%', marginTop: 16 }} />
       </View>
       <View
         style={{
@@ -20,19 +20,19 @@ export const PlaceholderCard = ({Showlist = false}) => {
           justifyContent: 'space-between',
         }}>
         <View>
-          <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 70}} />
+          <Text style={{ padding: 8 }}>
+            <ShimmerPlaceHolder style={{ width: 70 }} />
           </Text>
-          <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 50}} />
+          <Text style={{ padding: 8 }}>
+            <ShimmerPlaceHolder style={{ width: 50 }} />
           </Text>
         </View>
         <View>
-          <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 70}} />
+          <Text style={{ padding: 8 }}>
+            <ShimmerPlaceHolder style={{ width: 70 }} />
           </Text>
-          <Text style={{padding: 8}}>
-            <ShimmerPlaceHolder style={{width: 50}} />
+          <Text style={{ padding: 8 }}>
+            <ShimmerPlaceHolder style={{ width: 50 }} />
           </Text>
         </View>
       </View>
@@ -48,7 +48,8 @@ const PlaceholderList = () => {
       data={data}
       keyExtractor={(item, index) => index.toString()}
       renderItem={() => <PlaceholderCard />}
-      contentContainerStyle={{paddingBottom: 16}}
+      contentContainerStyle={{ paddingBottom: 16 }}
+      showsVerticalScrollIndicator={false}
     />
   );
 };

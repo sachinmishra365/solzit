@@ -17,6 +17,10 @@ const WorklogCard = ({
     iconColor,
     iconPress,
     showleftIcon = true,
+    iconName2,
+    iconColor2,
+    iconPress2,
+    showleftIcon2 = false,
     cardPress,
     rightIconPress,
     rightIconColor,
@@ -44,6 +48,17 @@ const WorklogCard = ({
                     flexDirection: 'row', alignItems: 'center',
                 }}>
                     {
+                        showleftIcon2 && (
+                            <IconButton
+                                icon={iconName2}
+                                iconColor={iconColor2}
+                                size={25}
+                                style={{ marginLeft: -10 }}
+                                onPress={iconPress2}
+                            />
+                        )
+                    }
+                    {
                         showleftIcon && (
                             <IconButton
                                 icon={iconName}
@@ -54,7 +69,8 @@ const WorklogCard = ({
                             />
                         )
                     }
-                    <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', flexWrap: 'wrap', width: '90%' }]}>{projectName}</Text>
+
+                    <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', flexWrap: 'wrap', width: '80%'}]}>{projectName}</Text>
                 </View>
 
             </Card.Content>
@@ -63,9 +79,9 @@ const WorklogCard = ({
             </Card.Content>
 
             <Card.Content style={[styles(isDark).cardContant, { marginVertical: 5 }]}>
-                <Text style={[styles(isDark).txt,isPastDate(startDate) ? { color: Colors.error } : null,]}>{startDate}</Text>
+                <Text style={[styles(isDark).txt, isPastDate(startDate) ? { color: Colors.error } : null,]}>{startDate}</Text>
                 {/* {(startDate && endDate) && (<Text style={[styles(isDark).txt]}>{' - '}</Text>)} */}
-                <Text style={[styles(isDark).txt,isPastDate(endDate) ? { color: Colors.error } : null,]}>{endDate}</Text>
+                <Text style={[styles(isDark).txt, isPastDate(endDate) ? { color: Colors.error } : null,]}>{endDate}</Text>
             </Card.Content>
             <Card.Content style={[styles(isDark).cardContant]}>
                 <Text style={styles(isDark).txt}>{serialNo}</Text>

@@ -488,6 +488,7 @@ const Dashboard = ({ navigation }: any) => {
             style={{ margin: 5 }}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={selectedStatus === 'Work From Home' ? null : <EmptyData />}
+            
           />
         </>
       )}

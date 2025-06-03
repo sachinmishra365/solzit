@@ -19,7 +19,7 @@ const Worklog = ({ navigation }: any) => {
     const dispatch = useDispatch();
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
-    
+
     const [todoList, SetTodoList] = useState<any>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [visible, setVisible] = React.useState(false);
@@ -121,7 +121,7 @@ const Worklog = ({ navigation }: any) => {
             showRightIcon2={(item?.workStatus?.label === 'Work In Progress' || item?.workStatus?.label === 'Review Failed') ? true : false}
             rightIconName2={item?.itemType?.label !== 'User Story' && "plus-circle-outline"}
             // item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug')
-            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog')  : null, dispatch(SetWorklogDetails(item)) }}
+            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') : null, dispatch(SetWorklogDetails(item)) }}
             // rightIconColor3={Colors.green}
             // showRightIcon3={true}
             // rightIconName3="pencil-circle-outline"
@@ -175,6 +175,8 @@ const Worklog = ({ navigation }: any) => {
                     keyExtractor={(item: any, index: any) => item?.id?.toString() + index}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />}
                     ListFooterComponent={<View style={{ height: 100 }} />}
+                    showsVerticalScrollIndicator={false}
+
                 />
             )}
             {/* <FAB

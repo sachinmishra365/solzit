@@ -1,7 +1,7 @@
-import {StyleSheet, View, FlatList, Dimensions} from 'react-native';
-import {Text} from 'react-native-paper';
+import { StyleSheet, View, FlatList, Dimensions } from 'react-native';
+import { Text } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
+import { createShimmerPlaceholder } from 'react-native-shimmer-placeholder';
 import React from 'react';
 
 const ImageShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
@@ -19,9 +19,9 @@ const PlaceholderCard = () => {
         elevation: 15,
       }}>
       <View>
-        <Text style={{padding: 8}}>
+        <Text style={{ padding: 8 }}>
           <ImageShimmerPlaceHolder
-            style={{width: 60, height: 60, borderRadius: 35}}
+            style={{ width: 60, height: 60, borderRadius: 35 }}
           />
         </Text>
       </View>
@@ -31,11 +31,11 @@ const PlaceholderCard = () => {
           padding: 8,
         }}>
         <View>
-          <Text style={{padding: 8}}>
-            <ImageShimmerPlaceHolder style={{width: windowWidth * 0.7}} />
+          <Text style={{ padding: 8 }}>
+            <ImageShimmerPlaceHolder style={{ width: windowWidth * 0.7 }} />
           </Text>
-          <Text style={{padding: 8}}>
-            <ImageShimmerPlaceHolder style={{width: windowWidth * 0.45}} />
+          <Text style={{ padding: 8 }}>
+            <ImageShimmerPlaceHolder style={{ width: windowWidth * 0.45 }} />
           </Text>
         </View>
       </View>
@@ -51,7 +51,8 @@ const PlaceholderList = () => {
       data={data}
       keyExtractor={(item, index) => index.toString()}
       renderItem={() => <PlaceholderCard />}
-      contentContainerStyle={{paddingBottom: 16}}
+      contentContainerStyle={{ paddingBottom: 16 }}
+      showsVerticalScrollIndicator={false}
     />
   );
 };

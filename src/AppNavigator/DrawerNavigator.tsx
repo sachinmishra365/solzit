@@ -491,7 +491,7 @@ const DrawerNavigator = ({navigation}: any) => {
 
       <Animated.View
         //  {...panResponder.panHandlers}
-        style={[styles(isDark).screenHeaderContainer, { transform: [{ scale: scaleValue }, { translateX: offsetValue }],  shadowColor: isDark ? Colors.background : Colors.black, opacity: showMenu === true ? 0.75 : 1, }]}>
+        style={[styles(isDark).screenHeaderContainer, { transform: [{ scale: scaleValue }, { translateX: offsetValue }],  shadowColor: isDark ? Colors.background : Colors.black, elevation: 24, }]}>
         <Animated.View style={{ transform: [{ translateY: closeButtonOffset }] }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
@@ -499,7 +499,7 @@ const DrawerNavigator = ({navigation}: any) => {
               {showMenu ? (
                 <IconButton
                   icon="close"
-                  iconColor={isDark ? Colors.white : Colors.black}
+                  iconColor={isDark ? Colors.white : Colors.white}
                   size={25}
                   onPress={toggleMenu}
                   accessibilityLabel="close"
@@ -532,7 +532,7 @@ const styles = (isDark: any,) =>
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
     },
-    drawerContainer: { justifyContent: 'flex-start', padding: 15, },
+    drawerContainer: { padding:15 },
 
     logo: {
       width: 90,
@@ -553,7 +553,7 @@ const styles = (isDark: any,) =>
       marginTop: 16,
       fontFamily: 'Lato-Bold',
     },
-    drawerBtnContainer: { flexGrow: 1, marginVertical: 50 },
+    drawerBtnContainer: { flexGrow: 1, marginTop: 50, paddingBottom: 50, }, 
 
     drawerBtn: {
       flexDirection: 'row',

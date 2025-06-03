@@ -21,7 +21,7 @@ const Fabbutton = () => {
       visible
       icon={open ? 'close' : 'plus'}
       color={isDark ? Colors.white : Colors.white}
-      style={{elevation: 5,margin:16}}
+      style={{elevation: 5}}
       accessibilityLabel="Fab Button Screen"
       actions={[
         {
@@ -83,4 +83,3 @@ const Fabbutton = () => {
 };
 
 export default Fabbutton;
-const styles = (isDark: any) => StyleSheet.create({});

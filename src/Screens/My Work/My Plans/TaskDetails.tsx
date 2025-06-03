@@ -116,14 +116,14 @@ const TaskDetails = ({navigation, route}: any) => {
     <View style={styles(isDark).mainContainer}>
       <CustomHeader
         showBackIcon={true}
-        title="Task Details"
+        title={`Task Details${' ('}${TaskDetail.reportDate}${')'}`}
         isDark={isDark}
         onPress={() => navigation.goBack()}
       />
       <View style={styles(isDark).divider} />
-      <Text style={[styles(isDark).titleText, {marginHorizontal: 16}]}>
+      {/* <Text style={[styles(isDark).titleText, {marginHorizontal: 16}]}>
         Total Tasks on {TaskDetail.reportDate}
-      </Text>
+      </Text> */}
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : data?.data === null ? (

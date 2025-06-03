@@ -215,7 +215,7 @@ const ApplyLeave = () => {
               touched,
             }) => (
               <View>
-                <View style={{ marginVertical: 16 }} />
+                <View style={{ marginTop: 12 }} />
 
                 <View style={{ marginHorizontal: 16 }}>
                   <Text
@@ -224,7 +224,7 @@ const ApplyLeave = () => {
                       fontSize: 16,
                       fontFamily: 'Lato-Bold',
                       textAlign: 'left',
-                      marginBottom: 10,
+                      marginBottom: 16,
                     }}>
                     Current EL Balance:{' '}
                     {elAvailable !== null ? elAvailable : ''}

@@ -38,29 +38,30 @@ const Feedback = ({ navigation }: any) => {
   };
 
   const renderItem = ({ item }: any) => (
-    <Card style={styles(isDark).card}>
+    <Card style={styles(isDark).card} onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}
+    >
       <Card.Content>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between',flexWrap:'wrap'}}>
-          <Text style={[styles(isDark).txt,{color:Colors.primary}]}>Status{' : '}{item.status.label}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold' }]}>{'Reported On : '}
             {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
           </Text>
+          <Text style={[styles(isDark).txt, { color: Colors.primary, fontFamily: 'Lato-Bold' }]}>{item.status.label}</Text>
         </View>
         <View>
 
           <View style={{ flexDirection: 'row', }}>
-            <Text style={[styles(isDark).txt,]}>{'Title : '}</Text>
+            {/* <Text style={[styles(isDark).txt,]}>{'Title : '}</Text> */}
             <Text style={[styles(isDark).txt, { flexWrap: 'wrap', flex: 1 }]}>{item.feedBackTitle}</Text>
           </View>
 
         </View>
-          <IconButton
+        {/* <IconButton
             icon={'eye'}
             iconColor={Colors.primary}
             size={25}
             style={{ position: 'absolute', right: 5, bottom: -15, }}
             onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}
-          />
+          /> */}
 
       </Card.Content>
     </Card>
@@ -86,7 +87,6 @@ const Feedback = ({ navigation }: any) => {
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             ListFooterComponent={<View style={{ height: 100 }} />}
           />
-
           : (
             <EmptyData />
           )}
@@ -111,19 +111,19 @@ const styles = (isDark: boolean) =>
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
-      marginVertical: 7,
+      marginTop: 10,
       borderColor: Colors.background,
       borderWidth: 0.5,
       marginHorizontal: 16,
-      paddingBottom: 20
+      // paddingBottom: 20
     },
 
     txt: {
-      fontFamily: 'Lato-Semibold',
+      fontFamily: 'Lato-Regular',
       marginBottom: 5,
       color: isDark ? Colors.white : Colors.black,
       fontSize: 14,
-      flexWrap:'wrap'
+      flexWrap: 'wrap'
     },
     fab: {
       position: 'absolute',

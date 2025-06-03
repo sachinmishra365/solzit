@@ -12,6 +12,7 @@ import { useGetAppSettingsValueQuery, useGetDayTaskReportDetailsQuery, useGetGen
 import WorklogCard from '../../../Components/WorklogCard';
 import EmptyData from '../../../Components/EmptyData';
 import ToastMessage from '../../../Components/ToastMessage';
+import PlanMyDayFilter from './PlanMyDayFilter';
 
 const PlanMyDay = ({ navigation, route }: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -127,66 +128,9 @@ const PlanMyDay = ({ navigation, route }: any) => {
     setFilterVisible(false);
     fetchData();
   };
-
-  const FilterModal = ({ visible, onClose, onSelect, selectedOption }: any) => {
-    return (
-      <Modal
-        transparent
-        animationType="slide"
-        visible={visible}
-        onRequestClose={onClose}>
-        <View style={styles(isDark).modalOverlay}>
-          <View style={styles(isDark).modalContainer}>
-            <TouchableOpacity
-              onPress={onClose}
-              style={{ alignSelf: 'flex-end', right: -20, top: -20 }}>
-              <IconButton
-                icon="close-octagon"
-                size={30}
-                iconColor={Colors.error}
-              />
-            </TouchableOpacity>
-            <Text style={[styles(isDark).modalTitle, { marginBottom: 20 }]}>
-              Select To-Do's
-            </Text>
-            <TouchableOpacity
-              style={[
-                styles(isDark).option,
-                selectedOption === 'myActiveItems' && {
-                  backgroundColor: isDark ? Colors.gray : Colors.white,
-                },
-              ]}
-              onPress={() => onSelect('myActiveItems')}>
-              <Text style={styles(isDark).optionText}>My Active Items</Text>
-            </TouchableOpacity>
-            <View
-              style={{
-                borderWidth: 0.5,
-                //  height: 1,
-                backgroundColor: isDark ? Colors.gray : Colors.medium_gray,
-                borderColor: isDark ? Colors.black : Colors.medium_gray,
-                width: '100%',
-              }}
-            />
-            <TouchableOpacity
-              style={[
-                styles(isDark).option,
-                selectedOption === 'generalTasks' && {
-                  backgroundColor: isDark ? Colors.gray : Colors.white,
-                },
-              ]}
-              onPress={() => onSelect('generalTasks')}>
-              <Text style={styles(isDark).optionText}>General Tasks</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
-
-
   const renderItem = ({ item }: any) => {
-    if (item?.itemType?.value === 674180002) {
+    
+    if (item?.itemType?.value === 674180002 || item?.itemType?.value === 674180003) {
       return (
         <WorklogCard
           projectName={item?.project?.name}
@@ -195,12 +139,15 @@ const PlanMyDay = ({ navigation, route }: any) => {
           startDate={item?.plannedStartDate ? moment(item?.plannedStartDate, 'MM/DD/YYYY HH:mm:ss').format('DD/MM/YYYY') : null}
           endDate={item?.plannedEndDate ? moment(item?.plannedEndDate, 'MM/DD/YYYY HH:mm:ss').format('DD/MM/YYYY') : null}
           status={item?.workStatus?.label}
-          iconName={checkedItems[item.id] ? 'checkbox-marked' : 'checkbox-blank-outline'}
-          iconColor={Colors.primary}
+          iconName2={checkedItems[item.id] ? 'checkbox-marked' : 'checkbox-blank-outline'}
+          iconColor2={Colors.primary}
+          iconName={item?.itemType?.label === 'To-Do' ? "checkbox-outline" : item?.itemType?.label === 'User Story' ? 'book' : 'bug'}
+          iconColor={item?.itemType?.label === 'To-Do' ? "green" : item?.itemType?.label === 'User Story' ? Colors.secondary : item?.itemType?.label === 'Bug' ? Colors.error : null}
           rightIconColor={Colors.primary}
-          iconPress={() => { toggleCheckbox(item.id); }}
+          iconPress2={() => { toggleCheckbox(item.id); }}
           showRightIcon2={false}
           showRightIcon={false}
+          showleftIcon2={true}
         />
       );
     }
@@ -223,9 +170,9 @@ const PlanMyDay = ({ navigation, route }: any) => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginHorizontal: 16,
+          marginHorizontal: 17,
           marginBottom: 10,
-          marginTop: 8,
+          marginTop: 12,
         }}>
         <Text style={[styles(isDark).label, { fontSize: 16 }]}>
           {!isFilterSelected
@@ -262,8 +209,8 @@ const PlanMyDay = ({ navigation, route }: any) => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          showsVerticalScrollIndicator
           ListFooterComponent={<View style={{ height: 100 }} />}
+          showsVerticalScrollIndicator={false}
         />
       )}
 
@@ -319,11 +266,13 @@ const PlanMyDay = ({ navigation, route }: any) => {
         }}
       />
 
-      <FilterModal
+      <PlanMyDayFilter
         visible={filterVisible}
-        onClose={() => setFilterVisible(false)}
-        onSelect={handleMenuOptionSelect}
-        selectedOption={selectedTaskType}
+        // onClose={() => setFilterVisible(false)}
+        setVisible={setFilterVisible}
+        onPressProjectItem={() => handleMenuOptionSelect('myActiveItems')}
+        onPressGeneral={() => handleMenuOptionSelect('generalTasks')}
+      // selectedOption={selectedTaskType}
       />
     </View>
   );

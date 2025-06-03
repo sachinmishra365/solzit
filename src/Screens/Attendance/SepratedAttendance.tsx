@@ -1,4 +1,4 @@
-import { ActivityIndicator, BackHandler, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
+import { ActivityIndicator, Animated, BackHandler, FlatList, Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import CustomHeader from '../../Components/CustomHeader';
 import { useNavigation } from '@react-navigation/native';
@@ -35,7 +35,20 @@ const SepratedAttendance = ({ route }: any) => {
   const [actualTime, setActualTime] = useState(0);
   const [visibleWorkType, setVisibleWorkType] = React.useState(false);
   const [selectedBreak, setSelectedBreak] = useState<any>();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", (event) => {
+      setKeyboardHeight(event.endCoordinates.height + 70);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
   useEffect(() => {
     if (pickStartTime && pickEndTime) {
       const startMoment = moment(pickStartTime, 'HH:mm');
@@ -421,7 +434,7 @@ const SepratedAttendance = ({ route }: any) => {
                             : item?.leaveType?.label === 'Soluzione Fixed Holiday'
                               ? Colors.darkgreen
                               : item?.leaveType?.label === 'Work From Home' || item?.leaveType?.label === 'Earn Leave'
-                                ? '#FF9800': Colors.green,
+                                ? '#FF9800' : Colors.green,
                       fontSize: 14,
                       fontFamily: 'Lato-Semibold',
                     }}>
@@ -588,6 +601,7 @@ const SepratedAttendance = ({ route }: any) => {
             renderItem={renderItem}
             keyExtractor={(item: any) => item?.id.toString()}
             ListFooterComponent={<View style={{ height: 100 }} />}
+            showsVerticalScrollIndicator={false}
           />
         )}
         <BreaksDialog
@@ -598,73 +612,75 @@ const SepratedAttendance = ({ route }: any) => {
       </View>
 
       <BottomSheet ref={bottomSheetRef}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{ backgroundColor: isDark ? Colors.black : Colors.white }}>
-          {selectedItem && (
-            <View>
-              <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  fontSize: 18,
-                  fontFamily: 'Lato-Bold',
-                  marginBottom: 6,
-                  marginLeft: 15,
-                }}>
-                Current data
-              </Text>
-              <Card
-                style={{
-                  backgroundColor: isDark ? Colors.black : Colors.background,
-                  marginVertical: 10,
-                  borderColor: Colors.background,
-                  borderWidth: 1,
-                  marginHorizontal: 16,
-                }}>
-                <Card.Content>
-                  <View
+        <KeyboardAvoidingView behavior='height' style={{ flex: 1, flexGrow: 1 }} >
+          <Animated.View style={[{ paddingBottom: keyboardHeight }]}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={{ backgroundColor: isDark ? Colors.black : Colors.white }}>
+              {selectedItem && (
+                <View>
+                  <Text
                     style={{
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                      flexWrap: 'wrap',
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 18,
+                      fontFamily: 'Lato-Bold',
+                      marginBottom: 6,
+                      marginLeft: 15,
                     }}>
-                    <Text
-                      style={{
-                        color: isDark ? Colors.white : Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
-                      }}>
-                      {selectedItem?.date
-                        ? moment(selectedItem?.date).format('DD MMM, YYYY')
-                        : 'N/A'}
-                    </Text>
-
-                    <View style={{}}>
-                      <Text
+                    Current data
+                  </Text>
+                  <Card
+                    style={{
+                      backgroundColor: isDark ? Colors.black : Colors.background,
+                      marginVertical: 10,
+                      borderColor: Colors.background,
+                      borderWidth: 1,
+                      marginHorizontal: 16,
+                    }}>
+                    <Card.Content>
+                      <View
                         style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Lato-Semibold',
+                          justifyContent: 'space-between',
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
                         }}>
-                        {selectedItem?.inTime
-                          ? moment(selectedItem?.inTime).format('h:mm A')
-                          : 'N/A'}{' '}
-                        {' - '}
-                        {selectedItem?.outTime
-                          ? moment(selectedItem?.outTime).format('h:mm A')
-                          : 'N/A'}
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                    }}>
-                    <View style={{ flexDirection: 'row' }}>
-                      {/* <Text
+                        <Text
+                          style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Lato-Semibold',
+                          }}>
+                          {selectedItem?.date
+                            ? moment(selectedItem?.date).format('DD MMM, YYYY')
+                            : 'N/A'}
+                        </Text>
+
+                        <View style={{}}>
+                          <Text
+                            style={{
+                              color: isDark ? Colors.white : Colors.black,
+                              fontSize: 16,
+                              fontFamily: 'Lato-Semibold',
+                            }}>
+                            {selectedItem?.inTime
+                              ? moment(selectedItem?.inTime).format('h:mm A')
+                              : 'N/A'}{' '}
+                            {' - '}
+                            {selectedItem?.outTime
+                              ? moment(selectedItem?.outTime).format('h:mm A')
+                              : 'N/A'}
+                          </Text>
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                        }}>
+                        <View style={{ flexDirection: 'row' }}>
+                          {/* <Text
                         style={{
                           color: isDark ? Colors.white : Colors.black,
                           fontSize: 18,
@@ -673,396 +689,398 @@ const SepratedAttendance = ({ route }: any) => {
                         }}>
                         Late?{' : '}
                       </Text> */}
-                      <Text
+                          <Text
+                            style={{
+                              color:
+                                selectedItem?.isLate === false
+                                  ? 'green'
+                                  : Colors.error,
+                              fontSize: 18,
+                              fontFamily: 'Lato-Bold',
+                              marginBottom: 6,
+                            }}>
+                            {selectedItem?.isLate === false ? 'Ontime' : 'Late'}
+                          </Text>
+                        </View>
+                        <View style={{ flexDirection: 'row' }}>
+                          <Text
+                            style={{
+                              color: isDark ? Colors.white : Colors.black,
+                              fontSize: 14,
+                              fontFamily: 'Lato-Semibold',
+                            }}>
+                            Day Type{' : '}
+                          </Text>
+                          <Text
+                            style={{
+                              color:
+                                selectedItem?.leaveType?.label === 'Loss of Pay'
+                                  ? Colors.error
+                                  : selectedItem?.leaveType?.label === 'Working Day'
+                                    ? Colors.green
+                                    : selectedItem?.leaveType?.label === 'Soluzione Fixed Holiday'
+                                      ? Colors.darkgreen
+                                      : selectedItem?.leaveType?.label === 'Work From Home' || selectedItem?.leaveType?.label === 'Earn Leave'
+                                        ? '#FF9800' : Colors.green,
+                              fontSize: 14,
+                              fontFamily: 'Lato-Semibold',
+                            }}>
+                            {selectedItem?.leaveType?.label
+                              ? selectedItem?.leaveType?.label
+                              : 'Working Day'}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View
                         style={{
-                          color:
-                            selectedItem?.isLate === false
-                              ? 'green'
-                              : Colors.error,
-                          fontSize: 18,
-                          fontFamily: 'Lato-Bold',
-                          marginBottom: 6,
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginTop: 10,
                         }}>
-                        {selectedItem?.isLate === false ? 'Ontime' : 'Late'}
-                      </Text>
-                    </View>
-                    <View style={{ flexDirection: 'row' }}>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontSize: 14,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        Day Type{' : '}
-                      </Text>
-                      <Text
-                        style={{
-                          color:
-                        selectedItem?.leaveType?.label === 'Loss of Pay'
-                          ? Colors.error
-                          : selectedItem?.leaveType?.label === 'Working Day'
-                            ? Colors.green
-                            : selectedItem?.leaveType?.label === 'Soluzione Fixed Holiday'
-                              ? Colors.darkgreen
-                              : selectedItem?.leaveType?.label === 'Work From Home' || selectedItem?.leaveType?.label === 'Earn Leave'
-                                ? '#FF9800': Colors.green,
-                          fontSize: 14,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        {selectedItem?.leaveType?.label
-                          ? selectedItem?.leaveType?.label
-                          : 'Working Day'}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginTop: 10,
-                    }}>
-                    <Text
-                      style={{
-                        color:
-                          selectedItem?.leaveType?.label === 'Earn Leave'
-                            ? isDark
-                              ? Colors.white
-                              : Colors.black
-                            : isDark
-                              ? Colors.white
-                              : Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
-                      }}>
-                      Punch In/Out : {selectedItem?.hoursPunchInOutTime}
-                    </Text>
-                  </View>
-                </Card.Content>
-              </Card>
-            </View>
-          )}
-
-          {selectedItem?.queryStatus?.label != 'Default' ? (
-            <View>
-              <Text
-                style={{
-                  color: isDark ? Colors.white : Colors.black,
-                  fontSize: 18,
-                  fontFamily: 'Lato-Bold',
-                  marginBottom: 6,
-                  marginLeft: 15,
-                }}>
-                Record data
-              </Text>
-              <Card
-                style={{
-                  backgroundColor: isDark ? Colors.black : Colors.background,
-                  marginVertical: 10,
-                  borderColor: Colors.background,
-                  borderWidth: 0.5,
-                  marginHorizontal: 16,
-                }}>
-                <Card.Content>
-                  <View
-                    style={{
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                      flexWrap: 'wrap',
-                    }}>
-                    <Text
-                      style={{
-                        color: isDark ? Colors.white : Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
-                      }}>
-                      {selectedItem?.date
-                        ? moment(selectedItem?.date).format('DD MMM, YYYY')
-                        : 'N/A'}
-                    </Text>
-
-                    <View>
-                      <Text
-                        style={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontSize: 16,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        {AttendanceQueryData?.suggestedStartTime
-                          ? moment(
-                            AttendanceQueryData?.suggestedStartTime,
-                            'YYYY-MM-DDTHH:mm:ss',
-                          ).format('hh:mm A')
-                          : 'N/A'}
-                        {' - '}
-                        {AttendanceQueryData?.suggestedEndtTime
-                          ? moment(
-                            AttendanceQueryData?.suggestedEndtTime,
-                            'YYYY-MM-DDTHH:mm:ss',
-                          ).format('hh:mm A')
-                          : 'N/A'}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View
-                    style={{
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                      marginTop: 5,
-                      flexWrap: 'wrap',
-                    }}>
-                    <Text
-                      style={{
-                        color: isDark ? Colors.white : Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
-                      }}>
-                      Actual Hours{' : '}
-                      {AttendanceQueryData?.actualHour
-                        ? AttendanceQueryData?.actualHour
-                        : 'N/A'}
-                    </Text>
-
-                    <View>
-                      <Text
-                        style={{
-                          color:
-                            selectedItem?.queryStatus?.label === 'Pending'
-                              ? 'orange'
-                              : selectedItem?.queryStatus?.label === 'Approved'
-                                ? 'green'
-                                : Colors.error,
-                          fontSize: 16,
-                          fontFamily: 'Lato-Semibold',
-                        }}>
-                        {AttendanceQueryData?.statusReason?.label
-                          ? AttendanceQueryData?.statusReason?.label
-                          : 'N/A'}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginTop: 10,
-                    }}>
-                    <Text
-                      style={{
-                        color: isDark ? Colors.white : Colors.black,
-                        fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
-                      }}>
-                      Reason : {AttendanceQueryData?.reason}
-                    </Text>
-                  </View>
-                </Card.Content>
-              </Card>
-            </View>
-          ) : (
-            <>
-              <Formik
-                initialValues={{
-                  startTime: '',
-                  endTime: '',
-                  actualHours: null,
-                  reason: '',
-                }}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}>
-                {({
-                  handleChange,
-                  handleBlur,
-                  handleSubmit,
-                  values,
-                  setFieldValue,
-                  errors,
-                  touched,
-                }) => {
-                  return (
-                    <View style={{ paddingHorizontal: 10 }}>
-                      <View style={{ marginVertical: 6 }} />
-                      <CustomTextInput
-                        label="Start Time"
-                        value={
-                          values.startTime
-                            ? moment(values.startTime, 'HH:mm').format(
-                              'hh:mm A',
-                            )
-                            : ''
-                        }
-                        autoFocus={false}
-                        secureTextEntry={false}
-                        onChangeText={handleChange('startTime')}
-                        onBlur={handleBlur('startTime')}
-                        rightIconName="clock"
-                        readOnly={true}
-                        leftIconName="calendar"
-                        style={styles(isDark).input}
-                        onPress={showTimepicker}
-                      />
-                      {touched.startTime && errors.startTime && (
                         <Text
                           style={{
-                            color: Colors.error,
-                            marginLeft: 20,
-                            fontFamily: 'Lato-Regular',
+                            color:
+                              selectedItem?.leaveType?.label === 'Earn Leave'
+                                ? isDark
+                                  ? Colors.white
+                                  : Colors.black
+                                : isDark
+                                  ? Colors.white
+                                  : Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Lato-Semibold',
                           }}>
-                          {errors.startTime}
+                          Punch In/Out : {selectedItem?.hoursPunchInOutTime}
                         </Text>
-                      )}
-                      {showStartTime && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={pickStartTime || new Date()}
-                          mode="time"
-                          is24Hour={false}
-                          display="default"
-                          accentColor={Colors.primary}
-                          onChange={(event, selectedTime) =>
-                            onChangeStartTime(
-                              event,
-                              selectedTime,
-                              setFieldValue,
-                            )
-                          }
-                        />
-                      )}
-                      <View style={{ marginVertical: 16 }} />
-                      <CustomTextInput
-                        label="End Time"
-                        value={
-                          values.endTime
-                            ? moment(values.endTime, 'HH:mm').format('hh:mm A')
-                            : ''
-                        }
-                        autoFocus={false}
-                        secureTextEntry={false}
-                        rightIconName="clock"
-                        leftIconName="calendar"
-                        onChangeText={handleChange('endTime')}
-                        onBlur={handleBlur('endTime')}
-                        editable={true}
-                        readOnly={true}
-                        style={styles(isDark).input}
-                        onPress={showEndTimepicker}
-                      />
-                      {touched.endTime && errors.endTime && (
-                        <Text
-                          style={{
-                            color: Colors.error,
-                            marginLeft: 20,
-                            fontFamily: 'Lato-Regular',
-                          }}>
-                          {errors.endTime}
-                        </Text>
-                      )}
-                      {showEndTime && (
-                        <DateTimePicker
-                          testID="dateTimePicker"
-                          value={pickEndTime || new Date()}
-                          mode="time"
-                          is24Hour={false}
-                          display="default"
-                          onChange={(event, selectedTime) =>
-                            onChangeEndTime(event, selectedTime, setFieldValue)
-                          }
-                        />
-                      )}
-                      <View style={{ marginVertical: 16 }} />
-                      <CustomTextInput
-                        label="Actual Hours"
-                        value={actualTime.toFixed(2)}
-                        onChangeText={handleChange('actualHours')}
-                        onBlur={handleBlur('actualHours')}
-                        secureTextEntry={false}
-                        leftIconName="hours-24"
-                        editable={false}
-                        readOnly
-                        style={styles(isDark).input}
-                      />
-                      {actualTime < 0 && (
-                        <Text
-                          style={{
-                            color: Colors.error,
-                            marginTop: 5,
-                            marginHorizontal: 16,
-                          }}>
-                          Actual hours cannot be negative, Please select end
-                          time after start time.
-                        </Text>
-                      )}
-                      <View style={{ marginVertical: 16 }} />
-                      <CustomTextInput
-                        label="Reason"
-                        value={values.reason}
-                        secureTextEntry={false}
-                        leftIconName="message-reply-text-outline"
-                        onChangeText={handleChange('reason')}
-                        onBlur={handleBlur('reason')}
-                        editable={true}
-                        style={[styles(isDark).input]}
-                        contentStyle={{ height: 100, paddingBottom: 10 }}
-                        numberOfLines={5}
-                        multiline={true}
-                      />
-                      {touched.reason && errors.reason && (
-                        <Text
-                          style={{
-                            color: Colors.error,
-                            marginLeft: 20,
-                            fontFamily: 'Lato-Regular',
-                          }}>
-                          {errors.reason}
-                        </Text>
-                      )}
+                      </View>
+                    </Card.Content>
+                  </Card>
+                </View>
+              )}
 
-                      <View style={{ marginVertical: 16 }} />
-
-                      <TouchableOpacity
+              {selectedItem?.queryStatus?.label != 'Default' ? (
+                <View>
+                  <Text
+                    style={{
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 18,
+                      fontFamily: 'Lato-Bold',
+                      marginBottom: 6,
+                      marginLeft: 15,
+                    }}>
+                    Record data
+                  </Text>
+                  <Card
+                    style={{
+                      backgroundColor: isDark ? Colors.black : Colors.background,
+                      marginVertical: 10,
+                      borderColor: Colors.background,
+                      borderWidth: 0.5,
+                      marginHorizontal: 16,
+                    }}>
+                    <Card.Content>
+                      <View
                         style={{
-                          width: SCREEN_WIDTH - 90,
-                          height: 45,
-                          backgroundColor:
-                            actualTime < 0 ? Colors.tertiary : Colors.primary,
-                          justifyContent: 'center',
-                          alignSelf: 'center',
-                          borderRadius: 3,
-                        }}
-                        disabled={actualTime < 0 ? true : false}
-                        onPress={() => handleSubmit()}>
-                        {
-                          result?.isLoading ? (
-                            <ActivityIndicator
-                              size="small"
-                              color={Colors.white}
-                            />
-                          ) : (
+                          justifyContent: 'space-between',
+                          flexDirection: 'row',
+                          flexWrap: 'wrap',
+                        }}>
+                        <Text
+                          style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Lato-Semibold',
+                          }}>
+                          {selectedItem?.date
+                            ? moment(selectedItem?.date).format('DD MMM, YYYY')
+                            : 'N/A'}
+                        </Text>
+
+                        <View>
+                          <Text
+                            style={{
+                              color: isDark ? Colors.white : Colors.black,
+                              fontSize: 16,
+                              fontFamily: 'Lato-Semibold',
+                            }}>
+                            {AttendanceQueryData?.suggestedStartTime
+                              ? moment(
+                                AttendanceQueryData?.suggestedStartTime,
+                                'YYYY-MM-DDTHH:mm:ss',
+                              ).format('hh:mm A')
+                              : 'N/A'}
+                            {' - '}
+                            {AttendanceQueryData?.suggestedEndtTime
+                              ? moment(
+                                AttendanceQueryData?.suggestedEndtTime,
+                                'YYYY-MM-DDTHH:mm:ss',
+                              ).format('hh:mm A')
+                              : 'N/A'}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View
+                        style={{
+                          justifyContent: 'space-between',
+                          flexDirection: 'row',
+                          marginTop: 5,
+                          flexWrap: 'wrap',
+                        }}>
+                        <Text
+                          style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Lato-Semibold',
+                          }}>
+                          Actual Hours{' : '}
+                          {AttendanceQueryData?.actualHour
+                            ? AttendanceQueryData?.actualHour
+                            : 'N/A'}
+                        </Text>
+
+                        <View>
+                          <Text
+                            style={{
+                              color:
+                                selectedItem?.queryStatus?.label === 'Pending'
+                                  ? 'orange'
+                                  : selectedItem?.queryStatus?.label === 'Approved'
+                                    ? 'green'
+                                    : Colors.error,
+                              fontSize: 16,
+                              fontFamily: 'Lato-Semibold',
+                            }}>
+                            {AttendanceQueryData?.statusReason?.label
+                              ? AttendanceQueryData?.statusReason?.label
+                              : 'N/A'}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          marginTop: 10,
+                        }}>
+                        <Text
+                          style={{
+                            color: isDark ? Colors.white : Colors.black,
+                            fontSize: 14,
+                            fontFamily: 'Lato-Semibold',
+                          }}>
+                          Reason : {AttendanceQueryData?.reason}
+                        </Text>
+                      </View>
+                    </Card.Content>
+                  </Card>
+                </View>
+              ) : (
+                <>
+                  <Formik
+                    initialValues={{
+                      startTime: '',
+                      endTime: '',
+                      actualHours: null,
+                      reason: '',
+                    }}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}>
+                    {({
+                      handleChange,
+                      handleBlur,
+                      handleSubmit,
+                      values,
+                      setFieldValue,
+                      errors,
+                      touched,
+                    }) => {
+                      return (
+                        <View style={{ paddingHorizontal: 10 }}>
+                          <View style={{ marginVertical: 6 }} />
+                          <CustomTextInput
+                            label="Start Time"
+                            value={
+                              values.startTime
+                                ? moment(values.startTime, 'HH:mm').format(
+                                  'hh:mm A',
+                                )
+                                : ''
+                            }
+                            autoFocus={false}
+                            secureTextEntry={false}
+                            onChangeText={handleChange('startTime')}
+                            onBlur={handleBlur('startTime')}
+                            rightIconName="clock"
+                            readOnly={true}
+                            leftIconName="calendar"
+                            style={styles(isDark).input}
+                            onPress={showTimepicker}
+                          />
+                          {touched.startTime && errors.startTime && (
                             <Text
                               style={{
-                                textAlign: 'center',
-                                fontFamily: 'Lato-Bold',
-                                color: Colors.white,
+                                color: Colors.error,
+                                marginLeft: 20,
+                                fontFamily: 'Lato-Regular',
                               }}>
-                              Submit
+                              {errors.startTime}
                             </Text>
-                          )
-                        }
-                      </TouchableOpacity>
+                          )}
+                          {showStartTime && (
+                            <DateTimePicker
+                              testID="dateTimePicker"
+                              value={pickStartTime || new Date()}
+                              mode="time"
+                              is24Hour={false}
+                              display="default"
+                              accentColor={Colors.primary}
+                              onChange={(event, selectedTime) =>
+                                onChangeStartTime(
+                                  event,
+                                  selectedTime,
+                                  setFieldValue,
+                                )
+                              }
+                            />
+                          )}
+                          <View style={{ marginVertical: 16 }} />
+                          <CustomTextInput
+                            label="End Time"
+                            value={
+                              values.endTime
+                                ? moment(values.endTime, 'HH:mm').format('hh:mm A')
+                                : ''
+                            }
+                            autoFocus={false}
+                            secureTextEntry={false}
+                            rightIconName="clock"
+                            leftIconName="calendar"
+                            onChangeText={handleChange('endTime')}
+                            onBlur={handleBlur('endTime')}
+                            editable={true}
+                            readOnly={true}
+                            style={styles(isDark).input}
+                            onPress={showEndTimepicker}
+                          />
+                          {touched.endTime && errors.endTime && (
+                            <Text
+                              style={{
+                                color: Colors.error,
+                                marginLeft: 20,
+                                fontFamily: 'Lato-Regular',
+                              }}>
+                              {errors.endTime}
+                            </Text>
+                          )}
+                          {showEndTime && (
+                            <DateTimePicker
+                              testID="dateTimePicker"
+                              value={pickEndTime || new Date()}
+                              mode="time"
+                              is24Hour={false}
+                              display="default"
+                              onChange={(event, selectedTime) =>
+                                onChangeEndTime(event, selectedTime, setFieldValue)
+                              }
+                            />
+                          )}
+                          <View style={{ marginVertical: 16 }} />
+                          <CustomTextInput
+                            label="Actual Hours"
+                            value={actualTime.toFixed(2)}
+                            onChangeText={handleChange('actualHours')}
+                            onBlur={handleBlur('actualHours')}
+                            secureTextEntry={false}
+                            leftIconName="hours-24"
+                            editable={false}
+                            readOnly
+                            style={styles(isDark).input}
+                          />
+                          {actualTime < 0 && (
+                            <Text
+                              style={{
+                                color: Colors.error,
+                                marginTop: 5,
+                                marginHorizontal: 16,
+                              }}>
+                              Actual hours cannot be negative, Please select end
+                              time after start time.
+                            </Text>
+                          )}
+                          <View style={{ marginVertical: 16 }} />
+                          <CustomTextInput
+                            label="Reason"
+                            value={values.reason}
+                            secureTextEntry={false}
+                            leftIconName="message-reply-text-outline"
+                            onChangeText={handleChange('reason')}
+                            onBlur={handleBlur('reason')}
+                            editable={true}
+                            style={[styles(isDark).input]}
+                            contentStyle={{ height: 100, paddingBottom: 10 }}
+                            numberOfLines={5}
+                            multiline={true}
+                          />
+                          {touched.reason && errors.reason && (
+                            <Text
+                              style={{
+                                color: Colors.error,
+                                marginLeft: 20,
+                                fontFamily: 'Lato-Regular',
+                              }}>
+                              {errors.reason}
+                            </Text>
+                          )}
 
-                      {isLoading && (
-                        <ActivityIndicator size="large" color={Colors.white} />
-                      )}
-                    </View>
-                  );
-                }}
-              </Formik>
-              <View style={{ height: 200 }} />
-            </>
-          )}
-        </ScrollView>
+                          <View style={{ marginVertical: 16 }} />
+
+                          <TouchableOpacity
+                            style={{
+                              width: SCREEN_WIDTH - 90,
+                              height: 45,
+                              backgroundColor:
+                                actualTime < 0 ? Colors.tertiary : Colors.primary,
+                              justifyContent: 'center',
+                              alignSelf: 'center',
+                              borderRadius: 3,
+                            }}
+                            disabled={actualTime < 0 ? true : false}
+                            onPress={() => handleSubmit()}>
+                            {
+                              result?.isLoading ? (
+                                <ActivityIndicator
+                                  size="small"
+                                  color={Colors.white}
+                                />
+                              ) : (
+                                <Text
+                                  style={{
+                                    textAlign: 'center',
+                                    fontFamily: 'Lato-Bold',
+                                    color: Colors.white,
+                                  }}>
+                                  Submit
+                                </Text>
+                              )
+                            }
+                          </TouchableOpacity>
+
+                          {isLoading && (
+                            <ActivityIndicator size="large" color={Colors.white} />
+                          )}
+                        </View>
+                      );
+                    }}
+                  </Formik>
+                  <View style={{ height: 200 }} />
+                </>
+              )}
+            </ScrollView>
+          </Animated.View>
+        </KeyboardAvoidingView>
       </BottomSheet>
     </>
   );

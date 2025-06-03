@@ -87,26 +87,21 @@ const LateArrivalTime = ({navigation}: any) => {
         <Text style={styles(isDark).label}>
             Time{' - '} In{' : '}
             <Text style={styles(isDark).value}>
-              {item?.inTime ? moment(item?.inTime).format('h:mm A') : '—'}
+              {item?.inTime ? moment(item?.inTime).format('h:mm A') : 'N/A'}
             </Text>{' '}{' | '}
             <Text style={styles(isDark).label}>
               Out{' : '}
               <Text style={styles(isDark).value}>
-                {item?.outTime ? moment(item?.outTime).format('h:mm A') : '—'}
+                {item?.outTime ? moment(item?.outTime).format('h:mm A') : 'N/A'}
               </Text>
             </Text>
             
           </Text>
           <Text
             style={{
-              paddingHorizontal: 10,
-              paddingVertical: 2,
-              borderRadius:2,
-              backgroundColor: item?.isLate ? 'red' : 'green',
-              color: item?.isLate ? Colors.white : 'white',
+              color: item?.isLate ? Colors.error :  Colors.green ,
               fontFamily: 'Lato-Bold',
-              fontSize: 14,
-              alignSelf: 'flex-end',
+              fontSize: 16,
             }}>
             {item?.isLate ? 'Late' : 'OnTime'}
           </Text>

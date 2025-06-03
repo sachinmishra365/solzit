@@ -46,7 +46,7 @@ const CustomHeader = ({
         {showFilterIcon && (
           <IconButton icon="filter" size={25} accessibilityLabel="filter"
             iconColor={isDark ? Colors.white : Colors.primary}
-            style={styles(isDark).searchIcon} onPress={filterOnPress}
+            style={[styles(isDark).searchIcon,{right:2}]} onPress={filterOnPress}
           />
         )}
         {showSearch && (

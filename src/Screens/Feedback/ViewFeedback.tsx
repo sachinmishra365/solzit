@@ -20,6 +20,7 @@ import {IconButton} from 'react-native-paper';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
 import RNFS from 'react-native-fs';
+import Placeholder from '../Placeholder/Placeholder';
 
 const ViewFeedback = ({route, navigation}: any) => {
   const {feedbackData} = route.params;
@@ -94,9 +95,7 @@ const ViewFeedback = ({route, navigation}: any) => {
         onPress={() => navigation.goBack()}
       />
       {isLoading ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
+       <Placeholder/>
       ) : (
         <ScrollView
           style={{
@@ -199,6 +198,7 @@ const ViewFeedback = ({route, navigation}: any) => {
                   /\.(jpg|jpeg|png|gif|bmp)$/i,
                 );
 
+                
                 return (
                   <View key={index} style={styles(isDark).attachmentContainer}>
                     {isImage ? (

@@ -21,7 +21,7 @@ const BugDetails = ({ navigation }: any) => {
     const [bugssDetailData, setBugsDetailData] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
 
-    const { data: BugsData, isSuccess, isLoading ,refetch} = useGetBugDetailsByUserStoryIdQuery({ ItemId: BugDetails?.id, accessToken: accessToken }, { skip: !BugDetails?.id || !accessToken });
+    const { data: BugsData, isSuccess, isLoading, refetch } = useGetBugDetailsByUserStoryIdQuery({ ItemId: BugDetails?.id, accessToken: accessToken }, { skip: !BugDetails?.id || !accessToken });
 
 
     useEffect(() => {
@@ -43,8 +43,8 @@ const BugDetails = ({ navigation }: any) => {
             title={item?.title}
             startDate={item?.createdOn ? moment(item?.createdOn, "MM/DD/YYYY HH:mm:ss").format("DD/MM/YYYY") : null}
             status={item?.workStatus?.label}
-            iconName={'book'}
-            iconColor={Colors.primary}
+            iconName={'bug'}
+            iconColor={Colors.error}
             rightIconName="eye"
             showRightIcon={false}
             rightIconColor={Colors.primary}
@@ -70,7 +70,7 @@ const BugDetails = ({ navigation }: any) => {
         try {
             await refetch();
             // console.log('Refetching data...');
-            
+
         } catch (err) {
             console.error('Refetch error:', err);
         } finally {
@@ -97,6 +97,7 @@ const BugDetails = ({ navigation }: any) => {
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />
                     }
                     ListFooterComponent={<View style={{ height: 100 }} />}
+                    showsVerticalScrollIndicator={false}
                 />
             )}
 

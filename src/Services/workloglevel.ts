@@ -27,7 +27,12 @@ export const workloglevelApi = createApi({
     baseUrl: 'https://solzitessapi-dev.azurewebsites.net/api/V1', //dev
     // baseUrl: 'https://solzitessapi.azurewebsites.net/api/V1', //pro
   }),
-  tagTypes: ['WorkStatus', 'DayTaskReports', 'DeleteDayTaskReports','Addworklog'],
+  tagTypes: [
+    'WorkStatus',
+    'DayTaskReports',
+    'DeleteDayTask',
+    'Addworklog',
+  ],
 
   endpoints: builder => ({
     GetToDoListBasedOnFilter: builder.mutation({
@@ -121,18 +126,6 @@ export const workloglevelApi = createApi({
         },
       }),
     }),
-    GetWorkLogsByEmpIdOnTodo: builder.query({
-      query: ({toDoId, accessToken}) => ({
-        url: `/ToDos/GetWorkLogsByEmpIdOnTodo?ToDoId=${toDoId}`,
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }),
-      providesTags: ['Addworklog'],
-
-    }),
 
     GetWorkLogById: builder.query({
       query: ({workLogId, accessToken}) => ({
@@ -204,7 +197,31 @@ export const workloglevelApi = createApi({
         body: data,
       }),
       invalidatesTags: ['Addworklog'],
+    }),
+    
+    DeleteWorkLog: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/WorkLogs/DeleteWorkLog`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+      invalidatesTags: ['DeleteDayTask'],
+    }),
 
+    GetWorkLogsByEmpIdOnTodo: builder.query({
+      query: ({toDoId, accessToken}) => ({
+        url: `/ToDos/GetWorkLogsByEmpIdOnTodo?ToDoId=${toDoId}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+      providesTags: ['Addworklog','DeleteDayTask'],
     }),
 
     GetMonthlyReportPlansList: builder.query({
@@ -231,7 +248,6 @@ export const workloglevelApi = createApi({
       },
       providesTags: ['DayTaskReports'],
     }),
-    
 
     GetToDoDetailsByToDoId: builder.query({
       query: ({accessToken, ItemId}) => {
@@ -332,7 +348,6 @@ export const workloglevelApi = createApi({
         };
       },
     }),
-
   }),
 });
 
@@ -363,4 +378,5 @@ export const {
   useEditBugMutation,
   useGetEmployeeWorkLogCategoryListQuery,
   useGetLinkedTaskByIdQuery,
+  useDeleteWorkLogMutation
 } = workloglevelApi;
