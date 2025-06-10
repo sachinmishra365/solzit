@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import {Card} from 'react-native-paper';
 import moment from 'moment';
+import EmptyData from '../../Components/EmptyData';
 
 const LateArrivalTime = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -157,21 +158,7 @@ const LateArrivalTime = ({navigation}: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : lateData?.length === 0 ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              alignSelf: 'center',
-              fontFamily: 'Lato-Bold',
-            }}>
-            No Records
-          </Text>
-        </View>
+       <EmptyData/>
       ) : (
         <FlatList
           data={lateData}

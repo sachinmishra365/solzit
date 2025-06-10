@@ -30,7 +30,7 @@ const FilterWorklogs = ({ visible, setVisible, onSelect, onPressGeneral, onPress
         <Portal>
             <Dialog visible={visible} style={styles(isDark).container} dismissable={false}>
                 <View style={styles(isDark).header}>
-                    <Text style={styles(isDark).headerTitle}>Filter</Text>
+                    <Text style={styles(isDark).headerTitle}>Filters</Text>
                     <TouchableOpacity onPress={hideDialog}>
                         <IconButton icon="close" size={25} iconColor={isDark ? Colors.white : Colors.black} />
                     </TouchableOpacity>

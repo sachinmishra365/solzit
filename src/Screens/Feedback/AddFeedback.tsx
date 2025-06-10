@@ -7,11 +7,11 @@ import {
   Modal,
   Image,
 } from 'react-native';
-import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
+import { Colors } from '../../constants/Colors';
 import {
   useAttachFileInSharePointMutation,
   useCreateMyFeedBacksMutation,
@@ -20,10 +20,10 @@ import {
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
-import {List, IconButton, Checkbox} from 'react-native-paper';
-import {Formik} from 'formik';
+import { List, IconButton, Checkbox } from 'react-native-paper';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {SCREEN_WIDTH} from '../../constants/Screen';
+import { SCREEN_WIDTH } from '../../constants/Screen';
 import Placeholder from '../Placeholder/Placeholder';
 import CustomTextInput from '../../Components/CustomTextInput';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -60,17 +60,17 @@ const FeedbackSchema = Yup.object().shape({
   }),
 });
 
-const AddFeedback = ({navigation, route}: any) => {
+const AddFeedback = ({ navigation, route }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
   const auth = useSelector((state: any) => state?.appState?.authToken);
 
-  const [CreateMyFeedBacks, {isLoading}] = useCreateMyFeedBacksMutation();
+  const [CreateMyFeedBacks, { isLoading }] = useCreateMyFeedBacksMutation();
   const [UploadDocument, result] = useAttachFileInSharePointMutation();
-  const {data: regardingOptionsData, isLoading: reportedLoading} =
+  const { data: regardingOptionsData, isLoading: reportedLoading } =
     useGetOptionSetReportedQuery({
-      ReportedTo:'ReportedTo',
+      ReportedTo: 'ReportedTo',
       accessToken: EmployeeId?.authToken?.accessToken,
     });
 
@@ -79,7 +79,9 @@ const AddFeedback = ({navigation, route}: any) => {
       label: item.label,
       value: item.value,
     })) || [];
-    
+  console.log(regardingOptionsData);
+
+
   const [modalVisible, setModalVisible] = useState(false);
 
   const openModal = () => setModalVisible(true);
@@ -149,7 +151,7 @@ const AddFeedback = ({navigation, route}: any) => {
       Name: 'solz_feedback',
     }));
 
-    const data = {itemDetails};
+    const data = { itemDetails };
 
     try {
       const response = await UploadDocument({
@@ -271,19 +273,19 @@ const AddFeedback = ({navigation, route}: any) => {
         <Placeholder />
       ) : (
         <>
-          <Text style={[styles(isDark).label, {marginHorizontal: 16}]}>
+          <Text style={[styles(isDark).label, { marginHorizontal: 16 ,marginTop: 8}]}>
             Soluzione values your feedback. Please feel free to share your
             thoughts.
           </Text>
 
-          <ScrollView contentContainerStyle={{marginHorizontal: 16}}>
+          <ScrollView contentContainerStyle={{ marginHorizontal: 16 }}>
             <Formik
               initialValues={{
-                regardingTo: {label: 'Select', value: null},
+                regardingTo: { label: 'Select', value: null },
                 feedBackTitle: '',
                 feedBackDescription: '',
                 isAttachmentRequired: false,
-                upload: [], 
+                upload: [],
               }}
               validationSchema={FeedbackSchema}
               onSubmit={handleSubmit}
@@ -299,14 +301,16 @@ const AddFeedback = ({navigation, route}: any) => {
                 touched,
               }) => (
                 <>
-                  <View style={{marginVertical: 10}} />
+                
+                  <View style={{ marginVertical: 8 }} />
                   {/* <Text style={styles(isDark).label}>Regarding</Text> */}
                   <CustomDropdownWithModal
                     label="Regarding"
-                    selectedValue={values.regardingTo}
                     options={regardingToData}
+                    selectedValue={values.regardingTo}
                     onSelect={(selectedOption: any) =>
-                      setFieldValue('regardingOptions', selectedOption)
+                      setFieldValue('regardingTo', selectedOption)
+
                     }
                   />
 
@@ -316,7 +320,7 @@ const AddFeedback = ({navigation, route}: any) => {
                     </Text>
                   )}
 
-                  <View style={{marginVertical: 12}} />
+                  <View style={{ marginVertical: 8 }} />
                   <CustomTextInput
                     label="Title"
                     value={values.feedBackTitle}
@@ -337,7 +341,7 @@ const AddFeedback = ({navigation, route}: any) => {
                     </Text>
                   )}
 
-                  <View style={{marginVertical: 12}} />
+                  <View style={{ marginVertical: 8 }} />
                   <CustomTextInput
                     label="Description"
                     value={values.feedBackDescription}
@@ -350,7 +354,7 @@ const AddFeedback = ({navigation, route}: any) => {
                     }}
                     onBlur={handleBlur('feedBackDescription')}
                     editable={true}
-                    contentStyle={{height: 100}}
+                    contentStyle={{ height: 100 }}
                     numberOfLines={5}
                     multiline={true}
                     autoFocus={true}
@@ -362,7 +366,7 @@ const AddFeedback = ({navigation, route}: any) => {
                       </Text>
                     )}
 
-                  <View
+                  {/* <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
@@ -384,114 +388,115 @@ const AddFeedback = ({navigation, route}: any) => {
                       }
                     />
                     <Text style={styles(isDark).label}>Attachments</Text>
-                  </View>
-                  {values.isAttachmentRequired && (
-                    <>
+                  </View> */}
+                  {/* {values.isAttachmentRequired && (
+                   
+                  )} */}
+
+                  <View style={{ marginVertical: 24 }}>
+                    <TouchableOpacity
+                      onPress={openModal}
+                      style={styles(isDark).uploadButton}>
+                      <IconButton
+                        icon="paperclip"
+                        iconColor={isDark ? 'white' : 'black'}
+                        size={30}
+                      />
+                      <Text style={styles(isDark).uploadButtonText}>
+                        {values.upload && values.upload.length > 0
+                          ? values.upload
+                            .map((file: any, i: number) =>
+                              file.filetype?.startsWith('image/')
+                                ? `image${i + 1}.${file.filetype.split('/')[1]
+                                }`
+                                : file.filename,
+                            )
+                            .join(', ')
+                          : 'Add Attachment'}
+                      </Text>
+                    </TouchableOpacity>
+
+                    {touched.upload && errors.upload && (
+                      <Text style={styles(isDark).error}>
+                        {errors.upload}
+                      </Text>
+                    )}
+
+                    <View style={{ marginVertical: 16 }}>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}>
+                        {values.upload?.map((file: any, index) => {
+                          const isImage = file.filetype?.startsWith('image/');
+                          return (
+                            <View
+                              key={index}
+                              style={{ marginRight: 10, alignItems: 'center' }}>
+                              {isImage ? (
+                                <Image
+                                  source={{
+                                    uri: `data:${file.filetype};base64,${file.bytes}`,
+                                  }}
+                                  style={{
+                                    width: 80,
+                                    height: 80,
+                                    borderRadius: 8,
+                                  }}
+                                />
+                              ) : (
+                                <IconButton
+                                  icon="file-document-outline"
+                                  size={40}
+                                />
+                              )}
+                              {!isImage && (
+                                <Text
+                                  numberOfLines={1}
+                                  style={{ width: 80, textAlign: 'center' }}>
+                                  {file.filename}
+                                </Text>
+                              )}
+                            </View>
+                          );
+                        })}
+                      </ScrollView>
+                    </View>
+
+                    <Modal
+                      visible={modalVisible}
+                      transparent
+                      animationType="fade"
+                      onRequestClose={closeModal}>
                       <TouchableOpacity
-                        onPress={openModal}
-                        style={styles(isDark).uploadButton}>
-                        <IconButton
-                          icon="paperclip"
-                          iconColor={isDark ? 'white' : 'black'}
-                          size={30}
-                        />
-                        <Text style={styles(isDark).uploadButtonText}>
-                          {values.upload && values.upload.length > 0
-                            ? values.upload
-                                .map((file: any, i: number) =>
-                                  file.filetype?.startsWith('image/')
-                                    ? `image${i + 1}.${
-                                        file.filetype.split('/')[1]
-                                      }`
-                                    : file.filename,
-                                )
-                                .join(', ')
-                            : 'Add Attachment'}
-                        </Text>
+                        style={styles(isDark).modalOverlay}
+                        activeOpacity={1}
+                        onPress={closeModal}>
+                        <View style={styles(isDark).modalContent}>
+                          <TouchableOpacity
+                            style={styles(isDark).modalButton}
+                            onPress={() =>
+                              onTakePhoto(setFieldValue, values.upload)
+                            }>
+                            <IconButton icon="camera" size={25} />
+                            <Text style={styles(isDark).modalButtonText}>
+                              Take Photo
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={styles(isDark).modalButton}
+                            onPress={() =>
+                              onPickFile(setFieldValue, values.upload)
+                            }>
+                            <IconButton icon="tray-arrow-up" size={25} />
+                            <Text style={styles(isDark).modalButtonText}>
+                              Upload File
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </TouchableOpacity>
-
-                      {touched.upload && errors.upload && (
-                        <Text style={styles(isDark).error}>
-                          {errors.upload}
-                        </Text>
-                      )}
-
-                      <View style={{marginVertical: 16}}>
-                        <ScrollView
-                          horizontal
-                          showsHorizontalScrollIndicator={false}>
-                          {values.upload?.map((file: any, index) => {
-                            const isImage = file.filetype?.startsWith('image/');
-                            return (
-                              <View
-                                key={index}
-                                style={{marginRight: 10, alignItems: 'center'}}>
-                                {isImage ? (
-                                  <Image
-                                    source={{
-                                      uri: `data:${file.filetype};base64,${file.bytes}`,
-                                    }}
-                                    style={{
-                                      width: 80,
-                                      height: 80,
-                                      borderRadius: 8,
-                                    }}
-                                  />
-                                ) : (
-                                  <IconButton
-                                    icon="file-document-outline"
-                                    size={40}
-                                  />
-                                )}
-                                {!isImage && (
-                                  <Text
-                                    numberOfLines={1}
-                                    style={{width: 80, textAlign: 'center'}}>
-                                    {file.filename}
-                                  </Text>
-                                )}
-                              </View>
-                            );
-                          })}
-                        </ScrollView>
-                      </View>
-
-                      <Modal
-                        visible={modalVisible}
-                        transparent
-                        animationType="fade"
-                        onRequestClose={closeModal}>
-                        <TouchableOpacity
-                          style={styles(isDark).modalOverlay}
-                          activeOpacity={1}
-                          onPress={closeModal}>
-                          <View style={styles(isDark).modalContent}>
-                            <TouchableOpacity
-                              style={styles(isDark).modalButton}
-                              onPress={() =>
-                                onTakePhoto(setFieldValue, values.upload)
-                              }>
-                              <IconButton icon="camera" size={25} />
-                              <Text style={styles(isDark).modalButtonText}>
-                                Take Photo
-                              </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                              style={styles(isDark).modalButton}
-                              onPress={() =>
-                                onPickFile(setFieldValue, values.upload)
-                              }>
-                              <IconButton icon="tray-arrow-up" size={25} />
-                              <Text style={styles(isDark).modalButtonText}>
-                                Upload File
-                              </Text>
-                            </TouchableOpacity>
-                          </View>
-                        </TouchableOpacity>
-                      </Modal>
-                    </>
-                  )}
+                    </Modal>
+                  </View>
 
                   <TouchableOpacity
                     style={styles(isDark).submitButton}
@@ -499,7 +504,7 @@ const AddFeedback = ({navigation, route}: any) => {
                     <Text
                       style={[
                         styles(isDark).uploadButtonText,
-                        {color: Colors.white, textAlign: 'center'},
+                        { color: Colors.white, textAlign: 'center' },
                       ]}>
                       Submit
                     </Text>
@@ -574,7 +579,7 @@ const styles = (isDark: boolean) =>
     label: {
       fontSize: 16,
       fontFamily: 'Lato-Bold',
-      marginBottom: 4,
+      // marginBottom: 4,
       color: isDark ? Colors.white : Colors.black,
     },
 
@@ -602,9 +607,9 @@ const styles = (isDark: boolean) =>
       fontFamily: 'Lato-Bold',
     },
     error: {
-      color: 'red',
+      color: Colors.error,
       fontSize: 12,
-      marginBottom: 10,
+      // marginBottom: 10,
       fontFamily: 'Lato-Regular',
     },
     modalOverlay: {

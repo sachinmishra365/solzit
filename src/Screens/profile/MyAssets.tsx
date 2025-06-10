@@ -137,7 +137,7 @@ const MyAssets = ({ navigation }: any) => {
         title="My Assets"
         onPress={() => navigation.goBack()}
       />
-      <View style={styles(isDark).divider} />
+      {/* <View style={styles(isDark).divider} /> */}
       <View style={styles(isDark).maincontainer}>
         {isLoading ? (
           <ShimmerPlaceHolder />

@@ -8,11 +8,12 @@ import moment from 'moment'
 import { Colors } from '../../constants/Colors'
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder'
 import FilterWorklogs from './FilterWorklogs'
-import { isDarkTheme, SetWorklogDetails } from '../../AppStore/Reducers/appState'
+import { isDarkTheme, setToDo, SetWorklogDetails } from '../../AppStore/Reducers/appState'
 import WorkTypeDialog from './WorkTypeDialog'
 import { FAB } from 'react-native-paper'
 import CustomTextInput from '../../Components/CustomTextInput'
 import ToastMessage from '../../Components/ToastMessage'
+import EmptyData from '../../Components/EmptyData'
 
 const Worklog = ({ navigation }: any) => {
     const isDark = useSelector(isDarkTheme);
@@ -80,7 +81,11 @@ const Worklog = ({ navigation }: any) => {
         SetTodoList([]);
         try {
             const response = await GetToDoList(body).unwrap();
-            SetTodoList(response?.data);
+                console.log('filteredList', response?.isSuccessful);
+
+            if (response?.isSuccessful) {
+                SetTodoList(response?.data);
+            }
 
         } catch (err) {
             ToastMessage({ type: "error", title: "Error", subtitle: "Something went wrong" });
@@ -94,6 +99,8 @@ const Worklog = ({ navigation }: any) => {
         handleWorklogs(selectedId?.filterID, selectedId?.itemTypeID, selectedId?.label);
         SetGeneralTask([]);
         SetMyProjectItem([]);
+        dispatch(setToDo(''));
+
     };
 
     const handleSelect = (filterID: number, itemTypeID: number, label: string) => {
@@ -121,7 +128,7 @@ const Worklog = ({ navigation }: any) => {
             showRightIcon2={(item?.workStatus?.label === 'Work In Progress' || item?.workStatus?.label === 'Review Failed') ? true : false}
             rightIconName2={item?.itemType?.label !== 'User Story' && "plus-circle-outline"}
             // item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug')
-            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') : null, dispatch(SetWorklogDetails(item)) }}
+            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') : dispatch(SetWorklogDetails(item)) }}
             // rightIconColor3={Colors.green}
             // showRightIcon3={true}
             // rightIconName3="pencil-circle-outline"
@@ -167,18 +174,21 @@ const Worklog = ({ navigation }: any) => {
             />
             {isLoading ? (
                 <ShimmerPlaceHolder />
-            ) : (
-                <FlatList
-                    data={filteredList}
-                    // data={[...(todoList ?? []), ...(generalTask ?? []), ...(myProjectItem ?? [])]}
-                    renderItem={renderItem}
-                    keyExtractor={(item: any, index: any) => item?.id?.toString() + index}
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />}
-                    ListFooterComponent={<View style={{ height: 100 }} />}
-                    showsVerticalScrollIndicator={false}
+            ) :
+                filteredList.length === 0 ? (
+                    <EmptyData />
+                )
+                    :
+                    <FlatList
+                        data={filteredList}
+                        // data={[...(todoList ?? []), ...(generalTask ?? []), ...(myProjectItem ?? [])]}
+                        renderItem={renderItem}
+                        keyExtractor={(item: any, index: any) => item?.id?.toString() + index}
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[Colors?.primary]} />}
+                        ListFooterComponent={<View style={{ height: 100 }} />}
+                        showsVerticalScrollIndicator={false}
 
-                />
-            )}
+                    />}
             {/* <FAB
                 style={styles(isDark).fab}
                 color={Colors.white}
@@ -207,7 +217,7 @@ const styles = (isDark: any) => StyleSheet.create({
     fab: {
         position: 'absolute',
         right: 32,
-        bottom: 32,
+        bottom: 52,
         backgroundColor: isDark ? Colors.gray : Colors.primary,
         elevation: 10,
     },

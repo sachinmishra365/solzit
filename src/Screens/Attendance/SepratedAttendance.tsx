@@ -18,6 +18,7 @@ import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import Toast from 'react-native-toast-message';
 import EmptyData from '../../Components/EmptyData';
 import BreaksDialog from './BreaksDialog';
+import ToastMessage from '../../Components/ToastMessage';
 
 const SepratedAttendance = ({ route }: any) => {
   const MonthData = route.params;
@@ -221,6 +222,8 @@ const SepratedAttendance = ({ route }: any) => {
 
     try {
       const response = await AskAttendanceQuery({ data, accessToken });
+      console.log('response:', response);
+
       if (response?.data?.messageDetail?.message_code === 201) {
         Toast.show({
           type: 'success',
@@ -242,6 +245,8 @@ const SepratedAttendance = ({ route }: any) => {
         setFieldValue('endTime', '');
         setFieldValue('actualHour', null);
         setFieldValue('reason', '');
+      } else {
+        ToastMessage({ type: "error", title: "Attendance Query", subtitle:response?.data?.messageDetail?.message });
       }
     } catch (error) { }
   };

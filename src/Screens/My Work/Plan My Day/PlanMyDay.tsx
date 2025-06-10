@@ -36,6 +36,10 @@ const PlanMyDay = ({ navigation, route }: any) => {
   const { data: appSettingData } = useGetAppSettingsValueQuery({ accessToken: EmployeeId?.authToken?.accessToken, AppSettingName: 'MAX_ADD_DAY_REPORT_TIME', });
   const isLoading = isToDoLoading || isGeneralTaskLoading;
 
+
+  console.log(showPlanData, 'showPlanData');
+  console.log(generalTaskData, 'generalTaskData');
+  
   const fetchData = async () => {
     if (
       selectedTaskType === 'myActiveItems' ||
@@ -328,7 +332,7 @@ const styles = (isDark: boolean) =>
     fab: {
       position: 'absolute',
       right: 32,
-      bottom: 32,
+      bottom: 52,
       backgroundColor: isDark ? Colors.gray : Colors.primary,
       elevation: 10,
     },

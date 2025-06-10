@@ -78,7 +78,13 @@ const App = () => {
         <SafeAreaView style={{ flex: 0, marginTop: typeof Platform.Version === 'number' && Platform.Version > 34 ? 38 : 0 }} />
         <SafeAreaView style={{ flex: 1 }}>
           <StatusBar
-            barStyle={isDark === 'dark' ? 'light-content' : 'light-content'}
+            barStyle={
+              isDark === 'dark'
+                ? 'light-content'
+                : typeof Platform.Version === 'number' && Platform.Version > 34
+                ? 'dark-content'
+                : 'light-content'
+            }
             //@ts-ignore
             backgroundColor={colorScheme === 'dark' ? Colors.black : Colors.primary}
           />

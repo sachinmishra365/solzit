@@ -23,7 +23,7 @@ const LoginScreen = ({ navigation }: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [showPassword, setShowPassword] = useState(true);
-  const [iscredential, setIsCredential] = useState(false);
+  const [iscredential, setIsCredential] = useState(true);
 
   const [userAuthenticationlogin, { isLoading, error }] = useUserAuthenticationloginMutation();
 

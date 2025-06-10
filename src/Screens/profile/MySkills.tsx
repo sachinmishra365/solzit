@@ -296,7 +296,7 @@ const styles = (isDark: boolean) =>
     fab: {
       position: 'absolute',
       right: 32,
-      bottom: 32,
+      bottom: 52,
       backgroundColor: isDark ? Colors.gray : Colors.primary,
       elevation: 10,
     },

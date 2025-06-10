@@ -1,17 +1,17 @@
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import React, {useState} from 'react';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../../AppStore/Reducers/appState';
-import {Colors} from '../../../constants/Colors';
-import {useCreateMyDailyTaskReportMutation} from '../../../Services/workloglevel';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
+import { Colors } from '../../../constants/Colors';
+import { useCreateMyDailyTaskReportMutation } from '../../../Services/workloglevel';
 import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
-import {Button, Card, Icon, List, TextInput} from 'react-native-paper';
+import { Button, Card, Icon, List, TextInput } from 'react-native-paper';
 
-const AddToMyPlan = ({navigation, route}: any) => {
+const AddToMyPlan = ({ navigation, route }: any) => {
   const isDark = useSelector(isDarkTheme);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
-  const {selectedItems = []} = route.params || {};
+  const { selectedItems = [] } = route.params || {};
   const [isCommitting, setIsCommitting] = useState(false);
   const [createTaskReport] = useCreateMyDailyTaskReportMutation();
   const [estimatedEfforts, setEstimatedEfforts] = useState<
@@ -77,14 +77,14 @@ const AddToMyPlan = ({navigation, route}: any) => {
         accessToken: EmployeeId?.authToken?.accessToken,
         data: payload,
       }).unwrap();
-      
+
       if (res?.isSuccessful && res?.messageDetail?.message_code === 201) {
         Toast.show({
           type: 'success',
           text1: 'Success',
           text2: res?.messageDetail?.message || 'Tasks committed successfully',
-        }); 
-        navigation.navigate('PlanMyDay', {clearSelected: true});
+        });
+        navigation.navigate('PlanMyDay', { clearSelected: true });
       }
     } catch (error: any) {
       console.error('Commit error:', error);
@@ -107,160 +107,160 @@ const AddToMyPlan = ({navigation, route}: any) => {
         onPress={() => navigation.goBack()}
       />
 
-      <ScrollView style={{}}> 
-         { selectedItems.map((item: any, index: number) => (
-            <Card key={item.id} style={styles(isDark).card}>
-              <Card.Content>
-                <View style={styles(isDark).topRow}>
-                  <Text
-                    style={[
-                      styles(isDark).label,
-                      {fontSize: 16, flexShrink: 1},
-                    ]}>
-                    {item?.project?.name ?? 'No Project Name'}
+      <ScrollView style={{}}>
+        {selectedItems.map((item: any, index: number) => (
+          <Card key={item.id} style={styles(isDark).card}>
+            <Card.Content>
+              <View style={styles(isDark).topRow}>
+                <Text
+                  style={[
+                    styles(isDark).label,
+                    { fontSize: 16, flexShrink: 1 },
+                  ]}>
+                  {item?.project?.name ?? 'No Project Name'}
+                </Text>
+              </View>
+              <View style={styles(isDark).row}>
+                <Text style={[styles(isDark).label]}>
+                  {item?.itemNumber}
+                  {' : '}
+                  <Text style={[styles(isDark).value, { flexShrink: 1 }]}>
+                    {item?.title}
                   </Text>
-                </View>
-                <View style={styles(isDark).row}>
-                  <Text style={[styles(isDark).label]}>
-                    {item?.itemNumber}
-                    {' : '}
-                    <Text style={[styles(isDark).value, {flexShrink: 1}]}>
-                      {item?.title}
-                    </Text>
-                  </Text>
-                </View>
+                </Text>
+              </View>
 
-                <View style={[styles(isDark).row, {}]}>
-                  <Text style={[styles(isDark).value, {fontSize: 16}]}>
-                    Estimated Effort{' : '}
-                    <Text style={[styles(isDark).value, {fontSize: 16}]}>
-                      {item?.toDoSubViewsDtos?.implementationEffort}
-                    </Text>
+              <View style={[styles(isDark).row, {}]}>
+                <Text style={[styles(isDark).value, { fontSize: 16 }]}>
+                  Estimated Effort{' : '}
+                  <Text style={[styles(isDark).value, { fontSize: 16 }]}>
+                    {item?.toDoSubViewsDtos?.implementationEffort}
                   </Text>
-                  <Text style={[styles(isDark).label, {fontSize: 16}]}>
-                    {item?.workStatus?.label}
-                  </Text>
-                </View>
+                </Text>
+                <Text style={[styles(isDark).label, { fontSize: 16 }]}>
+                  {item?.workStatus?.label}
+                </Text>
+              </View>
 
-                <View style={{marginTop: 10}}>
-                  <TextInput
-                    label="Effort to be spent today"
-                    value={estimatedEfforts[item.id] || ''}
-                    mode="outlined"
-                    keyboardType="numeric"
-                    onChangeText={text => {
-                      const num = parseFloat(text);
-                      setEstimatedEfforts(prev => ({
-                        ...prev,
-                        [item.id]: !isNaN(num) && num >= 0.25 ? text : '',
-                      }));
-                    }}
-                    outlineColor={Colors.medium_gray}
-                    theme={{
-                      colors: {
-                        primary: Colors.primary,
-                        background: isDark ? Colors.gray : Colors.white,
-                      },
-                    }}
-                    contentStyle={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Regular',
-                      fontSize: 14,
-                    }}
-                    style={styles(isDark).input}
-                  />
-                  {estimatedEfforts[item.id] !== '' &&
-                    parseFloat(estimatedEfforts[item.id]) < 0.25 && (
-                      <Text style={{color: 'red', marginTop: 4}}>
-                        Must be 0.25 or greater
-                      </Text>
-                    )}
-                  {isCommitAttempted && !estimatedEfforts[item.id] && (
-                    <Text style={{color: 'red', marginTop: 4}}>
-                      Please enter estimated effort
+              <View style={{ marginTop: 10 }}>
+                <TextInput
+                  label="Effort to be spent today"
+                  value={estimatedEfforts[item.id] || ''}
+                  mode="outlined"
+                  keyboardType="numeric"
+                  onChangeText={text => {
+                    const num = parseFloat(text);
+                    setEstimatedEfforts(prev => ({
+                      ...prev,
+                      [item.id]: !isNaN(num) && num >= 0.25 ? text : '',
+                    }));
+                  }}
+                  outlineColor={Colors.medium_gray}
+                  theme={{
+                    colors: {
+                      primary: isDark ? Colors.white : Colors.primary,
+                      background: isDark ? Colors.gray : Colors.white,
+                    },
+                  }}
+                  contentStyle={{
+                    color: isDark ? Colors.white : Colors.black,
+                    fontFamily: 'Lato-Regular',
+                    fontSize: 14,
+                  }}
+                  style={styles(isDark).input}
+                />
+                {estimatedEfforts[item.id] !== '' &&
+                  parseFloat(estimatedEfforts[item.id]) < 0.25 && (
+                    <Text style={{ color: 'red', marginTop: 4 }}>
+                      Must be 0.25 or greater
                     </Text>
                   )}
-                </View>
+                {isCommitAttempted && !estimatedEfforts[item.id] && (
+                  <Text style={{ color: 'red', marginTop: 4 }}>
+                    Please enter estimated effort
+                  </Text>
+                )}
+              </View>
 
-                <View style={{marginTop: 10, marginBottom: 10}}>
-                  <List.Accordion
-                    title={
-                      selectedWorkStatuses[item.id] ||
-                      item?.eodCommittedWorkStatus?.label ||
-                      'Committed EOD Status'
-                    }
-                    style={{
-                      backgroundColor: isDark ? Colors.gray : Colors.background,
-                      borderWidth: 0.5,
-                      borderColor: Colors.medium_gray,
-                      borderRadius: 1,
-                      height: 57,
-                    }}
-                    titleStyle={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontFamily: 'Lato-Regular',
-                      fontSize: 14,
-                    }}
-                    right={props => (
-                      <List.Icon
-                        {...props}
-                        icon="chevron-down"
-                        color={isDark ? Colors.white : Colors.black}
-                      />
-                    )}
-                    expanded={!!expandedStates[item.id]}
-                    onPress={() =>
-                      setExpandedStates(prev => ({
-                        ...prev,
-                        [item.id]: !prev[item.id],
-                      }))
-                    }>
-                    {WORK_STATUS_OPTIONS.map(option => (
-                      <List.Item
-                        key={option.value}
-                        title={option.label}
-                        onPress={() => {
-                          setSelectedWorkStatuses(prev => ({
-                            ...prev,
-                            [item.id]: option.label,
-                          }));
-                          setExpandedStates(prev => ({
-                            ...prev,
-                            [item.id]: false,
-                          }));
-                        }}
-                        right={() =>
-                          selectedWorkStatuses[item.id] === option.label ? (
-                            <Icon
-                              source="check"
-                              size={20}
-                              color={Colors.primary}
-                            />
-                          ) : null
-                        }
-                        style={{
-                          backgroundColor: isDark ? Colors.gray : Colors.white,
-                          height: 51,
-                        }}
-                        titleStyle={{
-                          color: isDark ? Colors.white : Colors.black,
-                          fontFamily: 'Lato-Regular',
-                          fontSize: 14,
-                        }}
-                      />
-                    ))}
-                  </List.Accordion>
-                   {isCommitAttempted && !selectedWorkStatuses[item.id] && (
+              <View style={{ marginTop: 10, marginBottom: 10 }}>
+                <List.Accordion
+                  title={
+                    selectedWorkStatuses[item.id] ||
+                    item?.eodCommittedWorkStatus?.label ||
+                    'Committed EOD Status'
+                  }
+                  style={{
+                    backgroundColor: isDark ? Colors.gray : Colors.background,
+                    borderWidth: 0.5,
+                    borderColor: isDark ? Colors.white :  Colors.medium_gray,
+                    borderRadius: 1,
+                    height: 57,
+                  }}
+                  titleStyle={{
+                    color: isDark ? Colors.white : Colors.black,
+                    fontFamily: 'Lato-Regular',
+                    fontSize: 14,
+                  }}
+                  right={props => (
+                    <List.Icon
+                      {...props}
+                      icon="chevron-down"
+                      color={isDark ? Colors.white : Colors.black}
+                    />
+                  )}
+                  expanded={!!expandedStates[item.id]}
+                  onPress={() =>
+                    setExpandedStates(prev => ({
+                      ...prev,
+                      [item.id]: !prev[item.id],
+                    }))
+                  }>
+                  {WORK_STATUS_OPTIONS.map(option => (
+                    <List.Item
+                      key={option.value}
+                      title={option.label}
+                      onPress={() => {
+                        setSelectedWorkStatuses(prev => ({
+                          ...prev,
+                          [item.id]: option.label,
+                        }));
+                        setExpandedStates(prev => ({
+                          ...prev,
+                          [item.id]: false,
+                        }));
+                      }}
+                      right={() =>
+                        selectedWorkStatuses[item.id] === option.label ? (
+                          <Icon
+                            source="check"
+                            size={20}
+                            color={Colors.primary}
+                          />
+                        ) : null
+                      }
+                      style={{
+                        backgroundColor: isDark ? Colors.gray : Colors.white,
+                        height: 51,
+                      }}
+                      titleStyle={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontFamily: 'Lato-Regular',
+                        fontSize: 14,
+                      }}
+                    />
+                  ))}
+                </List.Accordion>
+                {isCommitAttempted && !selectedWorkStatuses[item.id] && (
                   <Text style={{ color: 'red', marginTop: 4 }}>
                     Please select a work status
                   </Text>
                 )}
-                </View>
-                
-              </Card.Content>
-            </Card>
-          ))}
-     
+              </View>
+
+            </Card.Content>
+          </Card>
+        ))}
+
       </ScrollView>
 
       <Button
@@ -275,7 +275,7 @@ const AddToMyPlan = ({navigation, route}: any) => {
           backgroundColor: Colors.primary,
           borderRadius: 3,
         }}
-        labelStyle={{color: 'white', fontFamily: 'Lato-Bold'}}>
+        labelStyle={{ color: 'white', fontFamily: 'Lato-Bold' }}>
         Commit
       </Button>
     </View>

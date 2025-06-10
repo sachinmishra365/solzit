@@ -11,6 +11,7 @@ import { PERMISSION_TYPE, PermissionHandler } from '../../permissions';
 import Placeholder from '../Placeholder/Placeholder';
 
 import ImageCropPicker, { ImageOrVideo, Image as CropImage, } from 'react-native-image-crop-picker';
+import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 const Profile = ({ navigation }: any) => {
 
@@ -73,6 +74,11 @@ const Profile = ({ navigation }: any) => {
         includeExif: true,
         mediaType,
         includeBase64: true,
+        cropperStatusBarColor: isDark ? Colors.black : Colors.primary,
+        cropperToolbarColor: isDark ? Colors.black : Colors.primary,
+        cropperToolbarWidgetColor: isDark ? Colors.white : Colors.white,
+        cropperActiveWidgetColor: isDark ? Colors.primary : Colors.primary,
+
       }),
     );
   };
@@ -86,6 +92,10 @@ const Profile = ({ navigation }: any) => {
         includeExif: true,
         mediaType,
         includeBase64: true,
+        cropperStatusBarColor: isDark ? Colors.black : Colors.primary,
+        cropperToolbarColor: isDark ? Colors.black : Colors.primary,
+        cropperToolbarWidgetColor: isDark ? Colors.white : Colors.white,
+        cropperActiveWidgetColor: isDark ? Colors.primary : Colors.primary,
       }),
     );
   };
@@ -476,13 +486,13 @@ const styles = (isDark: any) =>
     },
     modalContainer: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.5)',
+      backgroundColor: isDark ? Colors.black :'rgba(0,0,0,0.5)',
       justifyContent: 'center',
       alignItems: 'center',
     },
     modalContent: {
       width: '80%',
-      backgroundColor: 'white',
+      backgroundColor:isDark ? Colors.gray : Colors.white,
       padding: 20,
       borderRadius: 10,
       justifyContent: 'center',
@@ -490,7 +500,8 @@ const styles = (isDark: any) =>
     },
     header: {
       fontSize: 24,
-      fontWeight: 'bold',
+      fontFamily: 'Lato-Bold',
+      color: Colors.white,
       marginBottom: 20,
     },
     imageContainer: {

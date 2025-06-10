@@ -165,8 +165,8 @@ const AddReference = ({ navigation, route }: any) => {
           <Placeholder />
         ) : (
           <>
-            <View style={{ marginHorizontal: 16 }}>
-              <Text style={[styles(isDark).label, { marginBottom: -5 }]}>
+            <View style={{ marginHorizontal: 16,marginTop: 8 }}>
+              <Text style={[styles(isDark).label, { marginBottom: -2 }]}>
                 Hiring Position:
                 <Text style={{ color: Colors.primary, fontFamily: 'Lato-Bold' }}>
                   {' '}
