@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Card, IconButton } from 'react-native-paper'
-import { Colors, Statuses } from '../constants/Colors'
 import { useSelector } from 'react-redux'
-import { isDarkTheme } from '../AppStore/Reducers/appState'
 import moment from 'moment'
+import { isDarkTheme } from '../../AppStore/Reducers/appState'
+import { Colors, Statuses } from '../../constants/Colors'
 
-const WorklogCard = ({
+const ApprovalCard = ({
     projectName,
     width = '80%',
     serialNo,
@@ -134,7 +134,7 @@ const WorklogCard = ({
     )
 }
 
-export default WorklogCard
+export default ApprovalCard
 
 const styles = (isDark: any) => StyleSheet.create({
     cardContainer: {

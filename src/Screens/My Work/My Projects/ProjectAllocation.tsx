@@ -9,18 +9,27 @@ import Toast from 'react-native-toast-message';
 import CustomHeader from '../../../Components/CustomHeader';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
 import EmptyData from '../../../Components/EmptyData';
+import ToastMessage from '../../../Components/ToastMessage';
 
 const ProjectAllocation = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
   const accessToken = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
 
-  const { data, isLoading ,refetch } = useGetemployeeProjectAllocationQuery({ accessToken: accessToken?.authToken?.accessToken, });
+  const { data, isLoading, refetch } = useGetemployeeProjectAllocationQuery({ accessToken: accessToken?.authToken?.accessToken, });
 
   const [myPlanData, setMyPlanData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-console.log(myPlanData);
+  const totalAllocation = myPlanData
+    .filter((item: any) => item?.status?.value === 1)
+    .reduce((sum, item: any) => {
+      const percent = typeof item.allocationPercentage === 'string'
+        ? parseFloat(item.allocationPercentage.replace('%', ''))
+        : Number(item.allocationPercentage);
+      return sum + (isNaN(percent) ? 0 : percent);
+    }, 0);
+
 
   const handleMyPlans = async () => {
     if (!connected) {
@@ -47,7 +56,9 @@ console.log(myPlanData);
 
   useEffect(() => {
     handleMyPlans();
-  }, [data]);
+
+  }, [data,]);
+
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -67,7 +78,7 @@ console.log(myPlanData);
 
               <View style={styles(isDark).row}>
                 <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Semibold' }]}>{'Allocation'}</Text>
-                 <Text style={[styles(isDark).txt, { color: 'green', fontFamily: 'Lato-Bold' }]}>{item.allocationPercentage}</Text>
+                <Text style={[styles(isDark).txt, { color: 'green', fontFamily: 'Lato-Bold' }]}>{item.allocationPercentage}</Text>
               </View>
 
               <View style={styles(isDark).row}>
@@ -94,6 +105,9 @@ console.log(myPlanData);
         title="Project Allocation"
         isDark={isDark}
         onPress={() => navigation.goBack()}
+        showallocation={true}
+        total={totalAllocation}
+        color={totalAllocation < 100 ? Colors.error : 'green'}
       />
       {isLoading ? (
         <ShimmerPlaceHolder />
@@ -112,6 +126,7 @@ console.log(myPlanData);
         ) : (
           <EmptyData />
         )}
+
     </View>
   );
 };

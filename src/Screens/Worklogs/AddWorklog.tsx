@@ -39,6 +39,7 @@ const AddWorklog = ({ navigation, route }: any) => {
     const [saveworklog, result] = useSaveWorkLogMutation();
 
     const validationSchema = Yup.object().shape({
+        worklogCategory: todo === 'General Tasks' ? Yup.string().required('Worklog Category is required') : Yup.string(),
         hour: Yup.number()
             .typeError('Hour must be a number')
             .required('Hour is required')
@@ -88,6 +89,7 @@ const AddWorklog = ({ navigation, route }: any) => {
 
         try {
             const response = await saveworklog({ data, accessToken }).unwrap();
+
             if (response?.messageDetail?.message_code === 201) {
                 // Alert.alert('Success', 'Work log saved successfully!')
                 ToastMessage({ type: "success", title: "Work log", subtitle: "Work log saved successfully!" });
@@ -95,6 +97,9 @@ const AddWorklog = ({ navigation, route }: any) => {
             }
         } catch (err) {
             console.log(err);
+            //@ts-ignore
+            ToastMessage({ type: "error", title: "Work log", subtitle: err?.data?.messageDetail?.message });
+
         }
     }
 
@@ -153,10 +158,10 @@ const AddWorklog = ({ navigation, route }: any) => {
                                                 <Text style={styles(isDark).formErrorText}>{String(errors[Object.keys(errors)[0]])}</Text>
                                             </View>
                                         )}
-                                        {(todo === 'General Tasks' && values.worklogCategory === '') &&
+                                        {/* {(todo === 'General Tasks' && values.worklogCategory === '') &&
                                             (<View style={styles(isDark).formErrorBox}>
                                                 <Text style={styles(isDark).formErrorText}>{'Worklog Category is required.'}</Text>
-                                            </View>)}
+                                            </View>)} */}
                                         <CustomTextInput
                                             label="Project Name"
                                             value={worklogData?.project?.name}

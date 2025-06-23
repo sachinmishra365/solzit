@@ -19,9 +19,15 @@ const CustomHeader = ({
   showRightIcon = false,
   rightIconPress,
   rightIconName,
+  showRightIcon2 = false,
+  rightIconPress2,
+  rightIconName2,
   showFilterIcon = false,
   filterOnPress,
   onMenuSelect,
+  showallocation = false,
+  total = 0,
+  color
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -46,7 +52,7 @@ const CustomHeader = ({
         {showFilterIcon && (
           <IconButton icon="filter" size={25} accessibilityLabel="filter"
             iconColor={isDark ? Colors.white : Colors.primary}
-            style={[styles(isDark).searchIcon,{right:2}]} onPress={filterOnPress}
+            style={[styles(isDark).searchIcon, { right: 2 }]} onPress={filterOnPress}
           />
         )}
         {showSearch && (
@@ -59,10 +65,21 @@ const CustomHeader = ({
             onPress={filterOnPress}
           />
         )}
+        {showallocation && (
+          <Text style={[styles(isDark).allocationtxt, { color: color }]}>
+            {total}{'%'}
+          </Text>
+        )}
         {showRightIcon && (
           <IconButton icon={rightIconName} size={25}
             iconColor={isDark ? Colors.white : Colors.primary}
             style={styles(isDark).searchIcon} onPress={rightIconPress}
+          />
+        )}
+        {showRightIcon2 && (
+          <IconButton icon={rightIconName2} size={25}
+            iconColor={isDark ? Colors.white : Colors.primary}
+            style={[styles(isDark).searchIcon,{right:48}]} onPress={rightIconPress2}
           />
         )}
       </View>
@@ -98,6 +115,12 @@ const styles = (isDark: any) =>
       color: isDark ? Colors.white : Colors.black,
       // marginTop: 2,
       fontFamily: 'Lato-Semibold',
+    },
+    allocationtxt: {
+      fontSize: 16,
+      fontFamily: 'Lato-Semibold',
+      position: 'absolute',
+      right: 20,
     },
     searchIcon: {
       position: 'absolute',

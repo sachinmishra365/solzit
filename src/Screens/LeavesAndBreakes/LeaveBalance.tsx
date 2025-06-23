@@ -175,7 +175,11 @@ const LeaveBalance = ({ navigation }: any) => {
                   fontSize: 14,
                   fontFamily: 'Lato-Bold',
                 }}>
-                Approved by :{' '}
+                 {item?.status?.value === 674180002
+                    ? 'Declined By : '
+                    : item?.status?.value === 674180000
+                    ? 'Canceled By : '
+                    : 'Approved by : '}
               </Text>
               <Text
                 style={{

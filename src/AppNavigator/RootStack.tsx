@@ -45,6 +45,8 @@ import WFHCard from '../Screens/Dashboard/WFHCard';
 import Breakes from '../Screens/LeavesAndBreakes/Breakes';
 import AddBreaks from '../Screens/LeavesAndBreakes/AddBreaks';
 import AddSkills from '../Screens/profile/AddSkills';
+import AppoveWorklog from '../Screens/WorklogApproval/AppoveWorklog';
+import SelectedEmployee from '../Screens/WorklogApproval/SelectedEmployee';
 
 
 const Stack = createNativeStackNavigator();
@@ -114,7 +116,8 @@ useEffect(() => {
       <Stack.Screen name="ShowPlan" component={ShowPlan} />
       <Stack.Screen name="WFHCard" component={WFHCard} />
       <Stack.Screen name="AddSkills" component={AddSkills} />
-
+      <Stack.Screen name="AppoveWorklog" component={AppoveWorklog} />
+      <Stack.Screen name="SelectedEmployee" component={SelectedEmployee} />
     </Stack.Navigator>
   );
 };

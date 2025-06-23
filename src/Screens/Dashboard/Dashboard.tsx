@@ -397,7 +397,7 @@ const Dashboard = ({ navigation }: any) => {
           monthTextColor: Colors.dark_gray,
           textDisabledColor: Colors.error,
         }}
-        enableSwipeMonths={true}
+        enableSwipeMonths={false}
         disableAllTouchEventsForDisabledDays={true}
       />
 

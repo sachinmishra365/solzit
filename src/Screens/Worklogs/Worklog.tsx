@@ -81,8 +81,6 @@ const Worklog = ({ navigation }: any) => {
         SetTodoList([]);
         try {
             const response = await GetToDoList(body).unwrap();
-                console.log('filteredList', response?.isSuccessful);
-
             if (response?.isSuccessful) {
                 SetTodoList(response?.data);
             }
@@ -128,7 +126,7 @@ const Worklog = ({ navigation }: any) => {
             showRightIcon2={(item?.workStatus?.label === 'Work In Progress' || item?.workStatus?.label === 'Review Failed') ? true : false}
             rightIconName2={item?.itemType?.label !== 'User Story' && "plus-circle-outline"}
             // item?.workStatus?.label === 'Review Failed' ? navigation.navigate('AddBug')
-            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress' ? navigation.navigate('AddWorklog') : dispatch(SetWorklogDetails(item)) }}
+            rightIconPress2={() => { item?.workStatus?.label === 'Work In Progress'  && navigation.navigate('AddWorklog') , dispatch(SetWorklogDetails(item)) }}
             // rightIconColor3={Colors.green}
             // showRightIcon3={true}
             // rightIconName3="pencil-circle-outline"

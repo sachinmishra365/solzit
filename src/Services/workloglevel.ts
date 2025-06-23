@@ -32,6 +32,7 @@ export const workloglevelApi = createApi({
     'DayTaskReports',
     'DeleteDayTask',
     'Addworklog',
+    'updateWorklogStatus',
   ],
 
   endpoints: builder => ({
@@ -188,7 +189,7 @@ export const workloglevelApi = createApi({
     }),
     SaveWorkLog: builder.mutation({
       query: ({data, accessToken}) => ({
-        url: `/ToDos/SaveWorkLog`,
+        url: `/ToDos/SaveWorkLog/`,
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -325,10 +326,38 @@ export const workloglevelApi = createApi({
       invalidatesTags: ['DayTaskReports'],
     }),
 
+    GetProjectManagerWorkLogApprovalList: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/WorkLogs/GetApprovalWorkLogWithAttendanceListBasedOnFilter`,
+        // url: `/WorkLogs/GetProjectManagerWorkLogApprovalList`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+      //@ts-ignore
+      providesTags: ['updateWorklogStatus'],
+    }),
+
+    UpdateWorkLogStatus: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/WorkLogs/UpdateWorkLogStatus`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
+      invalidatesTags: ['updateWorklogStatus'],
+    }),
+
     GetAppSettingsValue: builder.query({
       query: ({accessToken, AppSettingName}) => {
         return {
-          url: `/Master/GetAppSettingsValue?AppSettingName=${AppSettingName}`,
+          url: `/Master/GetAppSettingsValue?AppSettingName=MAX_ADD_DAY_REPORT_TIME`,
           method: 'GET',
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -378,5 +407,7 @@ export const {
   useEditBugMutation,
   useGetEmployeeWorkLogCategoryListQuery,
   useGetLinkedTaskByIdQuery,
-  useDeleteWorkLogMutation
+  useDeleteWorkLogMutation,
+  useGetProjectManagerWorkLogApprovalListMutation,
+  useUpdateWorkLogStatusMutation
 } = workloglevelApi;

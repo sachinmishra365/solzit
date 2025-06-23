@@ -486,6 +486,23 @@ const DrawerNavigator = ({navigation}: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Feedback</Text>
           </Pressable>
+
+          <Pressable
+            android_ripple={{color: 'rgba(0,0,0,0.1)'}}
+            onPressIn={() => {
+              navigation.navigate('AppoveWorklog');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={[styles(isDark).drawerBtn]}>
+            <Icon
+              source="chat-processing"
+              color={isDark ? Colors.white : Colors.primary}
+              size={23}
+            />
+            <Text style={styles(isDark).drawerBtnTxt}>Appove Worklog</Text>
+          </Pressable>
         </ScrollView>
       </View>
 

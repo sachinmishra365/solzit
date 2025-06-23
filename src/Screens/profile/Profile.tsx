@@ -54,9 +54,10 @@ const Profile = ({ navigation }: any) => {
   const openModal = async () => {
     const cameraPermission = await PermissionHandler.checkPermission(PERMISSION_TYPE.camera,);
     const photosPermission = await PermissionHandler.checkPermission(PERMISSION_TYPE.photos,);
-
+    console.log('Camera Permission:', cameraPermission);
+    
     if (!cameraPermission) {
-      Linking.openSettings();
+      Linking.openSettings();      
       return;
     }
 
@@ -78,7 +79,6 @@ const Profile = ({ navigation }: any) => {
         cropperToolbarColor: isDark ? Colors.black : Colors.primary,
         cropperToolbarWidgetColor: isDark ? Colors.white : Colors.white,
         cropperActiveWidgetColor: isDark ? Colors.primary : Colors.primary,
-
       }),
     );
   };

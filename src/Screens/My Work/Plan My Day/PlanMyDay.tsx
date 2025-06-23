@@ -28,18 +28,15 @@ const PlanMyDay = ({ navigation, route }: any) => {
   const [filterVisible, setFilterVisible] = useState(false);
   const [isFilterSelected, setIsFilterSelected] = useState(false);
   const [isFabDisabled, setIsFabDisabled] = useState(false);
+  const [validateTime, setValidateTime] = useState('');
   const todayDate = moment().format('YYYY-MM-DDT05:30:00');
 
   const [getToDoListBasedOnFilter, { isLoading: isToDoLoading }] = useGetToDoListBasedOnFilterMutation();
   const { data: generalTaskData, isLoading: isGeneralTaskLoading } = useGetGeneralTaskListInMyProjectQuery({ accessToken: accessToken?.authToken?.accessToken, });
-  const { data: showPlanData, isLoading: ShowPlanLoading, } = useGetDayTaskReportDetailsQuery({ accessToken: EmployeeId?.authToken?.accessToken, Date: todayDate, });
-  const { data: appSettingData } = useGetAppSettingsValueQuery({ accessToken: EmployeeId?.authToken?.accessToken, AppSettingName: 'MAX_ADD_DAY_REPORT_TIME', });
+  const { data: showPlanData, isLoading: ShowPlanLoading, error } = useGetDayTaskReportDetailsQuery({ accessToken: EmployeeId?.authToken?.accessToken, Date: todayDate, });
+  const { data: appSettingData } = useGetAppSettingsValueQuery({ accessToken: EmployeeId?.authToken?.accessToken, });
   const isLoading = isToDoLoading || isGeneralTaskLoading;
 
-
-  console.log(showPlanData, 'showPlanData');
-  console.log(generalTaskData, 'generalTaskData');
-  
   const fetchData = async () => {
     if (
       selectedTaskType === 'myActiveItems' ||
@@ -106,8 +103,8 @@ const PlanMyDay = ({ navigation, route }: any) => {
   useEffect(() => {
     if (appSettingData?.data) {
       const settingTime = moment(appSettingData.data, 'HH:mm:ss');
-      const currentTime = moment();
-
+      const currentTime = moment(moment().format('HH:mm:ss'), 'HH:mm:ss');
+      setValidateTime(settingTime.format('HH:mm:ss'));
       if (currentTime.isAfter(settingTime)) {
         setIsFabDisabled(true);
       } else {
@@ -132,8 +129,9 @@ const PlanMyDay = ({ navigation, route }: any) => {
     setFilterVisible(false);
     fetchData();
   };
+
   const renderItem = ({ item }: any) => {
-    
+
     if (item?.itemType?.value === 674180002 || item?.itemType?.value === 674180003) {
       return (
         <WorklogCard
@@ -223,14 +221,7 @@ const PlanMyDay = ({ navigation, route }: any) => {
         color={Colors.white}
         icon="plus"
         onPress={() => {
-          if (isFabDisabled) {
-            ToastMessage({
-              type: 'error',
-              title: 'Time Limit Exceeded',
-              subtitle: 'You cannot add to plan after 5:30 pm.',
-            });
-            return;
-          }
+
 
           const selectedItems = (
             selectedTaskType === 'myActiveItems' ||
@@ -244,6 +235,14 @@ const PlanMyDay = ({ navigation, route }: any) => {
               type: 'error',
               title: 'No Task Selected',
               subtitle: 'Please select at least one task to add.',
+            });
+            return;
+          }
+          if (isFabDisabled) {
+            ToastMessage({
+              type: 'error',
+              title: 'Time Limit Exceeded',
+              subtitle: `You cannot add to plan after ${validateTime}.`,
             });
             return;
           }

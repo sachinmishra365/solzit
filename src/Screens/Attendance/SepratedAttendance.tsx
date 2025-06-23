@@ -50,6 +50,7 @@ const SepratedAttendance = ({ route }: any) => {
       hideSubscription.remove();
     };
   }, []);
+  
   useEffect(() => {
     if (pickStartTime && pickEndTime) {
       const startMoment = moment(pickStartTime, 'HH:mm');

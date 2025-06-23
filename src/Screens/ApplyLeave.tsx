@@ -170,6 +170,8 @@ const ApplyLeave = () => {
         }, 5000);
       }
     } catch (err) {
+      console.log('Error applying leave:', err);
+      
     }
   };
 

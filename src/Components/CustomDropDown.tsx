@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Modal,
@@ -10,11 +10,12 @@ import {
   findNodeHandle,
   UIManager,
 } from 'react-native';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../AppStore/Reducers/appState';
-import {Colors} from '../constants/Colors';
-import {TextInput} from 'react-native-paper';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../AppStore/Reducers/appState';
+import { Colors } from '../constants/Colors';
+import { TextInput } from 'react-native-paper';
 import CustomTextInput from './CustomTextInput';
+import EmptyData from './EmptyData';
 
 const CustomDropdownWithModal = ({
   label = 'Select',
@@ -32,7 +33,7 @@ const CustomDropdownWithModal = ({
       const handle = findNodeHandle(inputRef.current);
       if (handle) {
         UIManager.measureInWindow(handle, (x, y, width, height) => {
-          setDropdownPos({x, y, width, height});
+          setDropdownPos({ x, y, width, height });
           setModalVisible(true);
         });
       }
@@ -59,7 +60,7 @@ const CustomDropdownWithModal = ({
           autoFocus={true}
         />
       </Pressable>
-      
+
 
       <Modal
         transparent
@@ -79,21 +80,31 @@ const CustomDropdownWithModal = ({
                   top: dropdownPos.y + dropdownPos.height + 5,
                   left: dropdownPos.x,
                 },
-              ]}>
-              {options.map((option: any) => (
-                <TouchableOpacity
-                  key={option.value}
-                  onPress={() => handleSelect(option)}
-                  style={styles(isDark).item}>
+              ]}>{options.length > 0 ? (
+                options.map((option: any) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    onPress={() => handleSelect(option)}
+                    style={styles(isDark).item}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontFamily: 'Lato-Regular',
+                      }}>
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))) : (
+                <View style={styles(isDark).item}>
                   <Text
                     style={{
                       color: isDark ? Colors.white : Colors.black,
                       fontFamily: 'Lato-Regular',
                     }}>
-                    {option.label}
+                   <EmptyData/>
                   </Text>
-                </TouchableOpacity>
-              ))}
+                </View>
+              )}
             </View>
           )}
         </Pressable>

@@ -142,7 +142,6 @@ const LateArrivalTime = ({navigation}: any) => {
           </Text>
         </View>
 
-        
       </Card.Content>
     </Card>
   );
