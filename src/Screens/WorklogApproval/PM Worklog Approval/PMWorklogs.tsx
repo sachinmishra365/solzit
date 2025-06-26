@@ -1,31 +1,30 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { isDarkTheme, setEmployeeList, setFilterEmployeeList } from '../../AppStore/Reducers/appState';
-import { Colors } from '../../constants/Colors';
-import CustomHeader from '../../Components/CustomHeader';
-import { useGetApprovalWorkLogWithAttendanceListBasedOnFilterMutation, useUpdateWorkLogStatusMutation } from '../../Services/workloglevel';
-import AppoveWorklogFilter from './AppoveWorklogFilter';
-import WorklogCard from '../../Components/WorklogCard';
 import moment from 'moment';
-import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import EmptyData from '../../Components/EmptyData';
 import { Button } from 'react-native-paper';
-import ToastMessage from '../../Components/ToastMessage';
-import Placeholder from '../Placeholder/Placeholder';
 import { useIsFocused } from '@react-navigation/native';
+import ToastMessage from '../../../Components/ToastMessage';
+import { useGetProjectManagerWorkLogApprovalListMutation, useUpdateWorkLogStatusMutation } from '../../../Services/workloglevel';
+import { isDarkTheme, setFilterPMList, setPMList } from '../../../AppStore/Reducers/appState';
+import WorklogCard from '../../../Components/WorklogCard';
+import { Colors } from '../../../constants/Colors';
+import CustomHeader from '../../../Components/CustomHeader';
+import Placeholder from '../../Placeholder/Placeholder';
+import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
+import EmptyData from '../../../Components/EmptyData';
+import PMApproveWorklogFilter from './PMApproveWorklogFilter';
 
-const AppoveWorklog = ({ navigation }: any) => {
+const PMWorklogs = ({ navigation }: any) => {
     const isFocuse = useIsFocused();
     const isDark = useSelector(isDarkTheme);
     const dispatch = useDispatch();
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
-    const employees = useSelector((state: any) => state?.appState?.EmployeeList);
+    const employees = useSelector((state: any) => state?.appState?.PMList);
+    const FilterEmployeeList = useSelector((state: any) => state?.appState?.FilterPMList);
 
-    const FilterEmployeeList = useSelector((state: any) => state?.appState?.FilterEmployeeList);
-
-    const [WorkLogApprovalList, result] = useGetApprovalWorkLogWithAttendanceListBasedOnFilterMutation();
+    const [WorkLogApprovalList, result] = useGetProjectManagerWorkLogApprovalListMutation();
     const [worklogStatus, response] = useUpdateWorkLogStatusMutation();
     const [checkedItems, setCheckedItems] = useState<any>({});
     const [filterVisible, setFilterVisible] = useState(false);
@@ -98,7 +97,7 @@ const AppoveWorklog = ({ navigation }: any) => {
         try {
             const response = await WorkLogApprovalList({ accessToken, data });
             if (response?.data?.isSuccessful) {
-                dispatch(setEmployeeList(response?.data?.data || []));
+                dispatch(setPMList(response?.data?.data || []));
             } else {
                 ToastMessage({ type: "error", title: "Worklog Approval", subtitle: response?.data?.messageDetail?.message });
             }
@@ -151,7 +150,7 @@ const AppoveWorklog = ({ navigation }: any) => {
                 rightIconColor={Colors.green}
                 showRightIcon={(isAllSelected && item?.isApproveable) ? true : false}
                 rightIconPress={() => handleBulkStatusChange(674180002)}
-                cardPress={() => navigation.navigate('SelectedEmployee', { id: item?.id, dates: item.dates, isAllSelected })}
+                cardPress={() => navigation.navigate('SelectedPM', { id: item?.id, dates: item.dates, isAllSelected })}
             />
         );
     };
@@ -160,8 +159,11 @@ const AppoveWorklog = ({ navigation }: any) => {
         <View style={styles(isDark).container}>
             <CustomHeader
                 showBackIcon={true}
-                title="EMP Worklog"
-                onPress={() => { navigation.goBack(); dispatch(setFilterEmployeeList([])); }}
+                title="PM Worklog"
+                onPress={() => {
+                    navigation.goBack();
+                    dispatch(setFilterPMList([])); 
+                }}
                 showFilterIcon={true}
                 filterOnPress={() => setFilterVisible(true)}
                 showRightIcon2={FilterEmployeeList?.employeeId ? true : false}
@@ -179,7 +181,7 @@ const AppoveWorklog = ({ navigation }: any) => {
                     <>
                         {!FilterEmployeeList?.employeeId &&
                             <View style={styles(isDark).formErrorBox}>
-                                <Text style={styles(isDark).formErrorText}>Please select the employee first  to approve multiple worklogs</Text>
+                                <Text style={styles(isDark).formErrorText}>Please select the PM first  to approve multiple worklogs</Text>
                             </View>
                         }
                         {FilterEmployeeList?.employeeId &&
@@ -212,7 +214,7 @@ const AppoveWorklog = ({ navigation }: any) => {
                             />
                         )}
 
-                        <AppoveWorklogFilter
+                        <PMApproveWorklogFilter
                             visible={filterVisible}
                             setVisible={setFilterVisible}
                         />
@@ -222,7 +224,7 @@ const AppoveWorklog = ({ navigation }: any) => {
     );
 };
 
-export default AppoveWorklog;
+export default PMWorklogs;
 
 const styles = (isDark: any) =>
     StyleSheet.create({

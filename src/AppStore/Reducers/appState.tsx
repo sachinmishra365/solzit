@@ -17,6 +17,8 @@ export const appStateSlice = createSlice({
     breakeOutId: '',
     EmployeeList: [],
     FilterEmployeeList: [],
+    PMList: [],
+    FilterPMList: [],
   },
   reducers: {
     auth: (state, action) => {
@@ -61,6 +63,12 @@ export const appStateSlice = createSlice({
     setFilterEmployeeList: (state, action) => {
       state.FilterEmployeeList = action.payload;
     },
+    setPMList: (state, action) => {
+      state.PMList = action.payload;
+    },
+    setFilterPMList: (state, action) => {
+      state.FilterPMList = action.payload;
+    },
   },
 });
 export const isDarkTheme = (state: any) =>
@@ -80,7 +88,9 @@ export const {
   setToDo,
   setBreakeOutId,
   setEmployeeList,
-  setFilterEmployeeList
+  setFilterEmployeeList,
+  setPMList,
+  setFilterPMList
 } = appStateSlice.actions;
 
 export default appStateSlice.reducer;

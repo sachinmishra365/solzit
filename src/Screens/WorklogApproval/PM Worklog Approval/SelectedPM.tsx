@@ -1,25 +1,25 @@
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
-import WorklogCard from '../../Components/WorklogCard';
 import moment from 'moment';
-import { Colors } from '../../constants/Colors';
-import CustomHeader from '../../Components/CustomHeader';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
-import { useUpdateWorkLogStatusMutation } from '../../Services/workloglevel';
 import { Button } from 'react-native-paper';
-import RejectMessageDialog from './RejectMessageDialog';
-import EmptyData from '../../Components/EmptyData';
-import ToastMessage from '../../Components/ToastMessage';
-import Placeholder from '../Placeholder/Placeholder';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
+import { useUpdateWorkLogStatusMutation } from '../../../Services/workloglevel';
+import ToastMessage from '../../../Components/ToastMessage';
+import WorklogCard from '../../../Components/WorklogCard';
+import { Colors } from '../../../constants/Colors';
+import CustomHeader from '../../../Components/CustomHeader';
+import RejectMessageDialog from '../RejectMessageDialog';
+import Placeholder from '../../Placeholder/Placeholder';
+import EmptyData from '../../../Components/EmptyData';
 
-const SelectedEmployee = ({ navigation, route }: any) => {
+const SelectedPM = ({ navigation, route }: any) => {
     const isDark = useSelector(isDarkTheme);
     const routeParams = route?.params || {};
-    const employees = useSelector((state: any) => state?.appState?.EmployeeList);
+    const employees = useSelector((state: any) => state?.appState?.PMList);
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
-    const FilterEmployeeList = useSelector((state: any) => state?.appState?.FilterEmployeeList);
+    const FilterEmployeeList = useSelector((state: any) => state?.appState?.FilterPMList);
 
     const extractedEmployeeId = routeParams.id?.split('_')[0];
     const formattedSelectedDate = routeParams.dates;
@@ -105,16 +105,8 @@ const SelectedEmployee = ({ navigation, route }: any) => {
             setCheckedItems(allSelected);
         }
     };
-    
 
-    // const onRefresh = () => {
-    //     setRefreshing(true);
-    //     setRefreshFlag(prev => !prev);
 
-    //     setTimeout(() => {
-    //         setRefreshing(false);
-    //     }, 1000); // simulate delay or use a callback on real fetch
-    // };
 
 
     const renderItem = ({ item }: any) => {
@@ -141,7 +133,7 @@ const SelectedEmployee = ({ navigation, route }: any) => {
                 showRightIcon={checkedItems[item.workLogId] ? true : false}
                 rightIconPress={() => handleBulkStatusChange(674180002)}
                 rightIconColor2={Colors.error}
-                showRightIcon2={checkedItems[item.workLogId]   ? true : false }
+                showRightIcon2={checkedItems[item.workLogId] ? true : false}
                 rightIconName2={'close-circle'}
                 rightIconPress2={() => setDialogVisible(true)}
             />
@@ -151,7 +143,7 @@ const SelectedEmployee = ({ navigation, route }: any) => {
         <View style={styles(isDark).container}>
             <CustomHeader
                 showBackIcon={true}
-                title="EMP Worklog"
+                title="PM Worklog"
                 onPress={() => navigation.goBack()}
                 rightIconPress={() => handleToggleSelectAll()}
                 rightIconName={Object.keys(checkedItems).length === selectedLogs.length ? "checkbox-multiple-marked" : 'checkbox-multiple-blank-outline'}
@@ -195,21 +187,14 @@ const SelectedEmployee = ({ navigation, route }: any) => {
                             <View style={{ marginVertical: '80%' }}>
                                 <EmptyData />
                             </View>}
-                        // refreshControl={
-                        //     <RefreshControl
-                        //         refreshing={refreshing}
-                        //         onRefresh={onRefresh}
-                        //         colors={[Colors.primary]}
-                        //         tintColor={Colors.primary}
-                        //     />
-                        // }
+
                     />)
             )}
         </View>
     )
 }
 
-export default SelectedEmployee
+export default SelectedPM
 
 const styles = (isDark: any,) =>
     StyleSheet.create({

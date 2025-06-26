@@ -114,13 +114,13 @@ const AddWorklog = ({ navigation, route }: any) => {
                 rightIconName={'eye'}
                 rightIconPress={() => navigation.navigate('WorklogDetails', { item: worklogData })}
             />
-            <View
+            {/* <View
                 style={{
                     borderWidth: 1, height: 1,
                     backgroundColor: isDark ? Colors.white : 'transparent',
                     borderColor: isDark ? Colors.black : 'transparent',
                 }}
-            />
+            /> */}
             {
                 result?.isLoading ? (
                     <Placeholder />

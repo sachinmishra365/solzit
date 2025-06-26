@@ -326,7 +326,7 @@ export const workloglevelApi = createApi({
       invalidatesTags: ['DayTaskReports'],
     }),
 
-    GetProjectManagerWorkLogApprovalList: builder.mutation({
+    GetApprovalWorkLogWithAttendanceListBasedOnFilter: builder.mutation({
       query: ({data, accessToken}) => ({
         url: `/WorkLogs/GetApprovalWorkLogWithAttendanceListBasedOnFilter`,
         // url: `/WorkLogs/GetProjectManagerWorkLogApprovalList`,
@@ -339,6 +339,17 @@ export const workloglevelApi = createApi({
       }),
       //@ts-ignore
       providesTags: ['updateWorklogStatus'],
+    }),
+    GetProjectManagerWorkLogApprovalList: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/WorkLogs/GetProjectManagerWorkLogApprovalList`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: data,
+      }),
     }),
 
     UpdateWorkLogStatus: builder.mutation({
@@ -408,6 +419,7 @@ export const {
   useGetEmployeeWorkLogCategoryListQuery,
   useGetLinkedTaskByIdQuery,
   useDeleteWorkLogMutation,
+  useGetApprovalWorkLogWithAttendanceListBasedOnFilterMutation,
   useGetProjectManagerWorkLogApprovalListMutation,
   useUpdateWorkLogStatusMutation
 } = workloglevelApi;

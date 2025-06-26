@@ -2,21 +2,21 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, TouchableOpacity, View 
 import React, { useState } from 'react';
 import { Dialog, Divider, IconButton, Portal } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { isDarkTheme, setFilterEmployeeList } from '../../AppStore/Reducers/appState';
-import { Colors } from '../../constants/Colors';
-import CustomTextInput from '../../Components/CustomTextInput';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
-import CustomDropdownWithModal from '../../Components/CustomDropDown';
+import { isDarkTheme, setFilterPMList } from '../../../AppStore/Reducers/appState';
+import CustomTextInput from '../../../Components/CustomTextInput';
+import CustomDropdownWithModal from '../../../Components/CustomDropDown';
+import { Colors } from '../../../constants/Colors';
 
 
-const AppoveWorklogFilter = ({ visible, setVisible }: {
+const PMApproveWorklogFilter = ({ visible, setVisible }: {
     visible: boolean;
     setVisible: (value: boolean) => void;
 
 }) => {
     const dispatch = useDispatch();
-    const employees = useSelector((state: any) => state?.appState?.EmployeeList);
+    const employees = useSelector((state: any) => state?.appState?.PMList);    
 
     const isDark = useSelector(isDarkTheme);
     const hideDialog = () => setVisible(false);
@@ -50,8 +50,7 @@ const AppoveWorklogFilter = ({ visible, setVisible }: {
             employeeId: selectedEmployee.value || null,
         };
         hideDialog();
-        dispatch(setFilterEmployeeList(filterData));
-
+        dispatch(setFilterPMList(filterData));
     }
 
     const onChangeStart = (_: any, selectedDate?: Date) => {
@@ -150,7 +149,7 @@ const AppoveWorklogFilter = ({ visible, setVisible }: {
     );
 };
 
-export default AppoveWorklogFilter;
+export default PMApproveWorklogFilter;
 
 const styles = (isDark: boolean) => StyleSheet.create({
     container: {
