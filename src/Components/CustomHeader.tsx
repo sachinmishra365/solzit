@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 import React from 'react';
-import { IconButton } from 'react-native-paper';
+import { Icon, IconButton } from 'react-native-paper';
 import { Colors } from '../constants/Colors';
 import { useSelector } from 'react-redux';
 import { isDarkTheme } from '../AppStore/Reducers/appState';
@@ -27,7 +27,8 @@ const CustomHeader = ({
   onMenuSelect,
   showallocation = false,
   total = 0,
-  color
+  color,
+  ShowWorkStatusInstruction = false
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -79,8 +80,22 @@ const CustomHeader = ({
         {showRightIcon2 && (
           <IconButton icon={rightIconName2} size={25}
             iconColor={isDark ? Colors.white : Colors.primary}
-            style={[styles(isDark).searchIcon,{right:48}]} onPress={rightIconPress2}
+            style={[styles(isDark).searchIcon, { right: 48 }]} onPress={rightIconPress2}
           />
+        )}
+        {ShowWorkStatusInstruction && (
+          <View style={{ position: 'absolute', right: 16, gap: 2 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Icon source={'checkbox-blank-circle'} size={14} color={isDark ? Colors.secondary : Colors.secondary} />
+              <Text style={[styles(isDark).title, { fontSize: 12, marginLeft: 5 }]}>{'Logged Hours'}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Icon source={'checkbox-blank-circle'} size={14} color={isDark ? Colors.darkgreen : Colors.darkgreen} />
+              <Text style={[styles(isDark).title, { fontSize: 12, marginLeft: 5 }]}>{'Approved Hours'}</Text>
+            </View>
+
+          </View>
+
         )}
       </View>
       <View

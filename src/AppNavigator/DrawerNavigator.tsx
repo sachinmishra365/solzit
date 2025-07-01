@@ -168,7 +168,7 @@ const DrawerNavigator = ({ navigation }: any) => {
             titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold', }}
             left={props => (<List.Icon{...props} icon="airplane" color={isDark ? Colors.white : Colors.primary} />)}
             right={props => (
-             <List.Icon{...props} icon={expandedId === 'leave' ? 'chevron-down' : 'chevron-left'} color={isDark ? Colors.white : Colors.black} />)}
+              <List.Icon{...props} icon={expandedId === 'leave' ? 'chevron-down' : 'chevron-left'} color={isDark ? Colors.white : Colors.black} />)}
             expanded={expandedId === 'leave'}
             onPress={() => handlePress('leave')}
             rippleColor={'rgba(0,0,0,0.1)'}>
@@ -432,28 +432,34 @@ const DrawerNavigator = ({ navigation }: any) => {
         //  {...panResponder.panHandlers}
         style={[styles(isDark).screenHeaderContainer, { transform: [{ scale: scaleValue }, { translateX: offsetValue }], shadowColor: isDark ? Colors.background : Colors.black, elevation: 24, }]}>
         <Animated.View style={{ transform: [{ translateY: closeButtonOffset }] }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 
-            <View style={styles(isDark).screenHeader}>
-              {showMenu ? (
-                <IconButton
-                  icon="close"
-                  iconColor={isDark ? Colors.white : Colors.white}
-                  size={25}
-                  onPress={toggleMenu}
-                  accessibilityLabel="close"
-                />
-              ) : (
-                <IconButton icon="menu" iconColor={isDark ? Colors.white : Colors.white} size={25} onPress={toggleMenu} accessibilityLabel='menu' />
+          <View style={styles(isDark).screenHeader}>
+            {showMenu ? (
+              <IconButton
+                icon="close"
+                iconColor={isDark ? Colors.white : Colors.white}
+                size={25}
+                onPress={toggleMenu}
+                accessibilityLabel="close"
+              />
+            ) : (
+              <IconButton icon="menu" iconColor={isDark ? Colors.white : Colors.white} size={25} onPress={toggleMenu} accessibilityLabel='menu' />
 
-              )}
-              <Text style={styles(isDark).headerTxt}>Soluzione</Text>
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                <Image
-                  source={require('../Assets/Images/Logo/solzitLogo.png')}
-                  style={styles(isDark).logomain}
-                />
-              </View>
+            )}
+            <Text style={styles(isDark).headerTxt}>Soluzione</Text>
+            <View style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              position: 'absolute',
+              top: 0,
+              right: 16,
+              alignContent: 'flex-end'
+            }}>
+              {/* <IconButton icon='calendar-blank-outline' iconColor={isDark ? Colors?.white : Colors?.white} onPress={() => { navigation.navigate('WorklogHour') }} /> */}
+              <Image
+                source={require('../Assets/Images/Logo/solzitLogo.png')}
+                style={styles(isDark).logomain}
+              />
             </View>
           </View>
         </Animated.View>
@@ -483,7 +489,7 @@ const styles = (isDark: any,) =>
     logomain: {
       width: 30,
       height: 30,
-      marginRight: 16,
+      // marginRight: 16,
     },
 
     UserName: {

@@ -37,10 +37,8 @@ import ProjectAllocation from '../Screens/My Work/My Projects/ProjectAllocation'
 import LateArrivalTime from '../Screens/LeavesAndBreakes/LateArrivalTime';
 import WorkFromHome from '../Screens/WorkFromHome/WorkFromHome';
 import ShowPlan from '../Screens/My Work/Plan My Day/Show Plan/ShowPlan';
-
 import AddBug from '../Screens/Worklogs/AddNewToDo/AddBug';
 import BugDetails from '../Screens/Worklogs/Bugs/BugDetails';
-
 import WFHCard from '../Screens/Dashboard/WFHCard';
 import Breakes from '../Screens/LeavesAndBreakes/Breakes';
 import AddBreaks from '../Screens/LeavesAndBreakes/AddBreaks';
@@ -49,6 +47,10 @@ import AppoveWorklog from '../Screens/WorklogApproval/AppoveWorklog';
 import SelectedEmployee from '../Screens/WorklogApproval/SelectedEmployee';
 import PMWorklogs from '../Screens/WorklogApproval/PM Worklog Approval/PMWorklogs';
 import SelectedPM from '../Screens/WorklogApproval/PM Worklog Approval/SelectedPM';
+import CurrentMonthWorklogHour from '../Screens/Dashboard/BigCalendar/CurrentMonthWorklogHour';
+import LastMonthWorklogHour from '../Screens/Dashboard/BigCalendar/LastMonthWorklogHour';
+import WorklogHour from '../Screens/Dashboard/BigCalendar/WorklogHour';
+import ToDosOnWorkLogDate from '../Screens/Dashboard/BigCalendar/ToDosOnWorkLogDate';
 
 
 const Stack = createNativeStackNavigator();
@@ -122,6 +124,10 @@ const RootStack = () => {
       <Stack.Screen name="SelectedEmployee" component={SelectedEmployee} />
       <Stack.Screen name="PMWorklogs" component={PMWorklogs} />
       <Stack.Screen name="SelectedPM" component={SelectedPM} />
+      <Stack.Screen name="WorklogHour" component={WorklogHour} />
+      <Stack.Screen name="CurrentMonthWorklogHour" component={CurrentMonthWorklogHour} />
+      <Stack.Screen name="LastMonthWorklogHour" component={LastMonthWorklogHour} />
+      <Stack.Screen name="ToDosOnWorkLogDate" component={ToDosOnWorkLogDate} />
     </Stack.Navigator>
   );
 };

@@ -4,7 +4,6 @@ import {FAB} from 'react-native-paper';
 import {Colors} from '../../../constants/Colors';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../../AppStore/Reducers/appState';
-import {StyleSheet} from 'react-native';
 
 const Fabbutton = () => {
   const navigation: any = useNavigation();
@@ -29,30 +28,30 @@ const Fabbutton = () => {
           color: isDark ? Colors.white : Colors.white,
           labelStyle: {
             color: isDark ? Colors.white : Colors.black,
-            fontFamily: 'Lato-Bold',
+            fontFamily: 'Lato-Semibold',
             marginVertical:5,
-            fontSize: 18,
+            fontSize: 16,
           },
           label: 'Processed Leaves',
           onPress: () => navigation.navigate('LeaveBalance'),
           style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
           accessibilityLabel: 'Processed Leaves',
-          size:'medium'
+          size:'small'
         },
         {
-          icon: 'calendar-clock',
-          label: 'My Leave Requests',
+          icon: 'calendar',
+          label: 'Worklogs Data',
           color: isDark ? Colors.white : Colors.white,
           labelStyle: {
             color: isDark ? Colors.white : Colors.black,
-            fontFamily: 'Lato-Bold',
+            fontFamily: 'Lato-Semibold',
             marginVertical:5,
-            fontSize: 18,
+            fontSize: 16,
           },
-          onPress: () => navigation.navigate('LeaveRequest'),
+          onPress: () => navigation.navigate('WorklogHour'),
           style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
           accessibilityLabel: 'My Leave Requests',
-          size:'medium'
+          size:'small'
 
         },
         {
@@ -61,14 +60,14 @@ const Fabbutton = () => {
           color: isDark ? Colors.white : Colors.white,
           labelStyle: {
             color: isDark ? Colors.white : Colors.black,
-            fontFamily: 'Lato-Bold',
+            fontFamily: 'Lato-Semibold',
             marginVertical:5,
-            fontSize: 18,
+            fontSize: 16,
           },
           onPress: () => navigation.navigate('ApplyLeave'),
           style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
           accessibilityLabel: 'Apply Leave',
-          size:'medium'
+          size:'small'
         },
       ]}
       onStateChange={onStateChange}

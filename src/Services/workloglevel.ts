@@ -117,6 +117,36 @@ export const workloglevelApi = createApi({
         },
       }),
     }),
+    GetWorkLogThisMonthAndLastMonth: builder.query({
+      query: ({month, accessToken}) => ({
+        url: `/Dashboard/GetWorkLogThisMonthAndLastMonth?Timeframe=${month}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    ApprovedWorkLogLast30Days: builder.query({
+      query: ({month, accessToken}) => ({
+        url: `/Dashboard/ApprovedWorkLogLast30Days?Timeframe=${month}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
+    ToDosOnWorkLogDate: builder.query({
+      query: ({workLogDate, accessToken}) => ({
+        url: `/Dashboard/ToDosOnWorkLogDate?workLogDate=${workLogDate}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }),
+    }),
     GetEmployeeByProjectId: builder.query({
       query: ({data, projectId, accessToken}) => ({
         url: `/ToDos/GetEmployeeByProjectId?ProjectId=${projectId}`,
@@ -199,7 +229,7 @@ export const workloglevelApi = createApi({
       }),
       invalidatesTags: ['Addworklog'],
     }),
-    
+
     DeleteWorkLog: builder.mutation({
       query: ({data, accessToken}) => ({
         url: `/WorkLogs/DeleteWorkLog`,
@@ -222,7 +252,7 @@ export const workloglevelApi = createApi({
           'Content-Type': 'application/json',
         },
       }),
-      providesTags: ['Addworklog','DeleteDayTask'],
+      providesTags: ['Addworklog', 'DeleteDayTask'],
     }),
 
     GetMonthlyReportPlansList: builder.query({
@@ -421,5 +451,8 @@ export const {
   useDeleteWorkLogMutation,
   useGetApprovalWorkLogWithAttendanceListBasedOnFilterMutation,
   useGetProjectManagerWorkLogApprovalListMutation,
-  useUpdateWorkLogStatusMutation
+  useUpdateWorkLogStatusMutation,
+  useGetWorkLogThisMonthAndLastMonthQuery,
+  useApprovedWorkLogLast30DaysQuery,
+  useToDosOnWorkLogDateQuery,
 } = workloglevelApi;
