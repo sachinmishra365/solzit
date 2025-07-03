@@ -17,7 +17,8 @@ import ScreenPlay from './ScreenPlay';
 
 const { height, width } = Dimensions.get('window');
 
-const Dashboard = ({ navigation }: any) => {
+const Dashboard = ({ navigation, DrawerOpen }: any) => {
+
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
   const [currentDate, setCurrentDate] = useState('');
@@ -373,7 +374,8 @@ const Dashboard = ({ navigation }: any) => {
     <View
       style={{
         flex: 1,
-        backgroundColor: isDark ? Colors.black : Colors.white,
+        backgroundColor: isDark ? Colors.black : DrawerOpen === true ? Colors.white : Colors.white,
+
       }}  {...panResponder.panHandlers}>
       <ScreenPlay name={Assesstoken?.userProfile?.fullName ? Assesstoken.userProfile.fullName : 'Guest'} />
       <Calendar
@@ -488,7 +490,7 @@ const Dashboard = ({ navigation }: any) => {
             style={{ margin: 5 }}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={selectedStatus === 'Work From Home' ? null : <EmptyData />}
-            
+
           />
         </>
       )}

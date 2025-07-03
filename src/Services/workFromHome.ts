@@ -49,6 +49,16 @@ export const workFromHomeApi = createApi({
       }),
     }),
 
+    GetTodayRemoteEmpAttendance: builder.query({
+      query: ({accessToken}) => ({
+        url: `/LeaveRecords/GetTodayRemoteEmpAttendance`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    }),
+
     CreateCheckInRequest: builder.mutation({
       query: ({body, accessToken}) => ({
         url: `/LeaveRecords/CreateCheckInRequest`,
@@ -118,4 +128,5 @@ export const {
   useCreateBreakInRequestMutation,
   useUpdateBreakOutTimeRequestMutation,
   useGetAttendanceInOutDetailsByInOutIdQuery,
+  useGetTodayRemoteEmpAttendanceQuery
 } = workFromHomeApi;

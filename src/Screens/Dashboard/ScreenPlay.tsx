@@ -46,7 +46,7 @@ const ScreenPlay = ({ name }: any) => {
   //   setReady(true);
   // }, [textWidth]);
 
-  const fullMessage = `${'Hi'}, ${name}! Welcome to Soluzione Ess App.`;
+  const fullMessage = `${'Hi'}, ${name}! Welcome to Soluzione Ess App`;
 
   return (
     <View style={styles(isDark).header}>

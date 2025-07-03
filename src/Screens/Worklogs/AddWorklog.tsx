@@ -111,8 +111,12 @@ const AddWorklog = ({ navigation, route }: any) => {
                 title={'Add Worklog'}
                 onPress={() => navigation.goBack()}
                 showRightIcon={true}
+                showRightIcon2={true}
                 rightIconName={'eye'}
                 rightIconPress={() => navigation.navigate('WorklogDetails', { item: worklogData })}
+                rightIconColor2={Colors.primary}
+                rightIconName2={'calendar'}
+                rightIconPress2={() => navigation.navigate('WorklogHour')}
             />
             {/* <View
                 style={{

@@ -50,7 +50,7 @@ const SepratedAttendance = ({ route }: any) => {
       hideSubscription.remove();
     };
   }, []);
-  
+
   useEffect(() => {
     if (pickStartTime && pickEndTime) {
       const startMoment = moment(pickStartTime, 'HH:mm');
@@ -247,7 +247,7 @@ const SepratedAttendance = ({ route }: any) => {
         setFieldValue('actualHour', null);
         setFieldValue('reason', '');
       } else {
-        ToastMessage({ type: "error", title: "Attendance Query", subtitle:response?.data?.messageDetail?.message });
+        ToastMessage({ type: "error", title: "Attendance Query", subtitle: response?.data?.messageDetail?.message });
       }
     } catch (error) { }
   };

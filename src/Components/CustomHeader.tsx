@@ -37,7 +37,7 @@ const CustomHeader = ({
       <View style={styles(isDark).container}>
         {showBackIcon ? (
           <IconButton icon="chevron-left" size={25} accessibilityLabel="Back"
-            iconColor={isDark ? Colors.white : Colors.black}
+            iconColor={isDark ? Colors.white : Colors.white}
             onPress={onPress}
             style={{ marginTop: 8 }}
           />
@@ -52,7 +52,7 @@ const CustomHeader = ({
 
         {showFilterIcon && (
           <IconButton icon="filter" size={25} accessibilityLabel="filter"
-            iconColor={isDark ? Colors.white : Colors.primary}
+            iconColor={isDark ? Colors.white : Colors.white}
             style={[styles(isDark).searchIcon, { right: 2 }]} onPress={filterOnPress}
           />
         )}
@@ -73,13 +73,13 @@ const CustomHeader = ({
         )}
         {showRightIcon && (
           <IconButton icon={rightIconName} size={25}
-            iconColor={isDark ? Colors.white : Colors.primary}
-            style={styles(isDark).searchIcon} onPress={rightIconPress}
+            iconColor={isDark ? Colors.white : Colors.white}
+            style={[styles(isDark).searchIcon,{right:0}]} onPress={rightIconPress}
           />
         )}
         {showRightIcon2 && (
           <IconButton icon={rightIconName2} size={25}
-            iconColor={isDark ? Colors.white : Colors.primary}
+            iconColor={isDark ? Colors.white : Colors.white}
             style={[styles(isDark).searchIcon, { right: 48 }]} onPress={rightIconPress2}
           />
         )}
@@ -114,7 +114,7 @@ export default CustomHeader;
 const styles = (isDark: any) =>
   StyleSheet.create({
     container: {
-      backgroundColor: isDark ? Colors.black : Colors.white,
+      backgroundColor: isDark ? Colors.black : Colors.primary,
       height: 60,
       width: width,
       flexDirection: 'row',
@@ -127,7 +127,7 @@ const styles = (isDark: any) =>
     },
     title: {
       fontSize: 18,
-      color: isDark ? Colors.white : Colors.black,
+      color: isDark ? Colors.white : Colors.white,
       // marginTop: 2,
       fontFamily: 'Lato-Semibold',
     },
@@ -146,7 +146,7 @@ const styles = (isDark: any) =>
       height: 40,
       backgroundColor: isDark ? Colors.gray : Colors.background,
       borderRadius: 10,
-      borderColor: isDark ? Colors.background : Colors.black,
+      borderColor: isDark ? Colors.background : Colors.white,
       borderWidth: 0.5,
       fontSize: 12,
       fontFamily: 'Lato-Semibold',

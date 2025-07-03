@@ -14,6 +14,8 @@ import ToastMessage from '../../Components/ToastMessage';
 const WorklogDetails = ({ navigation, route }: any) => {
     const isDark = useSelector(isDarkTheme);
     const worklogDetails = route?.params?.item;
+    const worklogDetailsData = useSelector((state: any) => state?.appState?.worklogDetails);
+
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
     const accessToken = Assesstoken?.authToken?.accessToken;
 
@@ -51,8 +53,6 @@ const WorklogDetails = ({ navigation, route }: any) => {
     };
 
     const handleDelete = (item: any) => {
-        console.log(item);
-
         showDialog(
             'Confirm Delete',
             'Are you sure you want to delete this worklog? This action cannot be undone.',
@@ -100,7 +100,6 @@ const WorklogDetails = ({ navigation, route }: any) => {
                 rightIconPress={() => {
                     if (isDeletable) {
                         handleDelete(item);
-                        console.log('Delete worklog:', item);
 
                     }
                 }}
@@ -131,6 +130,10 @@ const WorklogDetails = ({ navigation, route }: any) => {
                 showBackIcon={true}
                 title={'Worklog Details'}
                 onPress={() => navigation.goBack()}
+                showRightIcon={true}
+                rightIconColor={Colors.primary}
+                rightIconName={'calendar'}
+                rightIconPress={() => navigation.navigate('WorklogHour')}
             />
             {isLoading ? (
                 <ShimmerPlaceHolder />

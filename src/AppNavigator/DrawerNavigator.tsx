@@ -7,6 +7,7 @@ import Dashboard from '../Screens/Dashboard/Dashboard';
 import { isDarkTheme, theme } from '../AppStore/Reducers/appState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
+import Dashboard2 from '../Screens/Dashboard/Dashboard2';
 
 
 const DrawerNavigator = ({ navigation }: any) => {
@@ -16,6 +17,8 @@ const DrawerNavigator = ({ navigation }: any) => {
   // const [isSwitchOn, setIsSwitchOn] = useState(isDark);
   const userData = useSelector((state: any) => state?.appState?.authToken);
   const [showMenu, setShowMenu] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
+
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeButtonOffset = useRef(new Animated.Value(0)).current;
@@ -451,11 +454,11 @@ const DrawerNavigator = ({ navigation }: any) => {
               alignItems: 'center',
               flexDirection: 'row',
               position: 'absolute',
-              top: 0,
+              top: 10,
               right: 16,
               alignContent: 'flex-end'
             }}>
-              {/* <IconButton icon='calendar-blank-outline' iconColor={isDark ? Colors?.white : Colors?.white} onPress={() => { navigation.navigate('WorklogHour') }} /> */}
+              <IconButton icon='swap-horizontal-circle-outline' iconColor={isDark ? Colors?.white : Colors?.white} onPress={() => { setShowDrawer(!showDrawer) }} size={25}/>
               <Image
                 source={require('../Assets/Images/Logo/solzitLogo.png')}
                 style={styles(isDark).logomain}
@@ -463,7 +466,12 @@ const DrawerNavigator = ({ navigation }: any) => {
             </View>
           </View>
         </Animated.View>
-        <Dashboard />
+        {
+          showDrawer ?
+            <Dashboard DrawerOpen={showMenu} />
+            :
+            <Dashboard2 />
+        }
       </Animated.View>
     </SafeAreaView>
   );
