@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef} from 'react';
 import {
   View,
   Modal,
@@ -10,10 +10,9 @@ import {
   findNodeHandle,
   UIManager,
 } from 'react-native';
-import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../AppStore/Reducers/appState';
-import { Colors } from '../constants/Colors';
-import { TextInput } from 'react-native-paper';
+import {useSelector} from 'react-redux';
+import {isDarkTheme} from '../AppStore/Reducers/appState';
+import {Colors} from '../constants/Colors';
 import CustomTextInput from './CustomTextInput';
 import EmptyData from './EmptyData';
 
@@ -22,6 +21,7 @@ const CustomDropdownWithModal = ({
   selectedValue,
   options = [],
   onSelect,
+  disabled = false,
 }: any) => {
   const isDark = useSelector(isDarkTheme);
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,7 +33,7 @@ const CustomDropdownWithModal = ({
       const handle = findNodeHandle(inputRef.current);
       if (handle) {
         UIManager.measureInWindow(handle, (x, y, width, height) => {
-          setDropdownPos({ x, y, width, height });
+          setDropdownPos({x, y, width, height});
           setModalVisible(true);
         });
       }
@@ -47,7 +47,10 @@ const CustomDropdownWithModal = ({
 
   return (
     <View>
-      <Pressable onPress={handleOpenDropdown} ref={inputRef}>
+      <Pressable
+        onPress={handleOpenDropdown}
+        ref={inputRef}
+        disabled={disabled}>
         <CustomTextInput
           label={label}
           value={selectedValue?.label}
@@ -56,11 +59,10 @@ const CustomDropdownWithModal = ({
           rightIconName="chevron-down"
           lefticon={false}
           leftIconName={undefined}
-          onPress={handleOpenDropdown}
+          onPress={disabled ? null : handleOpenDropdown}
           autoFocus={true}
         />
       </Pressable>
-
 
       <Modal
         transparent
@@ -80,7 +82,8 @@ const CustomDropdownWithModal = ({
                   top: dropdownPos.y + dropdownPos.height + 5,
                   left: dropdownPos.x,
                 },
-              ]}>{options.length > 0 ? (
+              ]}>
+              {options.length > 0 ? (
                 options.map((option: any) => (
                   <TouchableOpacity
                     key={option.value}
@@ -94,14 +97,15 @@ const CustomDropdownWithModal = ({
                       {option.label}
                     </Text>
                   </TouchableOpacity>
-                ))) : (
+                ))
+              ) : (
                 <View style={styles(isDark).item}>
                   <Text
                     style={{
                       color: isDark ? Colors.white : Colors.black,
                       fontFamily: 'Lato-Regular',
                     }}>
-                   <EmptyData/>
+                    <EmptyData />
                   </Text>
                 </View>
               )}

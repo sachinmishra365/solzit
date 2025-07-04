@@ -1,11 +1,17 @@
-import {View, Text, StyleSheet, FlatList, RefreshControl, PanResponder} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  PanResponder,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
 import {Colors} from '../../constants/Colors';
-import {Card, FAB, SegmentedButtons} from 'react-native-paper';
-import Toast from 'react-native-toast-message';
+import {Card, FAB, IconButton, SegmentedButtons} from 'react-native-paper';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import {Bar as ProgressBar} from 'react-native-progress';
 import EmptyData from '../../Components/EmptyData';
@@ -20,7 +26,7 @@ const MySkills = ({navigation}: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
   const [selectedStatus, setSelectedStatus] = useState('My Recognized Skills');
 
-  const statuses = ['My Recognized Skills', ' Pending Actions'];
+  const statuses = ['My Recognized Skills', 'Pending Actions'];
   const [skillData, setSkillData] = useState([]);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -48,10 +54,8 @@ const MySkills = ({navigation}: any) => {
     refetchApplied();
     refetchApproved();
   };
- 
-  useEffect(() => {
-    if (!connected) return;
 
+  useEffect(() => {
     if (selectedStatus === 'My Recognized Skills') {
       if (
         Array.isArray(approvedData?.data) &&
@@ -61,7 +65,7 @@ const MySkills = ({navigation}: any) => {
       } else {
         setSkillData([]);
       }
-    } else if (selectedStatus === ' Pending Actions') {
+    } else if (selectedStatus === 'Pending Actions') {
       if (
         Array.isArray(appliedData?.data) &&
         appliedData?.messageDetail?.message_code === 200
@@ -82,24 +86,24 @@ const MySkills = ({navigation}: any) => {
     }, 1000);
   }, [refetchApplied, refetchApproved]);
 
-    const panResponder = PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return Math.abs(gestureState.dx) > 20;
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        if (gestureState.dx > 0) {
-          const currentIndex = statuses.indexOf(selectedStatus);
-          if (currentIndex > 0) {
-            filterByStatus(statuses[currentIndex - 1]);
-          }
-        } else if (gestureState.dx < 0) {
-          const currentIndex = statuses.indexOf(selectedStatus);
-          if (currentIndex < statuses?.length - 1) {
-            filterByStatus(statuses[currentIndex + 1]);
-          }
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (evt, gestureState) => {
+      return Math.abs(gestureState.dx) > 20;
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      if (gestureState.dx > 0) {
+        const currentIndex = statuses.indexOf(selectedStatus);
+        if (currentIndex > 0) {
+          filterByStatus(statuses[currentIndex - 1]);
         }
-      },
-    });
+      } else if (gestureState.dx < 0) {
+        const currentIndex = statuses.indexOf(selectedStatus);
+        if (currentIndex < statuses?.length - 1) {
+          filterByStatus(statuses[currentIndex + 1]);
+        }
+      }
+    },
+  });
 
   const renderItem = ({item}: any) => {
     const skillText =
@@ -114,7 +118,7 @@ const MySkills = ({navigation}: any) => {
       item.levelofskill?.label === 'Beginner'
         ? Colors.secondary
         : item.levelofskill?.label === 'Intermediate'
-        ? '#916918'
+        ? '#d3ab5c'
         : item.levelofskill?.label === 'Expert'
         ? 'green'
         : Colors.gray;
@@ -127,11 +131,40 @@ const MySkills = ({navigation}: any) => {
           borderColor: Colors.background,
           borderWidth: 0.5,
           marginHorizontal: 16,
-        }}>
+        }}>0
         <Card.Content>
           <View>
-            <Text style={styles(isDark).skillName}>{item.skillName?.name}</Text>
-            <View style={styles(isDark).levelContainer}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: 10,
+                marginTop: 5,
+                flexWrap: 'wrap',
+              }}>
+              <Text style={styles(isDark).skillName}>
+                {item.skillName?.name}
+              </Text>
+              <Text
+                style={[
+                  styles(isDark).skillName,
+                  {
+                    color:
+                      item?.statusReason?.label === 'Applied'
+                        ? Colors.secondary
+                        : item?.statusReason?.label === 'Approved'
+                        ? 'green'
+                        : item?.statusReason?.label === 'Upgrade Requested'
+                        ? 'orange'
+                        : '#9900ff',
+                  },
+                ]}>
+                {item?.statusReason?.label}
+              </Text>
+            </View>
+
+            <View style={[styles(isDark).levelContainer]}>
               <Text style={styles(isDark).skillDetail}>Level-{''}</Text>
               <Text
                 style={[
@@ -153,7 +186,7 @@ const MySkills = ({navigation}: any) => {
               }}
               // style={styles(isDark).progressBar}
               width={null}
-            />
+            />        
 
             <View style={[styles(isDark).rowContainer, {alignItems: 'center'}]}>
               <Text style={styles(isDark).skillDetail}>Certification :</Text>
@@ -182,6 +215,22 @@ const MySkills = ({navigation}: any) => {
                   {item?.certificationName}
                 </Text>
               </View>
+            )}
+
+            {['Applied', 'Approved'].includes(item?.statusReason?.label) && (
+              <IconButton
+                icon={
+                  item?.statusReason?.label === 'Applied'
+                    ? 'circle-edit-outline'
+                    : 'tray-arrow-up'
+                }
+                size={25}
+                onPress={() =>
+                  navigation.navigate('AddSkills', {itemData: item})
+                }
+                iconColor={isDark ? Colors.primary : Colors.primary}
+                style={{alignSelf: 'flex-end', marginVertical:-5}}
+              />
             )}
           </View>
         </Card.Content>
@@ -230,7 +279,7 @@ const MySkills = ({navigation}: any) => {
         }}
       />
 
-      {(selectedStatus === ' Pending Actions' && appliedLoading) ||
+      {(selectedStatus === 'Pending Actions' && appliedLoading) ||
       (selectedStatus === 'My Recognized Skills' && approvedLoading) ? (
         <ShimmerPlaceHolder />
       ) : skillData?.length === 0 ? (

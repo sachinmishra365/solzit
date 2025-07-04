@@ -10,9 +10,7 @@ import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
 import {Colors} from '../../constants/Colors';
-import {
-  useAttachFileInSharePointMutation,
-} from '../../Services/services';
+import {useAttachFileInSharePointMutation} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -25,6 +23,7 @@ import CustomTextInput from '../../Components/CustomTextInput';
 
 import {
   useAddMyNewSkillMutation,
+  useEditMySkillMutation,
   useGetAllMasterSkillsQuery,
   useGetOptionSetHasCertificateQuery,
   useGetOptionSetLevelOfSkillQuery,
@@ -37,6 +36,7 @@ const FeedbackSchema = Yup.object().shape({
     label: Yup.string().required('Please select a skill'),
     value: Yup.string().required('Invalid skill selection'),
   }),
+
   regardingLevelOfSkills: Yup.object().shape({
     label: Yup.string().required('Please select a level'),
     value: Yup.number().required('Invalid level'),
@@ -71,6 +71,7 @@ const AddSkills = ({navigation, route}: any) => {
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const connected = useSelector((state: any) => state?.appState?.connected);
   const auth = useSelector((state: any) => state?.appState?.authToken);
+  const itemData = route?.params?.itemData || null;
 
   const {data: skillOptionsData, isLoading: skillsLoading} =
     useGetAllMasterSkillsQuery({
@@ -116,79 +117,9 @@ const AddSkills = ({navigation, route}: any) => {
       value: item.value,
     })) || [];
 
+  const [CreateEditMySkill] = useEditMySkillMutation();
   const [CreateAddNewSkill, {isLoading}] = useAddMyNewSkillMutation();
   const [UploadDocument, result] = useAttachFileInSharePointMutation();
-
-  const handleSubmit = async (values: any) => {
-    if (!connected) {
-      Toast.show({
-        type: 'error',
-        text1: 'Network Error',
-        text2: 'Please check your internet connection',
-      });
-      return;
-    }
-    try {
-      const response = await CreateAddNewSkill({
-        accessToken: EmployeeId?.authToken?.accessToken,
-        data: {
-          skillId: values.regardingToSkills?.value,
-          levelOfSkill: {
-            label: values.regardingLevelOfSkills?.label,
-            value: values.regardingLevelOfSkills?.value,
-          },
-          hasCertification: {
-            label: values.regardingCertification?.label,
-            value: values.regardingCertification?.value,
-          },
-          typeOfCertification: values.regardingTypeCertification?.value
-            ? {
-                label: values.regardingTypeCertification?.label,
-                value: values.regardingTypeCertification?.value,
-              }
-            : null,
-          certicationName: values.certificateTitle,
-        },
-      }).unwrap();
-
-      if (
-        response?.isSuccessful &&
-        response?.messageDetail?.message_code === 201
-      ) {
-        const skillId = response?.data;
-        if (values.upload && values.upload.filename) {
-          await handleUploadDocument(skillId, values.upload);
-        } else {
-          Toast.show({
-            type: 'success',
-            text1: 'Success',
-            text2: 'Skill added successfully',
-          });
-        }
-        navigation.goBack();
-      } else if (response?.messageDetail?.message_code === 4449) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: response.messageDetail.message || 'Failed to add skill',
-        });
-      } else {
-        throw new Error(
-          response?.messageDetail?.message || 'Failed to add skill',
-        );
-      }
-    } catch (error: any) {
-      const errorMessage =
-        error?.data?.messageDetail?.message ||
-        error?.message ||
-        'Unknown error occurred';
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errorMessage,
-      });
-    }
-  };
 
   const handleUploadDocument = async (skillId: string, file: any) => {
     const data = {
@@ -220,7 +151,7 @@ const AddSkills = ({navigation, route}: any) => {
         );
       }
     } catch (error) {
-      console.error('Error uploading file:', JSON.stringify(error, null, 2));
+
       Toast.show({
         type: 'error',
         text1: 'Upload Error',
@@ -247,11 +178,135 @@ const AddSkills = ({navigation, route}: any) => {
     }
   };
 
+  const isEdit = itemData?.statusReason?.label === 'Applied' || itemData?.statusReason?.label === 'Approved';
+
+  const STATUS_REASON_MAP: Record<string, number> = {
+    Applied: 674180000,
+    Rejected: 674180001,
+    Pending: 674180002,
+    'Re-Applied': 674180003,
+    Approved: 674180004,
+  };
+
+  const handleSubmit = async (values: any) => {
+    if (!connected) {
+      Toast.show({
+        type: 'error',
+        text1: 'Network Error',
+        text2: 'Please check your internet connection',
+      });
+      return;
+    }
+
+    const commonPayload = {
+      skillId: values?.regardingToSkills?.value ?? null,
+
+      levelOfSkill: {
+        label: values.regardingLevelOfSkills?.label,
+        value: values.regardingLevelOfSkills?.value,
+      },
+      hasCertification: {
+        label: values.regardingCertification?.label,
+        value: values.regardingCertification?.value,
+      },
+      typeOfCertification: values.regardingTypeCertification?.value
+        ? {
+            label: values.regardingTypeCertification?.label,
+            value: values.regardingTypeCertification?.value,
+          }
+        : null,
+      certicationName: values.certificateTitle,
+    };
+
+    try {
+      let response;
+
+      if (isEdit) {
+        const payload = {
+          id: itemData?.id,
+          name: itemData?.name || 'Skill',
+
+          ...commonPayload,
+          statusReason: {
+            label: itemData?.statusReason?.label,
+            value:
+              STATUS_REASON_MAP[itemData?.statusReason?.label] ??
+              itemData?.statusReason?.value,
+          },
+        };
+
+        response = await CreateEditMySkill({
+          accessToken: EmployeeId?.authToken?.accessToken,
+          data: payload,
+        }).unwrap();
+      } else {
+        response = await CreateAddNewSkill({
+          accessToken: EmployeeId?.authToken?.accessToken,
+          data: commonPayload,
+        }).unwrap();
+      }
+   
+      if (
+        response?.isSuccessful &&
+        [201, 5016].includes(response?.messageDetail?.message_code)
+      ) {
+        const skillId = response?.data;
+        if (values.upload && values.upload.filename) {
+          await handleUploadDocument(skillId, values.upload);
+        } else {
+          Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2:
+              response?.messageDetail?.message_code === 201
+                ? 'Skill added successfully'
+                : 'Skill updated successfully',
+          });
+        }
+        navigation.goBack();
+      } else if (response?.messageDetail?.message_code === 4449) {
+     Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: response.messageDetail.message || 'Failed to add skill',
+        });
+      } else {
+        throw new Error(
+          response?.messageDetail?.message || 'Failed to add skill',
+        );
+      }
+   } catch (error: any) {
+
+    const errorMessage = error?.data?.messageDetail?.message || error?.message || 'Unknown error occurred';
+
+
+
+    if ( error?.data?.messageDetail?.message_code === 4449) {
+      Toast.show({
+        type: 'error',
+        text1: 'Skill Already Exists',
+        text2: 'You already have added this skill.',
+      });
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errorMessage,
+      });
+    }
+  }
+};
   return (
     <View style={styles(isDark).maincontainer}>
       <CustomHeader
         showBackIcon={true}
-        title="Add Skills"
+        title={
+          itemData?.statusReason?.label === 'Approved'
+            ? 'Approved Skill'
+            : itemData?.statusReason?.label === 'Applied'
+            ? 'Applied Skill'
+            : 'Add Skill'
+        }
         onPress={() => navigation.goBack()}
       />
       {isLoading || result?.isLoading ? (
@@ -261,16 +316,41 @@ const AddSkills = ({navigation, route}: any) => {
           <ScrollView contentContainerStyle={{marginHorizontal: 16}}>
             <Formik
               initialValues={{
-                regardingToSkills: {label: 'Select', value: null},
-                regardingLevelOfSkills: {label: 'Select', value: null},
-                regardingCertification: {label: 'Select', value: null},
-                certificateTitle: '',
-                regardingTypeCertification: {label: 'Select', value: null},
+                regardingToSkills: itemData
+                  ? {
+                      label: itemData?.skillName?.name,
+                      value: itemData?.skillId,
+                    }
+                  : {label: 'Select', value: null},
+
+                regardingLevelOfSkills: itemData
+                  ? {
+                      label: itemData?.levelofskill?.label,
+                      value: itemData?.levelofskill?.value,
+                    }
+                  : {label: 'Select', value: null},
+
+                regardingCertification: route?.params?.itemData
+                  ? {
+                      label: itemData?.hasCertification?.label,
+                      value: itemData?.hasCertification?.value,
+                    }
+                  : {label: 'Select', value: null},
+
+                certificateTitle: itemData ? itemData?.certificationName : null,
+
+                regardingTypeCertification: itemData?.typeOfCertification
+                  ? {
+                      label: itemData?.typeOfCertification?.label,
+                      value: itemData?.typeOfCertification?.value,
+                    }
+                  : {label: 'Select', value: null},
+
                 upload: {filename: '', filetype: '', bytes: ''},
               }}
-              validationSchema={FeedbackSchema}
+              validationSchema={!isEdit ? FeedbackSchema : undefined}
               onSubmit={handleSubmit}
-              validateOnChange={true}>
+              validateOnChange={!isEdit}>
               {({
                 values,
                 handleChange,
@@ -280,142 +360,194 @@ const AddSkills = ({navigation, route}: any) => {
                 handleBlur,
                 errors,
                 touched,
-              }) => (
-                <>
-                  <View style={{marginVertical: 5}}>
-                    <CustomDropdownWithModal
-                      label="Skills"
-                      selectedValue={values.regardingToSkills}
-                      options={skillOptions}
-                      onSelect={(selectedOption: any) =>
-                        setFieldValue('regardingToSkills', selectedOption)
-                      }
-                    />
+              }) => {
+                const selectedLevel = values.regardingLevelOfSkills?.label;
 
-                    {touched.regardingToSkills?.value && (
-                      <Text style={styles(isDark).error}>
-                        {errors.regardingToSkills?.value}
-                      </Text>
+                const allLevels = [
+                  {label: 'Beginner', value: 674180001},
+                  {label: 'Intermediate', value: 674180002},
+                  {label: 'Expert', value: 674180003},
+                ];
+
+                let filteredLevelOptions = allLevels;
+
+                if (itemData?.statusReason?.label === 'Approved' || itemData?.statusReason?.label === 'Applied') {
+                  if (selectedLevel === 'Beginner') {
+                    filteredLevelOptions = allLevels.filter(
+                      level =>
+                        level.label === 'Beginner' ||
+                        level.label === 'Intermediate' ||
+                        level.label === 'Expert',
+                    );
+                  } else if (selectedLevel === 'Intermediate') {
+                    filteredLevelOptions = allLevels.filter(
+                      level =>
+                        level.label === 'Intermediate' ||
+                        level.label === 'Expert',
+                    );
+                  } else if (selectedLevel === 'Expert') {
+                    filteredLevelOptions = allLevels.filter(
+                      level => level.label === 'Expert',
+                    );
+                  }
+                }
+
+                return (
+                  <>
+                    <View style={{marginVertical: 5}}>
+                      <CustomDropdownWithModal
+                        label="Skills"
+                        selectedValue={values.regardingToSkills}
+                        options={skillOptions}
+                        onSelect={(selectedOption: any) =>
+                          setFieldValue('regardingToSkills', selectedOption)
+                        }
+                        disabled={itemData?.statusReason?.label === 'Approved'}
+                      />
+
+                      {touched.regardingToSkills?.value && (
+                        <Text style={styles(isDark).error}>
+                          {typeof errors.regardingToSkills?.value === 'string'
+                            ? errors.regardingToSkills?.value
+                            : ''}
+                        </Text>
+                      )}
+                    </View>
+
+                    <View style={{marginVertical: 5}}>
+                      <CustomDropdownWithModal
+                        label="Level of Skill"
+                        selectedValue={values.regardingLevelOfSkills}
+                        options={filteredLevelOptions}
+                        onSelect={(selectedOption: any) =>
+                          setFieldValue(
+                            'regardingLevelOfSkills',
+                            selectedOption,
+                          )
+                        }
+                      />
+
+                      {touched.regardingLevelOfSkills &&
+                        errors.regardingLevelOfSkills && (
+                          <Text style={styles(isDark).error}>
+                            {typeof errors.regardingLevelOfSkills?.value ===
+                            'string'
+                              ? errors.regardingLevelOfSkills.value
+                              : ''}
+                          </Text>
+                        )}
+                    </View>
+
+                    <View style={{marginVertical: 5}}>
+                      <CustomDropdownWithModal
+                        label="Has Certification"
+                        selectedValue={values.regardingCertification}
+                        options={certOptions}
+                        onSelect={(selectedOption: any) =>
+                          setFieldValue(
+                            'regardingCertification',
+                            selectedOption,
+                          )
+                        }
+                      />
+
+                      {touched.regardingCertification &&
+                        errors.regardingCertification && (
+                          <Text style={styles(isDark).error}>
+                            {typeof errors.regardingCertification?.value ===
+                            'string'
+                              ? errors.regardingCertification.value
+                              : ''}
+                          </Text>
+                        )}
+                    </View>
+
+                    {values?.regardingCertification?.value === 674180000 && (
+                      <>
+                        <View style={{marginVertical: 5}}>
+                          <CustomTextInput
+                            label="Certification Name"
+                            value={values.certificateTitle}
+                            secureTextEntry={false}
+                            leftIconName="clipboard-text-outline"
+                            onChangeText={handleChange('certificateTitle')}
+                            onBlur={handleBlur('certificateTitle')}
+                            onFocus={() =>
+                              setFieldTouched('certificateTitle', true)
+                            }
+                            editable={true}
+                            autoFocus={true}
+                          />
+                          {touched.certificateTitle &&
+                            typeof errors.certificateTitle === 'string' &&
+                            !!errors.certificateTitle && (
+                              <Text style={styles(isDark).error}>
+                                {errors.certificateTitle}
+                              </Text>
+                            )}
+                        </View>
+
+                        <View style={{marginVertical: 5}}>
+                          <CustomDropdownWithModal
+                            autoFocus={true}
+                            label="Type of Certification"
+                            selectedValue={values.regardingTypeCertification}
+                            options={certTypeOptions}
+                            onSelect={(selectedOption: any) =>
+                              setFieldValue(
+                                'regardingTypeCertification',
+                                selectedOption,
+                              )
+                            }
+                          />
+
+                          {touched.regardingTypeCertification &&
+                            errors.regardingTypeCertification && (
+                              <Text style={styles(isDark).error}>
+                                {typeof errors.regardingTypeCertification
+                                  ?.value === 'string'
+                                  ? errors.regardingTypeCertification.value
+                                  : ''}
+                              </Text>
+                            )}
+                        </View>
+
+                        <View
+                          style={{
+                            marginVertical: 5,
+                          }}>
+                          <Text style={styles(isDark).label}>Attachments</Text>
+                          <>
+                            <TouchableOpacity
+                              onPress={() => pickDocument(setFieldValue)}
+                              style={styles(isDark).uploadButton}>
+                              <IconButton
+                                icon="tray-arrow-up"
+                                iconColor={isDark ? Colors.white : Colors.black}
+                                size={30}
+                              />
+                              <Text style={styles(isDark).uploadButtonText}>
+                                {values.upload.filename || 'Add Attachment'}
+                              </Text>
+                            </TouchableOpacity>
+                          </>
+                        </View>
+                      </>
                     )}
-                  </View>
-
-                  <View style={{marginVertical: 10}}>
-                    <CustomDropdownWithModal
-                      label="Level of Skill"
-                      selectedValue={values.regardingLevelOfSkills}
-                      options={levelOptions}
-                      onSelect={(selectedOption: any) =>
-                        setFieldValue('regardingLevelOfSkills', selectedOption)
-                      }
-                    />
-
-                    {touched.regardingLevelOfSkills &&
-                      errors.regardingLevelOfSkills && (
-                        <Text style={styles(isDark).error}>
-                          {errors.regardingLevelOfSkills.value}
-                        </Text>
-                      )}
-                  </View>
-
-                  <View style={{marginVertical: 5}}>
-                    <CustomDropdownWithModal
-                      label="Has Certification"
-                      selectedValue={values.regardingCertification}
-                      options={certOptions}
-                      onSelect={(selectedOption: any) =>
-                        setFieldValue('regardingCertification', selectedOption)
-                      }
-                    />
-
-                    {touched.regardingCertification &&
-                      errors.regardingCertification && (
-                        <Text style={styles(isDark).error}>
-                          {errors.regardingCertification.value}
-                        </Text>
-                      )}
-                  </View>
-
-                  {values?.regardingCertification?.value === 674180000 && (
-                    <>
-                      <View style={{marginVertical: 5}}>
-                        <CustomTextInput
-                          label="Certification Name"
-                          value={values.certificateTitle}
-                          secureTextEntry={false}
-                          leftIconName="clipboard-text-outline"
-                          onChangeText={handleChange('certificateTitle')}
-                          onBlur={handleBlur('certificateTitle')}
-                          onFocus={() =>
-                            setFieldTouched('certificateTitle', true)
-                          }
-                          editable={true}
-                          autoFocus={true}
-                        />
-                        {touched.certificateTitle &&
-                          errors.certificateTitle && (
-                            <Text style={styles(isDark).error}>
-                              {errors.certificateTitle}
-                            </Text>
-                          )}
-                      </View>
-
-                      <View style={{marginVertical: 5}}>
-                        <CustomDropdownWithModal
-                          autoFocus={true}
-                          label="Type of Certification"
-                          selectedValue={values.regardingTypeCertification}
-                          options={certTypeOptions}
-                          onSelect={(selectedOption: any) =>
-                            setFieldValue(
-                              'regardingTypeCertification',
-                              selectedOption,
-                            )
-                          }
-                        />
-
-                        {touched.regardingTypeCertification &&
-                          errors.regardingTypeCertification && (
-                            <Text style={styles(isDark).error}>
-                              {errors.regardingTypeCertification.value}
-                            </Text>
-                          )}
-                      </View>
-
-                      <View
-                        style={{
-                          marginVertical: 5,
-                        }}>
-                        <Text style={styles(isDark).label}>Attachments</Text>
-                        <>
-                          <TouchableOpacity
-                            onPress={() => pickDocument(setFieldValue)}
-                            style={styles(isDark).uploadButton}>
-                            <IconButton
-                              icon="tray-arrow-up"
-                              iconColor={isDark ? Colors.white : Colors.black}
-                              size={30}
-                            />
-                            <Text style={styles(isDark).uploadButtonText}>
-                              {values.upload.filename || 'Add Attachment'}
-                            </Text>
-                          </TouchableOpacity>
-                        </>
-                      </View>
-                    </>
-                  )}
-                  <TouchableOpacity
-                    style={styles(isDark).submitButton}
-                    onPress={() => handleSubmit()}>
-                    <Text
-                      style={[
-                        styles(isDark).uploadButtonText,
-                        {color: Colors.white, textAlign: 'center'},
-                      ]}>
-                      Save
-                    </Text>
-                  </TouchableOpacity>
-                </>
-              )}
+                    <TouchableOpacity
+                      style={styles(isDark).submitButton}
+                      onPress={() => handleSubmit()}>
+                      <Text
+                        style={[
+                          styles(isDark).uploadButtonText,
+                          {color: Colors.white, textAlign: 'center'},
+                        ]}>
+                        Save
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                );
+              }}
             </Formik>
           </ScrollView>
         </>
@@ -468,3 +600,4 @@ const styles = (isDark: boolean) =>
   });
 
 export default AddSkills;
+

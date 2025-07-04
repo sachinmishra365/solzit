@@ -126,7 +126,30 @@ export const employeeSkillsApi = createApi({
       }),
       invalidatesTags: ['Skill'],
     }),
-  }),
+
+     EditMySkill: builder.mutation({
+      query: ({data, accessToken}) => ({
+        url: `/EmployeeSkill/EditMySkill`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }),
+      invalidatesTags: ['Skill'],
+    }),
+
+    GetOptionSetStatusReason: builder.query({
+      query: ({statusReason, accessToken}) => ({
+        url: `/Master/GetOptionSet?DropDownName=${statusReason}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    }),
+  }), 
 });
 
 export const {
@@ -139,4 +162,6 @@ export const {
   useGetAllMySkillsListApprovedQuery,
   useGetMySkillBySkillIdQuery,
   useAddMyNewSkillMutation,
+  useEditMySkillMutation,
+  useGetOptionSetStatusReasonQuery,
 } = employeeSkillsApi;
