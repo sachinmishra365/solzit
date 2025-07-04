@@ -13,7 +13,6 @@ import ToastMessage from '../../Components/ToastMessage';
 
 
 const WFHCard = ({ wfhData, onActionComplete, refetchData, wfhisLoading }: any) => {
-
   const isDark = useSelector(isDarkTheme);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const accessToken = Assesstoken?.authToken?.accessToken;
@@ -134,113 +133,118 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData, wfhisLoading }: any) 
 
   return (
     <>
-      {!BreakInReult.isLoading || !BreakOutResult?.isLoading || !checkInResult?.isLoading || !CheckOutResult.isLoading  ? (
+      {!BreakInReult.isLoading || !BreakOutResult?.isLoading || !checkInResult?.isLoading || !CheckOutResult.isLoading ? (
 
-        <View style={styles(isDark).cardContainer}>
-          <View style={styles(isDark).contentContainer}>
-            {wfhData?.isCheckedIn !== true && (
-              <>
-                <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Bold', lineHeight: 20 }}>
-                  You have an approved Work from Home today. Please remember to Start your Day as soon as you start working. This will impact your attendance.
-                </Text>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: Colors.primary,
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
-                    borderRadius: 5,
-                    marginTop: 10,
-                    alignSelf: 'center',
-                  }}
-                  onPress={() =>
-                    showDialog(
-                      'Confirm Check In',
-                      'This time will be logged as your punch-in time for the attendance.',
-                      handleCheckIn,
-                    )
-                  }>
 
-                  <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
-                    Start your Day
+        Assesstoken?.userProfile?.isRemoteWorker || Assesstoken?.userProfile?.isOnWFH ? (
+          <View style={styles(isDark).cardContainer}>
+            <View style={styles(isDark).contentContainer}>
+              {wfhData?.isCheckedIn !== true && (
+                <>
+                  <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Bold', lineHeight: 20 }}>
+                    You have an approved Work from Home today. Please remember to Start your Day as soon as you start working. This will impact your attendance.
                   </Text>
-                </TouchableOpacity>
-              </>
-            )}
-
-            {wfhData?.isCheckedIn === true && (
-              <View style={styles(isDark).buttonsContainer}>
-                {!isBreakIn && (
-                  <>
-                    <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Bold', lineHeight: 20 }}>
-                      You have started your day for Work from Home. Please make sure you End your Day when you are done with the work.
-                    </Text>
-                    <TouchableOpacity
-                      style={[styles(isDark).buttonStyle, { backgroundColor: Colors.primary }]}
-                      onPress={() => showDialog(
-                        'Confirm Break In',
-                        'This time will be logged as Break Start Time in your attendance.',
-                        handleBreakIn,
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: Colors.primary,
+                      paddingHorizontal: 20,
+                      paddingVertical: 10,
+                      borderRadius: 5,
+                      marginTop: 10,
+                      alignSelf: 'center',
+                    }}
+                    onPress={() =>
+                      showDialog(
+                        'Confirm Check In',
+                        'This time will be logged as your punch-in time for the attendance.',
+                        handleCheckIn,
                       )
-                      }>
-                      <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
-                        Take a break
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-                {isBreakIn && !isBreakOut && (
-                  <>
-                    <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Bold', lineHeight: 20 }}>
-                      You have started your day for Work from Home. Please make sure you End your Day when you are done with the work.
+                    }>
+
+                    <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                      Start your Day
                     </Text>
-                    <TouchableOpacity
-                      style={[styles(isDark).buttonStyle, { backgroundColor: Colors.error }]}
-                      onPress={() =>
-                        showDialog(
-                          'Confirm Break Out',
-                          'The time will be logged as Break End Time in attendance.',
-                          handleBreakOut,
-                        )
-                      }>
-                      <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
-                        Return from Break
+                  </TouchableOpacity>
+                </>
+              )}
+
+              {wfhData?.isCheckedIn === true && (
+                <View style={styles(isDark).buttonsContainer}>
+                  {!isBreakIn && (
+                    <>
+                      <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Bold', lineHeight: 20 }}>
+                        You have started your day for Work from Home. Please make sure you End your Day when you are done with the work.
                       </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
+                      <TouchableOpacity
+                        style={[styles(isDark).buttonStyle, { backgroundColor: Colors.primary }]}
+                        onPress={() => showDialog(
+                          'Confirm Break In',
+                          'This time will be logged as Break Start Time in your attendance.',
+                          handleBreakIn,
+                        )
+                        }>
+                        <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                          Take a break
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                  {isBreakIn && !isBreakOut && (
+                    <>
+                      <Text style={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Bold', lineHeight: 20 }}>
+                        You have started your day for Work from Home. Please make sure you End your Day when you are done with the work.
+                      </Text>
+                      <TouchableOpacity
+                        style={[styles(isDark).buttonStyle, { backgroundColor: Colors.error }]}
+                        onPress={() =>
+                          showDialog(
+                            'Confirm Break Out',
+                            'The time will be logged as Break End Time in attendance.',
+                            handleBreakOut,
+                          )
+                        }>
+                        <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                          Return from Break
+                        </Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
 
-                <TouchableOpacity
-                  style={[styles(isDark).buttonStyle, {
-                    backgroundColor: isBreakIn && !isBreakOut ? isDark ? 'rgba(189, 1, 1, 0.3)' : 'rgba(189, 1, 1, 0.3)' : Colors.error,
-                    marginLeft: 10,
-                  }]}
-                  onPress={() =>
-                    showDialog(
-                      'Confirm Check Out',
-                      'This time will be logged as your punch-Out time for the attendance.',
-                      handleCheckOut,
-                    )
-                  }
-                  disabled={isBreakIn && !isBreakOut}>
-                  <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
-                    End your Day
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                  <TouchableOpacity
+                    style={[styles(isDark).buttonStyle, {
+                      backgroundColor: isBreakIn && !isBreakOut ? isDark ? 'rgba(189, 1, 1, 0.3)' : 'rgba(189, 1, 1, 0.3)' : Colors.error,
+                      marginLeft: 10,
+                    }]}
+                    onPress={() =>
+                      showDialog(
+                        'Confirm Check Out',
+                        'This time will be logged as your punch-Out time for the attendance.',
+                        handleCheckOut,
+                      )
+                    }
+                    disabled={isBreakIn && !isBreakOut}>
+                    <Text style={{ color: Colors.white, fontFamily: 'Lato-Bold' }}>
+                      End your Day
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
-            <CustomDialogBox
-              visible={dialogVisible}
-              title={dialogTitle}
-              message={dialogMessage}
-              onCancel={() => setDialogVisible(false)}
-              onConfirm={() => {
-                setDialogVisible(false);
-                onConfirmAction();
-              }}
-            />
+              <CustomDialogBox
+                visible={dialogVisible}
+                title={dialogTitle}
+                message={dialogMessage}
+                onCancel={() => setDialogVisible(false)}
+                onConfirm={() => {
+                  setDialogVisible(false);
+                  onConfirmAction();
+                }}
+              />
+            </View>
           </View>
-        </View>
+        )
+          : null
+
 
       ) :
         <ShimmerPlaceHolder />

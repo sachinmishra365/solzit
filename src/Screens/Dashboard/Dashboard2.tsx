@@ -1,18 +1,20 @@
 import { Dimensions, FlatList, Image, Modal, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Colors } from '../../constants/Colors'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { auth, isDarkTheme } from '../../AppStore/Reducers/appState';
 import ScreenPlay from './ScreenPlay';
 import WFHCard from './WFHCard';
 import { useGetOngoingWFHDateListQuery, useGetTodayRemoteEmpAttendanceQuery } from '../../Services/workFromHome';
-import { Button, Portal } from 'react-native-paper';
+import { Button, IconButton, Portal } from 'react-native-paper';
+import { useGetBalanceLeaveDashboardQuery, useGetTimeLoggedLastWeekQuery, useGetTimeLoggedThisWeekQuery } from '../../Services/Dashboardlevel';
 
 const { height, width } = Dimensions.get('window');
 
 
 const Dashboard2 = () => {
+    const dispatch = useDispatch();
     const isDark = useSelector(isDarkTheme);
     const metadata = useSelector((state: any) => state?.appState?.metadata);
     const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
@@ -24,12 +26,39 @@ const Dashboard2 = () => {
 
     const { data: OngoingWFHDateList, isLoading: wfhisLoading, refetch: onActionComplete, } = useGetOngoingWFHDateListQuery({ accessToken })
     const { data: TodayRemoteEmpAttendance, isLoading: wfhisLoading1, refetch: onActionComplete1, } = useGetTodayRemoteEmpAttendanceQuery({ accessToken })
+    const { data: BalanceLeaveDashboard, refetch: refetchBalanceLeaveDashboard } = useGetBalanceLeaveDashboardQuery({ accessToken })
+    const { data: TimeLoggedThisWeek, refetch: refetchTimeLoggedThisWeek } = useGetTimeLoggedThisWeekQuery({ accessToken })
+    const { data: TimeLoggedLastWeek, refetch: refetchTimeLoggedLastWeek } = useGetTimeLoggedLastWeekQuery({ accessToken })
 
-    const todayWFHData = Assesstoken?.userProfile?.isRemoteWorker ?
-        TodayRemoteEmpAttendance?.data :
-        OngoingWFHDateList?.data?.find((item: any) => moment(item.wfhDate).isSame(moment(), 'day'));
+    let todayWFHData = [];
+
+    if (Assesstoken?.userProfile?.isRemoteWorker) {
+        todayWFHData = TodayRemoteEmpAttendance?.data || [];
+    } else if (Assesstoken?.userProfile?.isOnWFH) {
+        todayWFHData = OngoingWFHDateList?.data?.find(
+            (item: any) => moment(item.wfhDate).isSame(moment(), 'day')
+        ) || [];
+    }
 
     const isLoading = wfhisLoading || wfhisLoading1;
+
+    useEffect(() => {
+        const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
+        const currentTime = moment().toISOString();
+        const isTokenExpired = moment(tokenExpiry).isSameOrBefore(currentTime);
+        const date = moment().format('YYYY-MM-DD');
+        if (isTokenExpired) {
+            dispatch(auth(undefined));
+        } else {
+            console.log('Token is still valid.');
+            onActionComplete()
+            onActionComplete1()
+            refetchTimeLoggedLastWeek()
+            refetchTimeLoggedThisWeek()
+            refetchBalanceLeaveDashboard()
+        }
+
+    }, []);
 
     const refetchAll = async () => {
         await Promise.all([onActionComplete(), onActionComplete1()]);
@@ -43,6 +72,9 @@ const Dashboard2 = () => {
             setRefreshing(false);
             onActionComplete1();
             onActionComplete();
+            refetchTimeLoggedLastWeek()
+            refetchTimeLoggedThisWeek()
+            refetchBalanceLeaveDashboard()
         }, 1000);
     }, [onActionComplete1, onActionComplete]);
 
@@ -166,20 +198,32 @@ const Dashboard2 = () => {
 
                 <View style={{ marginTop: 12, justifyContent: 'space-around', flexDirection: 'row' }}>
                     <View style={{ width: '45%', backgroundColor: Colors.primary, height: 100, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, }}>This Week Hours : 5</Text>
-                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, }}>Last Week Hours : 5</Text>
+                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, }}>This Week Hours : {TimeLoggedThisWeek?.data}</Text>
+                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, }}>Last Week Hours : {TimeLoggedLastWeek?.data}</Text>
                     </View>
-                    <View style={{ width: '45%', backgroundColor: Colors.green, height: 100, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, }}>Earn Leave Balance: 5</Text>
+                    <View style={{ width: '45%', backgroundColor: Colors.green, height: 100, borderRadius: 15, justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: -20 }}>
+                            <IconButton icon='swap-horizontal-circle-outline' iconColor={isDark ? Colors?.white : Colors?.white} size={30} />
+                            <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, fontSize: 15, marginRight: 16 }}>{BalanceLeaveDashboard?.data?.earnleaveremaining}</Text>
+                        </View>
+                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, fontSize: 13, marginLeft: 16 }}>Earn Leave Balance</Text>
                     </View>
 
                 </View>
                 <View style={{ marginTop: 12, justifyContent: 'space-around', flexDirection: 'row' }}>
-                    <View style={{ width: '45%', backgroundColor: Colors.error, height: 100, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, }}>Total LOPs : 5</Text>
+                    <View style={{ width: '45%', backgroundColor: Colors.error, height: 100, borderRadius: 15, justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: -20 }}>
+                            <IconButton icon='swap-horizontal-circle-outline' iconColor={isDark ? Colors?.white : Colors?.white} size={30} />
+                            <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, fontSize: 15, marginRight: 16 }}>{BalanceLeaveDashboard?.data?.totallopleave}</Text>
+                        </View>
+                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, fontSize: 13, marginLeft: 16 }}>Total LOPs</Text>
                     </View>
-                    <View style={{ width: '45%', backgroundColor: Colors.darkorange, height: 100, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, }}>No. Of Lates : 5</Text>
+                    <View style={{ width: '45%', backgroundColor: Colors.darkorange, height: 100, borderRadius: 15, justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: -20 }}>
+                            <IconButton icon='swap-horizontal-circle-outline' iconColor={isDark ? Colors?.white : Colors?.white} size={30} />
+                            <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, fontSize: 15, marginRight: 16 }}>{BalanceLeaveDashboard?.data?.noOfLate}</Text>
+                        </View>
+                        <Text style={{ fontFamily: 'Lato-Semibold', color: Colors.white, fontSize: 13, marginLeft: 16 }}>No. Of Lates</Text>
                     </View>
                 </View>
 
@@ -236,13 +280,6 @@ export default Dashboard2
 
 const styles = (isDark: any) =>
     StyleSheet.create({
-        // item: {
-        //     // flex: 1,
-        //     borderRadius: 5,
-        //     padding: 10,
-        //     marginRight: 10,
-        //     marginTop: 17,
-        // },
         holidayItem: {
             padding: 10,
             elevation: 15,

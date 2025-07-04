@@ -1,23 +1,16 @@
-import {
-  FlatList,
-  PanResponder,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Card, SegmentedButtons} from 'react-native-paper';
-import {Colors} from '../../constants/Colors';
-import {useSelector} from 'react-redux';
+import { FlatList, PanResponder, RefreshControl, Text, TouchableOpacity, View, } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Card, SegmentedButtons } from 'react-native-paper';
+import { Colors } from '../../constants/Colors';
+import { useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import { isDarkTheme } from '../../AppStore/Reducers/appState';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {useGetAllWFHRecordListQuery} from '../../Services/workFromHome';
+import { useGetAllWFHRecordListQuery } from '../../Services/workFromHome';
 import EmptyData from '../../Components/EmptyData';
 
-const WorkFromHome = ({navigation}: any) => {
+const WorkFromHome = ({ navigation }: any) => {
   const [items, setItems] = useState<any>([]);
   const isDark = useSelector(isDarkTheme);
 
@@ -28,10 +21,10 @@ const WorkFromHome = ({navigation}: any) => {
 
   const statuses = ['Approved', 'Declined', 'Cancelled', 'All'];
 
-  const {data, isLoading, isSuccess, refetch} = useGetAllWFHRecordListQuery({
+  const { data, isLoading, isSuccess, refetch } = useGetAllWFHRecordListQuery({
     accessToken: EmployeeId.authToken?.accessToken,
   });
-  console.log('data', data);
+  console.log('data', JSON.stringify(data));
 
   useEffect(() => {
     if (data && isSuccess) {
@@ -51,10 +44,14 @@ const WorkFromHome = ({navigation}: any) => {
       setFilteredItems(filteredData);
       refetch();
     }
+    refetch();
+
   }, [items, selectedStatus]);
 
   const filterByStatus = (status: string) => {
     setSelectedStatus(status);
+    refetch();
+
   };
 
   const [refreshing, setRefreshing] = useState(false);
@@ -67,7 +64,7 @@ const WorkFromHome = ({navigation}: any) => {
     }, 2000);
   }, []);
 
-  const renderItem = ({item}: any) => (
+  const renderItem = ({ item }: any) => (
     console.log('item', item),
     (
       <Card
@@ -79,45 +76,6 @@ const WorkFromHome = ({navigation}: any) => {
           marginHorizontal: 5,
         }}>
         <Card.Content>
-          <View
-            style={{
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-            }}>
-            <Text
-              style={{
-                color:
-                  item.leaveType.label === 'Work From Home'
-                    ? isDark
-                      ? Colors.white
-                      : Colors.black
-                    : isDark
-                    ? Colors.white
-                    : Colors.black,
-                fontSize: 16,
-                fontFamily: 'Lato-Bold',
-              }}>
-              {item?.leaveType?.label}
-            </Text>
-
-            <View style={{}}>
-              <Text
-                style={{
-                  color:
-                    item?.status?.label === 'Cancelled'
-                      ? '#E0514D'
-                      : item?.status?.label === 'Declined'
-                      ? Colors.error
-                      : item?.status?.label === 'Approved'
-                      ? 'green'
-                      : Colors.gray,
-                  fontSize: 16,
-                  fontFamily: 'Lato-Bold',
-                }}>
-                {item?.status?.label}
-              </Text>
-            </View>
-          </View>
 
           <View
             style={{
@@ -146,6 +104,7 @@ const WorkFromHome = ({navigation}: any) => {
               {moment(item?.wfhEndDate).format('DD/MM/YYYY')}
             </Text>
           </View>
+
           <View
             style={{
               flexDirection: 'row',
@@ -153,7 +112,7 @@ const WorkFromHome = ({navigation}: any) => {
               flexWrap: 'wrap',
             }}>
             {item?.approverOrDecliner && (
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <Text
                   style={{
                     color: isDark ? Colors.white : Colors.black,
@@ -163,8 +122,8 @@ const WorkFromHome = ({navigation}: any) => {
                   {item?.status?.value === 674180002
                     ? 'Declined By : '
                     : item?.status?.value === 674180000
-                    ? 'Canceled By : '
-                    : 'Approved by : '}
+                      ? 'Canceled By : '
+                      : 'Approved by : '}
                 </Text>
                 <Text
                   style={{
@@ -181,7 +140,7 @@ const WorkFromHome = ({navigation}: any) => {
           {item?.status?.value === 674180002 && (
             <>
               <View
-                style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 10}}>
+                style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
                 <Text
                   style={{
                     color: isDark ? Colors.white : Colors.black,
@@ -201,6 +160,25 @@ const WorkFromHome = ({navigation}: any) => {
               </View>
             </>
           )}
+
+          <View style={{ alignItems: 'flex-end' }}>
+            <Text
+              style={{
+                color:
+                  item?.status?.label === 'Cancelled'
+                    ? '#E0514D'
+                    : item?.status?.label === 'Declined'
+                      ? Colors.error
+                      : item?.status?.label === 'Approved'
+                        ? 'green'
+                        : Colors.gray,
+                fontSize: 16,
+                fontFamily: 'Lato-Bold',
+              }}>
+              {item?.status?.label}
+            </Text>
+          </View>
+
         </Card.Content>
       </Card>
     )
@@ -252,23 +230,23 @@ const WorkFromHome = ({navigation}: any) => {
               selectedStatus === status
                 ? Colors.secondary
                 : isDark
-                ? Colors.gray
-                : Colors.white,
+                  ? Colors.gray
+                  : Colors.white,
           },
           labelStyle: {
             color:
               selectedStatus === status
                 ? Colors.white
                 : isDark
-                ? Colors.white
-                : Colors.black,
+                  ? Colors.white
+                  : Colors.black,
             fontFamily: 'Lato-Semibold',
             fontSize: 13,
           },
         }))}
-        style={{marginVertical: 10, marginHorizontal: 16}}
+        style={{ marginVertical: 10, marginHorizontal: 16 }}
         theme={{
-          colors: {primary: Colors.primary},
+          colors: { primary: Colors.primary },
         }}
       />
       <View
@@ -283,24 +261,24 @@ const WorkFromHome = ({navigation}: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : //@ts-ignore
-      filteredItems && filteredItems?.length !== 0 ? (
-        <FlatList
-          style={{marginHorizontal: 16}}
-          data={filteredItems}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => onRefresh()}
-            />
-          }
-          renderItem={item => renderItem(item)}
-          keyExtractor={(item, index) => index.toString()}
-          ListFooterComponent={<View style={{height: 100}} />}
-          showsVerticalScrollIndicator={false}
-        />
-      ) : (
-        <EmptyData />
-      )}
+        filteredItems && filteredItems?.length !== 0 ? (
+          <FlatList
+            style={{ marginHorizontal: 16 }}
+            data={filteredItems}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => onRefresh()}
+              />
+            }
+            renderItem={item => renderItem(item)}
+            keyExtractor={(item, index) => index.toString()}
+            ListFooterComponent={<View style={{ height: 100 }} />}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <EmptyData />
+        )}
     </View>
   );
 };
