@@ -28,7 +28,6 @@ const MySkills = ({navigation}: any) => {
 
   const statuses = ['My Recognized Skills', 'Pending Actions'];
   const [skillData, setSkillData] = useState([]);
-
   const [refreshing, setRefreshing] = useState(false);
 
   const {
@@ -157,6 +156,8 @@ const MySkills = ({navigation}: any) => {
                         ? 'green'
                         : item?.statusReason?.label === 'Upgrade Requested'
                         ? 'orange'
+                         : item?.statusReason?.label === 'Rejected'
+                        ? '#f02684'
                         : '#9900ff',
                   },
                 ]}>
@@ -217,12 +218,14 @@ const MySkills = ({navigation}: any) => {
               </View>
             )}
 
-            {['Applied', 'Approved'].includes(item?.statusReason?.label) && (
+            {['Applied', 'Approved','Rejected'].includes(item?.statusReason?.label) && (
               <IconButton
                 icon={
                   item?.statusReason?.label === 'Applied'
                     ? 'circle-edit-outline'
-                    : 'tray-arrow-up'
+                    :  item?.statusReason?.label === 'Approved'
+                    ? 'tray-arrow-up'
+                    : 'reload'
                 }
                 size={25}
                 onPress={() =>

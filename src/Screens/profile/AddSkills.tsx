@@ -82,6 +82,9 @@ const AddSkills = ({navigation, route}: any) => {
       LevelOfSkill: 'LevelOfSkill',
       accessToken: EmployeeId?.authToken?.accessToken,
     });
+
+    console.log('levelOptionsData', levelOptionsData);
+    
   const {data: hasCertOptionsData, isLoading: certLoading} =
     useGetOptionSetHasCertificateQuery({
       HasCertification: 'HasCertification',
@@ -151,7 +154,6 @@ const AddSkills = ({navigation, route}: any) => {
         );
       }
     } catch (error) {
-
       Toast.show({
         type: 'error',
         text1: 'Upload Error',
@@ -178,13 +180,16 @@ const AddSkills = ({navigation, route}: any) => {
     }
   };
 
-  const isEdit = itemData?.statusReason?.label === 'Applied' || itemData?.statusReason?.label === 'Approved';
+  const isEdit =
+    itemData?.statusReason?.label === 'Applied' ||
+    itemData?.statusReason?.label === 'Approved' ||
+    itemData?.statusReason?.label === 'Rejected';
 
   const STATUS_REASON_MAP: Record<string, number> = {
     Applied: 674180000,
-    Rejected: 674180001,
+    'Re-Applied': 674180001,
     Pending: 674180002,
-    'Re-Applied': 674180003,
+    Rejected: 674180003,
     Approved: 674180004,
   };
 
@@ -198,13 +203,18 @@ const AddSkills = ({navigation, route}: any) => {
       return;
     }
 
+    const validLevelValues = levelOptions?.map((option:any )=> option.value);
+    const levelValue = values?.regardingLevelOfSkills?.value;
+
     const commonPayload = {
       skillId: values?.regardingToSkills?.value ?? null,
 
-      levelOfSkill: {
+       levelOfSkill: validLevelValues.includes(levelValue)
+    ? {
         label: values.regardingLevelOfSkills?.label,
-        value: values.regardingLevelOfSkills?.value,
-      },
+        value: levelValue,
+      }
+    : null,
       hasCertification: {
         label: values.regardingCertification?.label,
         value: values.regardingCertification?.value,
@@ -215,7 +225,7 @@ const AddSkills = ({navigation, route}: any) => {
             value: values.regardingTypeCertification?.value,
           }
         : null,
-      certicationName: values.certificateTitle,
+      certicationName: values?.certificateTitle?.trim() || '',
     };
 
     try {
@@ -228,10 +238,11 @@ const AddSkills = ({navigation, route}: any) => {
 
           ...commonPayload,
           statusReason: {
-            label: itemData?.statusReason?.label,
+            label: itemData?.statusReason?.label ?? 'Rejected',
             value:
               STATUS_REASON_MAP[itemData?.statusReason?.label] ??
-              itemData?.statusReason?.value,
+              itemData?.statusReason?.value ??
+              674180003,
           },
         };
 
@@ -239,16 +250,19 @@ const AddSkills = ({navigation, route}: any) => {
           accessToken: EmployeeId?.authToken?.accessToken,
           data: payload,
         }).unwrap();
+        console.log('Edit Skill Response:', response);
       } else {
         response = await CreateAddNewSkill({
           accessToken: EmployeeId?.authToken?.accessToken,
           data: commonPayload,
         }).unwrap();
       }
-   
+      console.log('Response from API:', response);
+      console.log('Response message detail:', response?.messageDetail);
+
       if (
         response?.isSuccessful &&
-        [201, 5016].includes(response?.messageDetail?.message_code)
+        [201, 5016, 200].includes(response?.messageDetail?.message_code)
       ) {
         const skillId = response?.data;
         if (values.upload && values.upload.filename) {
@@ -258,14 +272,15 @@ const AddSkills = ({navigation, route}: any) => {
             type: 'success',
             text1: 'Success',
             text2:
-              response?.messageDetail?.message_code === 201
+              response?.messageDetail?.message_code === 201 ||
+              response?.messageDetail?.message_code === 200
                 ? 'Skill added successfully'
                 : 'Skill updated successfully',
           });
         }
         navigation.goBack();
       } else if (response?.messageDetail?.message_code === 4449) {
-     Toast.show({
+        Toast.show({
           type: 'error',
           text1: 'Error',
           text2: response.messageDetail.message || 'Failed to add skill',
@@ -275,27 +290,29 @@ const AddSkills = ({navigation, route}: any) => {
           response?.messageDetail?.message || 'Failed to add skill',
         );
       }
-   } catch (error: any) {
+    } catch (error: any) {
+      console.error('Error in handleSubmit:', error);
+      const errorMessage =
+        error?.data?.messageDetail?.message ||
+        error?.message ||
+        'Unknown error occurred';
 
-    const errorMessage = error?.data?.messageDetail?.message || error?.message || 'Unknown error occurred';
-
-
-
-    if ( error?.data?.messageDetail?.message_code === 4449) {
-      Toast.show({
-        type: 'error',
-        text1: 'Skill Already Exists',
-        text2: 'You already have added this skill.',
-      });
-    } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errorMessage,
-      });
+      if (!isEdit && error?.data?.messageDetail?.message_code === 4449) {
+        Toast.show({
+          type: 'error',
+          text1: 'Skill Already Exists',
+          text2: 'You already have added this skill.',
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: errorMessage,
+        });
+      }
     }
-  }
-};
+  };
+
   return (
     <View style={styles(isDark).maincontainer}>
       <CustomHeader
@@ -305,6 +322,8 @@ const AddSkills = ({navigation, route}: any) => {
             ? 'Approved Skill'
             : itemData?.statusReason?.label === 'Applied'
             ? 'Applied Skill'
+            : itemData?.statusReason?.label === 'Rejected'
+            ? 'Rejected Skill'
             : 'Add Skill'
         }
         onPress={() => navigation.goBack()}
@@ -371,7 +390,11 @@ const AddSkills = ({navigation, route}: any) => {
 
                 let filteredLevelOptions = allLevels;
 
-                if (itemData?.statusReason?.label === 'Approved' || itemData?.statusReason?.label === 'Applied') {
+                if (
+                  itemData?.statusReason?.label === 'Approved' ||
+                  itemData?.statusReason?.label === 'Applied' ||
+                  itemData?.statusReason?.label === 'Rejected'
+                ) {
                   if (selectedLevel === 'Beginner') {
                     filteredLevelOptions = allLevels.filter(
                       level =>
@@ -402,7 +425,10 @@ const AddSkills = ({navigation, route}: any) => {
                         onSelect={(selectedOption: any) =>
                           setFieldValue('regardingToSkills', selectedOption)
                         }
-                        disabled={itemData?.statusReason?.label === 'Approved'}
+                        disabled={
+                          itemData?.statusReason?.label === 'Approved' ||
+                          itemData?.statusReason?.label === 'Rejected'
+                        }
                       />
 
                       {touched.regardingToSkills?.value && (
@@ -600,4 +626,3 @@ const styles = (isDark: boolean) =>
   });
 
 export default AddSkills;
-
