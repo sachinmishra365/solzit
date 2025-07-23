@@ -60,7 +60,6 @@ const Summary = ({route}: any) => {
     {label: 'LOP Low Hours (3-5)', value: records?.lopLowHrs3_5},
     {label: 'LOP Low Hours (<3)', value: records?.lopLowHrsLess3},
     {label: 'LOP Lates', value: records?.lopLates},
-    {label: 'Total LOPs', value: records?.totalLossOfPay},
   ];
 
   const handlesummary = async () => {
@@ -92,9 +91,10 @@ const Summary = ({route}: any) => {
             style={[
               styles(isDark).card,
               {
-                elevation: 5,
+                elevation: 3,
                 justifyContent: 'space-around',
                 flexDirection: 'row',
+                borderRadius: 5,
               },
             ]}>
             {UpperData.map((item, index) => (
@@ -107,7 +107,7 @@ const Summary = ({route}: any) => {
                 <Text
                   style={[
                     styles(isDark).txt,
-                    {fontSize: 12, textAlign: 'center'},
+                    {fontSize: 12, textAlign: 'center', marginBottom: 5},
                   ]}>
                   {item.label}
                 </Text>
@@ -115,76 +115,81 @@ const Summary = ({route}: any) => {
             ))}
           </View>
 
-          <Card style={styles(isDark).card}>
+          <Card style={[styles(isDark).card]}>
             <Card.Content>
-              <View style={styles(isDark).row}>
-                <Text
-                  style={[
-                    styles(isDark).txt,
-                    {fontFamily: 'Lato-Semibold', fontSize: 16},
-                  ]}>
-                  Leave Summary
-                </Text>
-                <Text style={styles(isDark).txt}>
-                  {records?.month?.label || 0}
-                </Text>
-              </View>
-              <View style={styles(isDark).row}>
-                <Text style={styles(isDark).txt}>
-                  {'Leave Type : '}
-               <Text style={{color:'#FF9800'}}>{'Earn Leave'}</Text>
-                </Text>
-                <Text style={styles(isDark).txt}>
-                  {'Starting Balance : '}
-                  {records?.earnedLeave || 0}
+              <Text style={styles(isDark).coolTitle}>
+                Leave Summary — {records?.month?.label || 'Month'}
+              </Text>
+
+              <View style={styles(isDark).infoBox}>
+                <Text style={styles(isDark).txt}>Leave Type{' :'}</Text>
+                <Text style={[styles(isDark).txt, {color: Colors.darkorange}]}>
+                  Earn Leave
                 </Text>
               </View>
 
-              <View style={styles(isDark).row}>
-                <Text style={styles(isDark).txt}>
-                  {'Leave Availed : '}
-                  {records?.earnleaveavailed || 0}
-                </Text>
-                <Text style={styles(isDark).txt}>
-                  {'Closing Balance : '}
-                  {records?.earnleaveremaining || 0}
-                </Text>
+              <View style={styles(isDark).grid}>
+                <View style={[styles(isDark).metricContainer, {width: '30%'}]}>
+                  <Text style={styles(isDark).txt}>Starting Balance</Text>
+                  <Text style={styles(isDark).metricValue}>
+                    {records?.earnedLeave || 0}
+                  </Text>
+                </View>
+                <View style={[styles(isDark).metricContainer, {width: '30%'}]}>
+                  <Text style={styles(isDark).txt}>Leave Availed</Text>
+                  <Text style={styles(isDark).metricValue}>
+                    {records?.earnleaveavailed || 0}
+                  </Text>
+                </View>
+                <View style={[styles(isDark).metricContainer, {width: '30%'}]}>
+                  <Text style={styles(isDark).txt}>Closing Balance</Text>
+                  <Text style={styles(isDark).metricValue}>
+                    {records?.earnleaveremaining || 0}
+                  </Text>
+                </View>
               </View>
             </Card.Content>
           </Card>
 
-          <Card style={styles(isDark).card}>
+          <Card style={[styles(isDark).card, styles(isDark).card]}>
             <Card.Content>
-              <Text
-                style={[
-                  styles(isDark).txt,
-                  {
-                    fontFamily: 'Lato-Semibold',
-                    fontSize: 16,
-                    textAlign: 'center',
-                  },
-                ]}>
-                {'Leave Summary'}
-              </Text>
-
-              {Summary.map((item, index) => (
-                <View key={index} style={styles(isDark).row}>
-                  <Text
+              <Text style={styles(isDark).coolTitle}>Leave Summary</Text>
+              <View style={styles(isDark).grid}>
+                {Summary.map((item, index) => (
+                  <View
+                    key={index}
                     style={[
-                      styles(isDark).txt,
-                      item.label === 'Total LOPs' && {fontFamily: 'Lato-Bold'},
+                      styles(isDark).metricContainer,
+                      {width: '48%', flexDirection: 'row'},
                     ]}>
-                    {item.label}
-                  </Text>
+                    <IconButton
+                      icon="clock-outline"
+                      size={20}
+                      iconColor={
+                        index % 2 === 0 ? Colors.green : Colors.secondary
+                      }
+                      style={styles(isDark).metricIcon}
+                    />
+                    <View style={styles(isDark).metricText}>
+                      <Text style={styles(isDark).txt}>{item.label}</Text>
+                      <Text style={styles(isDark).metricValue}>
+                        {item.value || 0}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+                <View style={{alignItems: 'flex-end', width: '100%'}}>
                   <Text
-                    style={[
-                      styles(isDark).txt,
-                      item.label === 'Total LOPs' && {fontFamily: 'Lato-Bold'},
-                    ]}>
-                    {item.value || 0}
+                    style={{
+                      fontSize: 14,
+                      color: Colors.error,
+                      fontFamily: 'Lato-Semibold',
+                    }}>
+                    Total LOPs{' : '}
+                    {records?.totalLossOfPay}
                   </Text>
                 </View>
-              ))}
+              </View>
             </Card.Content>
           </Card>
         </ScrollView>
@@ -204,9 +209,7 @@ const styles = (isDark: boolean) =>
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginHorizontal: 16,
-      borderRadius: 5,
-      padding: 8,
-      marginVertical: 5,
+      marginVertical: 7,
       borderColor: Colors.background,
       borderWidth: 0.5,
     },
@@ -214,12 +217,45 @@ const styles = (isDark: boolean) =>
       color: isDark ? Colors.white : Colors.black,
       fontSize: 14,
       fontFamily: 'Lato-Regular',
-      marginVertical: 2,
     },
-    row: {
+
+    coolTitle: {
+      fontSize: 16,
+      fontFamily: 'Lato-Bold',
+      textAlign: 'left',
+      color: isDark ? Colors.primary : Colors.primary,
+    },
+
+    grid: {
       flexDirection: 'row',
+      flexWrap: 'wrap',
       justifyContent: 'space-between',
+    },
+    metricContainer: {
+      backgroundColor: isDark ? Colors.gray : Colors.white,
+      borderRadius: 5,
+      padding: 10,
+      marginVertical: 6,
       alignItems: 'center',
-      marginVertical: 2,
+      elevation: 1,
+    },
+    metricIcon: {
+      marginRight: 8,
+    },
+    metricText: {
+      flex: 1,
+    },
+
+    metricValue: {
+      fontSize: 16,
+      color: isDark ? Colors.darkorange : Colors.black,
+      fontFamily: 'Lato-Semibold',
+    },
+
+    infoBox: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: 10,
+      gap: 6,
     },
   });

@@ -50,19 +50,11 @@ const Feedback = ({ navigation }: any) => {
         <View>
 
           <View style={{ flexDirection: 'row', }}>
-            {/* <Text style={[styles(isDark).txt,]}>{'Title : '}</Text> */}
             <Text style={[styles(isDark).txt, { flexWrap: 'wrap', flex: 1 }]}>{item.feedBackTitle}</Text>
           </View>
 
         </View>
-        {/* <IconButton
-            icon={'eye'}
-            iconColor={Colors.primary}
-            size={25}
-            style={{ position: 'absolute', right: 5, bottom: -15, }}
-            onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}
-          /> */}
-
+    
       </Card.Content>
     </Card>
   );
@@ -115,7 +107,6 @@ const styles = (isDark: boolean) =>
       borderColor: Colors.background,
       borderWidth: 0.5,
       marginHorizontal: 16,
-      // paddingBottom: 20
     },
 
     txt: {

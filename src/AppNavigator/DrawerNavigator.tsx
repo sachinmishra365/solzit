@@ -1,21 +1,32 @@
 import React from 'react';
-import { Animated, Image, SafeAreaView, StyleSheet, Text, Pressable, View, TouchableOpacity, useColorScheme, ScrollView, } from 'react-native';
-import { Icon, IconButton, List } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-import { Colors } from '../constants/Colors';
+import {
+  Animated,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  Pressable,
+  View,
+  TouchableOpacity,
+  useColorScheme,
+  ScrollView,
+} from 'react-native';
+import {Icon, IconButton, List} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import {Colors} from '../constants/Colors';
 import Dashboard from '../Screens/Dashboard/Dashboard';
-import { isDarkTheme, theme } from '../AppStore/Reducers/appState';
+import {isDarkTheme, theme} from '../AppStore/Reducers/appState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import Dashboard2 from '../Screens/Dashboard/Dashboard2';
 
-
-const DrawerNavigator = ({ navigation }: any) => {
+const DrawerNavigator = ({navigation}: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
   const colorScheme = useColorScheme();
   // const [isSwitchOn, setIsSwitchOn] = useState(isDark);
   const userData = useSelector((state: any) => state?.appState?.authToken);
+
   const [showMenu, setShowMenu] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
 
@@ -73,105 +84,226 @@ const DrawerNavigator = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles(isDark).container}>
-      <View style={styles(isDark).drawerContainer}>
-
+      <TouchableOpacity
+        style={styles(isDark).containerRow}
+        activeOpacity={0.8}
+        onPress={() => navigation.navigate('Profile')}>
         {Profiledata?.employeeImg ? (
           <Image
-            style={[styles(isDark).logo]}
-            source={{ uri: imageAsset?.data ? `data:image/jpeg;base64,${imageAsset?.data}` : base64Image, }}
+            style={styles(isDark).logo}
+            source={{
+              uri: imageAsset?.data
+                ? `data:image/jpeg;base64,${imageAsset?.data}`
+                : base64Image,
+            }}
           />
         ) : (
           <Image
-            style={[styles(isDark).logo]}
+            style={styles(isDark).logo}
             source={require('../Assets/Images/profile.png')}
           />
         )}
 
-        <TouchableOpacity style={styles(isDark).userRow} onPress={() => { navigation.navigate('Profile'); }}>
-          <Text style={styles(isDark).UserName}>{userData?.userProfile?.fullName ? userData.userProfile.fullName : 'Guest'}</Text>
-          <View style={styles(isDark).editIcon}>
-            <Icon source="account-edit" size={22} color={isDark ? Colors.white : Colors.primary} />
-          </View>
-        </TouchableOpacity>
+        <View style={styles(isDark).userRow}>
+          <Text style={styles(isDark).UserName}>
+            {userData?.userProfile?.fullName || 'Guest'}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Lato-Regular',
+              fontSize: 14,
+              color: Colors.white,
+            }}>
+            {userData?.userProfile?.email || 'GuestEmail'}
+          </Text>
+        </View>
 
-        <ScrollView style={styles(isDark).drawerBtnContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles(isDark).editIcon}>
+          <Icon source="chevron-right" size={30} color={Colors.white} />
+        </View>
+      </TouchableOpacity>
 
+      <View style={styles(isDark).drawerContainer}>
+        <ScrollView
+          style={styles(isDark).drawerBtnContainer}
+          showsVerticalScrollIndicator={false}>
           <Pressable
-            android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-            onPressIn={() => { navigation.navigate('SoluzioneDirectory'); }}
-            onPress={() => { toggleMenu(); }}
-            style={styles(isDark).drawerBtn}
-          >
-            <Icon source="book-open-page-variant" color={isDark ? Colors.white : Colors.primary} size={23} />
+            android_ripple={{color: 'rgba(0,0,0,0.1)'}}
+            onPressIn={() => {
+              navigation.navigate('SoluzioneDirectory');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={styles(isDark).drawerBtn}>
+            <Icon
+              source="book-open-page-variant"
+              color={isDark ? Colors.white : Colors.primary}
+              size={23}
+            />
             <Text style={styles(isDark).drawerBtnTxt}>Soluzione Directory</Text>
           </Pressable>
 
           <Pressable
-            android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-            onPressIn={() => { navigation.navigate('Attandance'); }}
-            onPress={() => { toggleMenu(); }}
-            style={[styles(isDark).drawerBtn]}
-          >
-            <Icon source="account" color={isDark ? Colors.white : Colors.primary} size={23} />
+            android_ripple={{color: 'rgba(0,0,0,0.1)'}}
+            onPressIn={() => {
+              navigation.navigate('Attandance');
+            }}
+            onPress={() => {
+              toggleMenu();
+            }}
+            style={[styles(isDark).drawerBtn]}>
+            <Icon
+              source="account"
+              color={isDark ? Colors.white : Colors.primary}
+              size={23}
+            />
             <Text style={styles(isDark).drawerBtnTxt}>Attendance</Text>
           </Pressable>
 
           <List.Accordion
-            style={{ backgroundColor: isDark ? Colors.black : Colors.white, width: '115%', marginLeft: -5, }}
+            style={{
+              backgroundColor: isDark ? Colors.black : Colors.white,
+              width: '115%',
+              marginLeft: -5,
+            }}
             title="My Work"
-            titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold', }}
-            left={props => (<List.Icon{...props} icon="folder" color={isDark ? Colors.white : Colors.primary} />)}
-            right={props => (<List.Icon{...props} icon={expandedId === 'work' ? 'chevron-down' : 'chevron-left'} color={isDark ? Colors.white : Colors.black} />)}
+            titleStyle={{
+              color: isDark ? Colors.white : Colors.black,
+              fontFamily: 'Lato-Semibold',
+            }}
+            left={props => (
+              <List.Icon
+                {...props}
+                icon="folder"
+                color={isDark ? Colors.white : Colors.primary}
+              />
+            )}
+            right={props => (
+              <List.Icon
+                {...props}
+                icon={expandedId === 'work' ? 'chevron-down' : 'chevron-left'}
+                color={isDark ? Colors.white : Colors.black}
+              />
+            )}
             expanded={expandedId === 'work'}
             onPress={() => handlePress('work')}
-            rippleColor={'rgba(0,0,0,0.1)'}
-          >
+            rippleColor={'rgba(0,0,0,0.1)'}>
             <List.Item
               title="My To-Dos"
-              left={props => (<List.Icon{...props} icon="plus-box-multiple" color={isDark ? Colors.white : Colors.primary} />)}
-              titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold', }}
-              style={{ marginLeft: 20, marginTop: -10 }}
-              onPressIn={() => { navigation.navigate('Worklog'); }}
-              onPress={() => { toggleMenu(); }}
+              left={props => (
+                <List.Icon
+                  {...props}
+                  icon="plus-box-multiple"
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+              )}
+              titleStyle={{
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Semibold',
+              }}
+              style={{marginLeft: 20, marginTop: -10}}
+              onPressIn={() => {
+                navigation.navigate('Worklog');
+              }}
+              onPress={() => {
+                toggleMenu();
+              }}
             />
 
             <List.Item
               title="Plan My Day"
-              left={props => (<List.Icon{...props} icon="note" color={isDark ? Colors.white : Colors.primary} />)}
-              titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold', }}
-              style={{ marginLeft: 20, marginTop: -10 }}
-              onPressIn={() => { navigation.navigate('PlanMyDay'); }}
-              onPress={() => { toggleMenu(); }}
+              left={props => (
+                <List.Icon
+                  {...props}
+                  icon="note"
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+              )}
+              titleStyle={{
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Semibold',
+              }}
+              style={{marginLeft: 20, marginTop: -10}}
+              onPressIn={() => {
+                navigation.navigate('PlanMyDay');
+              }}
+              onPress={() => {
+                toggleMenu();
+              }}
             />
 
             <List.Item
               title="My Plans"
               left={props => (
-                <List.Icon{...props} icon="note" color={isDark ? Colors.white : Colors.primary} />)}
-              titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold', }}
-              style={{ marginLeft: 20, marginTop: -10 }}
-              onPressIn={() => { navigation.navigate('MyPlans'); }}
-              onPress={() => { toggleMenu() }}
+                <List.Icon
+                  {...props}
+                  icon="note"
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+              )}
+              titleStyle={{
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Semibold',
+              }}
+              style={{marginLeft: 20, marginTop: -10}}
+              onPressIn={() => {
+                navigation.navigate('MyPlans');
+              }}
+              onPress={() => {
+                toggleMenu();
+              }}
             />
 
             <List.Item
               title="My Projects"
-              left={props => (<List.Icon{...props} icon="folder-open" color={isDark ? Colors.white : Colors.primary} />)}
-              titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold', }}
-              style={{ marginLeft: 20, marginTop: -10 }}
-              onPressIn={() => { navigation.navigate('ProjectAllocation'); }}
-              onPress={() => { toggleMenu(); }}
+              left={props => (
+                <List.Icon
+                  {...props}
+                  icon="folder-open"
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+              )}
+              titleStyle={{
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Semibold',
+              }}
+              style={{marginLeft: 20, marginTop: -10}}
+              onPressIn={() => {
+                navigation.navigate('ProjectAllocation');
+              }}
+              onPress={() => {
+                toggleMenu();
+              }}
             />
           </List.Accordion>
 
           <List.Accordion
-            style={{ backgroundColor: isDark ? Colors.black : Colors.white, width: '115%', marginLeft: -5, }}
+            style={{
+              backgroundColor: isDark ? Colors.black : Colors.white,
+              width: '115%',
+              marginLeft: -5,
+            }}
             title="Leaves & Breaks"
             titleNumberOfLines={2}
-            titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold', }}
-            left={props => (<List.Icon{...props} icon="airplane" color={isDark ? Colors.white : Colors.primary} />)}
+            titleStyle={{
+              color: isDark ? Colors.white : Colors.black,
+              fontFamily: 'Lato-Semibold',
+            }}
+            left={props => (
+              <List.Icon
+                {...props}
+                icon="airplane"
+                color={isDark ? Colors.white : Colors.primary}
+              />
+            )}
             right={props => (
-              <List.Icon{...props} icon={expandedId === 'leave' ? 'chevron-down' : 'chevron-left'} color={isDark ? Colors.white : Colors.black} />)}
+              <List.Icon
+                {...props}
+                icon={expandedId === 'leave' ? 'chevron-down' : 'chevron-left'}
+                color={isDark ? Colors.white : Colors.black}
+              />
+            )}
             expanded={expandedId === 'leave'}
             onPress={() => handlePress('leave')}
             rippleColor={'rgba(0,0,0,0.1)'}>
@@ -188,7 +320,7 @@ const DrawerNavigator = ({ navigation }: any) => {
                 color: isDark ? Colors.white : Colors.black,
                 fontFamily: 'Lato-Semibold',
               }}
-              style={{ marginLeft: 20, marginTop: -10 }}
+              style={{marginLeft: 20, marginTop: -10}}
               onPressIn={() => {
                 navigation.navigate('ApplyLeave');
               }}
@@ -210,7 +342,7 @@ const DrawerNavigator = ({ navigation }: any) => {
                 color: isDark ? Colors.white : Colors.black,
                 fontFamily: 'Lato-Semibold',
               }}
-              style={{ marginLeft: 20, marginTop: -10 }}
+              style={{marginLeft: 20, marginTop: -10}}
               onPressIn={() => {
                 navigation.navigate('LeaveRequest');
               }}
@@ -232,7 +364,7 @@ const DrawerNavigator = ({ navigation }: any) => {
                 color: isDark ? Colors.white : Colors.black,
                 fontFamily: 'Lato-Semibold',
               }}
-              style={{ marginLeft: 20, marginTop: -10 }}
+              style={{marginLeft: 20, marginTop: -10}}
               onPressIn={() => {
                 navigation.navigate('LeaveBalance');
               }}
@@ -254,7 +386,7 @@ const DrawerNavigator = ({ navigation }: any) => {
                 color: isDark ? Colors.white : Colors.black,
                 fontFamily: 'Lato-Semibold',
               }}
-              style={{ marginLeft: 20, marginTop: -10 }}
+              style={{marginLeft: 20, marginTop: -10}}
               onPressIn={() => {
                 navigation.navigate('LateArrivalTime');
               }}
@@ -276,7 +408,7 @@ const DrawerNavigator = ({ navigation }: any) => {
                 color: isDark ? Colors.white : Colors.black,
                 fontFamily: 'Lato-Semibold',
               }}
-              style={{ marginLeft: 20, marginTop: -10 }}
+              style={{marginLeft: 20, marginTop: -10}}
               onPressIn={() => {
                 navigation.navigate('Breakes');
               }}
@@ -315,20 +447,49 @@ const DrawerNavigator = ({ navigation }: any) => {
             expanded={expandedId === 'hiring'}
             onPress={() => handlePress('hiring')}
             rippleColor={'rgba(0,0,0,0.1)'}>
+            <List.Item
+              title="Open Positions"
+              left={props => (
+                <List.Icon
+                  {...props}
+                  icon="account-group"
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+              )}
+              titleStyle={{
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Semibold',
+              }}
+              style={{marginLeft: 20, marginTop: -10}}
+              onPressIn={() => {
+                navigation.navigate('OpenPositions');
+              }}
+              onPress={() => {
+                toggleMenu();
+              }}
+            />
 
             <List.Item
-              title="Open Positions" left={props => <List.Icon {...props} icon="account-group" color={isDark ? Colors.white : Colors.primary} />}
-              titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold' }}
-              style={{ marginLeft: 20, marginTop: -10 }}
-              onPressIn={() => { navigation.navigate('OpenPositions') }}
-              onPress={() => { toggleMenu() }} />
-
-            <List.Item
-              title="My References" left={props => <List.Icon {...props} icon="account-group" color={isDark ? Colors.white : Colors.primary} />}
-              titleStyle={{ color: isDark ? Colors.white : Colors.black, fontFamily: 'Lato-Semibold' }}
-              style={{ marginLeft: 20, marginTop: -10 }}
-              onPressIn={() => { navigation.navigate('MyReferences') }}
-              onPress={() => { toggleMenu() }} />
+              title="My References"
+              left={props => (
+                <List.Icon
+                  {...props}
+                  icon="account-group"
+                  color={isDark ? Colors.white : Colors.primary}
+                />
+              )}
+              titleStyle={{
+                color: isDark ? Colors.white : Colors.black,
+                fontFamily: 'Lato-Semibold',
+              }}
+              style={{marginLeft: 20, marginTop: -10}}
+              onPressIn={() => {
+                navigation.navigate('MyReferences');
+              }}
+              onPress={() => {
+                toggleMenu();
+              }}
+            />
           </List.Accordion>
           {/* {Profiledata?.isManager &&
             <List.Accordion
@@ -377,7 +538,7 @@ const DrawerNavigator = ({ navigation }: any) => {
             </List.Accordion>
           } */}
           <Pressable
-            android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
+            android_ripple={{color: 'rgba(0,0,0,0.1)'}}
             onPressIn={() => {
               navigation.navigate('WorkFromHome');
             }}
@@ -394,7 +555,7 @@ const DrawerNavigator = ({ navigation }: any) => {
           </Pressable>
 
           <Pressable
-            android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
+            android_ripple={{color: 'rgba(0,0,0,0.1)'}}
             onPressIn={() => {
               navigation.navigate('Feedback');
             }}
@@ -409,7 +570,6 @@ const DrawerNavigator = ({ navigation }: any) => {
             />
             <Text style={styles(isDark).drawerBtnTxt}>Feedback</Text>
           </Pressable>
-
 
           {/* <Pressable
               android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
@@ -427,15 +587,20 @@ const DrawerNavigator = ({ navigation }: any) => {
               />
               <Text style={styles(isDark).drawerBtnTxt}>EMP Worklog</Text>
             </Pressable> */}
-
         </ScrollView>
       </View>
 
       <Animated.View
         //  {...panResponder.panHandlers}
-        style={[styles(isDark).screenHeaderContainer, { transform: [{ scale: scaleValue }, { translateX: offsetValue }], shadowColor: isDark ? Colors.background : Colors.black, elevation: 24, }]}>
-        <Animated.View style={{ transform: [{ translateY: closeButtonOffset }] }}>
-
+        style={[
+          styles(isDark).screenHeaderContainer,
+          {
+            transform: [{scale: scaleValue}, {translateX: offsetValue}],
+            shadowColor: isDark ? Colors.background : Colors.black,
+            elevation: 24,
+          },
+        ]}>
+        <Animated.View style={{transform: [{translateY: closeButtonOffset}]}}>
           <View style={styles(isDark).screenHeader}>
             {showMenu ? (
               <IconButton
@@ -446,19 +611,32 @@ const DrawerNavigator = ({ navigation }: any) => {
                 accessibilityLabel="close"
               />
             ) : (
-              <IconButton icon="menu" iconColor={isDark ? Colors.white : Colors.white} size={25} onPress={toggleMenu} accessibilityLabel='menu' />
-
+              <IconButton
+                icon="menu"
+                iconColor={isDark ? Colors.white : Colors.white}
+                size={25}
+                onPress={toggleMenu}
+                accessibilityLabel="menu"
+              />
             )}
             <Text style={styles(isDark).headerTxt}>Soluzione</Text>
-            <View style={{
-              alignItems: 'center',
-              flexDirection: 'row',
-              position: 'absolute',
-              top: 10,
-              right: 16,
-              alignContent: 'flex-end'
-            }}>
-              <IconButton icon='swap-horizontal-circle-outline' iconColor={isDark ? Colors?.white : Colors?.white} onPress={() => { setShowDrawer(!showDrawer) }} size={25}/>
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+                position: 'absolute',
+                top: 10,
+                right: 16,
+                alignContent: 'flex-end',
+              }}>
+              <IconButton
+                icon="swap-horizontal-circle-outline"
+                iconColor={isDark ? Colors?.white : Colors?.white}
+                onPress={() => {
+                  setShowDrawer(!showDrawer);
+                }}
+                size={25}
+              />
               <Image
                 source={require('../Assets/Images/Logo/solzitLogo.png')}
                 style={styles(isDark).logomain}
@@ -466,18 +644,13 @@ const DrawerNavigator = ({ navigation }: any) => {
             </View>
           </View>
         </Animated.View>
-        {
-          showDrawer ?
-            <Dashboard DrawerOpen={showMenu} />
-            :
-            <Dashboard2 />
-        }
+        {showDrawer ? <Dashboard DrawerOpen={showMenu} /> : <Dashboard2 />}
       </Animated.View>
     </SafeAreaView>
   );
 };
 
-const styles = (isDark: any,) =>
+const styles = (isDark: any) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -485,28 +658,25 @@ const styles = (isDark: any,) =>
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
     },
-    drawerContainer: { padding: 15 },
+    drawerContainer: {padding: 10},
 
     logo: {
-      width: 90,
-      height: 90,
-      marginTop: 8,
+      width: 60,
+      height: 60,
       borderRadius: 50,
-      marginLeft: 5,
+      marginLeft: -25,
     },
     logomain: {
       width: 30,
       height: 30,
-      // marginRight: 16,
     },
 
     UserName: {
-      fontSize: 18,
-      color: isDark ? Colors.white : Colors.black,
-      marginTop: 16,
+      fontSize: 14,
+      color: Colors.white,
       fontFamily: 'Lato-Bold',
     },
-    drawerBtnContainer: { flexGrow: 1, marginTop: 50, paddingBottom: 50, },
+    drawerBtnContainer: {flexGrow: 1, },
 
     drawerBtn: {
       flexDirection: 'row',
@@ -533,7 +703,6 @@ const styles = (isDark: any,) =>
       bottom: 0,
       left: 0,
       right: 0,
-
     },
     screenHeader: {
       flexDirection: 'row',
@@ -545,14 +714,20 @@ const styles = (isDark: any,) =>
       fontFamily: 'Lato-Semibold',
     },
     userRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: 'column',
+      alignItems: 'flex-start',
       paddingHorizontal: 10,
     },
     editIcon: {
-      marginLeft: 8,
-      backgroundColor: 'transparent',
-      marginTop: 14,
+      marginLeft: 10,
+  
+    },
+    containerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: isDark ? Colors.black : Colors.primary,
+      paddingHorizontal: 43,
+      paddingVertical: 11,
     },
   });
 

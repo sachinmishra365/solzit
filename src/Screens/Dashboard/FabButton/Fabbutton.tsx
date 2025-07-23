@@ -2,13 +2,13 @@ import {useNavigation} from '@react-navigation/native';
 import * as React from 'react';
 import {FAB} from 'react-native-paper';
 import {Colors} from '../../../constants/Colors';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../../AppStore/Reducers/appState';
+import {useDispatch, useSelector} from 'react-redux';
+import {isDarkTheme, setDashboardZIndex} from '../../../AppStore/Reducers/appState';
 
 const Fabbutton = () => {
   const navigation: any = useNavigation();
   const isDark = useSelector(isDarkTheme);
-
+   const dispatch= useDispatch();
   const [state, setState] = React.useState({open: false});
   const onStateChange = ({open}: any) => setState({open});
 
@@ -48,7 +48,7 @@ const Fabbutton = () => {
             marginVertical:5,
             fontSize: 16,
           },
-          onPress: () => navigation.navigate('WorklogHour'),
+          onPress: () => {navigation.navigate('WorklogHour');dispatch(setDashboardZIndex(true))},
           style: {backgroundColor: isDark ? Colors.gray : Colors.primary},
           accessibilityLabel: 'My Leave Requests',
           size:'small'

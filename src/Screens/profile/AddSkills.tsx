@@ -4,13 +4,18 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import CustomHeader from '../../Components/CustomHeader';
 import {Colors} from '../../constants/Colors';
-import {useAttachFileInSharePointMutation} from '../../Services/services';
+import {
+  useAttachFileInSharePointMutation,
+  useGetAttachmentFromSharePointQuery,
+} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -34,23 +39,23 @@ import CustomDropdownWithModal from '../../Components/CustomDropDown';
 const FeedbackSchema = Yup.object().shape({
   regardingToSkills: Yup.object().shape({
     label: Yup.string().required('Please select a skill'),
-    value: Yup.string().required('Invalid skill selection'),
+    value: Yup.string().required('Please fill out this field'),
   }),
 
   regardingLevelOfSkills: Yup.object().shape({
     label: Yup.string().required('Please select a level'),
-    value: Yup.number().required('Invalid level'),
+    value: Yup.number().required('Please fill out this field'),
   }),
   regardingCertification: Yup.object().shape({
     label: Yup.string().required('Please select Yes/No'),
-    value: Yup.number().required('Invalid choice'),
+    value: Yup.number().required('Please fill out this field'),
   }),
   regardingTypeCertification: Yup.object().when('regardingCertification', {
     is: (val: any) => val?.value === 674180000, // "Yes"
     then: schema =>
       Yup.object().shape({
         label: Yup.string().required('Please select certificate type'),
-        value: Yup.number().required('Invalid type'),
+        value: Yup.number().required('Please fill out this field'),
       }),
     otherwise: schema => Yup.object().nullable(),
   }),
@@ -72,6 +77,7 @@ const AddSkills = ({navigation, route}: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
   const auth = useSelector((state: any) => state?.appState?.authToken);
   const itemData = route?.params?.itemData || null;
+  const appliedData = route?.params?.appliedData || null;
 
   const {data: skillOptionsData, isLoading: skillsLoading} =
     useGetAllMasterSkillsQuery({
@@ -83,8 +89,6 @@ const AddSkills = ({navigation, route}: any) => {
       accessToken: EmployeeId?.authToken?.accessToken,
     });
 
-    console.log('levelOptionsData', levelOptionsData);
-    
   const {data: hasCertOptionsData, isLoading: certLoading} =
     useGetOptionSetHasCertificateQuery({
       HasCertification: 'HasCertification',
@@ -123,6 +127,12 @@ const AddSkills = ({navigation, route}: any) => {
   const [CreateEditMySkill] = useEditMySkillMutation();
   const [CreateAddNewSkill, {isLoading}] = useAddMyNewSkillMutation();
   const [UploadDocument, result] = useAttachFileInSharePointMutation();
+  const {data: attachmentData, isLoading: getDocumentsLoading} =
+    useGetAttachmentFromSharePointQuery({
+      entityId: appliedData?.id,
+      entityName: 'solz_employeeskill',
+      accessToken: EmployeeId?.authToken?.accessToken,
+    });
 
   const handleUploadDocument = async (skillId: string, file: any) => {
     const data = {
@@ -162,7 +172,7 @@ const AddSkills = ({navigation, route}: any) => {
     }
   };
 
-  const pickDocument = async (setFieldValue: any) => {
+  const pickDocument = async (setFieldValue: any, values: any) => {
     try {
       const res = await DocumentPicker.pickSingle({
         type: [DocumentPicker.types.allFiles],
@@ -170,11 +180,14 @@ const AddSkills = ({navigation, route}: any) => {
 
       const base64File = await RNFS.readFile(res.uri, 'base64');
 
-      setFieldValue('upload', {
+      const newFile = {
         filename: res.name,
         filetype: res.type,
         bytes: base64File,
-      });
+      };
+
+      const currentUploads = values.upload || [];
+      setFieldValue('upload', [...currentUploads, newFile]);
     } catch (err) {
       console.error('Document picking error:', err);
     }
@@ -203,18 +216,18 @@ const AddSkills = ({navigation, route}: any) => {
       return;
     }
 
-    const validLevelValues = levelOptions?.map((option:any )=> option.value);
+    const validLevelValues = levelOptions?.map((option: any) => option.value);
     const levelValue = values?.regardingLevelOfSkills?.value;
 
     const commonPayload = {
       skillId: values?.regardingToSkills?.value ?? null,
 
-       levelOfSkill: validLevelValues.includes(levelValue)
-    ? {
-        label: values.regardingLevelOfSkills?.label,
-        value: levelValue,
-      }
-    : null,
+      levelOfSkill: validLevelValues.includes(levelValue)
+        ? {
+            label: values.regardingLevelOfSkills?.label,
+            value: levelValue,
+          }
+        : null,
       hasCertification: {
         label: values.regardingCertification?.label,
         value: values.regardingCertification?.value,
@@ -245,28 +258,26 @@ const AddSkills = ({navigation, route}: any) => {
               674180003,
           },
         };
-
         response = await CreateEditMySkill({
           accessToken: EmployeeId?.authToken?.accessToken,
           data: payload,
         }).unwrap();
-        console.log('Edit Skill Response:', response);
       } else {
         response = await CreateAddNewSkill({
           accessToken: EmployeeId?.authToken?.accessToken,
           data: commonPayload,
         }).unwrap();
       }
-      console.log('Response from API:', response);
-      console.log('Response message detail:', response?.messageDetail);
 
       if (
         response?.isSuccessful &&
         [201, 5016, 200].includes(response?.messageDetail?.message_code)
       ) {
-        const skillId = response?.data;
-        if (values.upload && values.upload.filename) {
-          await handleUploadDocument(skillId, values.upload);
+        const skillId = isEdit ? itemData?.id : response?.data;
+        if (values.upload && values.upload.length > 0) {
+          for (const file of values.upload) {
+            await handleUploadDocument(skillId, file);
+          }
         } else {
           Toast.show({
             type: 'success',
@@ -291,7 +302,6 @@ const AddSkills = ({navigation, route}: any) => {
         );
       }
     } catch (error: any) {
-      console.error('Error in handleSubmit:', error);
       const errorMessage =
         error?.data?.messageDetail?.message ||
         error?.message ||
@@ -310,6 +320,39 @@ const AddSkills = ({navigation, route}: any) => {
           text2: errorMessage,
         });
       }
+    }
+  };
+
+  const removeFile = (
+    indexToRemove: number,
+    setFieldValue: any,
+    values: any,
+  ) => {
+    const updatedFiles = values.upload.filter(
+      (_: any, index: number) => index !== indexToRemove,
+    );
+    setFieldValue('upload', updatedFiles);
+  };
+
+  const handleDownload = async (
+    base64Data: string | null,
+    fileName: string,
+  ) => {
+    if (!base64Data) {
+      Alert.alert('Download failed', 'No file data available.');
+      return;
+    }
+
+    try {
+      const downloadPath = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+      await RNFS.writeFile(downloadPath, base64Data, 'base64');
+      Alert.alert('Download Success', `File saved to: ${downloadPath}`);
+    } catch (error) {
+      // console.log('File Download Failed:', error);
+      Alert.alert(
+        'Download failed',
+        'There was an error while downloading the file.',
+      );
     }
   };
 
@@ -365,7 +408,7 @@ const AddSkills = ({navigation, route}: any) => {
                     }
                   : {label: 'Select', value: null},
 
-                upload: {filename: '', filetype: '', bytes: ''},
+                upload: [],
               }}
               validationSchema={!isEdit ? FeedbackSchema : undefined}
               onSubmit={handleSubmit}
@@ -383,9 +426,9 @@ const AddSkills = ({navigation, route}: any) => {
                 const selectedLevel = values.regardingLevelOfSkills?.label;
 
                 const allLevels = [
-                  {label: 'Beginner', value: 674180001},
-                  {label: 'Intermediate', value: 674180002},
-                  {label: 'Expert', value: 674180003},
+                  {label: 'Beginner', value: 674180000},
+                  {label: 'Intermediate', value: 674180001},
+                  {label: 'Expert', value: 674180002},
                 ];
 
                 let filteredLevelOptions = allLevels;
@@ -409,9 +452,7 @@ const AddSkills = ({navigation, route}: any) => {
                         level.label === 'Expert',
                     );
                   } else if (selectedLevel === 'Expert') {
-                    filteredLevelOptions = allLevels.filter(
-                      level => level.label === 'Expert',
-                    );
+                    filteredLevelOptions = [];
                   }
                 }
 
@@ -431,13 +472,12 @@ const AddSkills = ({navigation, route}: any) => {
                         }
                       />
 
-                      {touched.regardingToSkills?.value && (
-                        <Text style={styles(isDark).error}>
-                          {typeof errors.regardingToSkills?.value === 'string'
-                            ? errors.regardingToSkills?.value
-                            : ''}
-                        </Text>
-                      )}
+                      {touched.regardingToSkills &&
+                        typeof errors.regardingToSkills === 'string' && (
+                          <Text style={styles(isDark).error}>
+                            {errors.regardingToSkills}
+                          </Text>
+                        )}
                     </View>
 
                     <View style={{marginVertical: 5}}>
@@ -451,6 +491,7 @@ const AddSkills = ({navigation, route}: any) => {
                             selectedOption,
                           )
                         }
+                        disabled={selectedLevel === 'Expert'}
                       />
 
                       {touched.regardingLevelOfSkills &&
@@ -469,12 +510,20 @@ const AddSkills = ({navigation, route}: any) => {
                         label="Has Certification"
                         selectedValue={values.regardingCertification}
                         options={certOptions}
-                        onSelect={(selectedOption: any) =>
+                        onSelect={(selectedOption: any) => {
                           setFieldValue(
                             'regardingCertification',
                             selectedOption,
-                          )
-                        }
+                          );
+
+                          if (selectedOption?.value !== 674180001) {
+                            setFieldValue('certificateTitle', null);
+                            setFieldValue('regardingTypeCertification', {
+                              label: 'Select',
+                              value: null,
+                            });
+                          }
+                        }}
                       />
 
                       {touched.regardingCertification &&
@@ -538,25 +587,196 @@ const AddSkills = ({navigation, route}: any) => {
                             )}
                         </View>
 
-                        <View
-                          style={{
-                            marginVertical: 5,
-                          }}>
+                        <View style={{marginVertical: 5}}>
                           <Text style={styles(isDark).label}>Attachments</Text>
-                          <>
-                            <TouchableOpacity
-                              onPress={() => pickDocument(setFieldValue)}
-                              style={styles(isDark).uploadButton}>
-                              <IconButton
-                                icon="tray-arrow-up"
-                                iconColor={isDark ? Colors.white : Colors.black}
-                                size={30}
-                              />
-                              <Text style={styles(isDark).uploadButtonText}>
-                                {values.upload.filename || 'Add Attachment'}
-                              </Text>
-                            </TouchableOpacity>
-                          </>
+
+                          {attachmentData?.data?.length > 0 && (
+                                <View >
+                                  <Text style={styles(isDark).uploadButtonText}>
+                                 Download File
+                                  </Text>
+                                  {attachmentData.data.map(
+                                    (attachment: any, index: number) => {
+                                      const isImage =
+                                        attachment.fileName?.match(
+                                          /\.(jpg|jpeg|png|gif|bmp)$/i,
+                                        );
+                                      return (
+                                        <View
+                                          key={index}
+                                          style={{
+                                            ...styles(isDark).uploadButton,
+                                            flexDirection: 'row',
+                                            alignItems: 'center',
+                                            padding: 8,
+                                            marginBottom: 6,
+                                          }}>
+                                          {isImage ? (
+                                            <Image
+                                              source={{
+                                                uri: `data:image/jpeg;base64,${attachment.bytes}`,
+                                              }}
+                                              style={{
+                                                width: 60,
+                                                height: 60,
+                                                borderRadius: 5,
+                                                marginRight: 12,
+                                              }}
+                                              resizeMode="cover"
+                                            />
+                                          ) : (
+                                            <IconButton
+                                              icon="file-document-outline"
+                                              size={30}
+                                              iconColor={
+                                                isDark
+                                                  ? Colors.white
+                                                  : Colors.primary
+                                              }
+                                            />
+                                          )}
+                                          <Text
+                                            numberOfLines={2}
+                                            style={{
+                                              color: isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                              flex: 1,
+                                              marginRight: 8,
+                                            }}>
+                                            {attachment.fileName}
+                                          </Text>
+                                          <IconButton
+                                            icon="download-circle"
+                                            size={30}
+                                            iconColor={Colors.primary}
+                                            onPress={() =>
+                                              handleDownload(
+                                                attachment.bytes,
+                                                attachment.fileName,
+                                              )
+                                            }
+                                          />
+                                        </View>
+                                      );
+                                    },
+                                  )}
+                                </View>
+                              )}
+
+                          <TouchableOpacity
+                            onPress={() => pickDocument(setFieldValue, values)}
+                            style={styles(isDark).uploadButton}>
+                            <IconButton
+                              icon="tray-arrow-up"
+                              iconColor={isDark ? Colors.white : Colors.black}
+                              size={30}
+                            />
+                            <Text style={styles(isDark).uploadButtonText}>
+                              {values.upload && values.upload.length > 0
+                                ? values.upload
+                                    .map((file: any, i: number) =>
+                                      file.filetype?.startsWith('image/')
+                                        ? `image${i + 1}.${
+                                            file.filetype.split('/')[1]
+                                          }`
+                                        : file.filename,
+                                    )
+                                    .join(', ')
+                                : 'Add Attachment'}
+                            </Text>
+                          </TouchableOpacity>
+
+                          {touched.upload && errors.upload && (
+                            <Text style={styles(isDark).error}>
+                              {errors.upload}
+                            </Text>
+                          )}
+
+                          <View style={{marginTop: 10}}>
+                            <ScrollView showsVerticalScrollIndicator={false}>
+
+                              
+                              {values.upload?.map(
+                                (file: any, index: number) => {
+                                  const isImage =
+                                    file.filetype?.startsWith('image/');
+                                  return (
+                                    <View
+                                      key={index}
+                                      style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        backgroundColor: isDark
+                                          ? Colors.black
+                                          : Colors.white,
+                                      }}>
+                                      <View
+                                        style={{
+                                          flex: 1,
+                                          flexDirection: 'row',
+                                          alignItems: 'center',
+                                        }}>
+                                        {isImage ? (
+                                          <Image
+                                            source={{
+                                              uri: `data:${file.filetype};base64,${file.bytes}`,
+                                            }}
+                                            style={{
+                                              width: 40,
+                                              height: 40,
+                                              borderRadius: 4,
+                                              marginRight: 16,
+                                            }}
+                                          />
+                                        ) : (
+                                          <IconButton
+                                            icon="file-document-outline"
+                                            size={30}
+                                            iconColor={
+                                              isDark
+                                                ? Colors.white
+                                                : Colors.primary
+                                            }
+                                          />
+                                        )}
+                                        {
+                                          <Text
+                                            numberOfLines={2}
+                                            style={{
+                                              textAlign: 'left',
+                                              color: isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                              flexWrap: 'wrap',
+                                            }}>
+                                            {file.filename}
+                                          </Text>
+                                        }
+                                      </View>
+
+                                      <TouchableOpacity
+                                        onPress={() =>
+                                          removeFile(
+                                            index,
+                                            setFieldValue,
+                                            values,
+                                          )
+                                        }>
+                                        <IconButton
+                                          icon="trash-can-outline"
+                                          size={24}
+                                          iconColor={Colors.error}
+                                        />
+                                      </TouchableOpacity>
+                                    </View>
+                                  );
+                                },
+                              )}
+
+                              
+                            </ScrollView>
+                          </View>
                         </View>
                       </>
                     )}
@@ -602,7 +822,6 @@ const styles = (isDark: boolean) =>
       padding: 10,
       alignItems: 'center',
       borderRadius: 3,
-      marginBottom: 5,
       borderStyle: 'dashed',
     },
     submitButton: {
@@ -612,7 +831,7 @@ const styles = (isDark: boolean) =>
       justifyContent: 'center',
       alignSelf: 'center',
       borderRadius: 3,
-      marginTop: 10,
+     
     },
     uploadButtonText: {
       color: isDark ? Colors.white : Colors.black,

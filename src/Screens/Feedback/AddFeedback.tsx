@@ -79,8 +79,6 @@ const AddFeedback = ({ navigation, route }: any) => {
       label: item.label,
       value: item.value,
     })) || [];
-  console.log(regardingOptionsData);
-
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -180,29 +178,10 @@ const AddFeedback = ({ navigation, route }: any) => {
     }
   };
 
-  // const pickFromCamera = async (setFieldValue: any, currentFiles: any[]) => {
-  //   try {
-  //     const result = await launchCamera({
-  //       mediaType: 'photo',
-  //       includeBase64: true,
-  //     });
-  //     if (result.assets && result.assets.length > 0) {
-  //       const asset = result.assets[0];
-  //       const newFile = {
-  //         filename: asset.fileName,
-  //         filetype: asset.type,
-  //         bytes: asset.base64,
-  //       };
-  //       setFieldValue('upload', [...(currentFiles || []), newFile]);
-  //     }
-  //   } catch (err) {
-  //     console.error('Camera error:', err);
-  //   }
-  // };
   const pickFromCamera = async (setFieldValue: any, currentFiles: any[]) => {
     try {
       const image = await ImageCropPicker.openCamera({
-        cropping: false, // Set to true if you want cropping
+        cropping: false, 
         width: 500,
         height: 500,
         includeExif: true,
@@ -302,8 +281,7 @@ const AddFeedback = ({ navigation, route }: any) => {
               }) => (
                 <>
                 
-                  <View style={{ marginVertical: 8 }} />
-                  {/* <Text style={styles(isDark).label}>Regarding</Text> */}
+                  <View style={{ marginVertical: 5 }} />
                   <CustomDropdownWithModal
                     label="Regarding"
                     options={regardingToData}
@@ -320,7 +298,7 @@ const AddFeedback = ({ navigation, route }: any) => {
                     </Text>
                   )}
 
-                  <View style={{ marginVertical: 8 }} />
+                  <View style={{ marginVertical: 5 }} />
                   <CustomTextInput
                     label="Title"
                     value={values.feedBackTitle}
@@ -341,7 +319,7 @@ const AddFeedback = ({ navigation, route }: any) => {
                     </Text>
                   )}
 
-                  <View style={{ marginVertical: 8 }} />
+                  <View style={{ marginVertical: 5 }} />
                   <CustomTextInput
                     label="Description"
                     value={values.feedBackDescription}
@@ -366,34 +344,7 @@ const AddFeedback = ({ navigation, route }: any) => {
                       </Text>
                     )}
 
-                  {/* <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginHorizontal: -8,
-                    }}>
-                    <Checkbox
-                      status={
-                        values.isAttachmentRequired ? 'checked' : 'unchecked'
-                      }
-                      onPress={() =>
-                        setFieldValue(
-                          'isAttachmentRequired',
-                          !values.isAttachmentRequired,
-                        )
-                      }
-                      color={isDark ? Colors.secondary : Colors.primary}
-                      uncheckedColor={
-                        isDark ? Colors.secondary : Colors.primary
-                      }
-                    />
-                    <Text style={styles(isDark).label}>Attachments</Text>
-                  </View> */}
-                  {/* {values.isAttachmentRequired && (
-                   
-                  )} */}
-
-                  <View style={{ marginVertical: 24 }}>
+                  <View style={{ marginTop:15 }}>
                     <TouchableOpacity
                       onPress={openModal}
                       style={styles(isDark).uploadButton}>
@@ -422,7 +373,7 @@ const AddFeedback = ({ navigation, route }: any) => {
                       </Text>
                     )}
 
-                    <View style={{ marginVertical: 16 }}>
+                    <View style={{ marginTop:5 }}>
                       <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}>
@@ -509,7 +460,7 @@ const AddFeedback = ({ navigation, route }: any) => {
                       Submit
                     </Text>
                   </TouchableOpacity>
-                  {/* Pass setFieldValue and values.upload to onTakePhoto and onPickFile */}
+              
                   <Modal
                     visible={modalVisible}
                     transparent
@@ -579,7 +530,6 @@ const styles = (isDark: boolean) =>
     label: {
       fontSize: 16,
       fontFamily: 'Lato-Bold',
-      // marginBottom: 4,
       color: isDark ? Colors.white : Colors.black,
     },
 
@@ -590,7 +540,6 @@ const styles = (isDark: boolean) =>
       padding: 10,
       alignItems: 'center',
       borderRadius: 3,
-      marginBottom: 5,
       borderStyle: 'dashed',
     },
     submitButton: {
@@ -600,7 +549,8 @@ const styles = (isDark: boolean) =>
       justifyContent: 'center',
       alignSelf: 'center',
       borderRadius: 3,
-      marginTop: 10,
+      marginTop:5,
+
     },
     uploadButtonText: {
       color: isDark ? Colors.white : Colors.black,
@@ -609,7 +559,6 @@ const styles = (isDark: boolean) =>
     error: {
       color: Colors.error,
       fontSize: 12,
-      // marginBottom: 10,
       fontFamily: 'Lato-Regular',
     },
     modalOverlay: {

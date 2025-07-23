@@ -1,18 +1,34 @@
-import { ActivityIndicator, Animated, BackHandler, FlatList, Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Animated,
+  BackHandler,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import CustomHeader from '../../Components/CustomHeader';
-import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../../constants/Colors';
-import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
-import { useAskEmployeeAttendanceQueryMutation, useAttendanceMonthListMutation, useEmployeeAttendanceQueryQuery, } from '../../Services/services';
-import { Card, IconButton } from 'react-native-paper';
-import { SCREEN_WIDTH } from '../../constants/Screen';
+import {useNavigation} from '@react-navigation/native';
+import {Colors} from '../../constants/Colors';
+import {useSelector} from 'react-redux';
+import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import {
+  useAskEmployeeAttendanceQueryMutation,
+  useAttendanceMonthListMutation,
+  useEmployeeAttendanceQueryQuery,
+} from '../../Services/services';
+import {Card, IconButton} from 'react-native-paper';
+import {SCREEN_WIDTH} from '../../constants/Screen';
 import moment from 'moment';
 import CustomTextInput from '../../Components/CustomTextInput';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
-import { BottomSheet, IBottomSheetRef } from '../BottomSheet/BottomSheet';
+import {BottomSheet, IBottomSheetRef} from '../BottomSheet/BottomSheet';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
 import Toast from 'react-native-toast-message';
@@ -20,7 +36,7 @@ import EmptyData from '../../Components/EmptyData';
 import BreaksDialog from './BreaksDialog';
 import ToastMessage from '../../Components/ToastMessage';
 
-const SepratedAttendance = ({ route }: any) => {
+const SepratedAttendance = ({route}: any) => {
   const MonthData = route.params;
   const navigation = useNavigation();
   const isDark = useSelector(isDarkTheme);
@@ -39,10 +55,10 @@ const SepratedAttendance = ({ route }: any) => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   useEffect(() => {
-    const showSubscription = Keyboard.addListener("keyboardDidShow", (event) => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', event => {
       setKeyboardHeight(event.endCoordinates.height + 70);
     });
-    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
       setKeyboardHeight(0);
     });
     return () => {
@@ -92,12 +108,20 @@ const SepratedAttendance = ({ route }: any) => {
   };
 
   const validationSchema = Yup.object().shape({
-    startTime: Yup.string().required('Start time is required.').test('Start time can not be 00:00', value => value !== '00:00'),
-    endTime: Yup.string().required('End time is required.').test('End time can not be 00:00', value => value !== '00:00'),
+    startTime: Yup.string()
+      .required('Start time is required.')
+      .test('Start time can not be 00:00', value => value !== '00:00'),
+    endTime: Yup.string()
+      .required('End time is required.')
+      .test('End time can not be 00:00', value => value !== '00:00'),
     reason: Yup.string().required('Reason is required.'),
   });
 
-  const onChangeStartTime = (event: any, selectedTime: Date | undefined, setFieldValue: any,) => {
+  const onChangeStartTime = (
+    event: any,
+    selectedTime: Date | undefined,
+    setFieldValue: any,
+  ) => {
     setShowStartTime(false);
     if (selectedTime) {
       const formattedTime = moment(selectedTime).format('HH:mm');
@@ -110,7 +134,11 @@ const SepratedAttendance = ({ route }: any) => {
     setShowStartTime(true);
   };
 
-  const onChangeEndTime = (event: any, selectedTime: Date | undefined, setFieldValue: any,) => {
+  const onChangeEndTime = (
+    event: any,
+    selectedTime: Date | undefined,
+    setFieldValue: any,
+  ) => {
     setShowEndTime(false);
     if (selectedTime) {
       const formattedTime = moment(selectedTime).format('HH:mm');
@@ -123,7 +151,7 @@ const SepratedAttendance = ({ route }: any) => {
     setShowEndTime(true);
   };
 
-  const [attendanceData, { isLoading, error }] = useAttendanceMonthListMutation();
+  const [attendanceData, {isLoading, error}] = useAttendanceMonthListMutation();
 
   const data = {
     month: {
@@ -153,11 +181,11 @@ const SepratedAttendance = ({ route }: any) => {
       return;
     }
     try {
-      const response = await attendanceData({ data, accessToken }).unwrap();
+      const response = await attendanceData({data, accessToken}).unwrap();
       if (response?.messageDetail?.message_code === 200) {
         SetAttendancedata(response?.data);
       }
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -180,7 +208,7 @@ const SepratedAttendance = ({ route }: any) => {
         SetAttendanceQueryData(response?.data?.data);
         // SetLoad(true);
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -213,17 +241,16 @@ const SepratedAttendance = ({ route }: any) => {
       actualHour:
         values.endTime && values.startTime
           ? moment(values.endTime, 'HH:mm').diff(
-            moment(values.startTime, 'HH:mm'),
-            'hours',
-            true,
-          )
+              moment(values.startTime, 'HH:mm'),
+              'hours',
+              true,
+            )
           : 0,
       reason: values.reason,
     };
 
     try {
-      const response = await AskAttendanceQuery({ data, accessToken });
-      console.log('response:', response);
+      const response = await AskAttendanceQuery({data, accessToken});
 
       if (response?.data?.messageDetail?.message_code === 201) {
         Toast.show({
@@ -247,24 +274,30 @@ const SepratedAttendance = ({ route }: any) => {
         setFieldValue('actualHour', null);
         setFieldValue('reason', '');
       } else {
-        ToastMessage({ type: "error", title: "Attendance Query", subtitle: response?.data?.messageDetail?.message });
+        ToastMessage({
+          type: 'error',
+          title: 'Attendance Query',
+          subtitle: response?.data?.messageDetail?.message,
+        });
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
-  const renderItem = ({ item }: any) => {
-    console.log('item:', item?.leaveType?.label);
-
+  const renderItem = ({item}: any) => {
     return (
       <Card
         //@ts-ignore
-        style={styles(isDark).card} onPress={item?.leaveType?.value === 674180007 ? () => { setVisibleWorkType(!visibleWorkType), setSelectedBreak(item?.attendanceInOut) } : null}>
+        style={styles(isDark).card}
+        onPress={() => {
+          setVisibleWorkType(!visibleWorkType),
+            setSelectedBreak(item?.attendanceInOut);
+        }}>
         <Card.Content>
-          <View style={{ justifyContent: 'space-between', flexDirection: 'row' }}>
+          <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
             <Text
               style={{
                 color: isDark ? Colors.white : Colors.black,
-                fontSize: 14,
+                fontSize: 16,
                 fontFamily: 'Lato-Semibold',
               }}>
               {item?.date ? moment(item?.date).format('DD MMM, YYYY') : 'N/A'}
@@ -286,7 +319,7 @@ const SepratedAttendance = ({ route }: any) => {
           </View>
 
           {item?.leaveType?.label !== 'Weekend' &&
-            item?.leaveType?.label !== 'Soluzione Fixed Holiday' ? (
+          item?.leaveType?.label !== 'Soluzione Fixed Holiday' ? (
             <>
               <View
                 style={{
@@ -297,8 +330,8 @@ const SepratedAttendance = ({ route }: any) => {
                   marginTop: 10,
                 }}>
                 {item?.leaveType?.label !== 'Loss of Pay' &&
-                  item?.leaveType?.label !== 'Earn Leave' ? (
-                  <View style={{ flexDirection: 'row' }}>
+                item?.leaveType?.label !== 'Earn Leave' ? (
+                  <View style={{flexDirection: 'row'}}>
                     {/* <Text
                       style={{
                         color: isDark ? Colors.white : Colors.black,
@@ -320,8 +353,8 @@ const SepratedAttendance = ({ route }: any) => {
                 ) : null}
 
                 {item?.leaveType?.label !== 'Loss of Pay' &&
-                  item?.hoursPunchInOutTime > 0 ? (
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                item?.hoursPunchInOutTime > 0 ? (
+                  <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                     <Text
                       style={{
                         color: isDark ? Colors.white : Colors.black,
@@ -337,8 +370,8 @@ const SepratedAttendance = ({ route }: any) => {
                           item?.hoursPunchInOutTime < 7
                             ? Colors.error
                             : isDark
-                              ? Colors.white
-                              : Colors.black,
+                            ? Colors.white
+                            : Colors.black,
                         fontSize: 14,
                         fontFamily: 'Lato-Semibold',
                       }}>
@@ -357,8 +390,8 @@ const SepratedAttendance = ({ route }: any) => {
                   marginVertical: 10,
                 }}>
                 {item?.leaveType?.label !== 'Loss of Pay' &&
-                  item?.loggedHours > 0 ? (
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                item?.loggedHours > 0 ? (
+                  <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                     <Text
                       style={{
                         color: isDark ? Colors.white : Colors.black,
@@ -374,8 +407,8 @@ const SepratedAttendance = ({ route }: any) => {
                           item?.loggedHours < 7
                             ? Colors.error
                             : isDark
-                              ? Colors.white
-                              : Colors.black,
+                            ? Colors.white
+                            : Colors.black,
                         fontSize: 14,
                         fontFamily: 'Lato-Semibold',
                       }}>
@@ -385,8 +418,8 @@ const SepratedAttendance = ({ route }: any) => {
                 ) : null}
 
                 {item?.leaveType?.label !== 'Loss of Pay' &&
-                  item?.totalEffectiveApprovedHours > 0 ? (
-                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                item?.totalEffectiveApprovedHours > 0 ? (
+                  <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                     <Text
                       style={{
                         color: isDark ? Colors.white : Colors.black,
@@ -402,8 +435,8 @@ const SepratedAttendance = ({ route }: any) => {
                           item?.totalEffectiveApprovedHours < 7
                             ? Colors.error
                             : isDark
-                              ? Colors.white
-                              : Colors.black,
+                            ? Colors.white
+                            : Colors.black,
                         fontSize: 14,
                         fontFamily: 'Lato-Semibold',
                       }}>
@@ -417,42 +450,57 @@ const SepratedAttendance = ({ route }: any) => {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  // marginTop: 10,
                   flexWrap: 'wrap',
                   justifyContent: 'space-between',
                 }}>
-                <View style={{ flexDirection: 'row' }}>
-                  <Text
-                    style={{
-                      color: isDark ? Colors.white : Colors.black,
-                      fontSize: 14,
-                      fontFamily: 'Lato-Semibold',
-                    }}>
-                    Day Type{' : '}
-                  </Text>
-                  <Text
-                    style={{
-                      color:
-                        item?.leaveType?.label === 'Loss of Pay'
-                          ? Colors.error
-                          : item?.leaveType?.label === 'Working Day'
-                            ? Colors.green
-                            : item?.leaveType?.label === 'Soluzione Fixed Holiday'
+                <View style={{flexDirection: 'column'}}>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text
+                      style={{
+                        color: isDark ? Colors.white : Colors.black,
+                        fontSize: 14,
+                        fontFamily: 'Lato-Semibold',
+                      }}>
+                      Day Type{' : '}
+                    </Text>
+                    <View>
+                      <Text
+                        style={{
+                          color:
+                            item?.leaveType?.label === 'Loss of Pay'
+                              ? Colors.error
+                              : item?.leaveType?.label === 'Working Day'
+                              ? Colors.green
+                              : item?.leaveType?.label ===
+                                'Soluzione Fixed Holiday'
                               ? Colors.darkgreen
-                              : item?.leaveType?.label === 'Work From Home' || item?.leaveType?.label === 'Earn Leave'
-                                ? '#FF9800' : Colors.green,
-                      fontSize: 14,
-                      fontFamily: 'Lato-Semibold',
-                    }}>
-                    {item?.leaveType?.label
-                      ? item?.leaveType?.label
-                      : 'Working Day'}
-                  </Text>
+                              : item?.leaveType?.label === 'Work From Home' ||
+                                item?.leaveType?.label === 'Earn Leave'
+                              ? '#FF9800'
+                              : Colors.green,
+                          fontSize: 14,
+                          fontFamily: 'Lato-Semibold',
+                        }}>
+                        {item?.leaveType?.label
+                          ? item?.leaveType?.label
+                          : 'Working Day'}
+                      </Text>
+                      {item.isOnWFH && (
+                        <Text
+                          style={{
+                            fontSize: 13,
+                            color: Colors.primary,
+                            fontFamily: 'Lato-Semibold',
+                            marginTop: 2,
+                          }}>
+                          (Work from home)
+                        </Text>
+                      )}
+                    </View>
+                  </View>
                 </View>
-                <View
-                  style={{
-                    height: 'auto',
-                  }}>
+
+                <View style={{height: 'auto'}}>
                   <TouchableOpacity
                     style={{
                       backgroundColor: Colors.primary,
@@ -468,7 +516,7 @@ const SepratedAttendance = ({ route }: any) => {
                       SetClose(true);
                     }}>
                     <IconButton
-                      style={{ margin: -2 }}
+                      style={{margin: -2}}
                       icon={
                         item?.queryStatus?.label !== 'Default'
                           ? 'information-outline'
@@ -485,9 +533,9 @@ const SepratedAttendance = ({ route }: any) => {
                         flexWrap: 'wrap',
                         marginRight: 5,
                       }}>
-                      {item?.queryStatus?.label != 'Default' &&
-                        item?.leaveType?.label !== 'Weekend' &&
-                        item?.leaveType?.label !== 'Soluzione Fixed Holiday'
+                      {item?.queryStatus?.label !== 'Default' &&
+                      item?.leaveType?.label !== 'Weekend' &&
+                      item?.leaveType?.label !== 'Soluzione Fixed Holiday'
                         ? 'View Request'
                         : 'Request Change'}
                     </Text>
@@ -515,7 +563,7 @@ const SepratedAttendance = ({ route }: any) => {
                   : 'Working Day'}
               </Text>
               {item.hoursPunchInOutTime > 0 ? (
-                <View style={{ flexDirection: 'row' }}>
+                <View style={{flexDirection: 'row'}}>
                   <Text
                     style={{
                       color: isDark ? Colors.white : Colors.black,
@@ -530,8 +578,8 @@ const SepratedAttendance = ({ route }: any) => {
                         item?.hoursPunchInOutTime < 7
                           ? Colors.error
                           : isDark
-                            ? Colors.white
-                            : Colors.black,
+                          ? Colors.white
+                          : Colors.black,
                       fontSize: 14,
                       fontFamily: 'Lato-Semibold',
                     }}>
@@ -565,8 +613,8 @@ const SepratedAttendance = ({ route }: any) => {
                       item?.queryStatus?.label === 'Pending'
                         ? 'orange'
                         : item?.queryStatus?.label === 'Approved'
-                          ? 'green'
-                          : Colors.error,
+                        ? 'green'
+                        : Colors.error,
                     fontSize: 14,
                     fontFamily: 'Lato-Semibold',
                   }}>
@@ -606,7 +654,7 @@ const SepratedAttendance = ({ route }: any) => {
             data={attendancedata}
             renderItem={renderItem}
             keyExtractor={(item: any) => item?.id.toString()}
-            ListFooterComponent={<View style={{ height: 100 }} />}
+            ListFooterComponent={<View style={{height: 100}} />}
             showsVerticalScrollIndicator={false}
           />
         )}
@@ -618,11 +666,11 @@ const SepratedAttendance = ({ route }: any) => {
       </View>
 
       <BottomSheet ref={bottomSheetRef}>
-        <KeyboardAvoidingView behavior='height' style={{ flex: 1, flexGrow: 1 }} >
-          <Animated.View style={[{ paddingBottom: keyboardHeight }]}>
+        <KeyboardAvoidingView behavior="height" style={{flex: 1, flexGrow: 1}}>
+          <Animated.View style={[{paddingBottom: keyboardHeight}]}>
             <ScrollView
               showsVerticalScrollIndicator={false}
-              style={{ backgroundColor: isDark ? Colors.black : Colors.white }}>
+              style={{backgroundColor: isDark ? Colors.black : Colors.white}}>
               {selectedItem && (
                 <View>
                   <Text
@@ -637,7 +685,9 @@ const SepratedAttendance = ({ route }: any) => {
                   </Text>
                   <Card
                     style={{
-                      backgroundColor: isDark ? Colors.black : Colors.background,
+                      backgroundColor: isDark
+                        ? Colors.black
+                        : Colors.background,
                       marginVertical: 10,
                       borderColor: Colors.background,
                       borderWidth: 1,
@@ -685,7 +735,7 @@ const SepratedAttendance = ({ route }: any) => {
                           alignItems: 'center',
                           flexWrap: 'wrap',
                         }}>
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{flexDirection: 'row'}}>
                           {/* <Text
                         style={{
                           color: isDark ? Colors.white : Colors.black,
@@ -708,7 +758,7 @@ const SepratedAttendance = ({ route }: any) => {
                             {selectedItem?.isLate === false ? 'Ontime' : 'Late'}
                           </Text>
                         </View>
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{flexDirection: 'row'}}>
                           <Text
                             style={{
                               color: isDark ? Colors.white : Colors.black,
@@ -722,12 +772,18 @@ const SepratedAttendance = ({ route }: any) => {
                               color:
                                 selectedItem?.leaveType?.label === 'Loss of Pay'
                                   ? Colors.error
-                                  : selectedItem?.leaveType?.label === 'Working Day'
-                                    ? Colors.green
-                                    : selectedItem?.leaveType?.label === 'Soluzione Fixed Holiday'
-                                      ? Colors.darkgreen
-                                      : selectedItem?.leaveType?.label === 'Work From Home' || selectedItem?.leaveType?.label === 'Earn Leave'
-                                        ? '#FF9800' : Colors.green,
+                                  : selectedItem?.leaveType?.label ===
+                                    'Working Day'
+                                  ? Colors.green
+                                  : selectedItem?.leaveType?.label ===
+                                    'Soluzione Fixed Holiday'
+                                  ? Colors.darkgreen
+                                  : selectedItem?.leaveType?.label ===
+                                      'Work From Home' ||
+                                    selectedItem?.leaveType?.label ===
+                                      'Earn Leave'
+                                  ? '#FF9800'
+                                  : Colors.green,
                               fontSize: 14,
                               fontFamily: 'Lato-Semibold',
                             }}>
@@ -752,8 +808,8 @@ const SepratedAttendance = ({ route }: any) => {
                                   ? Colors.white
                                   : Colors.black
                                 : isDark
-                                  ? Colors.white
-                                  : Colors.black,
+                                ? Colors.white
+                                : Colors.black,
                             fontSize: 14,
                             fontFamily: 'Lato-Semibold',
                           }}>
@@ -779,7 +835,9 @@ const SepratedAttendance = ({ route }: any) => {
                   </Text>
                   <Card
                     style={{
-                      backgroundColor: isDark ? Colors.black : Colors.background,
+                      backgroundColor: isDark
+                        ? Colors.black
+                        : Colors.background,
                       marginVertical: 10,
                       borderColor: Colors.background,
                       borderWidth: 0.5,
@@ -812,16 +870,16 @@ const SepratedAttendance = ({ route }: any) => {
                             }}>
                             {AttendanceQueryData?.suggestedStartTime
                               ? moment(
-                                AttendanceQueryData?.suggestedStartTime,
-                                'YYYY-MM-DDTHH:mm:ss',
-                              ).format('hh:mm A')
+                                  AttendanceQueryData?.suggestedStartTime,
+                                  'YYYY-MM-DDTHH:mm:ss',
+                                ).format('hh:mm A')
                               : 'N/A'}
                             {' - '}
                             {AttendanceQueryData?.suggestedEndtTime
                               ? moment(
-                                AttendanceQueryData?.suggestedEndtTime,
-                                'YYYY-MM-DDTHH:mm:ss',
-                              ).format('hh:mm A')
+                                  AttendanceQueryData?.suggestedEndtTime,
+                                  'YYYY-MM-DDTHH:mm:ss',
+                                ).format('hh:mm A')
                               : 'N/A'}
                           </Text>
                         </View>
@@ -852,9 +910,10 @@ const SepratedAttendance = ({ route }: any) => {
                               color:
                                 selectedItem?.queryStatus?.label === 'Pending'
                                   ? 'orange'
-                                  : selectedItem?.queryStatus?.label === 'Approved'
-                                    ? 'green'
-                                    : Colors.error,
+                                  : selectedItem?.queryStatus?.label ===
+                                    'Approved'
+                                  ? 'green'
+                                  : Colors.error,
                               fontSize: 16,
                               fontFamily: 'Lato-Semibold',
                             }}>
@@ -904,15 +963,15 @@ const SepratedAttendance = ({ route }: any) => {
                       touched,
                     }) => {
                       return (
-                        <View style={{ paddingHorizontal: 10 }}>
-                          <View style={{ marginVertical: 6 }} />
+                        <View style={{paddingHorizontal: 10}}>
+                          <View style={{marginVertical: 6}} />
                           <CustomTextInput
                             label="Start Time"
                             value={
                               values.startTime
                                 ? moment(values.startTime, 'HH:mm').format(
-                                  'hh:mm A',
-                                )
+                                    'hh:mm A',
+                                  )
                                 : ''
                             }
                             autoFocus={false}
@@ -952,12 +1011,14 @@ const SepratedAttendance = ({ route }: any) => {
                               }
                             />
                           )}
-                          <View style={{ marginVertical: 16 }} />
+                          <View style={{marginVertical: 16}} />
                           <CustomTextInput
                             label="End Time"
                             value={
                               values.endTime
-                                ? moment(values.endTime, 'HH:mm').format('hh:mm A')
+                                ? moment(values.endTime, 'HH:mm').format(
+                                    'hh:mm A',
+                                  )
                                 : ''
                             }
                             autoFocus={false}
@@ -989,11 +1050,15 @@ const SepratedAttendance = ({ route }: any) => {
                               is24Hour={false}
                               display="default"
                               onChange={(event, selectedTime) =>
-                                onChangeEndTime(event, selectedTime, setFieldValue)
+                                onChangeEndTime(
+                                  event,
+                                  selectedTime,
+                                  setFieldValue,
+                                )
                               }
                             />
                           )}
-                          <View style={{ marginVertical: 16 }} />
+                          <View style={{marginVertical: 16}} />
                           <CustomTextInput
                             label="Actual Hours"
                             value={actualTime.toFixed(2)}
@@ -1016,7 +1081,7 @@ const SepratedAttendance = ({ route }: any) => {
                               time after start time.
                             </Text>
                           )}
-                          <View style={{ marginVertical: 16 }} />
+                          <View style={{marginVertical: 16}} />
                           <CustomTextInput
                             label="Reason"
                             value={values.reason}
@@ -1026,7 +1091,7 @@ const SepratedAttendance = ({ route }: any) => {
                             onBlur={handleBlur('reason')}
                             editable={true}
                             style={[styles(isDark).input]}
-                            contentStyle={{ height: 100, paddingBottom: 10 }}
+                            contentStyle={{height: 100, paddingBottom: 10}}
                             numberOfLines={5}
                             multiline={true}
                           />
@@ -1041,47 +1106,50 @@ const SepratedAttendance = ({ route }: any) => {
                             </Text>
                           )}
 
-                          <View style={{ marginVertical: 16 }} />
+                          <View style={{marginVertical: 16}} />
 
                           <TouchableOpacity
                             style={{
                               width: SCREEN_WIDTH - 90,
                               height: 45,
                               backgroundColor:
-                                actualTime < 0 ? Colors.tertiary : Colors.primary,
+                                actualTime < 0
+                                  ? Colors.tertiary
+                                  : Colors.primary,
                               justifyContent: 'center',
                               alignSelf: 'center',
                               borderRadius: 3,
                             }}
                             disabled={actualTime < 0 ? true : false}
                             onPress={() => handleSubmit()}>
-                            {
-                              result?.isLoading ? (
-                                <ActivityIndicator
-                                  size="small"
-                                  color={Colors.white}
-                                />
-                              ) : (
-                                <Text
-                                  style={{
-                                    textAlign: 'center',
-                                    fontFamily: 'Lato-Bold',
-                                    color: Colors.white,
-                                  }}>
-                                  Submit
-                                </Text>
-                              )
-                            }
+                            {result?.isLoading ? (
+                              <ActivityIndicator
+                                size="small"
+                                color={Colors.white}
+                              />
+                            ) : (
+                              <Text
+                                style={{
+                                  textAlign: 'center',
+                                  fontFamily: 'Lato-Bold',
+                                  color: Colors.white,
+                                }}>
+                                Submit
+                              </Text>
+                            )}
                           </TouchableOpacity>
 
                           {isLoading && (
-                            <ActivityIndicator size="large" color={Colors.white} />
+                            <ActivityIndicator
+                              size="large"
+                              color={Colors.white}
+                            />
                           )}
                         </View>
                       );
                     }}
                   </Formik>
-                  <View style={{ height: 200 }} />
+                  <View style={{height: 200}} />
                 </>
               )}
             </ScrollView>

@@ -16,11 +16,12 @@ import {
   useGetAttachmentFromSharePointQuery,
   useGetMyFeedbacksByFeedBackIdQuery,
 } from '../../Services/services';
-import {IconButton} from 'react-native-paper';
+import {Card, IconButton} from 'react-native-paper';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
 import RNFS from 'react-native-fs';
 import Placeholder from '../Placeholder/Placeholder';
+
 
 const ViewFeedback = ({route, navigation}: any) => {
   const {feedbackData} = route.params;
@@ -95,147 +96,157 @@ const ViewFeedback = ({route, navigation}: any) => {
         onPress={() => navigation.goBack()}
       />
       {isLoading ? (
-       <Placeholder/>
+        <Placeholder />
       ) : (
         <ScrollView
-          style={{
-            flex: 1,
-            backgroundColor: isDark ? Colors.black : Colors.background,
-            padding: 10,
-          }}
+         
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
-          <Text
-            style={[
-              styles(isDark).value,
-              {
-                textAlign: 'right',
-                fontFamily: 'Lato-Bold',
-                marginHorizontal: 16,
-              },
-            ]}>
-            {moment(feedbackByID[0]?.reportedOn, 'DD-MM-YYYY').format(
-              'D MMM, YYYY',
-            )}
-          </Text>
-
-          <View style={{marginHorizontal: 16}}>
-            <Text style={[styles(isDark).txt, {flex: 1, flexWrap: 'wrap'}]}>
-              {[feedbackByID[0]?.feedBackTitle]}
-            </Text>
-          </View>
-
-          <View style={{marginHorizontal: 16, marginBottom: 5}}>
-            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Regarding{' : '}
-              <Text style={[styles(isDark).value, {textAlign: 'left'}]}>
-                {feedbackByID[0]?.regardingTo?.label}
+          <Card style={{ borderWidth: 0.5,
+            borderColor: isDark ? Colors.dark_gray : Colors.white,
+             backgroundColor: isDark ? Colors.black : Colors.background,marginHorizontal:16,marginVertical:7,}}>
+            <Card.Content>
+              <Text
+                style={[
+                  styles(isDark).value,
+                  {
+                    textAlign: 'right',
+                    fontFamily: 'Lato-Bold',
+                  
+                  },
+                ]}>
+                {moment(feedbackByID[0]?.reportedOn, 'DD-MM-YYYY').format(
+                  'D MMM, YYYY',
+                )}
               </Text>
-            </Text>
 
-            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Status{' : '}
-              <Text style={styles(isDark).value}>
-                {feedbackByID[0]?.status?.label}
-              </Text>
-            </Text>
-          </View>
-
-          {(feedbackByID[0]?.status?.label === 'Declined' ||
-            (feedbackByID[0]?.status?.label === 'Resolved' &&
-              feedbackByID[0]?.publishToEmp === true)) && (
-            <>
-              <View style={styles(isDark).row}>
-                <View>
-                  <Text
-                    style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-                    Date of Resolution:
-                  </Text>
-                  <Text style={[styles(isDark).value, {textAlign: 'left'}]}>
-                    {feedbackByID[0]?.actionTakenOn}
-                  </Text>
-                </View>
-
-                <View>
-                  <Text
-                    style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-                    Action taken by:
-                  </Text>
-                  <Text style={[styles(isDark).value]}>
-                    {feedbackByID[0]?.actionTakenBy}
-                  </Text>
-                </View>
+              <View style={{}}>
+                <Text style={[styles(isDark).txt, { flexWrap: 'wrap'}]}>
+                  {[feedbackByID[0]?.feedBackTitle]}
+                </Text>
               </View>
-            </>
-          )}
-          <View style={styles(isDark).section}>
-            <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-              Description:
-            </Text>
-            <Text style={styles(isDark).value}>
-              {feedbackByID[0]?.feedBackDescription}
-            </Text>
-          </View>
 
-          {(feedbackByID[0]?.status?.label === 'Declined' ||
-            (feedbackByID[0]?.status?.label === 'Resolved' &&
-              feedbackByID[0]?.publishToEmp === true)) && (
-            <View style={styles(isDark).section}>
-              <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
-                Resolution:
-              </Text>
-              <Text style={styles(isDark).value}>
-                {feedbackByID[0]?.resolution}
-              </Text>
-            </View>
-          )}
+              <View style={{marginBottom: 5}}>
+                <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+                  Regarding{' : '}
+                  <Text style={[styles(isDark).value, {textAlign: 'left'}]}>
+                    {feedbackByID[0]?.regardingTo?.label}
+                  </Text>
+                </Text>
 
-          {attachmentData?.data?.length > 0 && (
-            <View style={styles(isDark).attachmentBox}>
-              {attachmentData.data.map((attachment: any, index: number) => {
-                const isImage = attachment.fileName?.match(
-                  /\.(jpg|jpeg|png|gif|bmp)$/i,
-                );
+                <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+                  Status{' : '}
+                  <Text style={styles(isDark).value}>
+                    {feedbackByID[0]?.status?.label}
+                  </Text>
+                </Text>
+              </View>
 
-                
-                return (
-                  <View key={index} style={styles(isDark).attachmentContainer}>
-                    {isImage ? (
-                      <Image
-                        source={{
-                          uri: `data:image/jpeg;base64,${attachment.bytes}`,
-                        }}
-                        style={{width: 100, height: 100, borderRadius:5}}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <>
-                        <Text
-                          style={[
-                            styles(isDark).value,
-                            {flexWrap: 'wrap', width: '70%'},
-                          ]}>
-                          {attachment.fileName}
-                        </Text>
-                        <IconButton
-                          icon="download-circle"
-                          size={40}
-                          iconColor={Colors.primary}
-                          onPress={() =>
-                            handleDownload(
-                              attachment.bytes,
-                              attachment.fileName,
-                            )
-                          }
-                        />
-                      </>
-                    )}
+              {(feedbackByID[0]?.status?.label === 'Declined' ||
+                (feedbackByID[0]?.status?.label === 'Resolved' &&
+                  feedbackByID[0]?.publishToEmp === true)) && (
+                <>
+                  <View style={styles(isDark).row}>
+                    <View>
+                      <Text
+                        style={[
+                          styles(isDark).value,
+                          {fontFamily: 'Lato-Bold'},
+                        ]}>
+                        Date of Resolution:
+                      </Text>
+                      <Text style={[styles(isDark).value, {textAlign: 'left'}]}>
+                        {feedbackByID[0]?.actionTakenOn}
+                      </Text>
+                    </View>
+
+                    <View>
+                      <Text
+                        style={[
+                          styles(isDark).value,
+                          {fontFamily: 'Lato-Bold'},
+                        ]}>
+                        Action taken by:
+                      </Text>
+                      <Text style={[styles(isDark).value]}>
+                        {feedbackByID[0]?.actionTakenBy}
+                      </Text>
+                    </View>
                   </View>
-                );
-              })}
-            </View>
-          )}
+                </>
+              )}
+              <View style={styles(isDark).section}>
+                <Text style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+                  Description:
+                </Text>
+                <Text style={styles(isDark).value}>
+                  {feedbackByID[0]?.feedBackDescription}
+                </Text>
+              </View>
+
+              {(feedbackByID[0]?.status?.label === 'Declined' ||
+                (feedbackByID[0]?.status?.label === 'Resolved' &&
+                  feedbackByID[0]?.publishToEmp === true)) && (
+                <View style={styles(isDark).section}>
+                  <Text
+                    style={[styles(isDark).value, {fontFamily: 'Lato-Bold'}]}>
+                    Resolution:
+                  </Text>
+                  <Text style={styles(isDark).value}>
+                    {feedbackByID[0]?.resolution}
+                  </Text>
+                </View>
+              )}
+
+              {attachmentData?.data?.length > 0 && (
+                <View style={styles(isDark).attachmentBox}>
+                  {attachmentData.data.map((attachment: any, index: number) => {
+                    const isImage = attachment.fileName?.match(
+                      /\.(jpg|jpeg|png|gif|bmp)$/i,
+                    );
+
+                    return (
+                      <View
+                        key={index}
+                        style={styles(isDark).attachmentContainer}>
+                        {isImage ? (
+                          <Image
+                            source={{
+                              uri: `data:image/jpeg;base64,${attachment.bytes}`,
+                            }}
+                            style={{width: 100, height: 100, borderRadius: 5}}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <>
+                            <Text
+                              style={[
+                                styles(isDark).value,
+                                {flexWrap: 'wrap', width: '70%'},
+                              ]}>
+                              {attachment.fileName}
+                            </Text>
+                            <IconButton
+                              icon="download-circle"
+                              size={40}
+                              iconColor={Colors.primary}
+                              onPress={() =>
+                                handleDownload(
+                                  attachment.bytes,
+                                  attachment.fileName,
+                                )
+                              }
+                            />
+                          </>
+                        )}
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+            </Card.Content>
+          </Card>
         </ScrollView>
       )}
     </View>
@@ -256,7 +267,7 @@ const styles = (isDark: boolean) =>
     },
     section: {
       marginVertical: 8,
-      marginHorizontal: 16,
+     
     },
     txt: {
       fontSize: 16,
@@ -271,16 +282,17 @@ const styles = (isDark: boolean) =>
     },
     attachmentBox: {
       borderWidth: 0.5,
+      borderColor:isDark ? Colors.gray : Colors.white,
       borderRadius: 3,
       padding: 10,
       backgroundColor: isDark ? Colors.gray : Colors.white,
-      marginHorizontal: 16,
+     
     },
     attachmentContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: 5,
+  
     },
   });
 

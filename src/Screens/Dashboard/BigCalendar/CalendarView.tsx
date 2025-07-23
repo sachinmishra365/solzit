@@ -2,6 +2,8 @@ import React from 'react';
 import {Calendar} from 'react-native-big-calendar';
 import moment from 'moment';
 import {Colors} from '../../../constants/Colors';
+import { useSelector } from 'react-redux';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
 
 const CalendarView = ({
   isloggeddata,
@@ -9,6 +11,7 @@ const CalendarView = ({
   selectedStatus,
   navigation,
 }: any) => {
+   const isDark = useSelector(isDarkTheme); 
   const loggedEvents =
     isloggeddata?.data?.map((item: any) => {
       const start = moment(item.tSdate).set({hour: 8, minute: 0});
@@ -49,15 +52,13 @@ const CalendarView = ({
           ? event.color === Colors.secondary
             ? Colors.secondary
             : Colors.darkgreen
-          : 'transparent',
+          :'transparent',
         borderRadius: 6,
         padding: 4,
+        elevation:0,
       })}
       onPressEvent={eventItem => {
         const selectedDate = moment(eventItem?.start).format('YYYY-MM-DD');
-        console.log('navigation:', navigation); // Debugging
-        console.log('selectedDate:', selectedDate);
-
         if (navigation?.navigate) {
           navigation.navigate('ToDosOnWorkLogDate', {selectedDate});
         } else {

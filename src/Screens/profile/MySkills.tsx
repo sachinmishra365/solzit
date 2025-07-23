@@ -115,7 +115,7 @@ const MySkills = ({navigation}: any) => {
         : 0;
     const skillTextColor =
       item.levelofskill?.label === 'Beginner'
-        ? Colors.secondary
+        ? Colors.medium_gray
         : item.levelofskill?.label === 'Intermediate'
         ? '#d3ab5c'
         : item.levelofskill?.label === 'Expert'
@@ -130,7 +130,8 @@ const MySkills = ({navigation}: any) => {
           borderColor: Colors.background,
           borderWidth: 0.5,
           marginHorizontal: 16,
-        }}>0
+        }}>
+        0
         <Card.Content>
           <View>
             <View
@@ -156,7 +157,7 @@ const MySkills = ({navigation}: any) => {
                         ? 'green'
                         : item?.statusReason?.label === 'Upgrade Requested'
                         ? 'orange'
-                         : item?.statusReason?.label === 'Rejected'
+                        : item?.statusReason?.label === 'Rejected'
                         ? '#f02684'
                         : '#9900ff',
                   },
@@ -187,7 +188,7 @@ const MySkills = ({navigation}: any) => {
               }}
               // style={styles(isDark).progressBar}
               width={null}
-            />        
+            />
 
             <View style={[styles(isDark).rowContainer, {alignItems: 'center'}]}>
               <Text style={styles(isDark).skillDetail}>Certification :</Text>
@@ -218,21 +219,25 @@ const MySkills = ({navigation}: any) => {
               </View>
             )}
 
-            {['Applied', 'Approved','Rejected'].includes(item?.statusReason?.label) && (
+            {['Applied', 'Approved', 'Rejected'].includes(
+              item?.statusReason?.label,
+            ) && (
               <IconButton
                 icon={
                   item?.statusReason?.label === 'Applied'
                     ? 'circle-edit-outline'
-                    :  item?.statusReason?.label === 'Approved'
+                    : item?.statusReason?.label === 'Approved'
                     ? 'tray-arrow-up'
                     : 'reload'
                 }
                 size={25}
-                onPress={() =>
-                  navigation.navigate('AddSkills', {itemData: item})
-                }
+                onPress={() => {
+                  refetchApplied(); 
+                  refetchApproved();
+                  navigation.navigate('AddSkills', {itemData: item,appliedData:item, approvedData: approvedData});
+                }}
                 iconColor={isDark ? Colors.primary : Colors.primary}
-                style={{alignSelf: 'flex-end', marginVertical:-5}}
+                style={{alignSelf: 'flex-end', marginVertical: -5}}
               />
             )}
           </View>

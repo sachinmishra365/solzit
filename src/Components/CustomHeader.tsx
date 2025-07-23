@@ -28,7 +28,8 @@ const CustomHeader = ({
   showallocation = false,
   total = 0,
   color,
-  ShowWorkStatusInstruction = false
+  ShowWorkStatusInstruction = false,
+  marginRight= 48
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -80,7 +81,7 @@ const CustomHeader = ({
         {showRightIcon2 && (
           <IconButton icon={rightIconName2} size={25}
             iconColor={isDark ? Colors.white : Colors.white}
-            style={[styles(isDark).searchIcon, { right: 48 }]} onPress={rightIconPress2}
+            style={[styles(isDark).searchIcon, { right: marginRight}]} onPress={rightIconPress2}
           />
         )}
         {ShowWorkStatusInstruction && (

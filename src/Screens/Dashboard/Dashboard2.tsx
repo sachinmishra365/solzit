@@ -27,19 +27,24 @@ import {
   useGetTimeLoggedThisWeekQuery,
 } from '../../Services/Dashboardlevel';
 import Fabbutton from './FabButton/Fabbutton';
+import LinearGradient from 'react-native-linear-gradient';
+import {BlurView} from '@react-native-community/blur';
 
 const {height, width} = Dimensions.get('window');
 
 const Dashboard2 = () => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
+
   const metadata = useSelector((state: any) => state?.appState?.metadata);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
+   const DashboardZIndex = useSelector((state: any) => state?.appState?.DashboardZIndex);
 
   const accessToken = Assesstoken?.authToken?.accessToken;
   const [selectedImage, setSelectedImage] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+
 
   const {
     data: OngoingWFHDateList,
@@ -225,6 +230,7 @@ const Dashboard2 = () => {
           flex: 1,
           backgroundColor: isDark ? Colors.black : Colors.white,
         }}>
+
         <ScreenPlay
           name={
             Assesstoken?.userProfile?.fullName
@@ -234,153 +240,146 @@ const Dashboard2 = () => {
         />
 
         <View
-          style={{
-            marginTop: 12,
-            justifyContent: 'space-around',
-            flexDirection: 'row',
-          }}>
-          <View
-            style={{
-              width: '45%',
-              backgroundColor: Colors.primary,
-              height: 100,
-              borderRadius: 15,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Text style={{fontFamily: 'Lato-Semibold', color: Colors.white}}>
-              This Week Hours : {TimeLoggedThisWeek?.data}
-            </Text>
-            <Text style={{fontFamily: 'Lato-Semibold', color: Colors.white}}>
-              Last Week Hours : {TimeLoggedLastWeek?.data}
-            </Text>
-          </View>
-          <View
-            style={{
-              width: '45%',
-              backgroundColor: Colors.green,
-              height: 100,
-              borderRadius: 15,
-              justifyContent: 'center',
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: -20,
-              }}>
-              <IconButton
-                icon="swap-horizontal-circle-outline"
-                iconColor={isDark ? Colors?.white : Colors?.white}
-                size={30}
-              />
-              <Text
-                style={{
-                  fontFamily: 'Lato-Semibold',
-                  color: Colors.white,
-                  fontSize: 15,
-                  marginRight: 16,
-                }}>
-                {BalanceLeaveDashboard?.data?.earnleaveremaining}
-              </Text>
+          // style={{
+          //   backgroundColor: isDark
+          //     ? 'rgba(0, 0, 0, 0.35)'
+          //     : 'rgba(255, 255, 255, 0.25)',
+          // }}
+          >
+          {/* <LinearGradient
+            colors={
+              isDark
+                ? ['#ca7e8a', '#aa52aa', '#9ceece', '#9de0f5']
+                : ['#4e0d17', '#2e082e', '#317a5e', '#206c83']
+            }
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            style={[
+              StyleSheet.absoluteFillObject,
+              {
+                opacity: 0.25,
+              },
+            ]}
+          /> */}
+
+   
+          <View style={{marginHorizontal: 16, marginTop: 16,}}>
+            <View style={{position: 'relative'}}>
+              <LinearGradient
+                colors={['#c77853', '#f11619']}
+                style={[styles(isDark).topBaseCard, ]}>
+                <View style={styles(isDark).bgStyle}/>
+
+                <View style={styles(isDark).rowCard}>
+                  <View style={[styles(isDark).columnCard, {width: '60%'}]}>
+                    <Text style={[styles(isDark).cardText]}>Total LOPs</Text>
+                    <Text style={[styles(isDark).commonValue]}>
+                      {BalanceLeaveDashboard?.data?.totallopleave ?? '0'}
+                    </Text>
+                  </View>
+                  <IconButton
+                    icon="calendar-week"
+                    iconColor={'#d65f10'}
+                    size={30}
+                    style={[styles(isDark).iconStyle, {right: 40}]}
+                  />
+                </View>
+              </LinearGradient>
+
+           <View style={{alignItems: 'flex-start'}}>
+              <LinearGradient
+                colors={['#77c753', '#659c22']}
+                style={[
+                  styles(isDark).topBaseCard,
+                  {width: '53%', height: 100,},
+                ]}>
+                <View style={styles(isDark).bgStyle}/>
+                <View style={styles(isDark).rowCard}>
+                  <View style={[styles(isDark).columnCard, {width: '50%'}]}>
+                    <Text style={[styles(isDark).cardText]}>Earn Leave</Text>
+                    <Text style={[styles(isDark).commonValue]}>
+                      {BalanceLeaveDashboard?.data?.earnleaveremaining ?? '0'}
+                    </Text>
+                  </View>
+                  <IconButton
+                    icon="calendar-plus"
+                    iconColor={'#56ab2f'}
+                    size={30}
+                    style={[styles(isDark).iconStyle, {right: 14}]}
+                  />
+                </View>
+              </LinearGradient>
             </View>
-            <Text
-              style={{
-                fontFamily: 'Lato-Semibold',
-                color: Colors.white,
-                fontSize: 13,
-                marginLeft: 16,
-              }}>
-              Earn Leave Balance
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            marginTop: 12,
-            justifyContent: 'space-around',
-            flexDirection: 'row',
-          }}>
-          <View
-            style={{
-              width: '45%',
-              backgroundColor: Colors.error,
-              height: 100,
-              borderRadius: 15,
-              justifyContent: 'center',
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: -20,
-              }}>
-              <IconButton
-                icon="swap-horizontal-circle-outline"
-                iconColor={isDark ? Colors?.white : Colors?.white}
-                size={30}
-              />
-              <Text
-                style={{
-                  fontFamily: 'Lato-Semibold',
-                  color: Colors.white,
-                  fontSize: 15,
-                  marginRight: 16,
-                }}>
-                {BalanceLeaveDashboard?.data?.totallopleave}
-              </Text>
+
+              <LinearGradient
+                colors={['#1e8188', '#316dee']}
+                style={[styles(isDark).commonOverlay, {height: 150, top: 0,zIndex:DashboardZIndex?2:0,}]}>
+                <View style={styles(isDark).bgStyle}/>
+                <View style={styles(isDark).rowCard}>
+                  <View style={[styles(isDark).columnCard, {width: '50%'}]}>
+                    <Text style={[styles(isDark).cardText]}>
+                      Hours This Week
+                    </Text>
+                    <Text style={[styles(isDark).commonValue]}>
+                      {TimeLoggedThisWeek?.data ?? '0'} 
+                    </Text>
+                  </View>
+                  <IconButton
+                    icon="clock-time-twelve"
+                    iconColor={isDark ? '#62a2a7' : '#80c9ce'}
+                    size={30}
+                    style={styles(isDark).iconStyle}
+                  />
+                </View>
+              </LinearGradient>    
             </View>
-            <Text
-              style={{
-                fontFamily: 'Lato-Semibold',
-                color: Colors.white,
-                fontSize: 13,
-                marginLeft: 16,
-              }}>
-              Total LOPs
-            </Text>
-          </View>
-          <View
-            style={{
-              width: '45%',
-              backgroundColor: Colors.darkorange,
-              height: 100,
-              borderRadius: 15,
-              justifyContent: 'center',
-            }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: -20,
-              }}>
-              <IconButton
-                icon="swap-horizontal-circle-outline"
-                iconColor={isDark ? Colors?.white : Colors?.white}
-                size={30}
-              />
-              <Text
-                style={{
-                  fontFamily: 'Lato-Semibold',
-                  color: Colors.white,
-                  fontSize: 15,
-                  marginRight: 16,
-                }}>
-                {BalanceLeaveDashboard?.data?.noOfLate}
-              </Text>
+
+            <View style={{position: 'relative', marginBottom: 16}}>
+              <LinearGradient
+                colors={['#c585d4', '#530a53']}
+                style={[styles(isDark).topBaseCard, {zIndex:DashboardZIndex?1:0}]}>
+                <View style={styles(isDark).bgStyle}/>
+                <View style={styles(isDark).rowCard}>
+                  <View style={[styles(isDark).columnCard, {width: '60%'}]}>
+                    <Text style={[styles(isDark).cardText]}>No of Lates</Text>
+                    <Text style={[styles(isDark).commonValue]}>
+                      {BalanceLeaveDashboard?.data?.noOfLate ?? '0'}
+                    </Text>
+                  </View>
+                  <IconButton
+                    icon="clock-time-five"
+                    iconColor={'#882388'}
+                    size={30}
+                    style={[styles(isDark).iconStyle, {right: 40}]}
+                  />
+                </View>
+              </LinearGradient>
+
+              <LinearGradient
+                colors={['#209e94', '#41b96f']}
+                style={[
+                  styles(isDark).commonOverlay,
+                  {height: 151, bottom: 0,zIndex:DashboardZIndex?2:0},
+                ]}>
+                <View style={styles(isDark).bgStyle}/>
+                <View style={styles(isDark).rowCard}>
+                  <View style={[styles(isDark).columnCard, {width: '50%'}]}>
+                    <Text style={[styles(isDark).cardText]}>
+                      Hours Last Week
+                    </Text>
+                    <Text style={[styles(isDark).commonValue]}>
+                      {TimeLoggedLastWeek?.data ?? '0'} 
+                    </Text>
+                  </View>
+                  <IconButton
+                    icon="chart-bar"
+                    iconColor={isDark ? '#689e89' : '#528f87'}
+                    size={30}
+                    style={styles(isDark).iconStyle}
+                  />
+                </View>
+              </LinearGradient>
             </View>
-            <Text
-              style={{
-                fontFamily: 'Lato-Semibold',
-                color: Colors.white,
-                fontSize: 13,
-                marginLeft: 16,
-              }}>
-              No. Of Lates
-            </Text>
           </View>
         </View>
 
@@ -403,7 +402,7 @@ const Dashboard2 = () => {
           }
         />
       </View>
-      <Fabbutton />
+      <Fabbutton  />
 
       <Modal
         visible={modalVisible}
@@ -471,5 +470,53 @@ const styles = (isDark: any) =>
       right: 20,
       padding: 10,
       minHeight: 37,
+    },
+    cardText: {
+      fontFamily: 'Lato-Semibold',
+      color: isDark ? Colors.white : Colors.white,
+      fontSize: 18,
+    },
+    commonValue: {
+      fontFamily: 'Lato-Bold',
+      color: isDark ? Colors?.white : Colors?.white,
+      fontSize: 14,
+
+    },
+    topBaseCard: {
+      width: '60%',
+      height: 100,
+      borderRadius: 12,
+      padding: 10,
+      elevation: 4,
+    },
+    commonOverlay: {
+      width: '50%',
+      borderRadius: 12,
+      padding: 10,
+      position: 'absolute',
+      right: 0,
+      elevation: 4,
+    },
+    rowCard: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
+    columnCard: {
+      alignSelf: 'flex-start',
+      flexShrink: 1,
+    },
+    iconStyle: {
+      backgroundColor: 'rgba(255,255,255,0.2)',
+      borderRadius: 12,
+    },
+    bgStyle: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      backgroundColor: isDark? 'rgba(0, 0, 0, 0.35)': 'rgba(255, 255, 255, 0.1)',
+      borderRadius: 12,
     },
   });

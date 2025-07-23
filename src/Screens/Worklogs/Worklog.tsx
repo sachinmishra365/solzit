@@ -41,7 +41,7 @@ const Worklog = ({ navigation }: any) => {
         handleWorklogs(selectedId?.filterID, selectedId?.itemTypeID, selectedId?.label);
     }, []);
 
-    const filterData = (data: any) => {
+    const filterData = (data: any) => {      
         return data?.filter((item: any) =>
             item?.project?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             item?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||

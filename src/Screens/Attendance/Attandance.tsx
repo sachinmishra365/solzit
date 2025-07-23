@@ -65,17 +65,25 @@ const Attendance = ({ navigation }: any) => {
     return (
       <Card style={styles(isDark).card}>
         <Card.Content>
-          <View
-            style={styles(isDark).row}>
-            <Text style={styles(isDark).txt}>{'Month : '}{item.month.label ? item.month.label : 'N/A'}</Text>
-            <Text style={styles(isDark).txt}>{'Total Pay Day : '}{item.totalPayDays ? item.totalPayDays : 0}</Text>
+          <View style={{alignItems:'flex-start', marginTop:-10,marginBottom:5}}>
+             <Text style={[ { fontFamily: 'Lato-Bold',fontSize:16 ,color:Colors.primary,}]}>{item.month.label ? item.month.label : 'N/A'}{', '}
+               <Text style={[ { fontFamily: 'Lato-Semibold',fontSize:16 ,color: isDark ? Colors.white : Colors.black, }]}>{item.year.label ? item.year.label : 'N/A'}</Text>
+             </Text>
+          </View>
+          
+          <View style={[styles(isDark).row,{alignItems:'center'}]}>
+              <View  style={{flexDirection:'column',alignItems:'center'}}>
+               <Text style={[styles(isDark).txt,{fontSize:18}]}>{item.earnedLeave ? item.earnedLeave : 0}</Text>
+                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular' }]}>Earned Leave  </Text>
+              </View>
+          
+          <View  style={{flexDirection:'column',alignItems:'center'}}>
+               <Text style={[styles(isDark).txt,{fontSize:18}]}>{item.totalPayDays ? item.totalPayDays : 0}</Text>
+                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular' }]}>Total Pay Day </Text>
+              </View>
           </View>
 
-          <View
-            style={styles(isDark).row}>
-            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{'Year : '}{item.year.label ? item.year.label : 'N/A'}</Text>
-            <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{'Earned Leave : '}{item.earnedLeave ? item.earnedLeave : 0}</Text>
-          </View>
+          
 
           <View
             style={{
@@ -84,13 +92,14 @@ const Attendance = ({ navigation }: any) => {
               marginTop: 10,
             }}>
             <TouchableOpacity
-              style={[{ backgroundColor: '#916918', }, styles(isDark).button]}
+              style={[{ 
+      elevation:5,  backgroundColor:  Colors.primary,}, styles(isDark).button]}
               onPress={() => {
                 navigation.navigate('Summary', item);
               }}>
               <IconButton
                 style={{ margin: -2 }}
-                icon="information"
+                icon="eye"
                 iconColor={Colors.white}
                 size={25}
               />
@@ -102,7 +111,8 @@ const Attendance = ({ navigation }: any) => {
 
             <TouchableOpacity
               style={[{
-                backgroundColor: Colors.primary,
+             
+      elevation:5,  backgroundColor:  Colors.primary,
               }, styles(isDark).button]}
               onPress={() => {
                 navigation.navigate('SepratedAttendance', item);
@@ -167,13 +177,10 @@ const styles = (isDark: boolean) =>
       borderColor: Colors.background,
       borderWidth: 0.5,
       marginHorizontal: 16,
-      elevation: 15,
       shadowColor: isDark ? Colors.white : Colors.black,
     },
     button: {
-      justifyContent: 'center',
-      alignSelf: 'center',
-      borderRadius: 3,
+      borderRadius:5,
       alignItems: 'center',
       flexDirection: 'row',
       height: 'auto',
@@ -181,15 +188,13 @@ const styles = (isDark: boolean) =>
     },
     txt: {
       color: isDark ? Colors.white : Colors.black,
-      fontSize: 15,
+      fontSize: 14,
       fontFamily: 'Lato-Semibold',
-      marginBottom: 5,
-      lineHeight: 25
     },
     btntxt: {
       textAlign: 'center',
       fontFamily: 'Lato-Bold',
-      color: Colors.white,
+      color: Colors.white ,
       flexWrap: 'wrap',
       marginRight: 12,
       fontSize: 14,
@@ -198,6 +203,11 @@ const styles = (isDark: boolean) =>
       justifyContent: 'space-between',
       flexDirection: 'row',
       flexWrap: 'wrap',
+      backgroundColor: isDark ?Colors.gray: Colors.white,
+      padding:10,
+      borderRadius:5,
+      elevation:1,
+ 
     }
   });
 
