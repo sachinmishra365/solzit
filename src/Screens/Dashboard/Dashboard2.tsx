@@ -28,7 +28,6 @@ import {
 } from '../../Services/Dashboardlevel';
 import Fabbutton from './FabButton/Fabbutton';
 import LinearGradient from 'react-native-linear-gradient';
-import {BlurView} from '@react-native-community/blur';
 
 const {height, width} = Dimensions.get('window');
 
