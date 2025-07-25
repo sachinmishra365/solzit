@@ -24,7 +24,6 @@ const WorkFromHome = ({ navigation }: any) => {
   const { data, isLoading, isSuccess, refetch } = useGetAllWFHRecordListQuery({
     accessToken: EmployeeId.authToken?.accessToken,
   });
-  console.log('data', JSON.stringify(data));
 
   useEffect(() => {
     if (data && isSuccess) {
@@ -65,7 +64,6 @@ const WorkFromHome = ({ navigation }: any) => {
   }, []);
 
   const renderItem = ({ item }: any) => (
-    console.log('item', item),
     (
       <Card
         style={{

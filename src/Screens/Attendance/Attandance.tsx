@@ -74,16 +74,14 @@ const Attendance = ({ navigation }: any) => {
           <View style={[styles(isDark).row,{alignItems:'center'}]}>
               <View  style={{flexDirection:'column',alignItems:'center'}}>
                <Text style={[styles(isDark).txt,{fontSize:18}]}>{item.earnedLeave ? item.earnedLeave : 0}</Text>
-                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular' }]}>Earned Leave  </Text>
+                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular' ,}]}>Earned Leave  </Text>
               </View>
           
           <View  style={{flexDirection:'column',alignItems:'center'}}>
                <Text style={[styles(isDark).txt,{fontSize:18}]}>{item.totalPayDays ? item.totalPayDays : 0}</Text>
-                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular' }]}>Total Pay Day </Text>
+                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular', }]}>Total Pay Day </Text>
               </View>
           </View>
-
-          
 
           <View
             style={{
@@ -203,7 +201,7 @@ const styles = (isDark: boolean) =>
       justifyContent: 'space-between',
       flexDirection: 'row',
       flexWrap: 'wrap',
-      backgroundColor: isDark ?Colors.gray: Colors.white,
+      backgroundColor: isDark ?'rgba(128, 128, 128,0.2)': Colors.background,
       padding:10,
       borderRadius:5,
       elevation:1,

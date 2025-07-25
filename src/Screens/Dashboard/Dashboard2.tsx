@@ -28,6 +28,7 @@ import {
 } from '../../Services/Dashboardlevel';
 import Fabbutton from './FabButton/Fabbutton';
 import LinearGradient from 'react-native-linear-gradient';
+import { useIsFocused } from '@react-navigation/native';
 
 const {height, width} = Dimensions.get('window');
 
@@ -262,11 +263,11 @@ const Dashboard2 = () => {
           /> */}
 
    
-          <View style={{marginHorizontal: 16, marginTop: 16,}}>
-            <View style={{position: 'relative'}}>
+          <View style={{marginHorizontal: 16, marginTop: 16,overflow: 'hidden'}}>
+            <View style={{position: 'relative', overflow: 'hidden'}}>
               <LinearGradient
                 colors={['#c77853', '#f11619']}
-                style={[styles(isDark).topBaseCard, ]}>
+                style={[styles(isDark).topBaseCard,{zIndex:DashboardZIndex?1:0} ]}>
                 <View style={styles(isDark).bgStyle}/>
 
                 <View style={styles(isDark).rowCard}>
@@ -290,7 +291,7 @@ const Dashboard2 = () => {
                 colors={['#77c753', '#659c22']}
                 style={[
                   styles(isDark).topBaseCard,
-                  {width: '53%', height: 100,},
+                  {width: '53%', height: 100,zIndex:DashboardZIndex?1:0},
                 ]}>
                 <View style={styles(isDark).bgStyle}/>
                 <View style={styles(isDark).rowCard}>
@@ -333,10 +334,10 @@ const Dashboard2 = () => {
               </LinearGradient>    
             </View>
 
-            <View style={{position: 'relative', marginBottom: 16}}>
+            <View style={{position: 'relative', marginBottom: 16,}}>
               <LinearGradient
                 colors={['#c585d4', '#530a53']}
-                style={[styles(isDark).topBaseCard, {zIndex:DashboardZIndex?1:0}]}>
+                style={[styles(isDark).topBaseCard, {zIndex:DashboardZIndex?1:0,}]}>
                 <View style={styles(isDark).bgStyle}/>
                 <View style={styles(isDark).rowCard}>
                   <View style={[styles(isDark).columnCard, {width: '60%'}]}>
@@ -358,7 +359,7 @@ const Dashboard2 = () => {
                 colors={['#209e94', '#41b96f']}
                 style={[
                   styles(isDark).commonOverlay,
-                  {height: 151, bottom: 0,zIndex:DashboardZIndex?2:0},
+                  {height: 151, bottom: 0,zIndex:DashboardZIndex?2:0,position: 'absolute',},
                 ]}>
                 <View style={styles(isDark).bgStyle}/>
                 <View style={styles(isDark).rowCard}>

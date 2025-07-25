@@ -65,7 +65,7 @@ const WorklogCard = ({
                                 icon={iconName}
                                 iconColor={iconColor}
                                 size={25}
-                                style={{ marginLeft: -10 }}
+                                style={{ marginLeft: -13 }}
                                 onPress={iconPress}
                             />
                         )

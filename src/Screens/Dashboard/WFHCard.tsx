@@ -121,7 +121,7 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData, wfhisLoading }: any) 
 
       if (response?.isSuccessful) {
         onActionComplete();
-        ToastMessage({ type: "success", title: "Break In", subtitle: response?.messageDetail?.message });
+        ToastMessage({ type: "success", title: "Check Out", subtitle: response?.messageDetail?.message });
 
       }
     } catch (error: any) {
@@ -244,7 +244,6 @@ const WFHCard = ({ wfhData, onActionComplete, refetchData, wfhisLoading }: any) 
           </View>
         )
           : null
-
 
       ) :
         <ShimmerPlaceHolder />

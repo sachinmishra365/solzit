@@ -51,6 +51,7 @@ import CurrentMonthWorklogHour from '../Screens/Dashboard/BigCalendar/CurrentMon
 import LastMonthWorklogHour from '../Screens/Dashboard/BigCalendar/LastMonthWorklogHour';
 import WorklogHour from '../Screens/Dashboard/BigCalendar/WorklogHour';
 import ToDosOnWorkLogDate from '../Screens/Dashboard/BigCalendar/ToDosOnWorkLogDate';
+import AttendanceDetails from '../Screens/Attendance/AttendanceDetails';
 
 
 const Stack = createNativeStackNavigator();
@@ -128,6 +129,7 @@ const RootStack = () => {
       <Stack.Screen name="CurrentMonthWorklogHour" component={CurrentMonthWorklogHour} />
       <Stack.Screen name="LastMonthWorklogHour" component={LastMonthWorklogHour} />
       <Stack.Screen name="ToDosOnWorkLogDate" component={ToDosOnWorkLogDate} />
+      <Stack.Screen name="AttendanceDetails" component={AttendanceDetails} />
     </Stack.Navigator>
   );
 };
