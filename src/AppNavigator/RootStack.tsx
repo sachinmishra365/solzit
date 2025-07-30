@@ -52,6 +52,7 @@ import LastMonthWorklogHour from '../Screens/Dashboard/BigCalendar/LastMonthWork
 import WorklogHour from '../Screens/Dashboard/BigCalendar/WorklogHour';
 import ToDosOnWorkLogDate from '../Screens/Dashboard/BigCalendar/ToDosOnWorkLogDate';
 import AttendanceDetails from '../Screens/Attendance/AttendanceDetails';
+import Dashboard2 from '../Screens/Dashboard/Dashboard2';
 
 
 const Stack = createNativeStackNavigator();
@@ -83,6 +84,7 @@ const RootStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+      {/* <Stack.Screen name="Dashboard2" component={Dashboard2} /> */}
       <Stack.Screen name="ApplyLeave" component={ApplyLeave} />
       <Stack.Screen name="LeaveRequest" component={LeaveRequest} />
       <Stack.Screen name="LeaveBalance" component={LeaveBalance} />

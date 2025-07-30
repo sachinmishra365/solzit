@@ -26,6 +26,7 @@ const FontSize = {
   xLarge: 20,
   xxLarge: 24,
 };
+
 const Statuses = {
   not_started: {label: 'Not Started', color: '#000000'},
   analysing: {label: 'Analyzing', color: '#2196F3'},

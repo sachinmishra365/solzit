@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, TextInput, View } from 'react-native';
 import React from 'react';
 import { Icon, IconButton } from 'react-native-paper';
 import { Colors } from '../constants/Colors';
@@ -29,7 +29,9 @@ const CustomHeader = ({
   total = 0,
   color,
   ShowWorkStatusInstruction = false,
-  marginRight= 48
+  marginRight = 48,
+  divider = true,
+  showLogo = false,
 }: any) => {
   const isDark = useSelector(isDarkTheme);
 
@@ -44,11 +46,10 @@ const CustomHeader = ({
           />
         ) : (
           <IconButton icon="menu" size={25} accessibilityLabel="Menu"
-            iconColor={isDark ? Colors.white : Colors.black}
+            iconColor={isDark ? Colors.white : Colors.white}
             onPress={onPress}
           />
         )}
-
         <Text style={styles(isDark).title}>{title}</Text>
 
         {showFilterIcon && (
@@ -75,13 +76,19 @@ const CustomHeader = ({
         {showRightIcon && (
           <IconButton icon={rightIconName} size={25}
             iconColor={isDark ? Colors.white : Colors.white}
-            style={[styles(isDark).searchIcon,{right:0}]} onPress={rightIconPress}
+            style={[styles(isDark).searchIcon, { right: 0 }]} onPress={rightIconPress}
+          />
+        )}
+        {showLogo && (
+          <Image
+            source={require('../Assets/Images/Logo/solzitLogo.png')}
+            style={[{ width: 27, height: 27, borderRadius: 15, right: 0}, styles(isDark).searchIcon ]}
           />
         )}
         {showRightIcon2 && (
           <IconButton icon={rightIconName2} size={25}
             iconColor={isDark ? Colors.white : Colors.white}
-            style={[styles(isDark).searchIcon, { right: marginRight}]} onPress={rightIconPress2}
+            style={[styles(isDark).searchIcon, { right: marginRight }]} onPress={rightIconPress2}
           />
         )}
         {ShowWorkStatusInstruction && (
@@ -99,13 +106,19 @@ const CustomHeader = ({
 
         )}
       </View>
-      <View
-        style={{
-          borderWidth: 1, height: 1,
-          backgroundColor: isDark ? Colors.white : 'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',
-        }}
-      />
+      {
+        divider && (
+          <View
+            style={{
+              borderWidth: 1, height: 1,
+              backgroundColor: isDark ? Colors.white : 'transparent',
+              borderColor: isDark ? Colors.black : 'transparent',
+              elevation: 5,
+
+            }}
+          />
+        )
+      }
     </>
   );
 };
@@ -124,7 +137,6 @@ const styles = (isDark: any) =>
       right: 0,
       zIndex: 1,
       alignItems: 'center',
-      elevation: 5,
     },
     title: {
       fontSize: 18,

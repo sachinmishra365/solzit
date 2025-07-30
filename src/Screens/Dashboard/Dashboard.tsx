@@ -430,7 +430,6 @@ const Dashboard = ({ navigation, DrawerOpen }: any) => {
         }}
       />
 
-
       {selectedStatus === 'Work From Home' && <WFHCard wfhData={todayWFHData} onActionComplete={onActionComplete} refetchData={onActionComplete} wfhisLoading={wfhisLoading} />}
 
 

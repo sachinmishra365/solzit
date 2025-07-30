@@ -9,18 +9,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Colors} from '../../constants/Colors';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { Colors } from '../../constants/Colors';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import {auth, isDarkTheme} from '../../AppStore/Reducers/appState';
+import { auth, isDarkTheme } from '../../AppStore/Reducers/appState';
 import ScreenPlay from './ScreenPlay';
 import WFHCard from './WFHCard';
 import {
   useGetOngoingWFHDateListQuery,
   useGetTodayRemoteEmpAttendanceQuery,
 } from '../../Services/workFromHome';
-import {Button, IconButton, Portal} from 'react-native-paper';
+import { Button, IconButton, Portal } from 'react-native-paper';
 import {
   useGetBalanceLeaveDashboardQuery,
   useGetTimeLoggedLastWeekQuery,
@@ -29,16 +29,17 @@ import {
 import Fabbutton from './FabButton/Fabbutton';
 import LinearGradient from 'react-native-linear-gradient';
 import { useIsFocused } from '@react-navigation/native';
+import CustomHeader from '../../Components/CustomHeader';
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
-const Dashboard2 = () => {
+const Dashboard2 = ({ navigation }: any) => {
   const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
 
   const metadata = useSelector((state: any) => state?.appState?.metadata);
   const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
-   const DashboardZIndex = useSelector((state: any) => state?.appState?.DashboardZIndex);
+  const DashboardZIndex = useSelector((state: any) => state?.appState?.DashboardZIndex);
 
   const accessToken = Assesstoken?.authToken?.accessToken;
   const [selectedImage, setSelectedImage] = useState(null);
@@ -50,18 +51,18 @@ const Dashboard2 = () => {
     data: OngoingWFHDateList,
     isLoading: wfhisLoading,
     refetch: onActionComplete,
-  } = useGetOngoingWFHDateListQuery({accessToken});
+  } = useGetOngoingWFHDateListQuery({ accessToken });
   const {
     data: TodayRemoteEmpAttendance,
     isLoading: wfhisLoading1,
     refetch: onActionComplete1,
-  } = useGetTodayRemoteEmpAttendanceQuery({accessToken});
-  const {data: BalanceLeaveDashboard, refetch: refetchBalanceLeaveDashboard} =
-    useGetBalanceLeaveDashboardQuery({accessToken});
-  const {data: TimeLoggedThisWeek, refetch: refetchTimeLoggedThisWeek} =
-    useGetTimeLoggedThisWeekQuery({accessToken});
-  const {data: TimeLoggedLastWeek, refetch: refetchTimeLoggedLastWeek} =
-    useGetTimeLoggedLastWeekQuery({accessToken});
+  } = useGetTodayRemoteEmpAttendanceQuery({ accessToken });
+  const { data: BalanceLeaveDashboard, refetch: refetchBalanceLeaveDashboard } =
+    useGetBalanceLeaveDashboardQuery({ accessToken });
+  const { data: TimeLoggedThisWeek, refetch: refetchTimeLoggedThisWeek } =
+    useGetTimeLoggedThisWeekQuery({ accessToken });
+  const { data: TimeLoggedLastWeek, refetch: refetchTimeLoggedLastWeek } =
+    useGetTimeLoggedLastWeekQuery({ accessToken });
 
   let todayWFHData = [];
 
@@ -119,7 +120,7 @@ const Dashboard2 = () => {
     }
   };
 
-  const renderHolidays = ({item}: any) => {
+  const renderHolidays = ({ item }: any) => {
     const base64 = `data:image/jpeg;base64`;
     const image = item?.holidayImage;
     const HolidayImage = `${base64},${image}`;
@@ -137,9 +138,9 @@ const Dashboard2 = () => {
             {image ? (
               <TouchableOpacity
                 onPress={() => handleImagePress(HolidayImage)}
-                style={{minHeight: 38, minWidth: 38}}>
+                style={{ minHeight: 38, minWidth: 38 }}>
                 <Image
-                  source={{uri: HolidayImage}}
+                  source={{ uri: HolidayImage }}
                   style={styles(isDark).Holidaylogo}
                   accessibilityLabel="Image"
                 />
@@ -149,7 +150,7 @@ const Dashboard2 = () => {
                 onPress={() =>
                   handleImagePress(getImageSource(item?.holidayName))
                 }
-                style={{minHeight: 38, minWidth: 38}}>
+                style={{ minHeight: 38, minWidth: 38 }}>
                 <Image
                   source={getImageSource(item?.holidayName)}
                   style={styles(isDark).Holidaylogo}
@@ -230,7 +231,21 @@ const Dashboard2 = () => {
           flex: 1,
           backgroundColor: isDark ? Colors.black : Colors.white,
         }}>
-
+        {/* <CustomHeader
+          showBackIcon={false}
+          divider={false}
+          title="Soluzione"
+          onPress={() => navigation.openDrawer()}
+          showRightIcon={true}
+          showRightIcon2={true}
+          rightIconName={'swap-horizontal-circle-outline'}
+          rightIconPress={() =>
+            navigation.navigate('WorklogDetails')
+          }
+          rightIconColor2={Colors.primary}
+          rightIconName2={'swap-horizontal-circle-outline'}
+          rightIconPress2={() => navigation.navigate('WorklogHour')}
+        /> */}
         <ScreenPlay
           name={
             Assesstoken?.userProfile?.fullName
@@ -240,12 +255,12 @@ const Dashboard2 = () => {
         />
 
         <View
-          // style={{
-          //   backgroundColor: isDark
-          //     ? 'rgba(0, 0, 0, 0.35)'
-          //     : 'rgba(255, 255, 255, 0.25)',
-          // }}
-          >
+        // style={{
+        //   backgroundColor: isDark
+        //     ? 'rgba(0, 0, 0, 0.35)'
+        //     : 'rgba(255, 255, 255, 0.25)',
+        // }}
+        >
           {/* <LinearGradient
             colors={
               isDark
@@ -262,16 +277,16 @@ const Dashboard2 = () => {
             ]}
           /> */}
 
-   
-          <View style={{marginHorizontal: 16, marginTop: 16,overflow: 'hidden'}}>
-            <View style={{position: 'relative', overflow: 'hidden'}}>
+
+          <View style={{ marginHorizontal: 16, marginTop: 16, overflow: 'hidden' }}>
+            <View style={{ position: 'relative', overflow: 'hidden' }}>
               <LinearGradient
                 colors={['#c77853', '#f11619']}
-                style={[styles(isDark).topBaseCard,{zIndex:DashboardZIndex?1:0} ]}>
-                <View style={styles(isDark).bgStyle}/>
+                style={[styles(isDark).topBaseCard, { zIndex: DashboardZIndex ? 1 : 0 }]}>
+                <View style={styles(isDark).bgStyle} />
 
                 <View style={styles(isDark).rowCard}>
-                  <View style={[styles(isDark).columnCard, {width: '60%'}]}>
+                  <View style={[styles(isDark).columnCard, { width: '60%' }]}>
                     <Text style={[styles(isDark).cardText]}>Total LOPs</Text>
                     <Text style={[styles(isDark).commonValue]}>
                       {BalanceLeaveDashboard?.data?.totallopleave ?? '0'}
@@ -281,47 +296,47 @@ const Dashboard2 = () => {
                     icon="calendar-week"
                     iconColor={'#d65f10'}
                     size={30}
-                    style={[styles(isDark).iconStyle, {right: 40}]}
+                    style={[styles(isDark).iconStyle, { right: 40 }]}
                   />
                 </View>
               </LinearGradient>
 
-           <View style={{alignItems: 'flex-start'}}>
-              <LinearGradient
-                colors={['#77c753', '#659c22']}
-                style={[
-                  styles(isDark).topBaseCard,
-                  {width: '53%', height: 100,zIndex:DashboardZIndex?1:0},
-                ]}>
-                <View style={styles(isDark).bgStyle}/>
-                <View style={styles(isDark).rowCard}>
-                  <View style={[styles(isDark).columnCard, {width: '50%'}]}>
-                    <Text style={[styles(isDark).cardText]}>Earn Leave</Text>
-                    <Text style={[styles(isDark).commonValue]}>
-                      {BalanceLeaveDashboard?.data?.earnleaveremaining ?? '0'}
-                    </Text>
+              <View style={{ alignItems: 'flex-start' }}>
+                <LinearGradient
+                  colors={['#77c753', '#659c22']}
+                  style={[
+                    styles(isDark).topBaseCard,
+                    { width: '53%', height: 100, zIndex: DashboardZIndex ? 1 : 0 },
+                  ]}>
+                  <View style={styles(isDark).bgStyle} />
+                  <View style={styles(isDark).rowCard}>
+                    <View style={[styles(isDark).columnCard, { width: '50%' }]}>
+                      <Text style={[styles(isDark).cardText]}>Earn Leave</Text>
+                      <Text style={[styles(isDark).commonValue]}>
+                        {BalanceLeaveDashboard?.data?.earnleaveremaining ?? '0'}
+                      </Text>
+                    </View>
+                    <IconButton
+                      icon="calendar-plus"
+                      iconColor={'#56ab2f'}
+                      size={30}
+                      style={[styles(isDark).iconStyle, { right: 14 }]}
+                    />
                   </View>
-                  <IconButton
-                    icon="calendar-plus"
-                    iconColor={'#56ab2f'}
-                    size={30}
-                    style={[styles(isDark).iconStyle, {right: 14}]}
-                  />
-                </View>
-              </LinearGradient>
-            </View>
+                </LinearGradient>
+              </View>
 
               <LinearGradient
                 colors={['#1e8188', '#316dee']}
-                style={[styles(isDark).commonOverlay, {height: 150, top: 0,zIndex:DashboardZIndex?2:0,}]}>
-                <View style={styles(isDark).bgStyle}/>
+                style={[styles(isDark).commonOverlay, { height: 150, top: 0, zIndex: DashboardZIndex ? 2 : 0, }]}>
+                <View style={styles(isDark).bgStyle} />
                 <View style={styles(isDark).rowCard}>
-                  <View style={[styles(isDark).columnCard, {width: '50%'}]}>
+                  <View style={[styles(isDark).columnCard, { width: '50%' }]}>
                     <Text style={[styles(isDark).cardText]}>
                       Hours This Week
                     </Text>
                     <Text style={[styles(isDark).commonValue]}>
-                      {TimeLoggedThisWeek?.data ?? '0'} 
+                      {TimeLoggedThisWeek?.data ?? '0'}
                     </Text>
                   </View>
                   <IconButton
@@ -331,16 +346,16 @@ const Dashboard2 = () => {
                     style={styles(isDark).iconStyle}
                   />
                 </View>
-              </LinearGradient>    
+              </LinearGradient>
             </View>
 
-            <View style={{position: 'relative', marginBottom: 16,}}>
+            <View style={{ position: 'relative', marginBottom: 16, }}>
               <LinearGradient
                 colors={['#c585d4', '#530a53']}
-                style={[styles(isDark).topBaseCard, {zIndex:DashboardZIndex?1:0,}]}>
-                <View style={styles(isDark).bgStyle}/>
+                style={[styles(isDark).topBaseCard, { zIndex: DashboardZIndex ? 1 : 0, }]}>
+                <View style={styles(isDark).bgStyle} />
                 <View style={styles(isDark).rowCard}>
-                  <View style={[styles(isDark).columnCard, {width: '60%'}]}>
+                  <View style={[styles(isDark).columnCard, { width: '60%' }]}>
                     <Text style={[styles(isDark).cardText]}>No of Lates</Text>
                     <Text style={[styles(isDark).commonValue]}>
                       {BalanceLeaveDashboard?.data?.noOfLate ?? '0'}
@@ -350,7 +365,7 @@ const Dashboard2 = () => {
                     icon="clock-time-five"
                     iconColor={'#882388'}
                     size={30}
-                    style={[styles(isDark).iconStyle, {right: 40}]}
+                    style={[styles(isDark).iconStyle, { right: 40 }]}
                   />
                 </View>
               </LinearGradient>
@@ -359,16 +374,16 @@ const Dashboard2 = () => {
                 colors={['#209e94', '#41b96f']}
                 style={[
                   styles(isDark).commonOverlay,
-                  {height: 151, bottom: 0,zIndex:DashboardZIndex?2:0,position: 'absolute',},
+                  { height: 151, bottom: 0, zIndex: DashboardZIndex ? 2 : 0, position: 'absolute', },
                 ]}>
-                <View style={styles(isDark).bgStyle}/>
+                <View style={styles(isDark).bgStyle} />
                 <View style={styles(isDark).rowCard}>
-                  <View style={[styles(isDark).columnCard, {width: '50%'}]}>
+                  <View style={[styles(isDark).columnCard, { width: '50%' }]}>
                     <Text style={[styles(isDark).cardText]}>
                       Hours Last Week
                     </Text>
                     <Text style={[styles(isDark).commonValue]}>
-                      {TimeLoggedLastWeek?.data ?? '0'} 
+                      {TimeLoggedLastWeek?.data ?? '0'}
                     </Text>
                   </View>
                   <IconButton
@@ -402,7 +417,7 @@ const Dashboard2 = () => {
           }
         />
       </View>
-      <Fabbutton  />
+      <Fabbutton />
 
       <Modal
         visible={modalVisible}
@@ -414,7 +429,7 @@ const Dashboard2 = () => {
             // @ts-ignore
             source={
               typeof selectedImage === 'string'
-                ? {uri: selectedImage}
+                ? { uri: selectedImage }
                 : selectedImage
             }
             style={styles(isDark).modalImage}
@@ -516,7 +531,7 @@ const styles = (isDark: any) =>
       right: 0,
       bottom: 0,
       left: 0,
-      backgroundColor: isDark? 'rgba(0, 0, 0, 0.35)': 'rgba(255, 255, 255, 0.1)',
+      backgroundColor: isDark ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 0.1)',
       borderRadius: 12,
     },
   });
