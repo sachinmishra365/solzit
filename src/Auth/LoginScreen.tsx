@@ -99,7 +99,7 @@ const LoginScreen = ({ navigation }: any) => {
           onSubmit={handleLogin}>
           {({ handleChange, handleBlur, handleSubmit, values, errors, touched, }) => (
             <View>
-              <View style={{ alignItems: 'center', marginVertical: 16 }}>
+              <View style={{ alignItems: 'center', marginVertical: 10 }}>
                 {isDark ? (
                   <Image
                     source={require('../Assets/Images/Logo/SOLZIT_LOGO.png')}
@@ -113,7 +113,7 @@ const LoginScreen = ({ navigation }: any) => {
                 )}
               </View>
 
-              <View style={{ marginVertical: 16 }} />
+              <View style={{ marginVertical: 10 }} />
 
               <CustomTextInput
                 label="Username"
@@ -131,7 +131,7 @@ const LoginScreen = ({ navigation }: any) => {
               {touched.username && errors.username && (
                 //@ts-ignore  
                 <Text style={{ color: Colors.error, marginLeft: 20, fontFamily: 'Lato-Regular', }}>{errors.username}</Text>)}
-              <View style={{ marginVertical: 16 }} />
+              <View style={{ marginVertical: 10 }} />
 
               <CustomTextInput
                 label="Password"

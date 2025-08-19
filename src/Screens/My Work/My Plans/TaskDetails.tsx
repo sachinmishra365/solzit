@@ -8,6 +8,7 @@ import {Card} from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
 import {useGetDayTaskReportDetailsQuery} from '../../../Services/workloglevel';
+import EmptyData from '../../../Components/EmptyData';
 
 const TaskDetails = ({navigation, route}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -78,7 +79,7 @@ const TaskDetails = ({navigation, route}: any) => {
           overflow: 'hidden',
         }}>
         <Card.Content>
-          <Text style={styles(isDark).titleText}>
+          <Text style={[styles(isDark).titleText,{color:Colors.primary}]}>
             {item.toDoTicketNumber}{' : '}{item.toDoProject?.name}
           </Text>
           <Text style={[styles(isDark).valueText, {marginBottom:5}]}>
@@ -127,21 +128,7 @@ const TaskDetails = ({navigation, route}: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : data?.data === null ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              alignSelf: 'center',
-              fontFamily: 'Lato-Bold',
-            }}>
-            No Records
-          </Text>
-        </View>
+        <EmptyData/>
       ) : (
         <FlatList
           data={myPlanData}

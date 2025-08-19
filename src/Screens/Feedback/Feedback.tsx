@@ -104,7 +104,7 @@ const styles = (isDark: boolean) =>
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginTop: 10,
-      borderColor: Colors.background,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
     },

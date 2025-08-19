@@ -86,7 +86,7 @@ const Summary = ({route}: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 100}}>
           <View
             style={[
               styles(isDark).card,
@@ -210,7 +210,7 @@ const styles = (isDark: boolean) =>
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginHorizontal: 16,
       marginVertical: 7,
-      borderColor: Colors.background,
+      borderColor: Colors.white,
       borderWidth: 0.5,
     },
     txt: {

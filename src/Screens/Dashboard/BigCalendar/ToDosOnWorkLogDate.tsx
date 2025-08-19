@@ -12,6 +12,7 @@ import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder'
 
 const ToDosOnWorkLogDate = ({ route, navigation }: any) => {
     const Date = route?.params?.selectedDate
+ 
     const isFocuse = useIsFocused();
 
     const isDark = useSelector(isDarkTheme);

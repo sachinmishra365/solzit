@@ -57,7 +57,7 @@ const MyPlans = ({navigation}: any) => {
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
         marginVertical: 7,
-        borderColor: Colors.background,
+        borderColor: Colors.white,
         borderWidth: 0.5,
         marginHorizontal: 16,
         overflow: 'hidden',
@@ -153,7 +153,7 @@ const styles = (isDark: boolean) =>
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginVertical: 7,
-      borderColor: Colors.background,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
     },
@@ -161,13 +161,15 @@ const styles = (isDark: boolean) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 10,
+      marginBottom: 5,
       flexWrap: 'wrap',
     },
-    dateText: {fontFamily: 'Lato-Bold', color: Colors.primary},
+    dateText: {fontSize:16,fontFamily: 'Lato-Bold', color: Colors.primary},
     taskText: {
+      fontSize:14,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
+      lineHeight: 25,
     },
   });
 export default MyPlans;

@@ -13,9 +13,8 @@ const CombinedDashboard = ({ navigation }: any) => {
             <CustomHeader
                 showBackIcon={false}
                 divider={false}
-                title="Soluzione"
+                titleImage={require('../../Assets/Images/Logo/SolzLogoDash.png')}
                 onPress={() => navigation.openDrawer()}
-                showLogo={true}
                 showRightIcon2={true}
                 rightIconName={'swap-horizontal-circle-outline'}
                 rightIconColor2={Colors.primary}

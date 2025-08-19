@@ -118,25 +118,24 @@ const SepratedAttendance = ({route}: any) => {
             <Text
               style={{
                 color: isDark ? Colors.white : Colors.black,
-                fontSize: 16,
-                fontFamily: 'Lato-Semibold',
+                fontSize: 14,
+                fontFamily: 'Lato-Bold',
               }}>
               {item?.date ? moment(item?.date).format('DD MMM, YYYY') : 'N/A'}
             </Text>
 
-            <View style={{}}>
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,
                   fontSize: 14,
-                  fontFamily: 'Lato-Semibold',
+                  fontFamily: 'Lato-Regular',
                 }}>
                 {item?.inTime
                   ? `${moment(item?.inTime).format('h:mm A')}  -  `
                   : null}{' '}
                 {item?.outTime ? moment(item?.outTime).format('h:mm A') : null}
               </Text>
-            </View>
+
           </View>
 
           {item?.leaveType?.label !== 'Weekend' &&
@@ -148,7 +147,7 @@ const SepratedAttendance = ({route}: any) => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   flexWrap: 'wrap',
-                  marginTop: 10,
+                  marginTop:5 , 
                 }}>
                 {item?.leaveType?.label !== 'Loss of Pay' &&
                 item?.leaveType?.label !== 'Earn Leave' ? (
@@ -156,9 +155,9 @@ const SepratedAttendance = ({route}: any) => {
                     <Text
                       style={{
                         color: item?.isLate === false ? 'green' : Colors.error,
-                        fontSize: 18,
+                        fontSize: 16,
                         fontFamily: 'Lato-Bold',
-                        marginBottom: 6,
+                
                       }}>
                       {item?.isLate === false ? 'Ontime' : 'Late'}
                     </Text>
@@ -172,7 +171,7 @@ const SepratedAttendance = ({route}: any) => {
                       style={{
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
+                        fontFamily: 'Lato-Regular',
                         flexWrap: 'wrap',
                       }}>
                       Punch In/Out{' : '}
@@ -182,9 +181,7 @@ const SepratedAttendance = ({route}: any) => {
                         color:
                           item?.hoursPunchInOutTime < 7
                             ? Colors.error
-                            : isDark
-                            ? Colors.white
-                            : Colors.black,
+                            : Colors.primary,
                         fontSize: 14,
                         fontFamily: 'Lato-Semibold',
                       }}>
@@ -200,7 +197,7 @@ const SepratedAttendance = ({route}: any) => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   flexWrap: 'wrap',
-                  marginVertical: 10,
+                  marginTop:5,
                 }}>
                 {item?.leaveType?.label !== 'Loss of Pay' &&
                 item?.loggedHours > 0 ? (
@@ -209,7 +206,7 @@ const SepratedAttendance = ({route}: any) => {
                       style={{
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
+                        fontFamily: 'Lato-Regular',
                         flexWrap: 'wrap',
                       }}>
                       Logged Hours{' : '}
@@ -237,7 +234,7 @@ const SepratedAttendance = ({route}: any) => {
                       style={{
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
+                       fontFamily: 'Lato-Regular',
                         flexWrap: 'wrap',
                       }}>
                       Effective Hours{' : '}
@@ -272,7 +269,7 @@ const SepratedAttendance = ({route}: any) => {
                       style={{
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 14,
-                        fontFamily: 'Lato-Semibold',
+                       fontFamily: 'Lato-Regular',
                       }}>
                       Day Type{' : '}
                     </Text>
@@ -292,7 +289,7 @@ const SepratedAttendance = ({route}: any) => {
                               ? '#FF9800'
                               : Colors.green,
                           fontSize: 14,
-                          fontFamily: 'Lato-Semibold',
+                          fontFamily: 'Lato-Bold',
                         }}>
                         {item?.leaveType?.label
                           ? item?.leaveType?.label
@@ -343,6 +340,7 @@ const SepratedAttendance = ({route}: any) => {
                     <Text
                       style={{
                         textAlign: 'center',
+                        fontSize:14,
                         fontFamily: 'Lato-Bold',
                         color: Colors.white,
                         flexWrap: 'wrap',
@@ -383,7 +381,7 @@ const SepratedAttendance = ({route}: any) => {
                     style={{
                       color: isDark ? Colors.white : Colors.black,
                       fontSize: 14,
-                      fontFamily: 'Lato-Semibold',
+                     fontFamily: 'Lato-Regular',
                     }}>
                     Punch In/Out{' : '}
                   </Text>
@@ -418,7 +416,7 @@ const SepratedAttendance = ({route}: any) => {
                   style={{
                     color: isDark ? Colors.white : Colors.black,
                     fontSize: 14,
-                    fontFamily: 'Lato-Semibold',
+                    fontFamily: 'Lato-Regular',
                   }}>
                   Status{' : '}
                 </Text>
@@ -483,19 +481,10 @@ const styles = (isDark: boolean) =>
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
-      marginVertical: 7,
-      borderColor: Colors.background,
+      marginVertical: 5,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
     },
-    modalContainer: {
-      backgroundColor: 'white',
-      paddingHorizontal: 20,
-      margin: 20,
-      borderRadius: 8,
-      elevation: 5,
-    },
-    input: {
-      width: '95%',
-    },
+    
   });

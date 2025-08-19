@@ -142,7 +142,7 @@ const styles = (isDark: any) => StyleSheet.create({
         borderRadius: 5,
         marginHorizontal: 16,
         marginTop: 10,
-        borderColor: Colors.background,
+        borderColor: Colors.white,
         borderWidth: 0.5,
     },
     cardContant: {

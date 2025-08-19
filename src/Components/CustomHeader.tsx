@@ -11,6 +11,7 @@ const CustomHeader = ({
   showBackIcon = false,
   onPress,
   title,
+  titleImage, 
   searchOnPress,
   showSearchIcon = false,
   onSearchChange,
@@ -28,8 +29,7 @@ const CustomHeader = ({
   showallocation = false,
   total = 0,
   color,
-  ShowWorkStatusInstruction = false,
-  marginRight = 48,
+  marginRight = 0,
   divider = true,
   showLogo = false,
 }: any) => {
@@ -50,7 +50,14 @@ const CustomHeader = ({
             onPress={onPress}
           />
         )}
+        {titleImage ? (
+        <Image
+          source={titleImage}
+          style={{ width: 100, height: 25, resizeMode: 'contain' }}
+        />
+      ) : (
         <Text style={styles(isDark).title}>{title}</Text>
+      )}
 
         {showFilterIcon && (
           <IconButton icon="filter" size={25} accessibilityLabel="filter"
@@ -90,20 +97,6 @@ const CustomHeader = ({
             iconColor={isDark ? Colors.white : Colors.white}
             style={[styles(isDark).searchIcon, { right: marginRight }]} onPress={rightIconPress2}
           />
-        )}
-        {ShowWorkStatusInstruction && (
-          <View style={{ position: 'absolute', right: 16, gap: 2 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon source={'checkbox-blank-circle'} size={14} color={isDark ? Colors.secondary : Colors.secondary} />
-              <Text style={[styles(isDark).title, { fontSize: 12, marginLeft: 5 }]}>{'Logged Hours'}</Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon source={'checkbox-blank-circle'} size={14} color={isDark ? Colors.darkgreen : Colors.darkgreen} />
-              <Text style={[styles(isDark).title, { fontSize: 12, marginLeft: 5 }]}>{'Approved Hours'}</Text>
-            </View>
-
-          </View>
-
         )}
       </View>
       {

@@ -231,8 +231,8 @@ const AttendanceDetails = ({route, navigation}: any) => {
               style={{
                 backgroundColor: isDark ? Colors.black : Colors.background,
                 marginVertical: 10,
-                borderColor: Colors.background,
-                borderWidth: 1,
+                borderColor: Colors.white,
+                borderWidth: 0.5,
                 marginHorizontal: 16,
               }}>
               <Card.Content>
@@ -286,7 +286,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                             : Colors.error,
                         fontSize: 18,
                         fontFamily: 'Lato-Bold',
-                        marginBottom: 6,
+                       
                       }}>
                       {selectedItem?.isLate === false ? 'Ontime' : 'Late'}
                     </Text>
@@ -329,7 +329,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    marginTop: 10,
+                    marginTop: 5,
                   }}>
                   <Text
                     style={{
@@ -344,7 +344,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                       fontSize: 14,
                       fontFamily: 'Lato-Semibold',
                     }}>
-                    Punch In/Out : {selectedItem?.hoursPunchInOutTime}
+                    Punch In/Out{' : '}{selectedItem?.hoursPunchInOutTime}
                   </Text>
                 </View>
               </Card.Content>
@@ -369,7 +369,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
               style={{
                 backgroundColor: isDark ? Colors.black : Colors.background,
                 marginVertical: 10,
-                borderColor: Colors.background,
+                borderColor: Colors.white,
                 borderWidth: 0.5,
                 marginHorizontal: 16,
               }}>
@@ -492,8 +492,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                 touched,
               }) => {
                 return (
-                  <View style={{paddingHorizontal: 10}}>
-                    <View style={{marginVertical: 6}} />
+                  <View style={{paddingHorizontal: 8}}>
                     <CustomTextInput
                       label="Start Time"
                       value={
@@ -534,7 +533,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                         }
                       />
                     )}
-                    <View style={{marginVertical: 16}} />
+                    <View style={{marginVertical: 7}} />
                     <CustomTextInput
                       label="End Time"
                       value={
@@ -575,7 +574,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                         }
                       />
                     )}
-                    <View style={{marginVertical: 16}} />
+                    <View style={{marginVertical: 7}} />
                     <CustomTextInput
                       label="Actual Hours"
                       value={actualTime.toFixed(2)}
@@ -598,7 +597,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                         after start time.
                       </Text>
                     )}
-                    <View style={{marginVertical: 16}} />
+                      <View style={{marginVertical: 7}} />
                     <CustomTextInput
                       label="Reason"
                       value={values.reason}
@@ -623,7 +622,7 @@ const AttendanceDetails = ({route, navigation}: any) => {
                       </Text>
                     )}
 
-                    <View style={{marginVertical: 16}} />
+                     <View style={{marginVertical: 7}} />
 
                     <TouchableOpacity
                       style={{
@@ -672,12 +671,6 @@ const styles = (isDark: boolean) =>
     maincontainer: {
       flex: 1,
       backgroundColor: isDark ? Colors.black : Colors.white,
-    },
-    card: {
-      backgroundColor: Colors.background,
-      margin: 16,
-      padding: 16,
-      borderRadius: 8,
     },
     input: {
       width: '95%',

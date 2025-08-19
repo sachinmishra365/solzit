@@ -136,7 +136,7 @@ const styles = (isDark: boolean, urgency?: string) =>
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginVertical: 7,
-      borderColor: Colors.background,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
     },

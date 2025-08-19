@@ -65,7 +65,7 @@ const Attendance = ({ navigation }: any) => {
     return (
       <Card style={styles(isDark).card}>
         <Card.Content>
-          <View style={{alignItems:'flex-start', marginTop:-10,marginBottom:5}}>
+          <View style={{alignItems:'flex-start', marginTop:-5,marginBottom:5}}>
              <Text style={[ { fontFamily: 'Lato-Bold',fontSize:16 ,color:Colors.primary,}]}>{item.month.label ? item.month.label : 'N/A'}{', '}
                <Text style={[ { fontFamily: 'Lato-Semibold',fontSize:16 ,color: isDark ? Colors.white : Colors.black, }]}>{item.year.label ? item.year.label : 'N/A'}</Text>
              </Text>
@@ -74,12 +74,12 @@ const Attendance = ({ navigation }: any) => {
           <View style={[styles(isDark).row,{alignItems:'center'}]}>
               <View  style={{flexDirection:'column',alignItems:'center'}}>
                <Text style={[styles(isDark).txt,{fontSize:18}]}>{item.earnedLeave ? item.earnedLeave : 0}</Text>
-                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular' ,}]}>Earned Leave  </Text>
+                  <Text style={[ styles(isDark).txt]}>Earned Leave  </Text>
               </View>
           
           <View  style={{flexDirection:'column',alignItems:'center'}}>
                <Text style={[styles(isDark).txt,{fontSize:18}]}>{item.totalPayDays ? item.totalPayDays : 0}</Text>
-                  <Text style={[ styles(isDark).txt,{ fontFamily: 'Lato-Regular', }]}>Total Pay Day </Text>
+                  <Text style={[ styles(isDark).txt]}>Total Pay Day </Text>
               </View>
           </View>
 
@@ -172,7 +172,7 @@ const styles = (isDark: boolean) =>
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginVertical: 7,
-      borderColor: Colors.background,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
       shadowColor: isDark ? Colors.white : Colors.black,
@@ -187,7 +187,7 @@ const styles = (isDark: boolean) =>
     txt: {
       color: isDark ? Colors.white : Colors.black,
       fontSize: 14,
-      fontFamily: 'Lato-Semibold',
+      fontFamily: 'Lato-Regular',
     },
     btntxt: {
       textAlign: 'center',

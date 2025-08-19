@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import { isDarkTheme } from '../AppStore/Reducers/appState';
 import Placeholder from './Placeholder/Placeholder';
+import { Icon } from 'react-native-paper';
 
 
 const validationSchema = Yup.object().shape({
@@ -223,18 +224,19 @@ const ApplyLeave = () => {
                   <Text
                     style={{
                       color: isDark ? Colors.white : Colors.black,
-                      fontSize: 16,
-                      fontFamily: 'Lato-Bold',
+                      fontSize: 14,
+                      fontFamily: 'Lato-Regular',
                       textAlign: 'left',
                       marginBottom: 16,
                     }}>
-                    Current EL Balance:{' '}
+                    Current EL Balance{' : '}
                     {elAvailable !== null ? elAvailable : ''}
                     {elAvailable === 0 && (
                       <Text
                         style={{
                           color: isDark ? Colors.white : Colors.black,
-                          fontSize: 16,
+                          fontSize: 14,
+                           fontFamily: 'Lato-Regular',
                         }}>
                         {'  '}(Leave applied will be marked as Loss of Pay)
                       </Text>
@@ -247,7 +249,7 @@ const ApplyLeave = () => {
                       fontSize: 16,
                       fontFamily: 'Lato-Bold',
                     }}>
-                    Leave Type
+                   <Icon source="briefcase-outline" size={20} color={Colors.primary} />{' '}Leave Type
                   </Text>
                   <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
@@ -301,7 +303,7 @@ const ApplyLeave = () => {
                       fontSize: 16,
                       fontFamily: 'Lato-Bold',
                     }}>
-                    Leave Day Type
+                   <Icon source="calendar-clock-outline" size={20} color={Colors.primary} />{' '}Leave Day Type
                   </Text>
                   <View style={{ flexDirection: 'row' }}>
                     <TouchableOpacity
@@ -401,7 +403,7 @@ const ApplyLeave = () => {
                           fontSize: 16,
                           fontFamily: 'Lato-Bold',
                         }}>
-                        Half Day Type
+                    <Icon source="clock-outline" size={20} color={Colors.primary} />{' '}Half Day Type
                       </Text>
                       <View style={{ flexDirection: 'row' }}>
                         <TouchableOpacity

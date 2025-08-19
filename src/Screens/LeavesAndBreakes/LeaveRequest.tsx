@@ -48,7 +48,7 @@ const LeaveRequest = ({ navigation }: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily: 'Lato-Semibold',
+               fontFamily: 'Lato-Regular',
             }}>
             {item.totalDaysofLeave !== 0.5
               ? `Full Day Leave (${item?.totalDaysofLeave})`
@@ -69,7 +69,7 @@ const LeaveRequest = ({ navigation }: any) => {
                           ? 'green'
                           : Colors.gray,
                 fontSize: 16,
-                fontFamily: 'Lato-Semibold',
+                 fontFamily: 'Lato-Bold',
               }}>
               {item?.status?.label}
             </Text>
@@ -85,8 +85,8 @@ const LeaveRequest = ({ navigation }: any) => {
           <Text
             style={{
               color: isDark ? Colors.white : Colors.black,
-              fontSize: 18,
-              fontFamily: 'Lato-Bold',
+              fontSize: 16,
+              fontFamily: 'Lato-Semibold',
               marginBottom: 6,
             }}>
             {item?.leaveStartDate === item?.leaveEndDate
@@ -99,12 +99,12 @@ const LeaveRequest = ({ navigation }: any) => {
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily: 'Lato-Semibold',
+               fontFamily: 'Lato-Regular',
             }}>
             Absent Day: {item.totalAbsentDays}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between',marginTop:5 }}>
           <Text
             style={{
               color:
@@ -244,33 +244,29 @@ const LeaveRequest = ({ navigation }: any) => {
 export default LeaveRequest;
 
 
-const styles = (isDark: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: isDark ? Colors.black : Colors.white,
-  },
-  cardContainer: {
-    backgroundColor: isDark ? Colors.black : Colors.background,
-    marginVertical: 7,
-    borderColor: Colors.background,
-    borderWidth: 0.5,
-    marginHorizontal: 5,
-  },
-  btnContainer: {
-    height: 'auto',
-    backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    borderRadius: 3,
-    minHeight: 25,
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  btntxt: {
-    textAlign: 'center',
-    fontFamily: 'Lato-Bold',
-    color: Colors.white,
-    flexWrap: 'wrap',
-    margin: 12,
-  }
-});
+const styles = (isDark: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isDark ? Colors.black : Colors.white,
+    },
+    cardContainer: {
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginVertical: 7,
+      borderColor: Colors.white,
+      borderWidth: 0.5,
+    },
+    btnContainer: {
+      paddingHorizontal: 15,
+      paddingVertical: 8,
+      backgroundColor: Colors.primary,
+      borderRadius: 5,
+    },
+    btntxt: {
+      fontSize:14,
+      textAlign: 'center',
+      fontFamily: 'Lato-Bold',
+      color: Colors.white,
+      flexWrap: 'wrap',
+    },
+  });

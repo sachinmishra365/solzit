@@ -7,7 +7,7 @@ import {Colors} from '../../constants/Colors';
 import {useEmployeeAttendanceListMutation} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card} from 'react-native-paper';
+import {Card, Chip, Icon} from 'react-native-paper';
 import moment from 'moment';
 import EmptyData from '../../Components/EmptyData';
 
@@ -49,7 +49,6 @@ const LateArrivalTime = ({navigation}: any) => {
         },
       }).unwrap();
 
-
       if (response?.messageDetail?.message_code === 200) {
         const filteredData = response?.data
           ?.filter((item: any) => item?.isLate)
@@ -81,12 +80,20 @@ const LateArrivalTime = ({navigation}: any) => {
     handleLateArrival().finally(() => setRefreshing(false));
   };
 
-  const renderItem = ({item}: any) => (
-    <Card style={styles(isDark).card}>
-      <Card.Content>
-        <View style={styles(isDark).row}>
+  const renderItem = ({item}: any) => {
+    return (
+      <Card style={styles(isDark).card}>
+        <Card.Content style={{gap: 10}}>
+         <View style={styles(isDark).row}>
+          <View style={styles(isDark).rowStart}>
+           <Icon
+                source="clock-time-four-outline"
+                size={18}
+                color={Colors.primary}
+              />
+
         <Text style={styles(isDark).label}>
-            Time{' - '} In{' : '}
+             {'  '}Time{' - '} In{' : '}
             <Text style={styles(isDark).value}>
               {item?.inTime ? moment(item?.inTime).format('h:mm A') : 'N/A'}
             </Text>{' '}{' | '}
@@ -98,53 +105,74 @@ const LateArrivalTime = ({navigation}: any) => {
             </Text>
             
           </Text>
+          </View>
           <Text
             style={{
-              color: item?.isLate ? Colors.error :  Colors.green ,
+              color: item?.isLate ? Colors.error :  Colors.darkgreen ,
               fontFamily: 'Lato-Bold',
               fontSize: 16,
             }}>
             {item?.isLate ? 'Late' : 'OnTime'}
           </Text>
         </View>
-        <View style={styles(isDark).row}>
-          <Text
-            style={[
-              styles(isDark).label,
-              {
-                fontSize: 16,
-              },
-            ]}>
-            {item?.isPresent ? 'Present' : 'Absent'}
-          </Text>
-          <Text
-            style={[
-              {fontSize: 16, color: Colors.primary, fontFamily: 'Lato-Bold'},
-            ]}>
-            {item?.date ? moment(item?.date).format('DD MMM YYYY') : '—'}
-          </Text>
-        </View>
 
-        <View style={styles(isDark).row}>
-        <Text>
-            <Text style={styles(isDark).label}>
-              Punch In/Out{' : '}
-              <Text style={styles(isDark).value}>
-                {item?.hoursPunchInOutTime}
+          <View style={styles(isDark).row}>
+            <Chip
+              icon={({size, color}) => (
+                <Icon
+                  source={
+                    item?.isPresent
+                      ? 'check-circle-outline'
+                      : 'close-circle-outline'
+                  }
+                  size={18}
+                  color={isDark?Colors.black:Colors.white}
+                />
+              )}
+              style={{
+                backgroundColor: item?.isPresent ? Colors.green : Colors.error,
+              }}
+              textStyle={{
+                color: isDark?Colors.black:Colors.white,
+                fontFamily: 'Lato-Bold',
+                fontSize: 12,
+              }}>
+              {item?.isPresent ? 'Present' : 'Absent'}
+            </Chip>
+
+            <View style={styles(isDark).rowStart}>
+              <Text style={[styles(isDark).label,{color: Colors.primary,fontSize:16}]}>
+                {'  '}
+                {item?.date ? moment(item?.date).format('DD MMM YYYY') : 'N/A'}
               </Text>
-            </Text>
-          </Text>
-          <Text style={styles(isDark).label}>
-            Deficient Hours{' : '}
-            <Text style={styles(isDark).value}>
-              {item?.deficientHours ?? 0}
-            </Text>
-          </Text>
-        </View>
+            </View>
+          </View>
 
-      </Card.Content>
-    </Card>
-  );
+          <View style={styles(isDark).row}>
+            <View style={styles(isDark).rowStart}>
+              <Icon source="login-variant" size={18} color={Colors.primary} />
+              <Text style={styles(isDark).label}>
+                {'  '}Punch In/Out{' : '}
+                {item?.hoursPunchInOutTime ?? 'N/A'}
+              </Text>
+            </View>
+
+            <View style={styles(isDark).rowStart}>
+              <Icon
+                source="timer-sand-empty"
+                size={18}
+                color={Colors.primary}
+              />
+              <Text style={styles(isDark).label}>
+                {'  '}Deficient Hours{' : '}
+                {item?.deficientHours ?? 0}
+              </Text>
+            </View>
+          </View>
+        </Card.Content>
+      </Card>
+    );
+  };
 
   return (
     <View style={styles(isDark).mainContainer}>
@@ -157,7 +185,7 @@ const LateArrivalTime = ({navigation}: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : lateData?.length === 0 ? (
-       <EmptyData/>
+        <EmptyData />
       ) : (
         <FlatList
           data={lateData}
@@ -182,22 +210,25 @@ const styles = (isDark: boolean) =>
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
-      marginVertical: 7,
-      borderColor: Colors.background,
+      marginVertical: 5,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
-      overflow: 'hidden',
     },
     row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 5,
       flexWrap: 'wrap',
+    },
+    rowStart: {
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     label: {
       fontFamily: 'Lato-Semibold',
       color: isDark ? Colors.white : Colors.black,
+      fontSize: 14,
     },
     value: {
       fontSize: 14,

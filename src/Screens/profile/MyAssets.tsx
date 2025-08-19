@@ -62,8 +62,8 @@ const MyAssets = ({ navigation }: any) => {
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 7,
-        borderColor: Colors.background,
+        marginVertical: 5,
+        borderColor:  isDark ? Colors.background : Colors.white,
         borderWidth: 0.5,
         marginHorizontal: 16,
       }}>
@@ -201,6 +201,7 @@ const styles = (isDark: boolean) =>
     value: {
       color: isDark ? Colors.white : Colors.black,
       fontFamily: 'Lato-Regular',
+      fontSize: 14,
     },
   });
 

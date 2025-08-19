@@ -47,12 +47,11 @@ import AppoveWorklog from '../Screens/WorklogApproval/AppoveWorklog';
 import SelectedEmployee from '../Screens/WorklogApproval/SelectedEmployee';
 import PMWorklogs from '../Screens/WorklogApproval/PM Worklog Approval/PMWorklogs';
 import SelectedPM from '../Screens/WorklogApproval/PM Worklog Approval/SelectedPM';
-import CurrentMonthWorklogHour from '../Screens/Dashboard/BigCalendar/CurrentMonthWorklogHour';
-import LastMonthWorklogHour from '../Screens/Dashboard/BigCalendar/LastMonthWorklogHour';
 import WorklogHour from '../Screens/Dashboard/BigCalendar/WorklogHour';
 import ToDosOnWorkLogDate from '../Screens/Dashboard/BigCalendar/ToDosOnWorkLogDate';
 import AttendanceDetails from '../Screens/Attendance/AttendanceDetails';
-import Dashboard2 from '../Screens/Dashboard/Dashboard2';
+import CarouselScreen from '../Screens/Dashboard/NewDashBoard/CarouselScreen';
+import UpcomingEvents from '../Screens/Dashboard/NewDashBoard/UpcomingEvents';
 
 
 const Stack = createNativeStackNavigator();
@@ -69,7 +68,7 @@ const RootStack = () => {
   useEffect(() => {
     if (upcomingBirthdayData && holidaysData) {
       const merged: any = [
-        // ...(upcomingBirthdayData?.data || []),
+        ...(upcomingBirthdayData?.data || []),
         ...(holidaysData?.data || []),
       ];
       dispatch(SetMetaData(merged))
@@ -128,10 +127,10 @@ const RootStack = () => {
       <Stack.Screen name="PMWorklogs" component={PMWorklogs} />
       <Stack.Screen name="SelectedPM" component={SelectedPM} />
       <Stack.Screen name="WorklogHour" component={WorklogHour} />
-      <Stack.Screen name="CurrentMonthWorklogHour" component={CurrentMonthWorklogHour} />
-      <Stack.Screen name="LastMonthWorklogHour" component={LastMonthWorklogHour} />
       <Stack.Screen name="ToDosOnWorkLogDate" component={ToDosOnWorkLogDate} />
       <Stack.Screen name="AttendanceDetails" component={AttendanceDetails} />
+       <Stack.Screen name="CarouselScreen" component={CarouselScreen} />
+      <Stack.Screen name="UpcomingEvents" component={UpcomingEvents} />
     </Stack.Navigator>
   );
 };

@@ -90,7 +90,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
     return (
       <Card style={styles(isDark).card}>
         <Card.Content>
-          <View style={{marginTop: -10}}>
+          <View style={{marginBottom:10,}}>
             <Text style={[styles(isDark).name]}>
               {item.fullName}
               {' | '}
@@ -98,7 +98,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
             </Text>
           </View>
 
-          <View style={[styles(isDark).row, {marginBottom: -10}]}>
+          <View style={[styles(isDark).row, {}]}>
             <View style={styles(isDark).imageContainer}>
               <Image
                 source={
@@ -156,7 +156,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 </View>
               </TouchableOpacity>
 
-              <View style={[styles(isDark).row]}>
+              {/* <View style={[styles(isDark).row]}>
                 <IconButton
                   icon="cake"
                   size={15}
@@ -169,7 +169,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 <Text style={[styles(isDark).email]}>
                   {moment(item.birthdayDate).format('MMM D')}
                 </Text>
-              </View>
+              </View> */}
             </View>
           </View>
         </Card.Content>
@@ -220,8 +220,8 @@ const styles = (isDark: boolean) =>
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
-      marginVertical: 7,
-      borderColor: isDark ? Colors.dark_gray : Colors.background,
+      marginVertical: 5,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
     },
@@ -235,12 +235,12 @@ const styles = (isDark: boolean) =>
       borderRadius: 50,
       marginRight: 10,
       borderWidth: 0.5,
-      borderColor: isDark ? Colors.black : Colors.background,
+      borderColor: Colors.white,
     },
     name: {
       color: isDark ? Colors.white : Colors.black,
       fontFamily: 'Lato-Bold',
-      fontSize: 18,
+      fontSize: 16,
     },
     email: {
       fontSize: 14,

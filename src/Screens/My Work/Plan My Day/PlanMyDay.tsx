@@ -291,7 +291,7 @@ const styles = (isDark: boolean) =>
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginVertical: 7,
-      borderColor: Colors.background,
+      borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
       overflow: 'hidden',
@@ -358,8 +358,6 @@ const styles = (isDark: boolean) =>
     option: {
       width: '100%',
       alignItems: 'center',
-      // borderBottomWidth: 1,
-      // borderBottomColor: Colors.medium_gray,
       padding: 10,
     },
     optionText: {

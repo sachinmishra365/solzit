@@ -126,12 +126,11 @@ const MySkills = ({navigation}: any) => {
       <Card
         style={{
           backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 7,
-          borderColor: Colors.background,
+          marginVertical: 5,
+          borderColor: Colors.white,
           borderWidth: 0.5,
           marginHorizontal: 16,
         }}>
-        0
         <Card.Content>
           <View>
             <View
@@ -266,7 +265,7 @@ const MySkills = ({navigation}: any) => {
               selectedStatus === status
                 ? Colors.secondary
                 : isDark
-                ? Colors.gray
+                ? Colors.black
                 : Colors.white,
           },
           labelStyle: {

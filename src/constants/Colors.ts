@@ -13,7 +13,7 @@ const Colors = {
   dispatched: '#83B100',
   background: '#FFFFFF',
   green: '#4CAF50',
-  orange: ' #FF9800',
+  orange: '#FF9800',
   darkgreen: '#0c660f',
   skyblue: '#2196F3',
   darkorange: '#FF9800',

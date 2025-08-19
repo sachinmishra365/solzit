@@ -7,17 +7,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Card, SegmentedButtons } from 'react-native-paper';
-import { Colors } from '../../constants/Colors';
-import { useProcessedLeavesQuery } from '../../Services/services';
-import { useSelector } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {Card, SegmentedButtons} from 'react-native-paper';
+import {Colors} from '../../constants/Colors';
+import {useProcessedLeavesQuery} from '../../Services/services';
+import {useSelector} from 'react-redux';
 import moment from 'moment';
 import CustomHeader from '../../Components/CustomHeader';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import {isDarkTheme} from '../../AppStore/Reducers/appState';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
+import EmptyData from '../../Components/EmptyData';
 
-const LeaveBalance = ({ navigation }: any) => {
+const LeaveBalance = ({navigation}: any) => {
   const [items, setItems] = useState<any>([]);
   const isDark = useSelector(isDarkTheme);
 
@@ -28,7 +29,7 @@ const LeaveBalance = ({ navigation }: any) => {
 
   const statuses = ['Approved', 'Declined', 'Cancelled', 'All'];
 
-  const { data, isLoading, isSuccess, refetch } = useProcessedLeavesQuery({
+  const {data, isLoading, isSuccess, refetch} = useProcessedLeavesQuery({
     data_ID: EmployeeId?.userProfile?.userId || null,
     accessToken: EmployeeId.authToken?.accessToken,
   });
@@ -70,26 +71,26 @@ const LeaveBalance = ({ navigation }: any) => {
     }, 2000);
   }, []);
 
-  const renderItem = ({ item }: any) => (
+  const renderItem = ({item}: any) => (
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
         marginVertical: 7,
-        borderColor: Colors.background,
+        borderColor: Colors.white,
         borderWidth: 0.5,
-        marginHorizontal: 5,
       }}>
       <Card.Content>
         <View
           style={{
             justifyContent: 'space-between',
             flexDirection: 'row',
+             marginBottom: 3,
           }}>
           <Text
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily: 'Lato-Bold',
+               fontFamily: 'Lato-Regular',
             }}>
             {item.totalDaysofLeave !== 0.5
               ? `Full Day Leave (${item?.totalDaysofLeave})`
@@ -103,13 +104,13 @@ const LeaveBalance = ({ navigation }: any) => {
                   item?.status?.label === 'Applied'
                     ? Colors.primary
                     : item?.status?.label === 'Cancelled'
-                      ? '#E0514D'
-                      : item?.status?.label === 'Declined'
-                        ? Colors.error
-                        : item?.status?.label === 'Approved'
-                          ? 'green'
-                          : Colors.gray,
-                fontSize: 16,
+                    ? '#E0514D'
+                    : item?.status?.label === 'Declined'
+                    ? Colors.error
+                    : item?.status?.label === 'Approved'
+                    ? 'green'
+                    : Colors.gray,
+                fontSize: 14,
                 fontFamily: 'Lato-Bold',
               }}>
               {item?.status?.label}
@@ -123,27 +124,28 @@ const LeaveBalance = ({ navigation }: any) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
+          marginBottom: 3,
           }}>
           <Text
             style={{
               color: isDark ? Colors.white : Colors.black,
-              fontSize: 18,
-              fontFamily: 'Lato-Bold',
-              marginBottom: 6,
+              fontSize: 16,
+              fontFamily: 'Lato-Semibold',
+             
             }}>
             {item?.leaveStartDate === item?.leaveEndDate
               ? moment(item?.leaveStartDate).format('ddd, DD MMM')
               : `${moment(item?.leaveStartDate).format(
-                'ddd, DD MMM',
-              )} - ${moment(item?.leaveEndDate).format('ddd, DD MMM')}`}
+                  'ddd, DD MMM',
+                )} - ${moment(item?.leaveEndDate).format('ddd, DD MMM')}`}
           </Text>
           <Text
             style={{
               color: isDark ? Colors.white : Colors.black,
               fontSize: 14,
-              fontFamily: 'Lato-Bold',
+               fontFamily: 'Lato-Regular',
             }}>
-            Absent Day: {item?.totalAbsentDays}
+            Absent Day{' : '} {item?.totalAbsentDays}
           </Text>
         </View>
         <View
@@ -156,36 +158,36 @@ const LeaveBalance = ({ navigation }: any) => {
             style={{
               color:
                 item?.leaveType?.label === 'Earn Leave'
-                  ? '#FF9800':
-                  item?.leaveType?.label === 'Loss of Pay'
-                    ? Colors.error
-                    : isDark
-                      ? Colors.white
-                      : Colors.black,
+                  ? '#FF9800'
+                  : item?.leaveType?.label === 'Loss of Pay'
+                  ? Colors.error
+                  : isDark
+                  ? Colors.white
+                  : Colors.black,
               fontSize: 14,
               fontFamily: 'Lato-Bold',
             }}>
             {item?.leaveType?.label}
           </Text>
           {item?.approver && (
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{flexDirection: 'row'}}>
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,
                   fontSize: 14,
-                  fontFamily: 'Lato-Bold',
+                  fontFamily: 'Lato-Semibold',
                 }}>
-                 {item?.status?.value === 674180002
-                    ? 'Declined By : '
-                    : item?.status?.value === 674180000
-                    ? 'Canceled By : '
-                    : 'Approved by : '}
+                {item?.status?.value === 674180002
+                  ? 'Declined By : '
+                  : item?.status?.value === 674180000
+                  ? 'Canceled By : '
+                  : 'Approved by : '}
               </Text>
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,
                   fontSize: 14,
-                  fontFamily: 'Lato-Bold',
+                   fontFamily: 'Lato-Regular',
                 }}>
                 {item?.approver ? item?.approver : 'N/A'}
               </Text>
@@ -194,7 +196,7 @@ const LeaveBalance = ({ navigation }: any) => {
         </View>
         {item?.declinedReason && (
           <>
-            <View style={{ marginVertical: 10 }}>
+            <View style={{marginVertical: 10}}>
               <Text
                 style={{
                   color: isDark ? Colors.white : Colors.black,
@@ -260,60 +262,52 @@ const LeaveBalance = ({ navigation }: any) => {
         buttons={statuses.map(status => ({
           value: status,
           label: status,
-          style: { backgroundColor: selectedStatus === status ? Colors.secondary : (isDark ? Colors.gray : Colors.white), },
+          style: {
+            backgroundColor:
+              selectedStatus === status
+                ? Colors.secondary
+                : isDark
+                ? Colors.black
+                : Colors.white,
+          },
           labelStyle: {
-            color: selectedStatus === status ? Colors.white : isDark ? Colors.white : Colors.black,
-            fontFamily: 'Lato-Semibold',
-            fontSize: 13,
+            color:
+              selectedStatus === status
+                ? Colors.white
+                : isDark
+                ? Colors.white
+                : Colors.black,
+            fontFamily: 'Lato-Bold',
+            fontSize: 11,
           },
         }))}
-        style={{ marginVertical: 10, marginHorizontal: 16 }}
+        style={{marginVertical: 10, marginHorizontal: 16}}
         theme={{
-          colors: { primary: Colors.primary },
-        }}
-      />
-
-      <View
-        style={{
-          borderWidth: 1,
-          height: 1,
-          backgroundColor: isDark ? Colors.white : 'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',
+          colors: {primary: Colors.primary},
         }}
       />
 
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : //@ts-ignore
-        filteredItems && filteredItems?.length !== 0 ? (
-          <FlatList
-            style={{ marginHorizontal: 16 }}
-            data={filteredItems}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => onRefresh()}
-              />
-            }
-            renderItem={item => renderItem(item)}
-            keyExtractor={(item, index) => index.toString()}
-            ListFooterComponent={<View style={{ height: 100 }} />}
-            showsVerticalScrollIndicator={false}
-          />
-        ) : (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                alignSelf: 'center',
-                fontFamily: 'Lato-Bold',
-                height: 38,
-                padding: 7,
-              }}>
-              No Records
-            </Text>
-          </View>
-        )}
+      filteredItems && filteredItems?.length !== 0 ? (
+        <FlatList
+         style={{ marginHorizontal: 16 }}
+          data={filteredItems}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
+            />
+          }
+          renderItem={item => renderItem(item)}
+          keyExtractor={(item, index) => index.toString()}
+          ListFooterComponent={<View style={{height: 100}} />}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <EmptyData/>
+      )}
     </View>
   );
 };

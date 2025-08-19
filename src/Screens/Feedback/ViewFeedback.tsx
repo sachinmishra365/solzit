@@ -104,7 +104,7 @@ const ViewFeedback = ({route, navigation}: any) => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
           <Card style={{ borderWidth: 0.5,
-            borderColor: isDark ? Colors.dark_gray : Colors.white,
+            borderColor: Colors.white,
              backgroundColor: isDark ? Colors.black : Colors.background,marginHorizontal:16,marginVertical:7,}}>
             <Card.Content>
               <Text

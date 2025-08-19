@@ -70,7 +70,10 @@ const App = () => {
     });
   };
 
-  const theme = { ...MD3LightTheme, roundness: 2 };
+  const theme = { ...MD3LightTheme, roundness: 2 , colors: {
+    ...MD3LightTheme.colors,
+    background: colorScheme === 'dark' ? Colors.black : Colors.primary,
+  },};
 
   return (
     <>
@@ -90,7 +93,7 @@ const App = () => {
           />
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
-              <PaperProvider theme={theme}>
+              <PaperProvider theme={theme} >
                 <NavigationContainer ref={navigationRef}>
                   <StackNavigator />
                   <Toast config={toastConfig} />

@@ -30,15 +30,14 @@ const PositionDetail = ({ route }: any) => {
         title="Position Detail"
         onPress={() => navigation.goBack()}
       />
-      <ScrollView showsVerticalScrollIndicator={false} >
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:100}}>
         <Card
           style={{
             backgroundColor: isDark ? Colors.black : Colors.background,
             marginVertical: 10,
-            borderColor: Colors.background,
+            borderColor: Colors.white,
             borderWidth: 0.5,
             marginHorizontal: 16,
-            marginBottom:100
           }}>
           <Card.Content>
             <Text style={[styles(isDark).hiringPosition, { fontSize: 18 }]}>

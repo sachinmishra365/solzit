@@ -69,9 +69,9 @@ const WorkFromHome = ({ navigation }: any) => {
         style={{
           backgroundColor: isDark ? Colors.black : Colors.background,
           marginVertical: 7,
-          borderColor: Colors.background,
+          borderColor: Colors.white,
           borderWidth: 0.5,
-          marginHorizontal: 5,
+
         }}>
         <Card.Content>
 
@@ -171,7 +171,7 @@ const WorkFromHome = ({ navigation }: any) => {
                         ? 'green'
                         : Colors.gray,
                 fontSize: 16,
-                fontFamily: 'Lato-Bold',
+                fontFamily:'Lato-Bold',
               }}>
               {item?.status?.label}
             </Text>
@@ -191,13 +191,11 @@ const WorkFromHome = ({ navigation }: any) => {
         const currentIndex = statuses.indexOf(selectedStatus);
         if (currentIndex > 0) {
           filterByStatus(statuses[currentIndex - 1]);
-          refetch();
         }
       } else if (gestureState.dx < 0) {
         const currentIndex = statuses.indexOf(selectedStatus);
         if (currentIndex < statuses.length - 1) {
           filterByStatus(statuses[currentIndex + 1]);
-          refetch();
         }
       }
     },
@@ -228,7 +226,7 @@ const WorkFromHome = ({ navigation }: any) => {
               selectedStatus === status
                 ? Colors.secondary
                 : isDark
-                  ? Colors.gray
+                  ? Colors.black
                   : Colors.white,
           },
           labelStyle: {
@@ -237,9 +235,9 @@ const WorkFromHome = ({ navigation }: any) => {
                 ? Colors.white
                 : isDark
                   ? Colors.white
-                  : Colors.black,
-            fontFamily: 'Lato-Semibold',
-            fontSize: 13,
+                  : Colors.black, 
+            fontFamily: 'Lato-Bold',
+            fontSize: 11,
           },
         }))}
         style={{ marginVertical: 10, marginHorizontal: 16 }}
@@ -247,21 +245,13 @@ const WorkFromHome = ({ navigation }: any) => {
           colors: { primary: Colors.primary },
         }}
       />
-      <View
-        style={{
-          borderWidth: 1,
-          height: 1,
-          backgroundColor: isDark ? Colors.white : 'transparent',
-          borderColor: isDark ? Colors.black : 'transparent',
-        }}
-      />
-
+     
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : //@ts-ignore
         filteredItems && filteredItems?.length !== 0 ? (
           <FlatList
-            style={{ marginHorizontal: 16 }}
+           style={{ marginHorizontal: 16 }}
             data={filteredItems}
             refreshControl={
               <RefreshControl
