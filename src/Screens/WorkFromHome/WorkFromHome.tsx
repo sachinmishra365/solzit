@@ -1,6 +1,6 @@
-import { FlatList, PanResponder, RefreshControl, Text, TouchableOpacity, View, } from 'react-native';
+import { FlatList, PanResponder, RefreshControl, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Card, SegmentedButtons } from 'react-native-paper';
+import { Card, Icon, IconButton, SegmentedButtons } from 'react-native-paper';
 import { Colors } from '../../constants/Colors';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
@@ -63,124 +63,111 @@ const WorkFromHome = ({ navigation }: any) => {
     }, 2000);
   }, []);
 
-  const renderItem = ({ item }: any) => (
-    (
-      <Card
-        style={{
-          backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 7,
-          borderColor: Colors.white,
-          borderWidth: 0.5,
+  
+  const getStatusStyle = (status: string) => {
+  switch (status) {
+    case 'Approved':
+      return { color: '#28a745', backgroundColor: 'rgba(40,167,69,0.15)', icon: 'check-circle' };
+    case 'Declined':
+      return { color: '#dc3545', backgroundColor: 'rgba(220,53,69,0.15)', icon: 'close-circle' };
+    case 'Cancelled':
+      return { color: '#E0514D', backgroundColor: 'rgba(224,81,77,0.15)', icon: 'cancel' };
+    default:
+      return { color: '#6c757d', backgroundColor: 'rgba(108,117,125,0.15)', icon: 'help-circle' };
+  }
+  };
 
-        }}>
+   const renderItem = ({ item }: any) => {
+    const statusStyle = getStatusStyle(item?.status?.label);
+
+    return (
+      <Card
+        style={[
+           styles(isDark).card,
+          { backgroundColor: isDark ? Colors.black : Colors.background },
+        ]}>
         <Card.Content>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 14,
-                fontFamily: 'Lato-Semibold',
-                marginBottom: 6,
-              }}>
-              Start{' : '}
-              {moment(item?.wfhStartDate).format('DD/MM/YYYY')}
-            </Text>
-            <Text
-              style={{
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 14,
-                fontFamily: 'Lato-Semibold',
-              }}>
-              End{' : '}
-              {moment(item?.wfhEndDate).format('DD/MM/YYYY')}
-            </Text>
-          </View>
+          <View style={ styles(isDark).row}>
+            <View>
+              <Text
+                 style={styles(isDark).label}>
+                Start Date
+              </Text>
+              <Text
+                 style={styles(isDark).value}>
+                {moment(item?.wfhStartDate).format('D MMM, YYYY')}
+              </Text>
+            </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-            }}>
             {item?.approverOrDecliner && (
-              <View style={{ flexDirection: 'row' }}>
+              <View >
                 <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Bold',
-                  }}>
+                   style={styles(isDark).label}>
                   {item?.status?.value === 674180002
-                    ? 'Declined By : '
+                    ? 'Declined By'
                     : item?.status?.value === 674180000
-                      ? 'Canceled By : '
-                      : 'Approved by : '}
+                    ? 'Canceled By'
+                    : 'Approved By'}
                 </Text>
                 <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  {item?.approverOrDecliner || ' N/A'}
+                   style={styles(isDark).value}>
+                  {item?.approverOrDecliner || 'N/A'}
                 </Text>
               </View>
             )}
           </View>
 
-          {item?.status?.value === 674180002 && (
+
+          <View style={ styles(isDark).row}>
+            <View>
+              <Text
+                 style={styles(isDark).label}>
+                End Date
+              </Text>
+              <Text
+               style={styles(isDark).value}>
+                {moment(item?.wfhEndDate).format('D MMM, YYYY')}
+              </Text>
+            </View>
+
+            <View
+              style={[
+                 styles(isDark).statusContainer,
+                { backgroundColor: statusStyle.backgroundColor },
+              ]}>
+              <IconButton
+                icon={statusStyle.icon}
+                size={14}
+                iconColor={statusStyle.color}
+                style={ styles(isDark).statusIcon}
+              />
+              <Text
+                style={[
+                  styles(isDark).statusText,
+                  { color: statusStyle.color },
+                ]}>
+                {item?.status?.label}
+              </Text>
+            </View>
+          </View>
+           {item?.status?.value === 674180002 && (
             <>
               <View
-                style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
+                style={{ flexDirection: 'row', flexWrap: 'wrap',  }}>
                 <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Bold',
-                  }}>
-                  Declined Reason :{' '}
+                  style={[styles(isDark).label,{ marginTop: 4 ,fontFamily: 'Lato-Bold',}]}>
+                  Declined Reason{' : '}
                 </Text>
-                <Text
-                  style={{
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14,
-                    fontFamily: 'Lato-Regular',
-                  }}>
-                  {item?.declinedReason ? item?.declinedReason : 'N/A'}
+                <Text  style={[styles(isDark).label,{ marginTop: 4}]}>{item?.declinedReason ? item?.declinedReason : 'N/A'}
                 </Text>
               </View>
             </>
           )}
-
-          <View style={{ alignItems: 'flex-end' }}>
-            <Text
-              style={{
-                color:
-                  item?.status?.label === 'Cancelled'
-                    ? '#E0514D'
-                    : item?.status?.label === 'Declined'
-                      ? Colors.error
-                      : item?.status?.label === 'Approved'
-                        ? 'green'
-                        : Colors.gray,
-                fontSize: 16,
-                fontFamily:'Lato-Bold',
-              }}>
-              {item?.status?.label}
-            </Text>
-          </View>
-
         </Card.Content>
       </Card>
-    )
-  );
+    );
+  };
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (evt, gestureState) => {
@@ -251,7 +238,7 @@ const WorkFromHome = ({ navigation }: any) => {
       ) : //@ts-ignore
         filteredItems && filteredItems?.length !== 0 ? (
           <FlatList
-           style={{ marginHorizontal: 16 }}
+           contentContainerStyle={{ paddingHorizontal:16 }}
             data={filteredItems}
             refreshControl={
               <RefreshControl
@@ -270,5 +257,50 @@ const WorkFromHome = ({ navigation }: any) => {
     </View>
   );
 };
+
+const styles = (isDark: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    card: {
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginTop: 10,
+      borderColor: Colors.white,
+      borderWidth: 0.5,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    label: {
+      fontSize: 14,
+      fontFamily: 'Lato-Regular',
+      color: isDark ? Colors.white : Colors.black
+    },
+    value: {
+      fontSize: 14,
+      fontFamily: 'Lato-Bold',
+      marginBottom: 4,
+      color: isDark ? Colors.white : Colors.black
+    },
+    statusContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 10,
+      borderRadius: 8,
+
+    },
+    statusIcon: {
+      marginRight: -3,
+       marginLeft: -7 ,
+    },
+    statusText: {
+      fontSize: 14,
+      fontFamily: 'Lato-Bold',
+    },
+    
+  });
 
 export default WorkFromHome;

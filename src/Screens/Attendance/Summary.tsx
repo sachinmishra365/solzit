@@ -123,9 +123,7 @@ const Summary = ({route}: any) => {
 
               <View style={styles(isDark).infoBox}>
                 <Text style={styles(isDark).txt}>Leave Type{' :'}</Text>
-                <Text style={[styles(isDark).txt, {color: Colors.darkorange}]}>
-                  Earn Leave
-                </Text>
+                <Text style={[styles(isDark).txt, {color: Colors.darkorange}]}>Earn Leave</Text>
               </View>
 
               <View style={styles(isDark).grid}>
@@ -151,7 +149,7 @@ const Summary = ({route}: any) => {
             </Card.Content>
           </Card>
 
-          <Card style={[styles(isDark).card, styles(isDark).card]}>
+          <Card style={[styles(isDark).card]}>
             <Card.Content>
               <Text style={styles(isDark).coolTitle}>Leave Summary</Text>
               <View style={styles(isDark).grid}>
@@ -209,7 +207,7 @@ const styles = (isDark: boolean) =>
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
       marginHorizontal: 16,
-      marginVertical: 7,
+      marginVertical: 5,
       borderColor: Colors.white,
       borderWidth: 0.5,
     },

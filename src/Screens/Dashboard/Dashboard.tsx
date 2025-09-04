@@ -139,6 +139,7 @@ const Dashboard = ({ navigation, DrawerOpen }: any) => {
       return require('../../Assets/Images/Correct.png');
     }
   };
+
   const renderLeaveCard = ({ item }: any) => {
     return renderHolidays({ item });
   };
@@ -247,7 +248,6 @@ const Dashboard = ({ navigation, DrawerOpen }: any) => {
     );
   };
 
-  
   return (
     <View
       style={{

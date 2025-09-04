@@ -16,8 +16,8 @@ import {Colors} from '../../constants/Colors';
 import {useGetSoluzioneUpcomingBirthdaysQuery} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import {Card, Icon, IconButton} from 'react-native-paper';
-import moment from 'moment';
+import {Card,IconButton} from 'react-native-paper';
+
 
 const SoluzioneDirectory = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -25,12 +25,10 @@ const SoluzioneDirectory = ({navigation}: any) => {
   const connected = useSelector((state: any) => state?.appState?.connected);
 
   const [directoryData, setDirectoryData] = useState([]);
-  const [filteredData, setFilteredData] = useState(directoryData);
-  const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const {data, error, isLoading, refetch} =
+  const {data, isLoading, refetch} =
     useGetSoluzioneUpcomingBirthdaysQuery({
       accessToken: accessToken?.authToken?.accessToken,
     });
@@ -76,6 +74,7 @@ const SoluzioneDirectory = ({navigation}: any) => {
       refetch();
     }, 1000);
   };
+  
   const filterData = (data: any) => {
     return data?.filter(
       (item: any) =>
@@ -83,14 +82,33 @@ const SoluzioneDirectory = ({navigation}: any) => {
         item?.designation?.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   };
-
   const filteredList = [...filterData(directoryData)];
+
+  const getIconStyle = (type: string) => {
+  switch (type) {
+    case 'email':
+      return {
+        backgroundColor:'rgba(48,124,232,0.2)', 
+        color: '#307CE8', 
+      };
+    case 'phone':
+      return {
+        backgroundColor: 'rgba(12,102,15,0.2)', 
+        color: '#0C660F', 
+      };
+    default:
+      return {
+        backgroundColor: 'rgba(108,117,125,0.2)', 
+        color: '#6c757d',
+      };
+  }
+};
 
   const renderItem = ({item}: any) => {
     return (
       <Card style={styles(isDark).card}>
         <Card.Content>
-          <View style={{marginBottom:10,}}>
+          <View style={{marginBottom: 10}}>
             <Text style={[styles(isDark).name]}>
               {item.fullName}
               {' | '}
@@ -116,11 +134,11 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 <View style={[styles(isDark).row]}>
                   <IconButton
                     icon="email"
-                    size={15}
-                    iconColor={isDark ? Colors.black : Colors.white}
+                    size={18}
+                    iconColor={getIconStyle('email').color}
                     style={{
                       borderRadius: 8,
-                      backgroundColor: 'rgba(48, 124, 232,0.6)',
+                      backgroundColor: getIconStyle('email').backgroundColor,
                     }}
                   />
                   <Text
@@ -138,11 +156,11 @@ const SoluzioneDirectory = ({navigation}: any) => {
                 <View style={[styles(isDark).row]}>
                   <IconButton
                     icon="phone"
-                    size={15}
-                    iconColor={isDark ? Colors.black : Colors.white}
+                    size={18}
+                    iconColor={getIconStyle('phone').color}
                     style={{
                       borderRadius: 8,
-                      backgroundColor: 'rgba(12, 102, 15,0.6)',
+                      backgroundColor: getIconStyle('phone').backgroundColor,
                     }}
                   />
                   <Text
@@ -155,21 +173,6 @@ const SoluzioneDirectory = ({navigation}: any) => {
                   </Text>
                 </View>
               </TouchableOpacity>
-
-              {/* <View style={[styles(isDark).row]}>
-                <IconButton
-                  icon="cake"
-                  size={15}
-                  iconColor={isDark ? Colors.black : Colors.white}
-                  style={{
-                    borderRadius: 8,
-                    backgroundColor: 'rgba(255, 152, 0,0.6)',
-                  }}
-                />
-                <Text style={[styles(isDark).email]}>
-                  {moment(item.birthdayDate).format('MMM D')}
-                </Text>
-              </View> */}
             </View>
           </View>
         </Card.Content>

@@ -8,17 +8,14 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
-import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
-import {Card, FAB, IconButton, SegmentedButtons} from 'react-native-paper';
-import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
+import { useGetAllMySkillsListAppliedQuery, useGetAllMySkillsListApprovedQuery } from '../../../Services/employeeSkills';
+import { Colors } from '../../../constants/Colors';
+import { Card, FAB, IconButton, SegmentedButtons } from 'react-native-paper';
 import {Bar as ProgressBar} from 'react-native-progress';
-import EmptyData from '../../Components/EmptyData';
-import {
-  useGetAllMySkillsListAppliedQuery,
-  useGetAllMySkillsListApprovedQuery,
-} from '../../Services/employeeSkills';
+import CustomHeader from '../../../Components/CustomHeader';
+import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
+import EmptyData from '../../../Components/EmptyData';
 
 const MySkills = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);

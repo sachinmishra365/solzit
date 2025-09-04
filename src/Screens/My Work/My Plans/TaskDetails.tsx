@@ -67,52 +67,51 @@ const TaskDetails = ({navigation, route}: any) => {
     handleMyPlans().finally(() => setRefreshing(false));
   };
 
-  const renderItem = ({item}: any) => {
-    return (
-      <Card
-        style={{
-          backgroundColor: isDark ? Colors.black : Colors.background,
-          marginVertical: 7,
-          borderColor: Colors.background,
-          borderWidth: 0.5,
-          marginHorizontal: 16,
-          overflow: 'hidden',
-        }}>
-        <Card.Content>
-          <Text style={[styles(isDark).titleText,{color:Colors.primary}]}>
-            {item.toDoTicketNumber}{' : '}{item.toDoProject?.name}
-          </Text>
-          <Text style={[styles(isDark).valueText, {marginBottom:5}]}>
-            Title{' : '}
-            <Text style={styles(isDark).labelText}>{item.toDoTitle}</Text>
-          </Text>
+const renderItem = ({item}: any) => {
+  return (
+    <Card
+      style={{
+        backgroundColor: isDark ? Colors.black : Colors.background,
+        marginVertical: 7,
+        borderColor: Colors.background,
+        borderWidth: 0.5,
+        marginHorizontal: 16,
+        overflow: 'hidden',
+      }}>
+      <Card.Content>
+        <Text style={[styles(isDark).titleText, {color: Colors.primary}]}>
+          {item.toDoTicketNumber} : {item.toDoProject?.name}
+        </Text>
 
-          <View style={styles(isDark).rowContainer}>
-            <Text style={styles(isDark).valueText}>
-              {item.commitmentStatus?.label}
-            </Text>
-            <Text style={styles(isDark).valueText}>
-              {item.currentWorkStatusOfTask?.label}
-            </Text>
+        <View style={styles(isDark).row}>
+        <Text style={styles(isDark).valueText}>Title : </Text>
+         <Text style={styles(isDark).labelText}>{item.toDoTitle}</Text>
+         </View>
+
+        <View style={styles(isDark).rowContainer}>
+          <Text style={styles(isDark).valueText}>
+            {item.commitmentStatus?.label}
+          </Text>
+          <Text style={styles(isDark).valueText}>
+            {item.currentWorkStatusOfTask?.label}
+          </Text>
+        </View>
+
+        <View style={styles(isDark).rowContainer}>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <Text style={styles(isDark).valueText}>Total Estimated Effort :</Text>
+            <Text style={styles(isDark).labelText}> {item.taskEstimatedEffort}</Text>
           </View>
-          <View style={styles(isDark).rowContainer}>
-            <Text style={[styles(isDark).valueText]}>
-              Total Estimated Effort{' : '}
-              <Text style={styles(isDark).labelText}>
-                {item.taskEstimatedEffort}
-              </Text>
-            </Text>
-            <Text style={styles(isDark).valueText}>
-              Actual Effort{' : '}
-              <Text style={styles(isDark).labelText}>
-                {item.actualEffortForDay}
-              </Text>
-            </Text>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+            <Text style={styles(isDark).valueText}>Actual Effort :</Text>
+            <Text style={styles(isDark).labelText}> {item.actualEffortForDay}</Text>
           </View>
-        </Card.Content>
-      </Card>
-    );
-  };
+        </View>
+      </Card.Content>
+    </Card>
+  );
+};
+
   return (
     <View style={styles(isDark).mainContainer}>
       <CustomHeader
@@ -122,9 +121,6 @@ const TaskDetails = ({navigation, route}: any) => {
         onPress={() => navigation.goBack()}
       />
       <View style={styles(isDark).divider} />
-      {/* <Text style={[styles(isDark).titleText, {marginHorizontal: 16}]}>
-        Total Tasks on {TaskDetail.reportDate}
-      </Text> */}
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : data?.data === null ? (
@@ -152,16 +148,15 @@ const styles = (isDark: boolean) =>
       backgroundColor: isDark ? Colors.black : Colors.white,
     },
     divider: {
-      height: 1,
       backgroundColor: isDark ? Colors.medium_gray : 'transparent',
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
-      marginVertical: 7,
+      marginVertical: 5,
       borderColor: Colors.background,
       borderWidth: 0.5,
       marginHorizontal: 16,
-      overflow: 'hidden',
+
     },
     rowContainer: {
       flexDirection: 'row',
@@ -186,6 +181,13 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Semibold',
       color: isDark ? Colors.white : Colors.black,
+    },
+      row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 5,
+      flexWrap: 'wrap', 
+      
     },
   });
 export default TaskDetails;

@@ -1,40 +1,22 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Alert,
-} from 'react-native';
-import React, {useState} from 'react';
+import {View,Text,StyleSheet,ScrollView,TouchableOpacity,Image,Alert,} from 'react-native';
+import React from 'react';
 import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
-import CustomHeader from '../../Components/CustomHeader';
-import {Colors} from '../../constants/Colors';
-import {
-  useAttachFileInSharePointMutation,
-  useGetAttachmentFromSharePointQuery,
-} from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
-import {List, IconButton, Checkbox} from 'react-native-paper';
+import {IconButton} from 'react-native-paper';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import {SCREEN_WIDTH} from '../../constants/Screen';
-import Placeholder from '../Placeholder/Placeholder';
-import CustomTextInput from '../../Components/CustomTextInput';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
+import { useAddMyNewSkillMutation, useEditMySkillMutation, useGetAllMasterSkillsQuery, useGetOptionSetHasCertificateQuery, useGetOptionSetLevelOfSkillQuery, useGetOptionSetTypeOfCertificateQuery } from '../../../Services/employeeSkills';
+import { useAttachFileInSharePointMutation, useGetAttachmentFromSharePointQuery } from '../../../Services/services';
+import CustomHeader from '../../../Components/CustomHeader';
+import Placeholder from '../../Placeholder/Placeholder';
+import CustomDropdownWithModal from '../../../Components/CustomDropDown';
+import CustomTextInput from '../../../Components/CustomTextInput';
+import { Colors } from '../../../constants/Colors';
+import { SCREEN_WIDTH } from '../../../constants/Screen';
 
-import {
-  useAddMyNewSkillMutation,
-  useEditMySkillMutation,
-  useGetAllMasterSkillsQuery,
-  useGetOptionSetHasCertificateQuery,
-  useGetOptionSetLevelOfSkillQuery,
-  useGetOptionSetTypeOfCertificateQuery,
-} from '../../Services/employeeSkills';
-import CustomDropdownWithModal from '../../Components/CustomDropDown';
 
 const FeedbackSchema = Yup.object().shape({
   regardingToSkills: Yup.object().shape({

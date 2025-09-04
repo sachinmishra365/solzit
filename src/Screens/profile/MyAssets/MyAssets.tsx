@@ -1,14 +1,15 @@
 import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
-import CustomHeader from '../../Components/CustomHeader';
-import { Colors } from '../../constants/Colors';
 import moment from 'moment';
-import { useEmployeeInventoryAllocationQuery } from '../../Services/services';
 import Toast from 'react-native-toast-message';
 import { Card } from 'react-native-paper';
-import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
+import { useEmployeeInventoryAllocationQuery } from '../../../Services/services';
+import { Colors } from '../../../constants/Colors';
+import CustomHeader from '../../../Components/CustomHeader';
+import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
+
 
 const MyAssets = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -137,7 +138,7 @@ const MyAssets = ({ navigation }: any) => {
         title="My Assets"
         onPress={() => navigation.goBack()}
       />
-      {/* <View style={styles(isDark).divider} /> */}
+
       <View style={styles(isDark).maincontainer}>
         {isLoading ? (
           <ShimmerPlaceHolder />

@@ -126,16 +126,16 @@ const LateArrivalTime = ({navigation}: any) => {
                       : 'close-circle-outline'
                   }
                   size={18}
-                  color={isDark?Colors.black:Colors.white}
+                  color={item?.isPresent?'rgb(0, 128, 0)':'rgb(189, 1, 1)'}
                 />
               )}
               style={{
-                backgroundColor: item?.isPresent ? Colors.green : Colors.error,
+                backgroundColor: item?.isPresent ? 'rgba(0, 128, 0,0.2)':'rgba(189, 1, 1,0.2)',
               }}
               textStyle={{
-                color: isDark?Colors.black:Colors.white,
+                color:item?.isPresent?'rgb(0, 128, 0)':'rgb(189, 1, 1)',
                 fontFamily: 'Lato-Bold',
-                fontSize: 12,
+                fontSize: 14,
               }}>
               {item?.isPresent ? 'Present' : 'Absent'}
             </Chip>

@@ -147,7 +147,7 @@ const ViewFeedback = ({route, navigation}: any) => {
                 (feedbackByID[0]?.status?.label === 'Resolved' &&
                   feedbackByID[0]?.publishToEmp === true)) && (
                 <>
-                  <View style={styles(isDark).row}>
+                  <View style={[styles(isDark).row,{marginLeft:0}]}>
                     <View>
                       <Text
                         style={[

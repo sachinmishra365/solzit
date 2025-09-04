@@ -1,17 +1,15 @@
 import { Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import CustomHeader from '../../Components/CustomHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, IconButton } from 'react-native-paper';
-import { auth, isDarkTheme } from '../../AppStore/Reducers/appState';
-import { Colors } from '../../constants/Colors';
-import { useEmployeeUpdateProfileMutation } from '../../Services/appLevel';
 import Toast from 'react-native-toast-message';
-import { PERMISSION_TYPE, PermissionHandler } from '../../permissions';
-import Placeholder from '../Placeholder/Placeholder';
-
 import ImageCropPicker, { ImageOrVideo, Image as CropImage, } from 'react-native-image-crop-picker';
-import { transparent } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
+import { auth, isDarkTheme } from '../../../AppStore/Reducers/appState';
+import { useEmployeeUpdateProfileMutation } from '../../../Services/appLevel';
+import { PERMISSION_TYPE, PermissionHandler } from '../../../permissions';
+import { Colors } from '../../../constants/Colors';
+import CustomHeader from '../../../Components/CustomHeader';
+import Placeholder from '../../Placeholder/Placeholder';
 
 const Profile = ({ navigation }: any) => {
 
@@ -194,7 +192,7 @@ const Profile = ({ navigation }: any) => {
                     top: -55,
                     left: 10,
                   }}
-                  source={require('../../Assets/Images/profile.png')}
+                  source={require('../../../Assets/Images/profile.png')}
                 />
               )}
             </TouchableOpacity>
@@ -370,7 +368,7 @@ const Profile = ({ navigation }: any) => {
                 />
               ) : (
                 <Image
-                  source={require('../../Assets/Images/profile.png')}
+                  source={require('../../../Assets/Images/profile.png')}
                   style={styles(isDark).image}
                 />
               )}

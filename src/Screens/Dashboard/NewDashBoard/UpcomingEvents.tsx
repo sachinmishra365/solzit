@@ -36,7 +36,6 @@ const UpcomingEvents = () => {
 
   const [appliedLeave, SetAppliedLeave] = useState<any>([]);
   const [confettiActive, setConfettiActive] = useState(false);
-   const [refreshing, setRefreshing] = useState(false);
 
   const {  data: AppliedLeave,  refetch: refetchapplies,  isLoading: appliedLoading,  } = useEmployeeAppliedLeavesQuery({accessToken: accessToken});
   const {  data: ProcessedLeaves,  refetch: refetchprocessed,  isLoading: processedLoading,  } = useProcessedLeavesQuery({accessToken: accessToken});
@@ -187,12 +186,12 @@ const UpcomingEvents = () => {
         {holidayList.map((holiday: any, index: any) => (
           <View
             key={index}
-            style={[styles(isDark).holidayCard, {paddingVertical: 12}]}>
+            style={[styles(isDark).holidayCard, {}]}>
             <View style={styles(isDark).holidayContent}>
-              <Text style={styles(isDark).holidayName}>
+              <Text style={[styles(isDark).holidayName,{marginLeft:-3}]}>
                 {holiday.holidayName}
               </Text>
-              <Text style={styles(isDark).holidayDate}>
+              <Text style={[  styles(isDark).holidayDate,{marginLeft:-3}]}>
                 {moment(holiday.date).format('DD MMM')}
               </Text>
             </View>
@@ -216,12 +215,11 @@ const UpcomingEvents = () => {
               style={styles(isDark).birthdayImage}
               resizeMode="cover"
             />
-            <View style={[{flex: 1, justifyContent: 'space-between'}]}>
-              <Text style={styles(isDark).holidayName}>
+            <View style={[{flex: 1, justifyContent: 'space-between',padding:5,}]}>
+              <Text style={[styles(isDark).holidayName]}>
                 {birthday.fullName}
               </Text>
               <Text style={[styles(isDark).holidayDate]}>
-                {' '}
                 {moment(birthday.birthdayDate).format('DD MMM')}
               </Text>
             </View>
@@ -348,7 +346,7 @@ const styles = (isDark: boolean) =>
       elevation: 1,
       borderWidth: 0.5,
       borderColor: isDark ? Colors.gray : Colors.background,
-      alignItems:'center',
+      alignItems:'flex-start',
     },
     bdyCard: {
       width: width * 0.4,
@@ -357,7 +355,7 @@ const styles = (isDark: boolean) =>
       marginRight: 10,
       overflow: 'hidden',
       elevation: 1,
-      borderWidth: 0.5,
+      borderWidth: isDark ? 0.5 : 0,
       borderColor: isDark ? Colors.gray : Colors.white,
     },
     birthdayImage: {
@@ -449,7 +447,6 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Semibold',
       color: isDark ? Colors.white : Colors.black,
-      paddingHorizontal: 8,
       flexWrap: 'wrap',
     },
 
@@ -457,6 +454,5 @@ const styles = (isDark: boolean) =>
       fontSize: 12,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.medium_gray : Colors.dark_gray,
-      paddingHorizontal: 8,
     },
   });

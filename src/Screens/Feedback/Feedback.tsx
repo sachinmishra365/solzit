@@ -37,27 +37,77 @@ const Feedback = ({ navigation }: any) => {
     }, 1000);
   };
 
-  const renderItem = ({ item }: any) => (
-    <Card style={styles(isDark).card} onPress={() => navigation.navigate('ViewFeedback', { feedbackData: item })}
-    >
-      <Card.Content>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold' }]}>{'Reported On : '}
-            {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
-          </Text>
-          <Text style={[styles(isDark).txt, { color: Colors.primary, fontFamily: 'Lato-Bold' }]}>{item.status.label}</Text>
-        </View>
-        <View>
+const getStatusStyle = (status: string) => {
+  switch (status) {
+    case 'New':
+      return { backgroundColor: 'rgba(0, 123, 255, 0.2)', color: '#007bff' }; 
+    case 'Resolved':
+      return { backgroundColor: 'rgba(40, 167, 69, 0.2)', color: '#28a745' }; 
+    case 'Declined':
+      return { backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#dc3545' }; 
+    case 'Under Review':
+      return { backgroundColor: 'rgba(255, 193, 7, 0.2)', color: '#ffc107' }; 
+    default:
+      return { backgroundColor: 'rgba(108, 117, 125, 0.2)', color: '#6c757d' }; 
+  }
+};
 
-          <View style={{ flexDirection: 'row', }}>
-            <Text style={[styles(isDark).txt, { flexWrap: 'wrap', flex: 1 }]}>{item.feedBackTitle}</Text>
-          </View>
 
-        </View>
-    
-      </Card.Content>
-    </Card>
-  );
+const renderItem = ({item}: any) => (
+  <Card
+    style={styles(isDark).card}
+    onPress={() => navigation.navigate('ViewFeedback', {feedbackData: item})}>
+    <Card.Content>
+      <Text style={[styles(isDark).txt, {fontFamily: 'Lato-Regular'}]}>
+        {'Reported On : '}
+        {moment(item.reportedOn, 'DD-MM-YYYY').format('D MMM, YYYY')}
+      </Text>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <Text
+          style={[
+            styles(isDark).txt,
+            {fontFamily: 'Lato-Bold', fontSize: 16, flex: 1},
+          ]}>
+          {item.feedBackTitle}
+        </Text>
+        <IconButton
+          icon="chevron-right"
+          size={25}
+          iconColor={Colors.primary}
+          onPress={() =>
+            navigation.navigate('ViewFeedback', {feedbackData: item})
+          }
+          style={{marginTop:-10}}
+        />
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <Text style={[styles(isDark).txt, {flex: 1}]}>Status</Text>
+        <Text
+          style={[
+            styles(isDark).statusText,
+            {             
+              color: getStatusStyle(item.status.label).color,
+            },
+          ]}>
+          {item.status.label}
+        </Text>
+      </View>
+    </Card.Content>
+  </Card>
+);
+
 
   return (
     <View style={styles(isDark).maincontainer}>
@@ -114,7 +164,7 @@ const styles = (isDark: boolean) =>
       marginBottom: 5,
       color: isDark ? Colors.white : Colors.black,
       fontSize: 14,
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
     },
     fab: {
       position: 'absolute',
@@ -129,7 +179,13 @@ const styles = (isDark: boolean) =>
       padding: 6,
       borderRadius: 3,
       backgroundColor: Colors.primary,
-    }
+    },
+    statusText: {
+      fontSize: 14,
+      fontFamily: 'Lato-Bold',
+      color: Colors.white,
+      overflow: 'hidden',
+    },
   });
 
 export default Feedback;

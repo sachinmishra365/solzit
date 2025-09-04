@@ -107,7 +107,7 @@ const ProjectAllocation = ({ navigation }: any) => {
         onPress={() => navigation.goBack()}
         showallocation={true}
         total={totalAllocation}
-        color={totalAllocation < 100 ? Colors.error : Colors.white}
+        color={Colors.white }
       />
       {isLoading ? (
         <ShimmerPlaceHolder />

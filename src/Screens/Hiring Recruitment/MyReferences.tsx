@@ -7,7 +7,7 @@ import { Colors, FontSize, hiringRecruitment } from '../../constants/Colors';
 import Toast from 'react-native-toast-message';
 import { useGetCandidateApplicationByEmployeeIdQuery } from '../../Services/services';
 import ShimmerPlaceHolder from '../Placeholder/ShimmerPlaceHolder';
-import { Card, Icon } from 'react-native-paper';
+import { Card, Icon, IconButton } from 'react-native-paper';
 
 const MyReferences = ({ navigation }: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -68,95 +68,86 @@ const MyReferences = ({ navigation }: any) => {
     }, 1000);
   };
 
-  const renderItem = ({ item }: any) => (
-    <Card
-      style={{
-        backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 7,
-        borderColor: Colors.white,
-        borderWidth: 0.5,
-        marginHorizontal: 16,
-      }}>
-      <Card.Content>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',flexWrap: 'wrap'}}>
-          {
-            item?.position?.name && (
-                <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Bold', fontSize: 18 }]}>
-                  {item.position?.name || 'N/A'}
-                </Text>
-            )
-          }
-         <Text
-  style={{
-    color: getStatusColor(item.applicationStatus?.value),
-    fontFamily: 'Lato-Bold',
-  }}
->
-  {item.applicationStatus?.label}
-</Text>
-        </View>
+ const renderItem = ({ item }: any) => (
+  <Card
+    style={{
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      marginVertical: 5,
+      borderColor: Colors.white,
+      borderWidth: 0.5,
+      marginHorizontal: 16,
 
-        {/* <View style={[styles(isDark).status, { marginVertical: 3 }]}>
+    }}>
+    <Card.Content>
+      <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Bold', fontSize: 18 }]}>
+          {item.firstName} {item.lastName}
+        </Text>
+
+      <TouchableOpacity onPress={() => Linking.openURL(`mailto:${item.email}`)}>
           <Text
-            style={{
-              fontSize: 16,
-              fontFamily: 'Lato-Semibold',
-              color: isDark ? Colors.white : Colors.black,
-            }}>
-            Status{' '}:
+            style={[
+              styles(isDark).infoText,
+              {
+                color: Colors.primary,
+                // textDecorationLine: 'underline',
+                marginTop:-5,
+              },
+            ]}>
+            {item.email}
           </Text>
-          <Text style={{ color: Colors.primary, fontFamily: 'Lato-Semibold', }}>
-            {' '}
-            {item.applicationStatus?.label}
-          </Text>
-        </View> */}
+      </TouchableOpacity>
 
+      {/* Mobile */}
+      <TouchableOpacity onPress={() => Linking.openURL(`tel:${item.mobileNumber}`)}>
         <View style={styles(isDark).infoRow}>
-          <Icon
-            source="account"
-            size={20}
-            color={isDark ? Colors.white : Colors.primary}
+          <IconButton
+            icon="phone"
+            size={22}
+            iconColor={Colors.primary}
+              style={styles(isDark).iconBtn}
           />
-          <Text style={[styles(isDark).infoText, { fontFamily: 'Lato-Semibold', marginLeft: 10,fontSize: 16 }]}>
-            {item.firstName} {item.lastName}
+          <Text style={[styles(isDark).infoText, { color: isDark? Colors.white : Colors.black,}]}>
+            {item.mobileNumber}
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => Linking.openURL(`mailto:${item.email}`)}>
-          <View style={styles(isDark).infoRow}>
-            <Icon
-              source="email"
-              size={20}
-              color={isDark ? Colors.white : Colors.primary}
-            />
-            <Text
-              style={[
-                styles(isDark).infoText,
-                {
-                  color: Colors.primary, textDecorationLine: 'underline', marginLeft: 10,
-                  marginTop: -5
-                },
-              ]}>
-              {item.email}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => Linking.openURL(`tel:${item.mobileNumber}`)}>
-          <View style={styles(isDark).infoRow}>
-            <Icon
-              source="phone"
-              size={20}
-              color={isDark ? Colors.white : Colors.primary}
-            />
-            <Text style={[styles(isDark).infoText, { color: Colors.primary, marginLeft: 10, }]}>
-              {item.mobileNumber}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </Card.Content>
-    </Card>
-  );
+      </TouchableOpacity>
+
+      {/* Position */}
+      <View style={styles(isDark).infoRow}>
+        <IconButton
+          icon="briefcase"
+          size={22}
+          iconColor={Colors.primary}
+            style={styles(isDark).iconBtn}
+        />
+        <Text style={[styles(isDark).infoText, {  }]}>
+          {item.position?.name || 'N/A'}
+        </Text>
+      </View>
+
+      {/* Application Status */}
+      <View style={styles(isDark).infoRow}>
+        <IconButton
+          icon="calendar-check"
+          size={22}
+          iconColor={getStatusColor(item.applicationStatus?.value)}
+            style={styles(isDark).iconBtn}
+        />
+        <Text
+          style={[
+            styles(isDark).infoText,
+            {
+              fontFamily: 'Lato-Bold',
+              color: getStatusColor(item.applicationStatus?.value),
+            },
+          ]}>{item.applicationStatus?.label}
+        </Text>
+      </View>
+
+    </Card.Content>
+  </Card>
+);
+
   return (
     <View style={styles(isDark).maincontainer}>
       <CustomHeader
@@ -223,12 +214,17 @@ const styles = (isDark: boolean) =>
     infoRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingVertical: 5,
     },
     infoText: {
       fontSize: 14,
-      fontFamily: 'Lato-Medium',
+      fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
+    },
+    iconBtn: {
+      margin: 0,
+      height: 35, 
+      alignSelf: 'center',
+      
     },
   });
 

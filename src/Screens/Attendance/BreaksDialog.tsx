@@ -27,7 +27,7 @@ const BreaksDialog = ({ visibleWorkType, setVisibleWorkType, BreaksData }: any) 
                     <ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
                         {BreaksData?.map((item: any, index: any) => (
                             <>
-                                <View key={index} style={{ flexDirection: 'row', backgroundColor: isDark ? Colors.dark_gray : '#cce0f5', padding: 10, marginTop: 2 }}>
+                                <View key={index} style={{ flexDirection: 'row', backgroundColor: isDark ? Colors.dark_gray : '#3574b8', padding: 10, marginTop: 2 }}>
                                     <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{item.breakInTime ? moment(item.breakInTime).format('hh:mm A') : 'N/A'}</Text>
                                     <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{item.breakOutTime ? moment(item.breakOutTime).format('hh:mm A') : 'N/A'}</Text>
                                     <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Regular' }]}>{item.totalHours ? item.totalHours : 0}</Text>

@@ -4,10 +4,12 @@ import CustomHeader from '../../../Components/CustomHeader';
 import {useSelector} from 'react-redux';
 import {isDarkTheme} from '../../../AppStore/Reducers/appState';
 import {Colors} from '../../../constants/Colors';
-import {Card} from 'react-native-paper';
+import {Card, Divider} from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import ShimmerPlaceHolder from '../../Placeholder/ShimmerPlaceHolder';
 import {useGetMonthlyReportPlansListQuery} from '../../../Services/workloglevel';
+import EmptyData from '../../../Components/EmptyData';
+import moment from 'moment';
 
 const MyPlans = ({navigation}: any) => {
   const isDark = useSelector(isDarkTheme);
@@ -17,6 +19,7 @@ const MyPlans = ({navigation}: any) => {
   const {data, isLoading, error} = useGetMonthlyReportPlansListQuery({
     accessToken: accessToken?.authToken?.accessToken,
   });
+  
   const [myPlanData, setMyPlanData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -52,60 +55,47 @@ const MyPlans = ({navigation}: any) => {
     handleMyPlans().finally(() => setRefreshing(false));
   };
 
-  const renderItem = ({item}: any) => (
-    <Card
-      style={{
-        backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 7,
-        borderColor: Colors.white,
-        borderWidth: 0.5,
-        marginHorizontal: 16,
-        overflow: 'hidden',
-      }}
-      onPress={() => navigation.navigate('TaskDetails', {TaskDetail: item})}>
-      <Card.Content>
-        <View style={styles(isDark).rowContainer}>
-          <Text style={[styles(isDark).dateText, {}]}>
-            Total Tasks{' : '}
-            {item.totalTask}
+const renderItem = ({item}: any) => (
+  <Card
+    style={[styles(isDark).card]}
+    onPress={() => navigation.navigate('TaskDetails', {TaskDetail: item})}>
+    <Card.Content>
+      <View style={styles(isDark).row}>
+        <Text style={[styles(isDark).taskLabel,{fontSize:16}]}>Total Tasks</Text>
+        <Text style={styles(isDark).dateText}>
+          {moment(item.reportDate, ['DD/MMM/YYYY', 'YYYY-MM-DD']).format( 'DD MMM YYYY',)}
+        </Text>
+      </View>
+
+      <View style={styles(isDark).rowBetween}>
+        <Text style={styles(isDark).totalValue}>{item.totalTask}</Text>
+        <View>
+          <Text style={styles(isDark).taskLabel}>{'    '}Committed Tasks{' : '}
+            <Text style={styles(isDark).taskValue}>{item.commitedTask}</Text>
           </Text>
-          <Text style={styles(isDark).dateText}>{item.reportDate}</Text>
-        </View>
-        <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).taskText}>
-            <Text
-              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
-              Committed Tasks{' : '}
-            </Text>
-            {item.commitedTask}
-          </Text>
-          <Text style={styles(isDark).taskText}>
-            <Text
-              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
-              Uncommitted Tasks{' : '}
-            </Text>
-            {item.unCommittedTask}
+          <Text style={styles(isDark).taskLabel}>Uncommitted Tasks{' : '}
+            <Text style={styles(isDark).taskValue}>{item.unCommittedTask}</Text>
           </Text>
         </View>
-        <View style={styles(isDark).rowContainer}>
-          <Text style={styles(isDark).taskText}>
-            <Text
-              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
-              Committed Hours{' : '}
-            </Text>
-            {item.committedHours}
-          </Text>
-          <Text style={styles(isDark).taskText}>
-            <Text
-              style={[styles(isDark).taskText, {fontFamily: 'Lato-Semibold'}]}>
-              Actual Work Log{' : '}
-            </Text>
+      </View>
+
+      <Divider style={{marginVertical: 8}} />
+
+      <View style={styles(isDark).row}>
+        <Text style={styles(isDark).taskLabel}>
+          Committed Hours{' : '}
+          <Text style={styles(isDark).taskValue}>{item.committedHours}</Text>
+        </Text>
+        <Text style={styles(isDark).taskLabel}>
+          Actual Work Log{' : '}
+          <Text style={styles(isDark).taskValue}>
             {item.actualWorkLogHours}
           </Text>
-        </View>
-      </Card.Content>
-    </Card>
-  );
+        </Text>
+      </View>
+    </Card.Content>
+  </Card>
+);
 
   return (
     <View style={styles(isDark).mainContainer}>
@@ -118,16 +108,7 @@ const MyPlans = ({navigation}: any) => {
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : myPlanData.length === 0 ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text
-            style={{
-              color: isDark ? Colors.white : Colors.black,
-              alignSelf: 'center',
-              fontFamily: 'Lato-Bold',
-            }}>
-            No Records
-          </Text>
-        </View>
+        <EmptyData/>
       ) : (
         <FlatList
           data={myPlanData}
@@ -152,24 +133,44 @@ const styles = (isDark: boolean) =>
     },
     card: {
       backgroundColor: isDark ? Colors.black : Colors.background,
-      marginVertical: 7,
+      marginVertical: 5,
       borderColor: Colors.white,
       borderWidth: 0.5,
       marginHorizontal: 16,
+      paddingVertical: 5,
     },
-    rowContainer: {
+    row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 5,
-      flexWrap: 'wrap',
     },
-    dateText: {fontSize:16,fontFamily: 'Lato-Bold', color: Colors.primary},
-    taskText: {
-      fontSize:14,
+    rowBetween: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginTop: 6,
+    },
+    dateText: {
+      fontSize: 14,
+      fontFamily: 'Lato-Semibold',
+      color: Colors.primary,
+    },
+    totalValue: {
+      fontSize: 20,
+      fontFamily: 'Lato-Bold',
+      color: isDark ? Colors.white : Colors.black,
+    },
+    taskLabel: {
+      fontSize: 14,
+      fontFamily: 'Lato-Semibold',
+      color: isDark ? Colors.white : Colors.black,
+      marginVertical: 2,
+    },
+    taskValue: {
+      fontSize: 14,
       fontFamily: 'Lato-Regular',
       color: isDark ? Colors.white : Colors.black,
-      lineHeight: 25,
     },
   });
+
 export default MyPlans;

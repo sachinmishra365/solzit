@@ -7,15 +7,14 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { auth, isDarkTheme } from '../../AppStore/Reducers/appState';
-import { Colors } from '../../constants/Colors';
-import CustomHeader from '../../Components/CustomHeader';
-import { useNavigation } from '@react-navigation/native';
-import { useChangePasswordMutation } from '../../Services/appLevel';
-import CustomTextInput from '../../Components/CustomTextInput';
+import { auth, isDarkTheme } from '../../../AppStore/Reducers/appState';
+import { Colors } from '../../../constants/Colors';
+import CustomHeader from '../../../Components/CustomHeader';
+import { useChangePasswordMutation } from '../../../Services/appLevel';
+import CustomTextInput from '../../../Components/CustomTextInput';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { SCREEN_WIDTH } from '../../constants/Screen';
+import { SCREEN_WIDTH } from '../../../constants/Screen';
 import Toast from 'react-native-toast-message';
 
 
@@ -131,7 +130,9 @@ const ChangePassword = ({ navigation }: any) => {
             {submitCount > 0 && Object.keys(errors).length > 0 && (
               //@ts-ignore
               <View style={styles(isDark).formErrorBox}>
-                <Text style={styles(isDark).formErrorText}>{errors[Object.keys(errors)[0]]}</Text>
+                <Text style={styles(isDark).formErrorText}>
+                  {errors[Object.keys(errors)[0] as keyof typeof errors] as string}
+                </Text>
               </View>
             )}
             <CustomTextInput

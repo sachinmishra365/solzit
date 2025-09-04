@@ -75,7 +75,7 @@ const LeaveBalance = ({navigation}: any) => {
     <Card
       style={{
         backgroundColor: isDark ? Colors.black : Colors.background,
-        marginVertical: 7,
+        marginVertical: 5,
         borderColor: Colors.white,
         borderWidth: 0.5,
       }}>
@@ -97,7 +97,7 @@ const LeaveBalance = ({navigation}: any) => {
               : `Half Day Leave (${item?.totalDaysofLeave})`}
           </Text>
 
-          <View style={{}}>
+          <View >
             <Text
               style={{
                 color:
@@ -281,7 +281,7 @@ const LeaveBalance = ({navigation}: any) => {
             fontSize: 11,
           },
         }))}
-        style={{marginVertical: 10, marginHorizontal: 16}}
+        style={{marginVertical:10, marginHorizontal: 16}}
         theme={{
           colors: {primary: Colors.primary},
         }}
@@ -292,7 +292,7 @@ const LeaveBalance = ({navigation}: any) => {
       ) : //@ts-ignore
       filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
-         style={{ marginHorizontal: 16 }}
+        contentContainerStyle={{ paddingHorizontal:16 }}
           data={filteredItems}
           refreshControl={
             <RefreshControl

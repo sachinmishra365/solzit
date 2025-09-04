@@ -4,15 +4,12 @@ import DrawerNavigator from './DrawerNavigator';
 import ApplyLeave from '../Screens/ApplyLeave';
 import LeaveRequest from '../Screens/LeavesAndBreakes/LeaveRequest';
 import LeaveBalance from '../Screens/LeavesAndBreakes/LeaveBalance';
-import Profile from '../Screens/profile/Profile';
 import Attandance from '../Screens/Attendance/Attandance';
-import ChangePassword from '../Screens/ChangePassword/ChangePassword';
+import ChangePassword from '../Screens/profile/ChangePassword/ChangePassword';
 import SepratedAttendance from '../Screens/Attendance/SepratedAttendance';
 import Summary from '../Screens/Attendance/Summary';
 import { PermissionHandler } from '../permissions';
 import { useEffect } from 'react';
-import MySkills from '../Screens/profile/MySkills';
-import MyAssets from '../Screens/profile/MyAssets';
 import OpenPositions from '../Screens/Hiring Recruitment/OpenPositions';
 import MyReferences from '../Screens/Hiring Recruitment/MyReferences';
 import AddReference from '../Screens/Hiring Recruitment/AddReference';
@@ -42,7 +39,6 @@ import BugDetails from '../Screens/Worklogs/Bugs/BugDetails';
 import WFHCard from '../Screens/Dashboard/WFHCard';
 import Breakes from '../Screens/LeavesAndBreakes/Breakes';
 import AddBreaks from '../Screens/LeavesAndBreakes/AddBreaks';
-import AddSkills from '../Screens/profile/AddSkills';
 import AppoveWorklog from '../Screens/WorklogApproval/AppoveWorklog';
 import SelectedEmployee from '../Screens/WorklogApproval/SelectedEmployee';
 import PMWorklogs from '../Screens/WorklogApproval/PM Worklog Approval/PMWorklogs';
@@ -52,6 +48,10 @@ import ToDosOnWorkLogDate from '../Screens/Dashboard/BigCalendar/ToDosOnWorkLogD
 import AttendanceDetails from '../Screens/Attendance/AttendanceDetails';
 import CarouselScreen from '../Screens/Dashboard/NewDashBoard/CarouselScreen';
 import UpcomingEvents from '../Screens/Dashboard/NewDashBoard/UpcomingEvents';
+import MySkills from '../Screens/profile/MySkills/MySkills';
+import AddSkills from '../Screens/profile/MySkills/AddSkills';
+import Profile from '../Screens/profile/Profile/Profile';
+import MyAssets from '../Screens/profile/MyAssets/MyAssets';
 
 
 const Stack = createNativeStackNavigator();

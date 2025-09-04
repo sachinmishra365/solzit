@@ -27,17 +27,15 @@ const ToDosOnWorkLogDate = ({ route, navigation }: any) => {
         if (isSuccess) {
             SetSelectedDateData(data?.data?.toDoList)
         }
-    }, [data, isFocuse])
+    }, [data, isFocuse]) 
 
     const renderItem = ({ item }: any) => {
-
         return (
             <Card style={[styles(isDark).cardContainer,]} >
                 <Card.Content style={styles(isDark).cardContant}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={[styles(isDark).txt, { fontFamily: 'Lato-Bold', flexWrap: 'wrap', marginVertical: 5 }]}>{item?.projectName || 'N/A'}</Text>
                     </View>
-
                 </Card.Content>
 
                 <Card.Content >

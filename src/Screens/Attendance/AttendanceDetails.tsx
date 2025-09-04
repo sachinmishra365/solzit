@@ -221,7 +221,6 @@ const AttendanceDetails = ({route, navigation}: any) => {
                 color: isDark ? Colors.white : Colors.black,
                 fontSize: 18,
                 fontFamily: 'Lato-Bold',
-                marginBottom: 6,
                 marginTop:6,
                 marginLeft: 15,
               }}>
@@ -360,7 +359,6 @@ const AttendanceDetails = ({route, navigation}: any) => {
                 color: isDark ? Colors.white : Colors.black,
                 fontSize: 18,
                 fontFamily: 'Lato-Bold',
-                marginBottom: 6,
                 marginLeft: 15,
               }}>
               Record data

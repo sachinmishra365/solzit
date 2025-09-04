@@ -1,8 +1,8 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View, Pressable } from 'react-native';
 import React from 'react';
-import { Colors } from '../../constants/Colors';
+import { Colors } from '../../../constants/Colors';
 import { useSelector } from 'react-redux';
-import { isDarkTheme } from '../../AppStore/Reducers/appState';
+import { isDarkTheme } from '../../../AppStore/Reducers/appState';
 import { IconButton } from 'react-native-paper';
 
 const Profilecard = () => {

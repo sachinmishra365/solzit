@@ -47,15 +47,12 @@ export default function CustomDrawer(props: any) {
 
     return (
       <DrawerContentScrollView {...props} contentContainerStyle={{flex: 1}}>
-        <TouchableOpacity
-          style={styles(isDark).containerRow}
-          activeOpacity={0.8}
-          onPress={() => {
+        <TouchableOpacity style={styles(isDark).drawerHeader} onPress={() => {
             navigation.navigate('Profile');
             props.navigation.closeDrawer();
           }}>
           <Image
-            style={styles(isDark).logo}
+            style={styles(isDark).profileImage}
             source={
               Profiledata?.employeeImg
                 ? {
@@ -66,24 +63,13 @@ export default function CustomDrawer(props: any) {
                 : require('../Assets/Images/profile.png')
             }
           />
-
-          <View style={styles(isDark).userCol}>
-            <Text style={styles(isDark).UserName}>
-              {userData?.userProfile?.fullName || 'Guest'}
-            </Text>
-            <Text style={styles(isDark).UserEmail}>
-              {userData?.userProfile?.email || 'GuestEmail'}
-            </Text>
-          </View>
-
-          <View style={{ marginTop:25,}}>
-            <IconButton
-            icon="chevron-right"
-            size={30}
-            iconColor={Colors.white}
-            style={styles(isDark).editIcon}
-          />
-          </View>
+          <Text style={styles(isDark).UserName}>
+            {userData?.userProfile?.fullName || 'Guest'}
+          </Text>
+          <Text style={styles(isDark).UserEmail}>
+            {userData?.userProfile?.email || 'GuestEmail'}
+          </Text>
+          <View style={styles(isDark).divider} />
         </TouchableOpacity>
 
         <ScrollView
@@ -126,7 +112,6 @@ export default function CustomDrawer(props: any) {
               marginLeft: -5,
               borderWidth: 0,
               borderColor: isDark ? Colors.black : Colors.primary,
-              
             }}
             title="My Work"
             titleStyle={{
@@ -583,64 +568,60 @@ export default function CustomDrawer(props: any) {
 }
 
 const styles = (isDark: any) =>
-    StyleSheet.create({
-        container: {
-            flex: 1,
-            alignItems: 'flex-start',
-            justifyContent: 'flex-start',
-        },
-        drawerContainer: { padding: 10 },
-        
-        drawerBtnContainer: { marginHorizontal: 16 },
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
+    },
+    drawerBtnContainer: {marginHorizontal: 16},
 
-        drawerBtn: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: 'transparent',
-            paddingLeft: 13,
-            borderRadius: 8,
-            minHeight: 45,
-            marginTop: 10,
-        },
-        drawerBtnTxt: {
-            marginLeft: 15,
-            color: isDark ? Colors.white : Colors.white,
-            flexWrap: 'wrap',
-            width: 'auto',
-            fontFamily: 'Lato-Semibold',
-            fontSize: 16,
-        },
-         containerRow: {
+    drawerBtn: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: isDark ? Colors.black : Colors.primary,
-      paddingHorizontal: 15,
-      paddingVertical: 10,
+      backgroundColor: 'transparent',
+      paddingLeft: 13,
+      borderRadius: 8,
+      minHeight: 45,
+      marginTop: 10,
     },
-    logo: {
-      width: 50,
-      height: 50,
-      borderRadius: 30,
-      marginRight: 10,
-    },
-    userCol: {
-      flex: 1,
-      flexDirection: 'column',
-      justifyContent: 'center',
-      marginTop:5,
-    },
-    UserName: {
+    drawerBtnTxt: {
+      marginLeft: 15,
+      color: isDark ? Colors.white : Colors.white,
+      flexWrap: 'wrap',
+      width: 'auto',
       fontFamily: 'Lato-Semibold',
       fontSize: 16,
+    },
+    drawerHeader: {
+      alignItems: 'center',
+      paddingVertical: 20,
+      backgroundColor: isDark ? Colors.black : Colors.primary,
+    },
+    profileImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      marginBottom: 10,
+      borderWidth: 2,
+      borderColor: Colors.white,
+    },
+    UserName: {
+      fontSize: 20,
+      fontWeight: '600',
       color: Colors.white,
+      marginBottom: 4,
     },
     UserEmail: {
-      fontFamily: 'Lato-Regular',
       fontSize: 14,
-      color: Colors.white,
+      color: isDark ? Colors.dark_gray : '#ddd',
+      marginBottom: 10,
     },
-    editIcon: {
-      marginLeft: 5,
+    divider: {
+      width: '100%',
+      height: 1,
+      backgroundColor: isDark ? '#333' : '#ccc',
+      marginTop: 10,
     },
-    });
+  });
 

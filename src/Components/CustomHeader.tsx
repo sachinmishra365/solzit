@@ -150,8 +150,8 @@ const styles = (isDark: any) =>
     searchInput: {
       flex: 1,
       height: 40,
-      backgroundColor: isDark ? Colors.gray : Colors.background,
-      borderRadius: 10,
+      backgroundColor: isDark ? Colors.black : Colors.background,
+      borderRadius:6,
       borderColor: isDark ? Colors.background : Colors.white,
       borderWidth: 0.5,
       fontSize: 12,

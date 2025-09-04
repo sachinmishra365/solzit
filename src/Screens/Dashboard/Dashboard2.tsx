@@ -1,19 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {View, Text, StyleSheet, Dimensions, ScrollView, RefreshControl} from 'react-native';
-import {useSelector} from 'react-redux';
-import {isDarkTheme} from '../../AppStore/Reducers/appState';
+import {useDispatch, useSelector} from 'react-redux';
+import {auth, isDarkTheme} from '../../AppStore/Reducers/appState';
 import CarouselScreen from './NewDashBoard/CarouselScreen';
 import UpcomingEvents from './NewDashBoard/UpcomingEvents';
 import Fabbutton from './FabButton/Fabbutton';
 import {Colors} from '../../constants/Colors';
+import moment from 'moment';
 
 const {width} = Dimensions.get('window');
 
 const Dashboard2 = () => {
+  const dispatch = useDispatch();
   const isDark = useSelector(isDarkTheme);
+  const Assesstoken = useSelector((state: any) => state?.appState?.authToken);
   const EmployeeId = useSelector((state: any) => state?.appState?.authToken);
   const userData = useSelector((state: any) => state?.appState?.authToken);
-  
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+      const tokenExpiry = Assesstoken?.authToken?.tokenExpiry;
+      const currentTime = moment().toISOString();
+      const isTokenExpired = moment(tokenExpiry).isSameOrBefore(currentTime);
+      const date = moment().format('YYYY-MM-DD');
+      setCurrentDate(date);
+      if (isTokenExpired) {
+        dispatch(auth(undefined));
+      } else {
+        console.log('Token is still valid.');
+      }
+    }, []);
+    
   return (
     <>
       <ScrollView 
