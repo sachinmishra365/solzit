@@ -338,7 +338,6 @@ const styles = (isDark: boolean) =>
     holidayCard: {
       marginTop: 10,
       width: width * 0.4,
-      height: 70,
       backgroundColor: isDark ? Colors.black : Colors.background,
       borderRadius: 15,
       marginRight: 10,
@@ -447,7 +446,8 @@ const styles = (isDark: boolean) =>
       fontSize: 14,
       fontFamily: 'Lato-Semibold',
       color: isDark ? Colors.white : Colors.black,
-      flexWrap: 'wrap',
+      // flexShrink: 1, 
+      flexWrap:'wrap',
     },
 
     holidayDate: {
