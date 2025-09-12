@@ -7,20 +7,20 @@ import {
   StyleSheet,
   RefreshControl,
 } from 'react-native';
-import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {  applied,  isDarkTheme,  processedLeaves,} from '../../../AppStore/Reducers/appState';
-import {  useEmployeeAppliedLeavesQuery,  useGetSoluzioneUpcomingBirthdaysQuery,  useProcessedLeavesQuery,} from '../../../Services/services';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { applied, isDarkTheme, processedLeaves, } from '../../../AppStore/Reducers/appState';
+import { useEmployeeAppliedLeavesQuery, useGetSoluzioneUpcomingBirthdaysQuery, useProcessedLeavesQuery, } from '../../../Services/services';
 import moment from 'moment';
-import {Colors} from '../../../constants/Colors';
+import { Colors } from '../../../constants/Colors';
 import LinearGradient from 'react-native-linear-gradient';
-import {Card, Icon} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {useNavigation} from '@react-navigation/native';
+import { Card, Icon } from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 import DashboardShimmer from '../../Placeholder/DashboardShimmer';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const UpcomingEvents = () => {
   const navigation = useNavigation<any>();
@@ -37,9 +37,10 @@ const UpcomingEvents = () => {
   const [appliedLeave, SetAppliedLeave] = useState<any>([]);
   const [confettiActive, setConfettiActive] = useState(false);
 
-  const {  data: AppliedLeave,  refetch: refetchapplies,  isLoading: appliedLoading,  } = useEmployeeAppliedLeavesQuery({accessToken: accessToken});
-  const {  data: ProcessedLeaves,  refetch: refetchprocessed,  isLoading: processedLoading,  } = useProcessedLeavesQuery({accessToken: accessToken});
-  const {  data: upcomingBirthdayData,  refetch: refetchBirthday,  isLoading: birthdayLoading,  } = useGetSoluzioneUpcomingBirthdaysQuery({accessToken: accessToken});
+  const { data: AppliedLeave, refetch: refetchapplies, isLoading: appliedLoading, } = useEmployeeAppliedLeavesQuery({ accessToken: accessToken });
+  const { data: ProcessedLeaves, refetch: refetchprocessed, isLoading: processedLoading, } = useProcessedLeavesQuery({ accessToken: accessToken });
+  const { data: upcomingBirthdayData, refetch: refetchBirthday, isLoading: birthdayLoading, } = useGetSoluzioneUpcomingBirthdaysQuery({ accessToken: accessToken });
+  console.log(AppliedLeave);
 
   const isLoading = appliedLoading || processedLoading || birthdayLoading;
 
@@ -85,36 +86,36 @@ const UpcomingEvents = () => {
   }, [upcomingBirthdayData]);
 
   useEffect(() => {
-  if (todayBirthdays?.length > 0 && !confettiShown.current) {
-    setConfettiActive(true);
-    confettiShown.current = true; 
-    const timer = setTimeout(() => {
-      setConfettiActive(false);
-    }, 6000);
+    if (todayBirthdays?.length > 0 && !confettiShown.current) {
+      setConfettiActive(true);
+      confettiShown.current = true;
+      const timer = setTimeout(() => {
+        setConfettiActive(false);
+      }, 6000);
 
-    return () => clearTimeout(timer);
-  }
-}, [todayBirthdays]);
+      return () => clearTimeout(timer);
+    }
+  }, [todayBirthdays]);
 
 
   const getStatusIconAndColor = (status: string) => {
     switch (status) {
       case 'Approved':
-        return {icon: 'calendar-check-outline', color: Colors.green};
+        return { icon: 'calendar-check-outline', color: Colors.green };
       case 'Declined':
-        return {icon: 'calendar-remove-outline', color: Colors.accent};
+        return { icon: 'calendar-remove-outline', color: Colors.accent };
       case 'Applied':
       default:
-        return {icon: 'calendar-clock-outline', color: Colors.secondary};
+        return { icon: 'calendar-clock-outline', color: Colors.secondary };
     }
   };
 
-  const leavesByStatus: {[key: string]: any[]} = {};
+  const leavesByStatus: { [key: string]: any[] } = {};
   statuses.forEach(status => {
     const source = status === 'Applied' ? appliedLeave : ProcessedLeaves?.data || [];
     leavesByStatus[status] = source.filter((item: any) => {
       const isThisMonth = moment(item?.leaveStartDate).isSame(
-        moment(),'month', );
+        moment(), 'month',);
       return item?.status?.label === status && isThisMonth;
     });
   });
@@ -132,8 +133,8 @@ const UpcomingEvents = () => {
       return (
         <View style={styles(isDark).birthdayCard}>
           <LinearGradient colors={gradientColors} style={styles(isDark).gradientBackground1}>
-           <Image 
-              source={ user.employeeImg? { uri: `data:image/png;base64,${user.employeeImg}`} : require('../../../Assets/Images/EmpBoy.png')}
+            <Image
+              source={user.employeeImg ? { uri: `data:image/png;base64,${user.employeeImg}` } : require('../../../Assets/Images/EmpBoy.png')}
               style={styles(isDark).userImage1}
             />
             <View>
@@ -152,8 +153,8 @@ const UpcomingEvents = () => {
           <View style={styles(isDark).userRow}>
             {todayBirthdays.map((user, idx) => (
               <View key={idx} style={styles(isDark).userContainer}>
-                <Image 
-                  source={ user.employeeImg? { uri: `data:image/png;base64,${user.employeeImg}`} : require('../../../Assets/Images/EmpBoy.png')}
+                <Image
+                  source={user.employeeImg ? { uri: `data:image/png;base64,${user.employeeImg}` } : require('../../../Assets/Images/EmpBoy.png')}
                   style={styles(isDark).userImage}
                 />
                 <Text style={styles(isDark).userName}>{user.fullName}</Text>
@@ -169,29 +170,29 @@ const UpcomingEvents = () => {
     <DashboardShimmer />
   ) : (
     <View style={styles(isDark).maincontainer}>
-       {confettiActive && (
-            <ConfettiCannon
-              count={200}
-              origin={{x: -10, y: 0}}
-              explosionSpeed={800}
-            />
-          )}
+      {confettiActive && (
+        <ConfettiCannon
+          count={200}
+          origin={{ x: -10, y: 0 }}
+          explosionSpeed={800}
+        />
+      )}
 
-       <BirthdayCard todayBirthdays={todayBirthdays} />
-       
+      <BirthdayCard todayBirthdays={todayBirthdays} />
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 5}}>
+        contentContainerStyle={{ paddingBottom: 5 }}>
         {holidayList.map((holiday: any, index: any) => (
           <View
             key={index}
             style={[styles(isDark).holidayCard, {}]}>
             <View style={styles(isDark).holidayContent}>
-              <Text style={[styles(isDark).holidayName,{marginLeft:-3}]}>
+              <Text style={[styles(isDark).holidayName, { marginLeft: -3 }]}>
                 {holiday.holidayName}
               </Text>
-              <Text style={[  styles(isDark).holidayDate,{marginLeft:-3}]}>
+              <Text style={[styles(isDark).holidayDate, { marginLeft: -3 }]}>
                 {moment(holiday.date).format('DD MMM')}
               </Text>
             </View>
@@ -203,19 +204,19 @@ const UpcomingEvents = () => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 5}}>
+        contentContainerStyle={{ paddingBottom: 5 }}>
         {birthdayList.map((birthday: any, index: any) => (
           <Card key={index} style={styles(isDark).bdyCard}>
             <Card.Cover
               source={
                 birthday.employeeImg
-                  ? {uri: `data:image/jpeg;base64,${birthday.employeeImg}`}
+                  ? { uri: `data:image/jpeg;base64,${birthday.employeeImg}` }
                   : require('../../../Assets/Images/EmpBoy.png')
               }
               style={styles(isDark).birthdayImage}
               resizeMode="cover"
             />
-            <View style={[{flex: 1, justifyContent: 'space-between',padding:5,}]}>
+            <View style={[{ flex: 1, justifyContent: 'space-between', padding: 5, }]}>
               <Text style={[styles(isDark).holidayName]}>
                 {birthday.fullName}
               </Text>
@@ -255,7 +256,7 @@ const UpcomingEvents = () => {
         const leaves = leavesByStatus[status]?.slice(0, 4);
         if (!leaves || leaves.length === 0) return null;
 
-        const {icon, color} = getStatusIconAndColor(status);
+        const { icon, color } = getStatusIconAndColor(status);
         const isSingleCard = leaves.length === 1;
 
         return (
@@ -277,12 +278,12 @@ const UpcomingEvents = () => {
                   <View
                     style={[
                       styles(isDark).iconContainer,
-                      {backgroundColor: color + '20'},
+                      { backgroundColor: color + '20' },
                     ]}>
                     <Icon source={icon} size={20} color={color} />
                   </View>
 
-                  <View style={{flex: 1}}>
+                  <View style={{ flex: 1 }}>
                     <Text style={styles(isDark).leaveType}>{status}</Text>
                     <Text style={styles(isDark).leaveDate}>
                       {moment(leave?.leaveStartDate).format('DD MMM')} {' - '}
@@ -341,11 +342,11 @@ const styles = (isDark: boolean) =>
       backgroundColor: isDark ? Colors.black : Colors.background,
       borderRadius: 15,
       marginRight: 10,
-      padding:10,
+      padding: 10,
       elevation: 1,
       borderWidth: 0.5,
       borderColor: isDark ? Colors.gray : Colors.background,
-      alignItems:'flex-start',
+      alignItems: 'flex-start',
     },
     bdyCard: {
       width: width * 0.4,
@@ -423,7 +424,7 @@ const styles = (isDark: boolean) =>
       fontSize: 18,
       fontWeight: 'bold',
       textAlign: 'center',
-       color: isDark ? Colors.white : Colors.black,
+      color: isDark ? Colors.white : Colors.black,
     },
 
     userName: {
@@ -447,7 +448,7 @@ const styles = (isDark: boolean) =>
       fontFamily: 'Lato-Semibold',
       color: isDark ? Colors.white : Colors.black,
       // flexShrink: 1, 
-      flexWrap:'wrap',
+      flexWrap: 'wrap',
     },
 
     holidayDate: {

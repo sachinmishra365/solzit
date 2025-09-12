@@ -6,9 +6,10 @@ import CarouselScreen from './NewDashBoard/CarouselScreen';
 import UpcomingEvents from './NewDashBoard/UpcomingEvents';
 import Fabbutton from './FabButton/Fabbutton';
 import {Colors} from '../../constants/Colors';
+
 import moment from 'moment';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const Dashboard2 = () => {
   const dispatch = useDispatch();
@@ -31,11 +32,12 @@ const Dashboard2 = () => {
       }
     }, []);
     
+
   return (
     <>
-      <ScrollView 
+      <ScrollView
         style={styles(isDark).container}
-        contentContainerStyle={{paddingBottom: 100}}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}>
         <Text style={styles(isDark).greet}>Welcome back !</Text>
         <Text style={styles(isDark).title}>
@@ -45,7 +47,7 @@ const Dashboard2 = () => {
         <View style={styles(isDark).carouselWrapper}>
           <CarouselScreen />
         </View>
-        <View style={{marginHorizontal: 16}}>
+        <View style={{ marginHorizontal: 16 }}>
           <UpcomingEvents />
         </View>
       </ScrollView>

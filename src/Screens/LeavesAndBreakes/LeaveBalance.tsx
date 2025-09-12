@@ -293,6 +293,7 @@ const LeaveBalance = ({navigation}: any) => {
       filteredItems && filteredItems?.length !== 0 ? (
         <FlatList
         contentContainerStyle={{ paddingHorizontal:16 }}
+
           data={filteredItems}
           refreshControl={
             <RefreshControl

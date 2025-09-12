@@ -222,7 +222,7 @@ const WorkFromHome = ({ navigation }: any) => {
                 ? Colors.white
                 : isDark
                   ? Colors.white
-                  : Colors.black, 
+                  : Colors.black,
             fontFamily: 'Lato-Bold',
             fontSize: 11,
           },
@@ -232,13 +232,14 @@ const WorkFromHome = ({ navigation }: any) => {
           colors: { primary: Colors.primary },
         }}
       />
-     
+
       {isLoading ? (
         <ShimmerPlaceHolder />
       ) : //@ts-ignore
         filteredItems && filteredItems?.length !== 0 ? (
           <FlatList
            contentContainerStyle={{ paddingHorizontal:16 }}
+
             data={filteredItems}
             refreshControl={
               <RefreshControl
